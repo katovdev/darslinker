@@ -27,10 +27,17 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
-  background: rgba(35, 35, 35, 0.8);
-  backdrop-filter: blur(20px);
+  z-index: 1000;
+  background: rgba(90, 90, 90, 0.1);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: backdrop-filter, background;
+}
+
+.header.scrolling {
+  transform: translateZ(0);
 }
 
 .header .container {
@@ -343,6 +350,80 @@ body {
   line-height: 1.6;
 }
 
+/* Analytics Card Special Styling */
+.analytics-card {
+  position: relative;
+  overflow: visible;
+  z-index: 5;
+}
+
+.analytics-3d-icon {
+  position: absolute;
+  bottom: -60px;
+  right: -150px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+/* Behind card - blurred */
+.analytics-behind {
+  z-index: -1;
+  clip-path: polygon(0 0, 100% 0, 100% 60%, 0 60%);
+}
+
+.analytics-behind .analytics-icon-image {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+  filter: blur(3px) brightness(0.6) saturate(100%);
+  transition: all 0.3s ease;
+  animation: analyticsFloat3D 5s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+/* Outside card - clear */
+.analytics-outside {
+  z-index: 10;
+  clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+}
+
+.analytics-icon-image-clear {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+  filter: brightness(0.9) saturate(120%);
+  transition: all 0.3s ease;
+  animation: analyticsFloat3D 5s ease-in-out infinite;
+}
+
+.analytics-card:hover .analytics-icon-image,
+.analytics-card:hover .analytics-icon-image-clear {
+  filter: brightness(1.1) saturate(150%);
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+
+/* Analytics Icon 3D Floating Animation */
+@keyframes analyticsFloat3D {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) translateZ(0);
+    filter: brightness(0.9) saturate(120%);
+  }
+  25% {
+    transform: translateY(-8px) rotate(3deg) translateZ(0);
+    filter: brightness(1.0) saturate(130%);
+  }
+  50% {
+    transform: translateY(-12px) rotate(0deg) translateZ(0);
+    filter: brightness(1.1) saturate(140%);
+  }
+  75% {
+    transform: translateY(-8px) rotate(-3deg) translateZ(0);
+    filter: brightness(1.0) saturate(130%);
+  }
+}
+
 .video-section {
   display: flex;
   justify-content: center;
@@ -425,6 +506,112 @@ body {
   font-weight: 600;
   color: #ffffff;
   margin: 0;
+}
+
+/* Course Card Special Styling */
+.course-card {
+  position: relative;
+  overflow: visible;
+}
+
+/* Course 3D Icon */
+.course-3d-icon {
+  position: absolute;
+  left: -250px;
+  top: -30px;
+  z-index: 10;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.course-icon-image {
+  width: 250px;
+  height: 250px;
+  object-fit: contain;
+  filter: brightness(0.8) saturate(150%);
+  transition: all 0.3s ease;
+  animation: courseFloat 5s ease-in-out infinite;
+}
+
+.course-card:hover .course-icon-image {
+  filter: brightness(1.1) saturate(180%);
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+/* Brending Card Special Styling */
+.brending-card {
+  position: relative;
+  overflow: visible;
+}
+
+/* Glass Decoration Element */
+.glass-decoration {
+  position: absolute;
+  right: -250px;
+  top: -30px;
+  z-index: 10;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.glass-deco-image {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+  filter: brightness(0.8) saturate(150%);
+  transition: all 0.3s ease;
+  animation: glassFloat 4s ease-in-out infinite;
+}
+
+.brending-card:hover .glass-deco-image {
+  filter: brightness(1.1) saturate(180%);
+  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+/* Course Floating Animation */
+@keyframes courseFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg) translateX(0px);
+    filter: brightness(0.8) saturate(150%);
+  }
+  20% {
+    transform: translateY(-6px) rotate(3deg) translateX(3px);
+    filter: brightness(0.9) saturate(160%);
+  }
+  40% {
+    transform: translateY(-10px) rotate(0deg) translateX(0px);
+    filter: brightness(1.0) saturate(170%);
+  }
+  60% {
+    transform: translateY(-8px) rotate(-2deg) translateX(-3px);
+    filter: brightness(0.95) saturate(165%);
+  }
+  80% {
+    transform: translateY(-4px) rotate(1deg) translateX(2px);
+    filter: brightness(0.9) saturate(160%);
+  }
+}
+
+/* Glass Floating Animation */
+@keyframes glassFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    filter: brightness(0.8) saturate(150%);
+  }
+  25% {
+    transform: translateY(-5px) rotate(2deg);
+    filter: brightness(0.9) saturate(160%);
+  }
+  50% {
+    transform: translateY(-8px) rotate(0deg);
+    filter: brightness(1.0) saturate(170%);
+  }
+  75% {
+    transform: translateY(-5px) rotate(-2deg);
+    filter: brightness(0.9) saturate(160%);
+  }
 }
 
 .platform-actions {
@@ -657,6 +844,60 @@ body {
   animation-delay: -4s;
 }
 
+/* 3D Play Button */
+.play-button-3d {
+  position: absolute;
+  top: -30px;
+  left: 10px;
+  z-index: 100;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  opacity: 0.8;
+  pointer-events: auto;
+}
+
+.play-button-3d:hover {
+  transform: scale(1.1) rotate(5deg);
+  opacity: 1;
+}
+
+.play-btn-image {
+  width: 300px;
+  height: 300px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+  transition: all 0.3s ease;
+  animation: playButtonFloat 4s ease-in-out infinite;
+}
+
+.play-button-3d:hover .play-btn-image {
+  filter: drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
+}
+
+.play-button-3d:active {
+  transform: scale(0.95);
+}
+
+/* Play Button Floating Animation */
+@keyframes playButtonFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2)) brightness(1);
+  }
+  25% {
+    transform: translateY(-8px) rotate(2deg);
+    filter: drop-shadow(0 8px 16px rgba(107, 123, 255, 0.3)) brightness(1.1);
+  }
+  50% {
+    transform: translateY(-12px) rotate(0deg);
+    filter: drop-shadow(0 12px 24px rgba(255, 255, 255, 0.2)) brightness(1.2);
+  }
+  75% {
+    transform: translateY(-8px) rotate(-2deg);
+    filter: drop-shadow(0 8px 16px rgba(107, 123, 255, 0.3)) brightness(1.1);
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   body {
@@ -716,5 +957,45 @@ body {
   .flag-img {
     width: 18px;
     height: 14px;
+  }
+
+  .play-button-3d {
+    top: 60px;
+    left: 15px;
+  }
+
+  .play-btn-image {
+    width: 60px;
+    height: 60px;
+  }
+
+  .analytics-3d-icon {
+    bottom: -40px;
+    right: -10px;
+  }
+
+  .analytics-icon-image {
+    width: 80px;
+    height: 80px;
+  }
+
+  .course-3d-icon {
+    left: -40px;
+    top: -20px;
+  }
+
+  .course-icon-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .glass-decoration {
+    right: -40px;
+    top: -20px;
+  }
+
+  .glass-deco-image {
+    width: 100px;
+    height: 100px;
   }
 }

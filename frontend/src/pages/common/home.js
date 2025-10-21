@@ -63,6 +63,11 @@ export function initHomePage() {
           </div>
         </div>
       </div>
+
+      <!-- 3D Play Button only in Hero Section -->
+      <div class="play-button-3d">
+        <img src="/src/assets/images/9 1.png" alt="3D Play Button" class="play-btn-image" />
+      </div>
     </section>
 
     <!-- Features Section -->
@@ -79,9 +84,19 @@ export function initHomePage() {
             <p>Uzcard, Humo, Visa, Mastercard, Payme, Click bo'yicha to'lov o'quvchi harid qilganiga integratsiya qilinb. Ixtisoriga nark tushinadi.</p>
           </div>
 
-          <div class="feature-card">
+          <div class="feature-card analytics-card">
             <h3>O'quvchilar tahlili</h3>
             <p>O'quvchilar faoliyatin real vaqt rejimida kuzatish, test, topshiriq natijalarini grafik va diagrammalarga qo'shish, individual kurslarni O'quvchilarga avtomatik tavsiyalanib.</p>
+
+            <!-- 3D Analytics Icon - Behind card (blurred) -->
+            <div class="analytics-3d-icon analytics-behind">
+              <img src="/src/assets/images/3D Black Chrome Shape (25) 1.png" alt="3D Analytics" class="analytics-icon-image" />
+            </div>
+
+            <!-- 3D Analytics Icon - Outside card (clear) -->
+            <div class="analytics-3d-icon analytics-outside">
+              <img src="/src/assets/images/3D Black Chrome Shape (25) 1.png" alt="3D Analytics" class="analytics-icon-image-clear" />
+            </div>
           </div>
         </div>
 
@@ -100,8 +115,13 @@ export function initHomePage() {
         <h2 class="section-title">Platformaning Asosiy Imkoniyatlari</h2>
 
         <div class="platform-features-grid">
-          <div class="platform-feature-card">
+          <div class="platform-feature-card course-card">
             <h4>1. Tez va oson kurs joylash</h4>
+
+            <!-- 3D Course Icon on left side -->
+            <div class="course-3d-icon">
+              <img src="/src/assets/images/3D Black Chrome Shape (3) 1.png" alt="3D Course Icon" class="course-icon-image" />
+            </div>
           </div>
           <div class="platform-feature-card">
             <h4>2. O'quvchilar Nazorati</h4>
@@ -116,8 +136,13 @@ export function initHomePage() {
           <div class="platform-feature-card">
             <h4>5. Sun'iy intellekt</h4>
           </div>
-          <div class="platform-feature-card">
+          <div class="platform-feature-card brending-card">
             <h4>6. Brendaga moslash</h4>
+
+            <!-- Decorative Glass Element next to card -->
+            <div class="glass-decoration">
+              <img src="/src/assets/images/gradient glass (20) 1 (1).png" alt="Glass Decoration" class="glass-deco-image" />
+            </div>
           </div>
 
           <div class="platform-feature-card">
@@ -148,6 +173,12 @@ export function initHomePage() {
 
   // Initialize neon dots
   createNeonDots();
+
+  // Initialize 3D play button
+  init3DPlayButton();
+
+  // Initialize header scroll effects
+  initHeaderScrollEffects();
 
   // Update store
   store.setState({ currentPage: 'home' });
@@ -433,5 +464,72 @@ function createNeonDots() {
     dot.style.animationDelay = (i * 2) + 's';
 
     container.appendChild(dot);
+  });
+}
+
+// Initialize 3D play button functionality
+function init3DPlayButton() {
+  const playButton = document.querySelector('.play-button-3d');
+  if (!playButton) return;
+
+  playButton.addEventListener('click', function() {
+    // Add click animation
+    this.style.transform = 'scale(0.9)';
+
+    setTimeout(() => {
+      this.style.transform = '';
+    }, 150);
+
+    // Here you can add functionality like opening a video modal
+    console.log('Play button clicked - add your video functionality here');
+
+    // Example: scroll to video section or open modal
+    const videoSection = document.querySelector('.video-section');
+    if (videoSection) {
+      videoSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  // Add pulse animation
+  playButton.addEventListener('mouseenter', function() {
+    this.style.animation = 'pulse 2s infinite';
+  });
+
+  playButton.addEventListener('mouseleave', function() {
+    this.style.animation = '';
+  });
+}
+
+// Initialize header scroll effects
+function initHeaderScrollEffects() {
+  const header = document.querySelector('.header');
+  if (!header) return;
+
+  let scrollTimeout;
+
+  window.addEventListener('scroll', function() {
+    const scrollY = window.scrollY;
+
+    // Smooth blur effect based on scroll
+    if (scrollY > 50) {
+      header.style.background = 'rgba(90, 90, 90, 0.15)';
+      header.style.backdropFilter = 'blur(30px) saturate(200%)';
+      header.style.webkitBackdropFilter = 'blur(30px) saturate(200%)';
+    } else {
+      header.style.background = 'rgba(90, 90, 90, 0.1)';
+      header.style.backdropFilter = 'blur(25px) saturate(180%)';
+      header.style.webkitBackdropFilter = 'blur(25px) saturate(180%)';
+    }
+
+    // Clear previous timeout
+    clearTimeout(scrollTimeout);
+
+    // Add scroll indicator
+    header.classList.add('scrolling');
+
+    // Remove scroll indicator after scrolling stops
+    scrollTimeout = setTimeout(() => {
+      header.classList.remove('scrolling');
+    }, 150);
   });
 }
