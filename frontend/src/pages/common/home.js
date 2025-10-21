@@ -138,10 +138,16 @@ export function initHomePage() {
       </div>
     </section>
 
+    <!-- Neon Dots Background -->
+    <div class="neon-dots-container" id="neonDotsContainer"></div>
+
   `;
 
   // Initialize glittering effects and interactions
   initHomePageEffects();
+
+  // Initialize neon dots
+  createNeonDots();
 
   // Update store
   store.setState({ currentPage: 'home' });
@@ -387,4 +393,45 @@ function createParticleEffect(x, y) {
       particle.remove();
     }, 1000);
   }
+}
+
+// Create animated neon dots
+function createNeonDots() {
+  const container = document.getElementById('neonDotsContainer');
+  if (!container) return;
+
+  // Strategic positions for 8 dots
+  const positions = [
+    { x: 15, y: 20 },    // Top left corner area
+    { x: 85, y: 15 },    // Top right corner area
+    { x: 20, y: 75 },    // Bottom left area
+    { x: 75, y: 80 },    // Bottom right area
+    { x: 45, y: 35 },    // Center-top area
+    { x: 60, y: 65 },    // Center-bottom area
+    { x: 5, y: 90 },     // Bottom left corner
+    { x: 90, y: 85 }     // Bottom right corner
+  ];
+
+  const colors = ['blue', 'white', 'blue', 'white', 'blue', 'white', 'blue', 'white'];
+  const animations = ['blink', 'pulse', 'blink', 'blink', 'pulse', 'blink', 'pulse', 'blink'];
+
+  positions.forEach((pos, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'neon-dot';
+
+    if (colors[i] === 'white') {
+      dot.classList.add('white');
+    }
+
+    dot.classList.add(animations[i]);
+
+    // Position the dot
+    dot.style.left = pos.x + '%';
+    dot.style.top = pos.y + '%';
+
+    // Staggered animation delays
+    dot.style.animationDelay = (i * 2) + 's';
+
+    container.appendChild(dot);
+  });
 }

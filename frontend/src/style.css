@@ -518,11 +518,18 @@ body {
   height: 95px;
   animation: float3 6s ease-in-out infinite;
 }
+.floating-7 {
+  bottom: 30%;
+  left: 10%;
+  width: 95px;
+  height: 95px;
+  animation: float3 6s ease-in-out infinite;
+}
 
 /* Glittering Animation */
 @keyframes glitter {
   0%, 100% {
-    filter: brightness(1) drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
+    filter: brightness(4) drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
     transform: scale(1);
   }
   25% {
@@ -566,6 +573,88 @@ body {
   0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
   33% { transform: translateY(-15px) translateX(10px) rotate(120deg); }
   66% { transform: translateY(10px) translateX(-10px) rotate(240deg); }
+}
+
+/* Neon Blinking Dots */
+.neon-dots-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.neon-dot {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #5B8BC7;
+  opacity: 0.12;
+  filter: blur(15px);
+}
+
+.neon-dot.white {
+  background: #ffffff;
+  opacity: 0.06;
+}
+
+@keyframes neonBlink {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.12;
+  }
+}
+
+@keyframes neonPulse {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.08;
+  }
+}
+
+@keyframes whiteBlink {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.06;
+  }
+}
+
+.neon-dot.blink {
+  animation: neonBlink 5s ease-in-out infinite;
+}
+
+.neon-dot.pulse {
+  animation: neonPulse 5s ease-in-out infinite;
+}
+
+.neon-dot.white.blink {
+  animation: whiteBlink 5s ease-in-out infinite;
+}
+
+.neon-dot:nth-child(2n) {
+  animation-delay: -1s;
+}
+
+.neon-dot:nth-child(3n) {
+  animation-delay: -2s;
+}
+
+.neon-dot:nth-child(4n) {
+  animation-delay: -3s;
+}
+
+.neon-dot:nth-child(5n) {
+  animation-delay: -4s;
 }
 
 /* Responsive Design */
