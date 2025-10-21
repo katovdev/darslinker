@@ -101,33 +101,33 @@ export function initHomePage() {
 
         <div class="platform-features-grid">
           <div class="platform-feature-card">
-            <h4>Tez va oson kurs joylash</h4>
+            <h4>1. Tez va oson kurs joylash</h4>
           </div>
           <div class="platform-feature-card">
-            <h4>O'quvchilar Nazorati</h4>
+            <h4>2. O'quvchilar Nazorati</h4>
           </div>
           <div class="platform-feature-card">
-            <h4>To'lov tizimi integratsiya</h4>
-          </div>
-
-          <div class="platform-feature-card">
-            <h4>Darslar analitikasi</h4>
-          </div>
-          <div class="platform-feature-card">
-            <h4>Sun'iy intellekt</h4>
-          </div>
-          <div class="platform-feature-card">
-            <h4>Brendaga moslash</h4>
+            <h4>3. To'lov tizimi integratsiya</h4>
           </div>
 
           <div class="platform-feature-card">
-            <h4>Qo'llab quvvatlash</h4>
+            <h4>4. Darslar analitikasi</h4>
           </div>
           <div class="platform-feature-card">
-            <h4>Ma'lumotlar xavfsizligi</h4>
+            <h4>5. Sun'iy intellekt</h4>
           </div>
           <div class="platform-feature-card">
-            <h4>Moliyaviy analitika</h4>
+            <h4>6. Brendaga moslash</h4>
+          </div>
+
+          <div class="platform-feature-card">
+            <h4>7. Qo'llab quvvatlash</h4>
+          </div>
+          <div class="platform-feature-card">
+            <h4>8. Ma'lumotlar xavfsizligi</h4>
+          </div>
+          <div class="platform-feature-card">
+            <h4>9. Moliyaviy analitika</h4>
           </div>
         </div>
 
