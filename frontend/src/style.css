@@ -938,7 +938,7 @@ body {
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0.12;
   overflow: hidden;
 }
 
@@ -954,7 +954,7 @@ body {
 
 .neon-dot.white {
   background: #ffffff;
-  opacity: 1;
+  opacity: 0.12;
 }
 
 @keyframes neonBlink {
@@ -2089,8 +2089,18 @@ body {
   flex-wrap: wrap;
 }
 
-.footer-contact span {
+.footer-contact-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   white-space: nowrap;
+}
+
+.footer-contact-item .contact-icon {
+  color: #7EA2D4;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
 }
 
 /* Social Links */
@@ -2186,6 +2196,15 @@ body {
     gap: 20px;
     flex-direction: column;
     font-size: 14px;
+  }
+
+  .footer-contact-item {
+    gap: 6px;
+  }
+
+  .footer-contact-item .contact-icon {
+    width: 14px;
+    height: 14px;
   }
 
   .social-links {
