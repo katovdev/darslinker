@@ -13,6 +13,14 @@ export function initHomePage() {
         </div>
 
         <nav class="nav-menu">
+          <a href="#" class="nav-item">Asosiy</a>
+          <a href="#" class="nav-item">Ma'lumot</a>
+          <a href="#" class="nav-item">Tariflar</a>
+          <a href="#" class="nav-item">Bloglar</a>
+          <a href="#" class="nav-item">Aloqa</a>
+        </nav>
+
+        <div class="header-actions">
           <div class="language-selector">
             <div class="lang-dropdown">
               <div class="lang-selected" id="langSelected">
@@ -36,14 +44,7 @@ export function initHomePage() {
               </div>
             </div>
           </div>
-          <a href="#" class="nav-item">Asosiy</a>
-          <a href="#" class="nav-item">Ma'lumot</a>
-          <a href="#" class="nav-item">Tariflar</a>
-          <a href="#" class="nav-item">Bloglar</a>
-          <a href="#" class="nav-item">Aloqa</a>
-        </nav>
 
-        <div class="header-actions">
           <!-- Light/Dark Mode Toggle -->
           <div class="theme-toggle" id="themeToggle">
             <div class="toggle-container">
