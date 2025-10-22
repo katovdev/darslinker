@@ -1,5 +1,6 @@
 import swaggerJSDoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+
 import { PORT } from "./env.js";
 
 const swaggerDefinition = {
@@ -11,7 +12,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: `http://localhost:${PORT}/api`,
+      url: `http://localhost:${PORT}/api-docs`,
       description: "Local server",
     },
   ],
@@ -33,7 +34,7 @@ const swaggerDefinition = {
 
 const options = {
   swaggerDefinition,
-  apis: ["./routes/*.js"],
+  apis: ["./src/routes/*.js"],
 };
 
 export default function swaggerDocs(app) {
