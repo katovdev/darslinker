@@ -9,28 +9,28 @@ export function initHomePage() {
     <header class="header">
       <div class="container">
         <div class="nav-brand">
-          <img src="/src/assets/images/darslinker.png" alt="Dars Linker" class="logo" />
+          <img src="/images/darslinker.png" alt="Dars Linker" class="logo" />
         </div>
 
         <nav class="nav-menu">
           <div class="language-selector">
             <div class="lang-dropdown">
               <div class="lang-selected" id="langSelected">
-                <img src="/src/assets/images/uz-flag.jpg" alt="UZ" class="flag-img" />
+                <img src="/images/uz-flag.jpg" alt="UZ" class="flag-img" />
                 <span>UZ</span>
                 <span class="dropdown-arrow">▼</span>
               </div>
               <div class="lang-options" id="langOptions">
-                <div class="lang-option" data-lang="en" data-flag="/src/assets/images/us-flag.png">
-                  <img src="/src/assets/images/us-flag.png" alt="EN" class="flag-img" />
+                <div class="lang-option" data-lang="en" data-flag="/images/us-flag.png">
+                  <img src="/images/us-flag.png" alt="EN" class="flag-img" />
                   <span>EN</span>
                 </div>
-                <div class="lang-option" data-lang="ru" data-flag="/src/assets/images/ru-flag.jpg">
-                  <img src="/src/assets/images/ru-flag.jpg" alt="RU" class="flag-img" />
+                <div class="lang-option" data-lang="ru" data-flag="/images/ru-flag.jpg">
+                  <img src="/images/ru-flag.jpg" alt="RU" class="flag-img" />
                   <span>RU</span>
                 </div>
-                <div class="lang-option active" data-lang="uz" data-flag="/src/assets/images/uz-flag.jpg">
-                  <img src="/src/assets/images/uz-flag.jpg" alt="UZ" class="flag-img" />
+                <div class="lang-option active" data-lang="uz" data-flag="/images/uz-flag.jpg">
+                  <img src="/images/uz-flag.jpg" alt="UZ" class="flag-img" />
                   <span>UZ</span>
                 </div>
               </div>
@@ -84,7 +84,7 @@ export function initHomePage() {
 
       <!-- 3D Play Button only in Hero Section -->
       <div class="play-button-3d">
-        <img src="/src/assets/images/9 1.png" alt="3D Play Button" class="play-btn-image" />
+        <img src="/images/9 1.png" alt="3D Play Button" class="play-btn-image" />
       </div>
     </section>
 
@@ -108,12 +108,12 @@ export function initHomePage() {
 
             <!-- 3D Analytics Icon - Behind card (blurred) -->
             <div class="analytics-3d-icon analytics-behind">
-              <img src="/src/assets/images/3D Black Chrome Shape (25) 1.png" alt="3D Analytics" class="analytics-icon-image" />
+              <img src="/images/3D Black Chrome Shape (25) 1.png" alt="3D Analytics" class="analytics-icon-image" />
             </div>
 
             <!-- 3D Analytics Icon - Outside card (clear) -->
             <div class="analytics-3d-icon analytics-outside">
-              <img src="/src/assets/images/3D Black Chrome Shape (25) 1.png" alt="3D Analytics" class="analytics-icon-image-clear" />
+              <img src="/images/3D Black Chrome Shape (25) 1.png" alt="3D Analytics" class="analytics-icon-image-clear" />
             </div>
           </div>
         </div>
@@ -138,7 +138,7 @@ export function initHomePage() {
 
             <!-- 3D Course Icon on left side -->
             <div class="course-3d-icon">
-              <img src="/src/assets/images/3D Black Chrome Shape (3) 1.png" alt="3D Course Icon" class="course-icon-image" />
+              <img src="/images/3D Black Chrome Shape (3) 1.png" alt="3D Course Icon" class="course-icon-image" />
             </div>
           </div>
           <div class="platform-feature-card">
@@ -159,7 +159,7 @@ export function initHomePage() {
 
             <!-- Decorative Glass Element next to card -->
             <div class="glass-decoration">
-              <img src="/src/assets/images/gradient glass (20) 1 (1).png" alt="Glass Decoration" class="glass-deco-image" />
+              <img src="/images/gradient glass (20) 1 (1).png" alt="Glass Decoration" class="glass-deco-image" />
             </div>
           </div>
 
@@ -190,7 +190,7 @@ export function initHomePage() {
           <!-- Minimal Plan -->
           <div class="pricing-card minimal-card">
             <div class="minimal-glass-decoration">
-              <img src="/src/assets/images/gradient glass (4) 1.png" alt="Glass Decoration" class="minimal-glass-image">
+              <img src="/images/gradient glass (4) 1.png" alt="Glass Decoration" class="minimal-glass-image">
             </div>
             <div class="pricing-header minimal">
               <h3>Minimal</h3>
@@ -380,7 +380,7 @@ export function initHomePage() {
           <!-- Korporativ Plan -->
           <div class="pricing-card korporativ-card">
             <div class="korporativ-glass-decoration">
-              <img src="/src/assets/images/gradient glass (5) 1.png" alt="Glass Decoration" class="korporativ-glass-image">
+              <img src="/images/gradient glass (5) 1.png" alt="Glass Decoration" class="korporativ-glass-image">
             </div>
             <div class="pricing-header korporativ">
               <h3>Korporativ</h3>
@@ -458,7 +458,7 @@ export function initHomePage() {
           <!-- Article Card 1 -->
           <div class="article-card samarali-dars-card">
             <div class="samarali-dars-decoration">
-              <img src="/src/assets/images/0010 1.png" alt="Samarali Dars Decoration" class="samarali-dars-image">
+              <img src="/images/0010 1.png" alt="Samarali Dars Decoration" class="samarali-dars-image">
             </div>
             <div class="article-header">
               <h3>Samarali Dars</h3>
@@ -566,7 +566,7 @@ export function initHomePage() {
           <!-- Article Card 6 -->
           <div class="article-card oxirgi-dars-card">
             <div class="oxirgi-dars-decoration">
-              <img src="/src/assets/images/0005 1.png" alt="Oxirgi Dars Decoration" class="oxirgi-dars-image">
+              <img src="/images/0005 1.png" alt="Oxirgi Dars Decoration" class="oxirgi-dars-image">
             </div>
             <div class="article-header">
               <h3>Samarali Dars</h3>
@@ -600,12 +600,12 @@ export function initHomePage() {
         <div class="advice-card">
           <!-- Glass Decoration Right -->
           <div class="advice-glass-decoration">
-            <img src="/src/assets/images/gradient glass (18) 1.png" alt="Glass Decoration" class="advice-glass-image">
+            <img src="/images/gradient glass (18) 1.png" alt="Glass Decoration" class="advice-glass-image">
           </div>
 
           <!-- Glass Decoration Left -->
           <div class="advice-glass-decoration-left">
-            <img src="/src/assets/images/gradient glass (18) 1.png" alt="Glass Decoration Left" class="advice-glass-image-left">
+            <img src="/images/gradient glass (18) 1.png" alt="Glass Decoration Left" class="advice-glass-image-left">
           </div>
 
           <h2 class="advice-title">Maslahat olish</h2>
@@ -656,7 +656,7 @@ export function initHomePage() {
         <div class="footer-content">
           <!-- Logo -->
           <div class="footer-logo-section">
-            <img src="/src/assets/images/darslinker.png" alt="Darslinker" class="footer-logo-img" />
+            <img src="/images/darslinker.png" alt="Darslinker" class="footer-logo-img" />
           </div>
 
           <!-- Navigation -->
@@ -671,11 +671,11 @@ export function initHomePage() {
 
           <!-- Payment Methods -->
           <div class="payment-methods">
-            <img src="/src/assets/images/Group 47.png" alt="Uzum" class="payment-logo" />
-            <img src="/src/assets/images/Group 39.png" alt="Payme" class="payment-logo" />
-            <img src="/src/assets/images/Group 38.png" alt="Click" class="payment-logo" />
-            <img src="/src/assets/images/Group 48.png" alt="Mastercard" class="payment-logo" />
-            <img src="/src/assets/images/Group 36.png" alt="Visa" class="payment-logo" />
+            <img src="/images/Group 47.png" alt="Uzum" class="payment-logo" />
+            <img src="/images/Group 39.png" alt="Payme" class="payment-logo" />
+            <img src="/images/Group 38.png" alt="Click" class="payment-logo" />
+            <img src="/images/Group 48.png" alt="Mastercard" class="payment-logo" />
+            <img src="/images/Group 36.png" alt="Visa" class="payment-logo" />
           </div>
 
           <!-- Contact Info -->
