@@ -604,15 +604,7 @@ export function initHomePage() {
     <section class="advice-section">
       <div class="container">
         <div class="advice-card">
-          <!-- Glass Decoration Right -->
-          <div class="advice-glass-decoration">
-            <img src="/images/gradient glass (18) 1.png" alt="Glass Decoration" class="advice-glass-image">
-          </div>
 
-          <!-- Glass Decoration Left -->
-          <div class="advice-glass-decoration-left">
-            <img src="/images/gradient glass (18) 1.png" alt="Glass Decoration Left" class="advice-glass-image-left">
-          </div>
 
           <h2 class="advice-title">Maslahat olish</h2>
           <form class="advice-form" onsubmit="submitAdviceForm(event)">
