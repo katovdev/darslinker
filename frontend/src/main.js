@@ -1,4 +1,4 @@
-import './assets/styles/main.css';
+import './style.css';
 import { router } from './utils/router.js';
 import { store } from './utils/store.js';
 import { config } from './utils/config.js';
