@@ -121,8 +121,13 @@ export function initHomePage() {
 
         <div class="video-section">
           <button class="video-btn">
-            <span class="play-icon">▶</span>
-            Video qo'llanmani ko'rish
+            <div class="play-icon-container">
+              <svg class="play-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="rgba(126, 162, 212, 0.1)"/>
+                <polygon points="10,8 16,12 10,16" fill="currentColor"/>
+              </svg>
+            </div>
+            <span class="video-text">Video qo'llanmani ko'rish</span>
           </button>
         </div>
       </div>
