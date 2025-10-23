@@ -223,4 +223,32 @@ async function resendRegistrationOtp(req, res) {
   }
 }
 
+async function login(req, res) {
+  try {
+    const { email, phone, password } = req.body;
+
+    const normalizedEmail = email ? normalizeEmail(email) : undefined;
+    const normalizedPhone = phone ? normalizePhone(phone) : undefined;
+
+    const existingUser = await User.findOne({
+      $or: [
+        email ? { email: email } : null,
+        phone ? { phone: phone } : null,
+      ].filter(Boolean),
+    });
+
+    if (
+      !existingUser ||
+      !(await bcrypt.compare(password, existingUser.password))
+    ) {
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while log in to system",
+      error: error.message,
+    });
+  }
+}
+
 export { register, verifyRegistrationOtp, resendRegistrationOtp };
