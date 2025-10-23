@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validation.middleware.js";
 import { registerSchema } from "../validations/user.validation.js";
-import { register } from "../controllers/user.controller.js";
+import { register } from "../controllers/auth.controller.js";
 
 const userRouter = Router();
 
@@ -147,7 +147,7 @@ const userRouter = Router();
 
 /**
  * @swagger
- * /users/register:
+ * /auth/register:
  *   post:
  *     summary: Register a new user
  *     description: Create a new user account with email or phone number. Password must contain at least one uppercase letter, lowercase letter, number, and special character.
