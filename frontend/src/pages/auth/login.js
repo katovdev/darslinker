@@ -1,13 +1,24 @@
 import { router } from '../../utils/router.js';
+import { findUserByPhoneOrEmail } from '../../utils/mockDatabase.js';
 
 export function initLoginPage() {
   const app = document.querySelector('#app');
+
+  // Prevent scrolling on body
+  document.body.style.overflow = 'hidden';
+  document.body.style.height = '100vh';
+
+  // Make router available globally
+  window.router = router;
 
   app.innerHTML = `
     <!-- Login Page -->
     <div class="login-page">
       <!-- Background -->
       <div class="login-background"></div>
+
+      <!-- Neon Dots -->
+      <div class="neon-dots-container" id="neonDotsContainer"></div>
 
       <!-- Animated Moon Decorations -->
       <div class="moon-decoration moon-top-right">
@@ -48,9 +59,6 @@ export function initLoginPage() {
                 <div class="country-selector">
                   <img src="/images/uz-flag.jpg" alt="UZ" class="country-flag" />
                   <span class="country-code">+998</span>
-                  <svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 10l5 5 5-5z"/>
-                  </svg>
                 </div>
                 <input
                   type="tel"
@@ -86,6 +94,9 @@ export function initLoginPage() {
 
   // Initialize login page functionality
   initLoginPageFunctionality();
+
+  // Initialize neon dots
+  initNeonDots();
 }
 
 function addLoginPageStyles() {
@@ -96,14 +107,20 @@ function addLoginPageStyles() {
   style.id = 'login-page-styles';
   style.textContent = `
     .login-page {
-      min-height: 100vh;
+      height: 100vh;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      padding: 0;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body:has(.login-page) {
+      overflow: hidden;
+      height: 100vh;
     }
 
     .login-background {
@@ -112,14 +129,90 @@ function addLoginPageStyles() {
       left: 0;
       width: 100%;
       height: 100%;
-      background: linear-gradient(135deg,
-        rgba(23, 23, 40, 1) 0%,
-        rgba(45, 45, 70, 1) 25%,
-        rgba(30, 30, 50, 1) 50%,
-        rgba(20, 20, 35, 1) 75%,
-        rgba(15, 15, 25, 1) 100%
-      );
+      background: #232323;
       z-index: -1;
+    }
+
+    /* Neon Blinking Dots */
+    .neon-dots-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0.12;
+      overflow: hidden;
+    }
+
+    .neon-dot {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #5B8BC7;
+      opacity: 0.12;
+      filter: blur(15px);
+    }
+
+    .neon-dot.white {
+      background: #ffffff;
+      opacity: 0.12;
+    }
+
+    @keyframes neonBlink {
+      0%, 100% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.12;
+      }
+    }
+
+    @keyframes neonPulse {
+      0%, 100% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.08;
+      }
+    }
+
+    @keyframes whiteBlink {
+      0%, 100% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 0.06;
+      }
+    }
+
+    .neon-dot.blink {
+      animation: neonBlink 5s ease-in-out infinite;
+    }
+
+    .neon-dot.pulse {
+      animation: neonPulse 5s ease-in-out infinite;
+    }
+
+    .neon-dot.white.blink {
+      animation: whiteBlink 5s ease-in-out infinite;
+    }
+
+    .neon-dot:nth-child(2n) {
+      animation-delay: -1s;
+    }
+
+    .neon-dot:nth-child(3n) {
+      animation-delay: -2s;
+    }
+
+    .neon-dot:nth-child(4n) {
+      animation-delay: -3s;
+    }
+
+    .neon-dot:nth-child(5n) {
+      animation-delay: -4s;
     }
 
     .moon-decoration {
@@ -129,20 +222,20 @@ function addLoginPageStyles() {
     }
 
     .moon-top-right {
-      top: 120px;
-      right: 80px;
+      top: 150px;
+      right: 350px;
       animation: moonFloat 6s ease-in-out infinite;
     }
 
     .moon-bottom-left {
-      bottom: 80px;
-      left: 80px;
+      bottom: 100px;
+      left: 330px;
       animation: moonFloat 8s ease-in-out infinite reverse;
     }
 
     .moon-image {
-      width: 120px;
-      height: 120px;
+      width: 200px;
+      height: 200px;
       filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
       animation: moonRotate 20s linear infinite;
     }
@@ -172,8 +265,9 @@ function addLoginPageStyles() {
     }
 
     .login-logo {
-      margin-bottom: 60px;
+      margin-bottom: 30px;
       text-align: center;
+      transform: translateY(-120px)
     }
 
     .login-logo h1 {
@@ -192,18 +286,20 @@ function addLoginPageStyles() {
     .login-modal {
       position: relative;
       z-index: 10;
+      transform: translateY(-100px);
     }
 
     .login-card {
-      background: rgba(45, 45, 60, 0.95);
-      backdrop-filter: blur(20px);
+      background: rgba(90, 90, 90, 0.1);
+      backdrop-filter: blur(50px);
+      -webkit-backdrop-filter: blur(50px);
       border-radius: 24px;
-      padding: 40px;
-      width: 450px;
+      padding: 20px 40px 40px 40px;
+      width: 550px;
       box-shadow:
         0 20px 40px rgba(0, 0, 0, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid #7EA2D4;
     }
 
     .login-title {
@@ -211,15 +307,15 @@ function addLoginPageStyles() {
       font-size: 1.8rem;
       font-weight: 500;
       color: #ffffff;
-      margin: 0 0 32px 0;
+      margin: 1px 0 20px 0;
     }
 
     .login-toggle {
       display: flex;
       background: rgba(60, 60, 80, 0.5);
-      border-radius: 12px;
+      border-radius: 25px;
       padding: 4px;
-      margin-bottom: 32px;
+      margin-bottom: 20px;
     }
 
     .toggle-btn {
@@ -230,7 +326,7 @@ function addLoginPageStyles() {
       color: rgba(255, 255, 255, 0.7);
       font-size: 0.95rem;
       font-weight: 500;
-      border-radius: 8px;
+      border-radius: 25px;
       cursor: pointer;
       transition: all 0.3s ease;
     }
@@ -255,7 +351,7 @@ function addLoginPageStyles() {
       color: #ffffff;
       font-size: 1rem;
       font-weight: 500;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
     }
 
     .phone-input-container,
@@ -270,25 +366,24 @@ function addLoginPageStyles() {
     .phone-input {
       display: flex;
       background: rgba(60, 60, 80, 0.5);
-      border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 25px;
+      border: 1px solid #7EA2D4;
       overflow: hidden;
       transition: all 0.3s ease;
     }
 
     .phone-input:focus-within {
-      border-color: rgba(126, 162, 212, 0.5);
+      border-color: #7EA2D4;
       box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
     }
 
     .country-selector {
       display: flex;
       align-items: center;
-      padding: 14px 16px;
+      padding: 12px 20px;
       background: rgba(70, 70, 90, 0.5);
-      border-right: 1px solid rgba(255, 255, 255, 0.1);
-      cursor: pointer;
-      min-width: 100px;
+      border-right: 1px solid #7EA2D4;
+      min-width: 95px;
     }
 
     .country-flag {
@@ -302,16 +397,11 @@ function addLoginPageStyles() {
       color: #ffffff;
       font-size: 0.95rem;
       font-weight: 500;
-      margin-right: 6px;
-    }
-
-    .dropdown-arrow {
-      color: rgba(255, 255, 255, 0.6);
     }
 
     .phone-number-input {
       flex: 1;
-      padding: 14px 16px;
+      padding: 8px 20px;
       border: none;
       background: transparent;
       color: #ffffff;
@@ -325,10 +415,10 @@ function addLoginPageStyles() {
 
     .email-input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 16px 20px;
       background: rgba(60, 60, 80, 0.5);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
+      border: 1px solid #7EA2D4;
+      border-radius: 25px;
       color: #ffffff;
       font-size: 0.95rem;
       outline: none;
@@ -336,7 +426,7 @@ function addLoginPageStyles() {
     }
 
     .email-input:focus {
-      border-color: rgba(126, 162, 212, 0.5);
+      border-color: #7EA2D4;
       box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
     }
 
@@ -345,11 +435,13 @@ function addLoginPageStyles() {
     }
 
     .login-submit-btn {
-      width: 100%;
-      padding: 16px;
+      width: 200px;
+      padding: 13px;
+      margin: 10px auto 0 auto;
+      display: block;
       background: linear-gradient(135deg, #7EA2D4 0%, #5A85C7 100%);
       border: none;
-      border-radius: 12px;
+      border-radius: 25px;
       color: #ffffff;
       font-size: 1rem;
       font-weight: 600;
@@ -371,12 +463,19 @@ function addLoginPageStyles() {
     @media (max-width: 768px) {
       .login-card {
         width: 90vw;
-        max-width: 400px;
+        max-width: 450px;
         padding: 32px 24px;
       }
 
+      .login-logo {
+        margin-bottom: 25px;
+      }
+
+      .login-modal {
+      }
+
       .moon-top-right {
-        top: 60px;
+        top: 55px;
         right: 40px;
       }
 
@@ -400,17 +499,24 @@ function addLoginPageStyles() {
         padding: 24px 20px;
       }
 
+      .login-logo {
+        margin-bottom: 20px;
+      }
+
+      .login-modal {
+      }
+
       .country-selector {
         min-width: 80px;
-        padding: 12px 14px;
+        padding: 14px 16px;
       }
 
       .phone-number-input {
-        padding: 12px 14px;
+        padding: 14px 16px;
       }
 
       .email-input {
-        padding: 12px 14px;
+        padding: 14px 16px;
       }
     }
   `;
@@ -448,6 +554,7 @@ function initLoginPageFunctionality() {
     e.preventDefault();
 
     const isPhoneMode = phoneToggle.classList.contains('active');
+    let userIdentifier = '';
 
     if (isPhoneMode) {
       const phoneInput = document.getElementById('phoneInput');
@@ -458,7 +565,7 @@ function initLoginPageFunctionality() {
         return;
       }
 
-      console.log('Login attempt with phone:', phoneValue);
+      userIdentifier = '+998' + phoneValue.replace(/\s/g, '');
     } else {
       const emailInput = document.getElementById('emailInput');
       const emailValue = emailInput.value.trim();
@@ -473,19 +580,39 @@ function initLoginPageFunctionality() {
         return;
       }
 
-      console.log('Login attempt with email:', emailValue);
+      userIdentifier = emailValue;
     }
 
     // Add loading state
-    loginSubmit.textContent = 'Kirilmoqda...';
+    loginSubmit.textContent = 'Tekshirilmoqda...';
     loginSubmit.disabled = true;
 
-    // Simulate login process
+    // Check if user exists
     setTimeout(() => {
-      alert('Kirish muvaffaqiyatli!');
-      // Navigate to dashboard or home
-      router.navigate('/dashboard');
-    }, 1500);
+      const existingUser = findUserByPhoneOrEmail(userIdentifier);
+
+      if (existingUser) {
+        // User exists, store temp data and go to password page
+        sessionStorage.setItem('tempUserData', JSON.stringify(existingUser));
+        sessionStorage.setItem('userIdentifier', userIdentifier);
+
+        // Restore body scroll before navigation
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+
+        router.navigate('/password');
+      } else {
+        // User doesn't exist, go to register page
+        sessionStorage.setItem('registerIdentifier', userIdentifier);
+        sessionStorage.setItem('registerMode', isPhoneMode ? 'phone' : 'email');
+
+        // Restore body scroll before navigation
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+
+        router.navigate('/register');
+      }
+    }, 1000);
   });
 
   // Format phone number as user types
@@ -513,4 +640,71 @@ function initLoginPageFunctionality() {
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+}
+
+function initNeonDots() {
+  const container = document.getElementById('neonDotsContainer');
+
+  // Helper function to create a dot
+  function createDot(left, top, isSpecialPosition = false) {
+    const dot = document.createElement('div');
+    dot.className = 'neon-dot';
+
+    // Randomly assign animation type
+    const animations = ['blink', 'pulse'];
+    const animationType = animations[Math.floor(Math.random() * animations.length)];
+    dot.classList.add(animationType);
+
+    // 30% chance for white dots
+    if (Math.random() < 0.3) {
+      dot.classList.add('white');
+    }
+
+    // Position
+    dot.style.left = left;
+    dot.style.top = top;
+
+    // Random size variation (40px to 60px)
+    const size = 40 + Math.random() * 20;
+    dot.style.width = size + 'px';
+    dot.style.height = size + 'px';
+
+    container.appendChild(dot);
+  }
+
+  // Random dots across the screen
+  const randomDotCount = 6;
+  for (let i = 0; i < randomDotCount; i++) {
+    createDot(
+      Math.random() * 100 + '%',
+      Math.random() * 100 + '%'
+    );
+  }
+
+  // Left side dots
+  for (let i = 0; i < 3; i++) {
+    createDot(
+      Math.random() * 15 + '%', // 0-15% from left
+      Math.random() * 100 + '%',
+      true
+    );
+  }
+
+  // Top area dots
+  for (let i = 0; i < 3; i++) {
+    createDot(
+      Math.random() * 100 + '%',
+      Math.random() * 15 + '%', // 0-15% from top
+      true
+    );
+  }
+
+  // Bottom area dots
+  for (let i = 0; i < 3; i++) {
+    createDot(
+      Math.random() * 100 + '%',
+      85 + Math.random() * 15 + '%', // 85-100% from top
+      true
+    );
+  }
 }

@@ -5,6 +5,7 @@ import { config } from './utils/config.js';
 
 import { initHomePage } from './pages/common/home.js';
 import { initLoginPage } from './pages/auth/login.js';
+import { initPasswordPage } from './pages/auth/password.js';
 import { initRegisterPage } from './pages/auth/register.js';
 import { initDashboard } from './pages/common/dashboard.js';
 
@@ -28,6 +29,7 @@ class App {
   setupRoutes() {
     router.register('/', initHomePage);
     router.register('/login', initLoginPage);
+    router.register('/password', initPasswordPage);
     router.register('/register', initRegisterPage);
     router.register('/dashboard', initDashboard);
 

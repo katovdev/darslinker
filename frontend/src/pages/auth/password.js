@@ -1,0 +1,456 @@
+import { router } from '../../utils/router.js';
+import { authenticateUser } from '../../utils/mockDatabase.js';
+
+export function initPasswordPage() {
+  const app = document.querySelector('#app');
+
+  // Prevent scrolling on body
+  document.body.style.overflow = 'hidden';
+  document.body.style.height = '100vh';
+
+  // Make router available globally
+  window.router = router;
+
+  // Get user data from session storage
+  const userData = JSON.parse(sessionStorage.getItem('tempUserData') || '{}');
+  const userIdentifier = sessionStorage.getItem('userIdentifier') || '';
+
+  app.innerHTML = `
+    <!-- Password Page -->
+    <div class="password-page">
+      <!-- Background -->
+      <div class="password-background"></div>
+
+      <!-- Animated Moon Decorations -->
+      <div class="moon-decoration moon-top-right">
+        <img src="/images/0016 1.png" alt="Moon" class="moon-image" />
+      </div>
+
+      <div class="moon-decoration moon-bottom-left">
+        <img src="/images/0016 1.png" alt="Moon" class="moon-image" />
+      </div>
+
+      <!-- Logo -->
+      <div class="password-logo">
+        <h1>dars<span>linker</span></h1>
+      </div>
+
+      <!-- Password Modal -->
+      <div class="password-modal">
+        <div class="password-card">
+          <h2 class="user-name">${userData.firstName} ${userData.lastName}</h2>
+
+          <!-- Password Input Section -->
+          <div class="password-input-section">
+            <label class="password-label">Parol</label>
+            <input
+              type="password"
+              class="password-input"
+              placeholder="Parolingizni kiriting"
+              id="passwordInput"
+            />
+          </div>
+
+          <!-- Login Button -->
+          <button class="password-submit-btn" id="passwordSubmit">
+            Kirish
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Add password page styles
+  addPasswordPageStyles();
+
+  // Initialize password page functionality
+  initPasswordPageFunctionality(userIdentifier);
+}
+
+function addPasswordPageStyles() {
+  // Check if styles already exist
+  if (document.querySelector('#password-page-styles')) return;
+
+  const style = document.createElement('style');
+  style.id = 'password-page-styles';
+  style.textContent = `
+    .password-page {
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body:has(.password-page) {
+      overflow: hidden;
+      height: 100vh;
+    }
+
+    .password-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #232323;
+      z-index: -1;
+    }
+
+    .moon-decoration {
+      position: fixed;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .moon-top-right {
+      top: 140px;
+      right: 360px;
+      animation: moonFloat 6s ease-in-out infinite;
+    }
+
+    .moon-bottom-left {
+      bottom: 120px;
+      left: 340px;
+      animation: moonFloat 8s ease-in-out infinite reverse;
+    }
+
+    .moon-image {
+      width: 200px;
+      height: 200px;
+      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+      animation: moonRotate 20s linear infinite;
+    }
+
+    @keyframes moonFloat {
+      0%, 100% {
+        transform: translateY(0px) translateX(0px);
+      }
+      25% {
+        transform: translateY(-15px) translateX(5px);
+      }
+      50% {
+        transform: translateY(0px) translateX(10px);
+      }
+      75% {
+        transform: translateY(15px) translateX(5px);
+      }
+    }
+
+    @keyframes moonRotate {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .password-logo {
+      margin-bottom: 30px;
+      text-align: center;
+      transform: translateY(-120px);
+    }
+
+    .password-logo h1 {
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: #ffffff;
+      margin: 0;
+      letter-spacing: 2px;
+    }
+
+    .password-logo span {
+      color: #7EA2D4;
+      font-weight: 500;
+    }
+
+    .password-modal {
+      position: relative;
+      z-index: 10;
+      transform: translateY(-120px);
+    }
+
+    .password-card {
+      background: rgba(90, 90, 90, 0.1);
+      backdrop-filter: blur(50px);
+      -webkit-backdrop-filter: blur(50px);
+      border-radius: 24px;
+      padding: 40px;
+      width: 550px;
+      box-shadow:
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+      border: 1px solid #7EA2D4;
+    }
+
+    .user-name {
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: #ffffff;
+      margin: 0 0 10px 0;
+    }
+
+    .password-input-section {
+      margin-bottom: 32px;
+    }
+
+    .password-label {
+      display: block;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .password-input {
+      width: 100%;
+      padding: 16px 20px;
+      background: rgba(60, 60, 80, 0.5);
+      border: 1px solid #7EA2D4;
+      border-radius: 25px;
+      color: #ffffff;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .password-input:focus {
+      border-color: #7EA2D4;
+      box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+    }
+
+    .password-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .password-submit-btn {
+      width: 120px;
+      padding: 13px;
+      margin: 10px auto 0 auto;
+      display: block;
+      background: linear-gradient(135deg, #7EA2D4 0%, #5A85C7 100%);
+      border: none;
+      border-radius: 25px;
+      color: #ffffff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
+    }
+
+    .password-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(126, 162, 212, 0.4);
+    }
+
+    .password-submit-btn:active {
+      transform: translateY(0px);
+    }
+
+    .password-submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      top: 30px;
+      right: 30px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      color: #ffffff;
+      font-weight: 500;
+      z-index: 1000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+    }
+
+    .toast.success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .toast.error {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .password-card {
+        width: 90vw;
+        max-width: 450px;
+        padding: 32px 24px;
+      }
+
+      .password-logo {
+        margin-bottom: 25px;
+        transform: translateY(-20px);
+      }
+
+      .password-modal {
+        transform: translateY(-20px);
+      }
+
+      .moon-top-right {
+        top: 60px;
+        right: 40px;
+      }
+
+      .moon-bottom-left {
+        bottom: 40px;
+        left: 40px;
+      }
+
+      .moon-image {
+        width: 80px;
+        height: 80px;
+      }
+
+      .password-logo h1 {
+        font-size: 2rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .password-card {
+        padding: 24px 20px;
+      }
+
+      .password-logo {
+        margin-bottom: 20px;
+        transform: translateY(-15px);
+      }
+
+      .password-modal {
+        transform: translateY(-15px);
+      }
+
+      .password-input {
+        padding: 14px 16px;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+function initPasswordPageFunctionality(userIdentifier) {
+  const passwordInput = document.getElementById('passwordInput');
+  const passwordSubmit = document.getElementById('passwordSubmit');
+
+  // Focus on password input
+  passwordInput.focus();
+
+  // Handle Enter key press
+  passwordInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      handlePasswordSubmit();
+    }
+  });
+
+  // Handle form submission
+  passwordSubmit.addEventListener('click', (e) => {
+    e.preventDefault();
+    handlePasswordSubmit();
+  });
+
+  function handlePasswordSubmit() {
+    const passwordValue = passwordInput.value.trim();
+
+    if (!passwordValue) {
+      showErrorToast('Iltimos, parolingizni kiriting!');
+      return;
+    }
+
+    // Add loading state
+    passwordSubmit.textContent = 'Kirilmoqda...';
+    passwordSubmit.disabled = true;
+
+    // Simulate authentication
+    setTimeout(() => {
+      const user = authenticateUser(userIdentifier, passwordValue);
+
+      if (user) {
+        // Show success toast
+        showSuccessToast('Kirish muvaffaqiyatli!');
+
+        // Store user data in session
+        sessionStorage.setItem('currentUser', JSON.stringify(user));
+        sessionStorage.removeItem('tempUserData');
+        sessionStorage.removeItem('userIdentifier');
+
+        // Reset button state
+        passwordSubmit.textContent = 'Kirish';
+        passwordSubmit.disabled = false;
+        passwordInput.value = '';
+      } else {
+        showErrorToast('Parol noto\'g\'ri! Qaytadan urinib ko\'ring.');
+
+        // Reset button state
+        passwordSubmit.textContent = 'Kirish';
+        passwordSubmit.disabled = false;
+        passwordInput.value = '';
+        passwordInput.focus();
+      }
+    }, 1000);
+  }
+}
+
+function showSuccessToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast success';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Show toast
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+
+  // Hide and remove toast
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}
+
+function showErrorToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast error';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Show toast
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+
+  // Hide and remove toast
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}

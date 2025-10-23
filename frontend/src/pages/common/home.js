@@ -4,6 +4,9 @@ import { store } from '../../utils/store.js';
 export function initHomePage() {
   const app = document.querySelector('#app');
 
+  // Make router available globally for onclick handlers
+  window.router = router;
+
   app.innerHTML = `
     <!-- Header -->
     <header class="header">
