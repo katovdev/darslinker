@@ -141,8 +141,8 @@ const userRouter = Router();
 /**
  * @swagger
  * tags:
- *   name: Users
- *   description: User management and authentication endpoints
+ *   name: Auth
+ *   description: Authorization and authentication endpoints
  */
 
 /**
@@ -150,8 +150,8 @@ const userRouter = Router();
  * /auth/register:
  *   post:
  *     summary: Register a new user
- *     description: Create a new user account with email or phone number. Password must contain at least one uppercase letter, lowercase letter, number, and special character.
- *     tags: [Users]
+ *     description: Create a new user account with email address or phone number. Password must contain at least one uppercase letter, lowercase letter, number, and special character.
+ *     tags: [Auth]
  *     security: []
  *     requestBody:
  *       required: true

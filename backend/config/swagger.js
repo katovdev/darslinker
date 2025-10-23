@@ -6,9 +6,9 @@ import { PORT } from "./env.js";
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
-    title: "Online Education Platform API",
+    title: "Online Education Platform RESTful API endpoints documentation",
     version: "1.0.0",
-    description: "The Online Education Platform API description",
+    description: "The Online Education Platform RESTful API documentation description",
   },
   servers: [
     {
