@@ -2,12 +2,16 @@ import User from "../models/user.model.js";
 import bcrypt from "bcrypt";
 
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
-import { createAndSendOtp } from "../services/otp.service.js";
+import {
+  createAndSendOtp,
+  resendOtp,
+  verifyOtp,
+} from "../services/otp.service.js";
 import { BCRYPT_SALT_ROUNDS } from "../../config/env.js";
 
 /**
  * Register a new user (student or teacher)
- * @route POST /users/register
+ * @route POST /auth/register
  * @access Public
  */
 async function register(req, res) {
@@ -25,7 +29,8 @@ async function register(req, res) {
     });
 
     if (existingUser) {
-      const duplicateField = existingUser.email === email ? "email address" : "phone number";
+      const duplicateField =
+        existingUser.email === email ? "email address" : "phone number";
       return res.status(409).json({
         success: false,
         message: `User with this ${duplicateField} already exists`,
@@ -44,7 +49,7 @@ async function register(req, res) {
       phone: normalizedPhone,
       password: hashedPassword,
       role: role || "student",
-      status: "pending", // faqat OTP tasdiqlangach active bo‘ladi
+      status: "pending",
     });
 
     const identifier = normalizedEmail || normalizedPhone;
@@ -66,7 +71,7 @@ async function register(req, res) {
     return res.status(200).json({
       success: true,
       message:
-        "User registered successfully. OTP has been sent for verification.",
+        "User registered successfully. OTP has been sent for verification",
       data: {
         user: userResponse,
       },
@@ -100,4 +105,122 @@ async function register(req, res) {
   }
 }
 
-export { register };
+/**
+ * Verify register otp code with user email address or phone number
+ * @route POST /auth/verify-registration-otp
+ * @access Public
+ */
+async function verifyRegistrationOtp(req, res) {
+  try {
+    const { identifier, otp } = req.body;
+
+    if (!identifier || !otp) {
+      return res.status(400).json({
+        success: false,
+        message: "Identifier (email or phone) and OTP Code are required",
+      });
+    }
+
+    const result = await verifyOtp({ identifier, otp, purpose: "register" });
+
+    if (!result.success) {
+      let status = 400;
+      if (result.message.includes("expired")) status = 410;
+      if (result.message.includes("Too many")) status = 429;
+      return res.status(status).json({
+        success: false,
+        message: result.message,
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "OTP Code verified successfully",
+      data: { user: result?.data?.user },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while verifying an registration otp code",
+      error: error.message,
+    });
+  }
+}
+
+/**
+ * Resend registration otp
+ * @route POST /auth/resent-registration-otp
+ * @access Public
+ */
+async function resendRegistrationOtp(req, res) {
+  try {
+    const { email, phone } = req.body;
+
+    // Validate that at least one identifier is provided
+    if (!email && !phone) {
+      return res.status(400).json({
+        success: false,
+        message: "Either email or phone number is required",
+      });
+    }
+
+    const normalizedEmail = email ? normalizeEmail(email) : undefined;
+    const normalizedPhone = phone ? normalizePhone(phone) : undefined;
+
+    const identifier = normalizedEmail || normalizedPhone;
+    const channel = normalizedEmail ? "email" : "sms";
+
+    // Check if user exists with this identifier
+    const existingUser = await User.findOne({
+      $or: [
+        email ? { email: normalizedEmail } : null,
+        phone ? { phone: normalizedPhone } : null,
+      ].filter(Boolean),
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "No user found with this email or phone number",
+      });
+    }
+
+    // Check if user is already active (OTP already verified)
+    if (existingUser.status === "active") {
+      return res.status(400).json({
+        success: false,
+        message: "User account is already verified. No need to resend OTP Code",
+      });
+    }
+
+    const result = await resendOtp({
+      identifier,
+      purpose: "register",
+      channel,
+      meta: {
+        ip: req.ip,
+        userAgent: req.headers["user-agent"],
+      },
+    });
+
+    if (!result.success) {
+      return res.status(500).json({
+        success: false,
+        message: result.message || "Failed to resend OTP Code",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "OTP Code has been resent successfully for verification",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "An error occurred while resending the registration OTP Code",
+      error: error.message,
+    });
+  }
+}
+
+export { register, verifyRegistrationOtp, resendRegistrationOtp };
