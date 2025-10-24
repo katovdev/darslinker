@@ -7,6 +7,10 @@ import {
   resendOtp,
   verifyOtp,
 } from "../services/otp.service.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/token.utils.js";
 import { BCRYPT_SALT_ROUNDS } from "../../config/env.js";
 
 /**
@@ -223,25 +227,62 @@ async function resendRegistrationOtp(req, res) {
   }
 }
 
+/**
+ * User login with email address or phone number
+ * @route POST /auth/login
+ * @access Public
+ */
 async function login(req, res) {
   try {
-    const { email, phone, password } = req.body;
+    const { identifier, password } = req.body;
 
-    const normalizedEmail = email ? normalizeEmail(email) : undefined;
-    const normalizedPhone = phone ? normalizePhone(phone) : undefined;
+    const isEmail = identifier.includes("@");
+    const normalizedIdentifier = isEmail
+      ? normalizeEmail(identifier)
+      : normalizePhone(identifier);
 
     const existingUser = await User.findOne({
-      $or: [
-        email ? { email: email } : null,
-        phone ? { phone: phone } : null,
-      ].filter(Boolean),
+      [isEmail ? "email" : "phone"]: normalizedIdentifier,
     });
 
-    if (
-      !existingUser ||
-      !(await bcrypt.compare(password, existingUser.password))
-    ) {
+    if (!existingUser) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email address or phone number",
+      });
     }
+
+    if (existingUser.status !== "active") {
+      return res.status(403).json({
+        success: false,
+        message: "Account not active. Please verify your account",
+      });
+    }
+
+    const isMatch = await bcrypt.compare(password, existingUser.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Wrong password",
+      });
+    }
+
+    const tokenPayload = {
+      userId: existingUser._id.toString(),
+      email: existingUser.email,
+      phone: existingUser.phone,
+      role: existingUser.role,
+      status: existingUser.status,
+    };
+
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = generateRefreshToken(tokenPayload);
+
+    return res.status(200).json({
+      success: true,
+      accessToken,
+      refreshToken,
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -251,4 +292,4 @@ async function login(req, res) {
   }
 }
 
-export { register, verifyRegistrationOtp, resendRegistrationOtp };
+export { register, verifyRegistrationOtp, resendRegistrationOtp, login };

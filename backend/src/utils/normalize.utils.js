@@ -3,5 +3,5 @@ export function normalizeEmail(email) {
 }
 
 export function normalizePhone(phone) {
-  return phone ? phone.replace(/\D/g, "") : undefined; //Only numbers
+  return phone ? phone.replace(/\D/g, "") : undefined;
 }
