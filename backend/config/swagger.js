@@ -6,14 +6,15 @@ import { PORT } from "./env.js";
 const swaggerDefinition = {
   openapi: "3.0.0",
   info: {
-    title: "Online Education Platform RESTful API endpoints documentation",
+    title: "DarsLinker - Online Education Platform API",
     version: "1.0.0",
-    description: "The Online Education Platform RESTful API documentation description",
+    description:
+      "Comprehensive REST API for DarsLinker online education platform. Manage students, teachers, courses, assignments, and quizzes with secure JWT authentication.",
   },
   servers: [
     {
       url: `http://localhost:${PORT}/api-docs`,
-      description: "Local server",
+      description: "Local Development Server",
     },
   ],
   components: {
@@ -22,6 +23,8 @@ const swaggerDefinition = {
         type: "http",
         scheme: "bearer",
         bearerFormat: "JWT",
+        description:
+          "Enter your JWT access token (received from /auth/login endpoint)",
       },
     },
   },

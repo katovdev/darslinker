@@ -101,7 +101,7 @@ async function register(req, res) {
       });
     }
 
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
       message: "An error occurred while registering the user",
       error: error.message,
@@ -137,13 +137,16 @@ async function verifyRegistrationOtp(req, res) {
       });
     }
 
+    const userResponse = result?.data?.toObject();
+    delete userResponse.password;
+
     return res.status(200).json({
       success: true,
       message: "OTP Code verified successfully",
-      data: { user: result?.data?.user },
+      data: { user: userResponse },
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
       message: "An error occurred while verifying an registration otp code",
       error: error.message,
@@ -208,7 +211,7 @@ async function resendRegistrationOtp(req, res) {
     });
 
     if (!result.success) {
-      return res.status(500).json({
+      return res.status(400).json({
         success: false,
         message: result.message || "Failed to resend OTP Code",
       });
@@ -219,7 +222,7 @@ async function resendRegistrationOtp(req, res) {
       message: "OTP Code has been resent successfully for verification",
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
       message: "An error occurred while resending the registration OTP Code",
       error: error.message,
@@ -260,6 +263,7 @@ async function login(req, res) {
     }
 
     const isMatch = await bcrypt.compare(password, existingUser.password);
+
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -284,7 +288,7 @@ async function login(req, res) {
       refreshToken,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
       message: "An error occurred while log in to system",
       error: error.message,
