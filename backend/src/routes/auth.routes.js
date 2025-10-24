@@ -8,7 +8,7 @@ import {
   login,
 } from "../controllers/auth.controller.js";
 
-const userRouter = Router();
+const authRouter = Router();
 
 /**
  * @swagger
@@ -269,7 +269,7 @@ const userRouter = Router();
  *               success: false
  *               message: An error occurred while registering the user
  */
-userRouter.post("/register", validate(registerSchema), register);
+authRouter.post("/register", validate(registerSchema), register);
 
 /**
  * @swagger
@@ -378,7 +378,7 @@ userRouter.post("/register", validate(registerSchema), register);
  *               success: false
  *               message: An error occurred while verifying an registration otp code
  */
-userRouter.post("/verify-registration-otp", verifyRegistrationOtp);
+authRouter.post("/verify-registration-otp", verifyRegistrationOtp);
 
 /**
  * @swagger
@@ -484,7 +484,7 @@ userRouter.post("/verify-registration-otp", verifyRegistrationOtp);
  *                   message: An error occurred while resending the registration OTP Code
  *                   error: Detailed error message
  */
-userRouter.post("/resend-registration-otp", resendRegistrationOtp);
+authRouter.post("/resend-registration-otp", resendRegistrationOtp);
 
 /**
  * @swagger
@@ -622,6 +622,6 @@ userRouter.post("/resend-registration-otp", resendRegistrationOtp);
  *               message: An error occurred while log in to system
  *               error: Detailed error message
  */
-userRouter.post("/login", validate(loginSchema), login);
+authRouter.post("/login", validate(loginSchema), login);
 
-export default userRouter;
+export default authRouter;
