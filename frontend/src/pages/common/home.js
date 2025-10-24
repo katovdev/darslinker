@@ -73,8 +73,9 @@ export function initHomePage() {
     <section class="hero">
       <div class="container">
         <div class="hero-content">
-          <div class="hero-container">
+          <div class="hero-header-container">
             <h1 class="hero-title">Online Ta'limni Biz Bilan Boshlang</h1>
+
             <div class="hero-actions">
               <button class="btn-primary" onclick="router.navigate('/register'); return false;">BEPUL SINAB KO'RISH</button>
               <div class="stats-badge">
@@ -83,56 +84,45 @@ export function initHomePage() {
               </div>
             </div>
           </div>
+
+          <div class="hero-features-grid">
+            <div class="hero-feature-card">
+              <h3>Sun'iy intellekt (AI)</h3>
+              <p>O'quvchi savollarga avtomatik javob berish, darslarni puylash va ta'lim vazifasi mavzularini aniqlash va yecha maslahat data. Test topshiriqlarida yordam berish.</p>
+            </div>
+
+            <div class="hero-feature-card">
+              <h3>To'lov integratsiyasi</h3>
+              <p>Uzcard, Humo, Visa, Mastercard, Payme, Click bo'yicha to'lov o'quvchi harid qilganiga integratsiya qilinb. Ixtisoriga nark tushinadi.</p>
+            </div>
+
+            <div class="hero-feature-card analytics-card">
+              <h3>O'quvchilar tahlili</h3>
+              <p>O'quvchilar faoliyatin real vaqt rejimida kuzatish, test, topshiriq natijalarini grafik va diagrammalarga qo'shish, individual kurslarni O'quvchilarga avtomatik tavsiyalanib.</p>
+            </div>
+<!-- 3D Analytics Icon - Outside card (clear) -->
+              <div class="analytics-3d-icon analytics-outside">
+                <img src="/images/3D Black Chrome Shape (25) 1.png" alt="3D Analytics" class="analytics-icon-image-clear" />
+              </div>
+          </div>
+
+          <div class="hero-video-section">
+            <button class="video-btn">
+              <div class="play-icon-container">
+                <svg class="play-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="rgba(126, 162, 212, 0.1)"/>
+                  <polygon points="10,8 16,12 10,16" fill="currentColor"/>
+                </svg>
+              </div>
+              <span class="video-text">Video qo'llanmani ko'rish</span>
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- 3D Play Button only in Hero Section -->
       <div class="play-button-3d">
         <img src="/images/9 1.png" alt="3D Play Button" class="play-btn-image" />
-      </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features">
-      <div class="container">
-        <div class="features-grid">
-          <div class="feature-card">
-            <h3>Sun'iy intellekt (AI)</h3>
-            <p>O'quvchi savollarga avtomatik javob berish, darslarni puylash va ta'lim vazifasi mavzularini aniqlash va yecha maslahat data. Test topshiriqlarida yordam berish.</p>
-          </div>
-
-          <div class="feature-card">
-            <h3>To'lov integratsiyasi</h3>
-            <p>Uzcard, Humo, Visa, Mastercard, Payme, Click bo'yicha to'lov o'quvchi harid qilganiga integratsiya qilinb. Ixtisoriga nark tushinadi.</p>
-          </div>
-
-          <div class="feature-card analytics-card">
-            <h3>O'quvchilar tahlili</h3>
-            <p>O'quvchilar faoliyatin real vaqt rejimida kuzatish, test, topshiriq natijalarini grafik va diagrammalarga qo'shish, individual kurslarni O'quvchilarga avtomatik tavsiyalanib.</p>
-
-            <!-- 3D Analytics Icon - Behind card (blurred) -->
-            <div class="analytics-3d-icon analytics-behind">
-              <img src="/images/3D Black Chrome Shape (25) 1.png" alt="3D Analytics" class="analytics-icon-image" />
-            </div>
-
-            <!-- 3D Analytics Icon - Outside card (clear) -->
-            <div class="analytics-3d-icon analytics-outside">
-              <img src="/images/3D Black Chrome Shape (25) 1.png" alt="3D Analytics" class="analytics-icon-image-clear" />
-            </div>
-          </div>
-        </div>
-
-        <div class="video-section">
-          <button class="video-btn">
-            <div class="play-icon-container">
-              <svg class="play-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="rgba(126, 162, 212, 0.1)"/>
-                <polygon points="10,8 16,12 10,16" fill="currentColor"/>
-              </svg>
-            </div>
-            <span class="video-text">Video qo'llanmani ko'rish</span>
-          </button>
-        </div>
       </div>
     </section>
 
@@ -196,11 +186,12 @@ export function initHomePage() {
         <h2 class="section-title">Tariflar & Narxlar</h2>
 
         <div class="pricing-grid">
-          <!-- Minimal Plan -->
-          <div class="pricing-card minimal-card">
-            <div class="minimal-glass-decoration">
+        <div class="minimal-glass-decoration">
               <img src="/images/gradient glass (4) 1.png" alt="Glass Decoration" class="minimal-glass-image">
             </div>
+          <!-- Minimal Plan -->
+          <div class="pricing-card minimal-card">
+            
             <div class="pricing-header minimal">
               <h3>Minimal</h3>
             </div>
@@ -374,11 +365,12 @@ export function initHomePage() {
             <div class="pricing-price pro">1 270 000 so'm</div>
           </div>
 
-          <!-- Korporativ Plan -->
-          <div class="pricing-card korporativ-card">
-            <div class="korporativ-glass-decoration">
+               <div class="korporativ-glass-decoration">
               <img src="/images/gradient glass (5) 1.png" alt="Glass Decoration" class="korporativ-glass-image">
             </div>
+          <!-- Korporativ Plan -->
+          <div class="pricing-card korporativ-card">
+       
             <div class="pricing-header korporativ">
               <h3>Korporativ</h3>
             </div>
@@ -448,11 +440,12 @@ export function initHomePage() {
         <h2 class="section-title">O'qituvchilar uchun ma'qolalar</h2>
 
         <div class="articles-grid">
-          <!-- Article Card 1 -->
-          <div class="article-card samarali-dars-card">
-            <div class="samarali-dars-decoration">
+         <div class="samarali-dars-decoration">
               <img src="/images/0010 1.png" alt="Samarali Dars Decoration" class="samarali-dars-image">
             </div>
+          <!-- Article Card 1 -->
+          <div class="article-card samarali-dars-card">
+           
             <div class="article-header">
               <h3>Samarali Dars</h3>
             </div>
@@ -555,12 +548,12 @@ export function initHomePage() {
               </div>
             </div>
           </div>
-
-          <!-- Article Card 6 -->
-          <div class="article-card oxirgi-dars-card">
             <div class="oxirgi-dars-decoration">
               <img src="/images/0005 1.png" alt="Oxirgi Dars Decoration" class="oxirgi-dars-image">
             </div>
+          <!-- Article Card 6 -->
+          <div class="article-card oxirgi-dars-card">
+           
             <div class="article-header">
               <h3>Samarali Dars</h3>
             </div>
