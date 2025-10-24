@@ -158,7 +158,7 @@ export function initHomePage() {
           </div>
 
           <div class="platform-feature-card">
-            <h4>4. Darslar analitikasi</h4>
+            <h4>4. Onlayn uchrashuvlar</h4>
           </div>
           <div class="platform-feature-card">
             <h4>5. Sun'iy intellekt</h4>
@@ -218,16 +218,16 @@ export function initHomePage() {
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Kurslarni videosiz soni</span>
-                <span class="feature-value">∞</span>
-              </div>
-              <div class="feature-item">
-                <span>Qo'llab quvvatlash</span>
+                <span>Onlayn uchrashuv</span>
                 <span class="feature-check">✓</span>
               </div>
-              <div class="feature-item disabled">
+              <div class="feature-item">
+                <span>Qo'llab-quvvatlash</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
                 <span>O'quvchilar analitikasi</span>
-                <span class="feature-check">✗</span>
+                <span class="feature-check">✓</span>
               </div>
               <div class="feature-item disabled">
                 <span>Sertifikat generatsiyasi</span>
@@ -238,7 +238,7 @@ export function initHomePage() {
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>To'lov lenta</span>
+                <span>To'lov tizimi integratsyasi</span>
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
@@ -250,15 +250,11 @@ export function initHomePage() {
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>Brendaga mos dizayn</span>
-                <span class="feature-check">✗</span>
-              </div>
-              <div class="feature-item disabled">
-                <span>Real-time kuzatuv</span>
+                <span>Brendga mos dizayn</span>
                 <span class="feature-check">✗</span>
               </div>
             </div>
-            <div class="pricing-price minimal">470 000</div>
+            <div class="pricing-price minimal">470 000 so'm</div>
           </div>
 
           <!-- Standard Plan -->
@@ -281,11 +277,11 @@ export function initHomePage() {
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Kurslarni videosiz soni</span>
-                <span class="feature-value">∞</span>
+                <span>Onlayn uchrashuv</span>
+                <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Qo'llab quvvatlash</span>
+                <span>Qo'llab-quvvatlash</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
@@ -301,7 +297,7 @@ export function initHomePage() {
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>To'lov lenta</span>
+                <span>To'lov tizimi integratsyasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item disabled">
@@ -313,15 +309,11 @@ export function initHomePage() {
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>Brendaga mos dizayn</span>
-                <span class="feature-check">✗</span>
-              </div>
-              <div class="feature-item disabled">
-                <span>Real-time kuzatuv</span>
+                <span>Brendga mos dizayn</span>
                 <span class="feature-check">✗</span>
               </div>
             </div>
-            <div class="pricing-price standard">870 000</div>
+            <div class="pricing-price standard">870 000 so'm</div>
           </div>
 
           <!-- Pro Plan -->
@@ -343,11 +335,11 @@ export function initHomePage() {
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Kurslarni videosiz soni</span>
-                <span class="feature-value">∞</span>
+                <span>Onlayn uchrashuv</span>
+                <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Qo'llab quvvatlash</span>
+                <span>Qo'llab-quvvatlash</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
@@ -363,7 +355,7 @@ export function initHomePage() {
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>To'lov lenta</span>
+                <span>To'lov tizimi integratsyasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
@@ -375,15 +367,11 @@ export function initHomePage() {
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Brendaga mos dizayn</span>
-                <span class="feature-check">✓</span>
-              </div>
-              <div class="feature-item">
-                <span>Real-time kuzatuv</span>
+                <span>Brendga mos dizayn</span>
                 <span class="feature-check">✓</span>
               </div>
             </div>
-            <div class="pricing-price pro">1 270 000</div>
+            <div class="pricing-price pro">1 270 000 so'm</div>
           </div>
 
           <!-- Korporativ Plan -->
@@ -408,15 +396,15 @@ export function initHomePage() {
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Kurslarni videosiz soni</span>
-                <span class="feature-value">∞</span>
-              </div>
-              <div class="feature-item">
-                <span>Qo'llab quvvatlash</span>
+                <span>Onlayn uchrashuv</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Sizroq doirasi</span>
+                <span>Qo'llab-quvvatlash</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span>Shaxsiy Domein</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
@@ -432,7 +420,7 @@ export function initHomePage() {
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>To'lov lenta</span>
+                <span>To'lov tizimi integratsyasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
@@ -443,12 +431,8 @@ export function initHomePage() {
                 <span>Kontent xavfsizligi</span>
                 <span class="feature-check">✓</span>
               </div>
-              <div class="feature-item">
-                <span>Real-time kuzatuv</span>
-                <span class="feature-check">✓</span>
-              </div>
             </div>
-            <div class="pricing-price korporativ">Maxsus Narx</div>
+            <div class="pricing-price korporativ">Maxsus narx</div>
           </div>
         </div>
 
@@ -765,6 +749,9 @@ export function initHomePage() {
 
   // Initialize SMS contact
   initSMSContact();
+
+  // Initialize navigation
+  initNavigation();
 
   // Update store
   store.setState({ currentPage: 'home' });
@@ -1251,5 +1238,156 @@ function initSMSContact() {
   // Add hover sound effect (optional)
   smsContact.addEventListener('mouseenter', function() {
     // You can add sound effects here later
+  });
+}
+
+// Initialize Navigation functionality
+function initNavigation() {
+  const logo = document.querySelector('.logo');
+  const navItems = document.querySelectorAll('.nav-item');
+
+  // Add navigation styles if not already present
+  addNavigationStyles();
+
+  // Logo click handler - scroll to top (Hero section)
+  if (logo) {
+    logo.addEventListener('click', function(e) {
+      e.preventDefault();
+      scrollToSection('hero');
+    });
+    // Make logo clickable
+    logo.style.cursor = 'pointer';
+  }
+
+  // Navigation menu items
+  navItems.forEach((item, index) => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+
+      const text = this.textContent.trim();
+
+      switch (text) {
+        case 'Asosiy':
+          scrollToSection('hero');
+          break;
+        case 'Ma\'lumot':
+          scrollToSection('platform-features');
+          break;
+        case 'Tariflar':
+          scrollToSection('pricing-section');
+          break;
+        case 'Bloglar':
+          scrollToSection('articles-section');
+          break;
+        case 'Aloqa':
+          scrollToSection('advice-section');
+          break;
+        default:
+          console.log('Unknown navigation item:', text);
+      }
+    });
+  });
+
+  // Initialize footer navigation
+  initFooterNavigation();
+}
+
+// Smooth scroll to section
+function scrollToSection(sectionClass) {
+  const section = document.querySelector(`.${sectionClass}`);
+  if (section) {
+    const headerHeight = document.querySelector('.header')?.offsetHeight || 0;
+    const sectionTop = section.offsetTop - headerHeight - 20; // 20px extra padding
+
+    window.scrollTo({
+      top: sectionTop,
+      behavior: 'smooth'
+    });
+  }
+}
+
+
+// Add navigation styles
+function addNavigationStyles() {
+  if (document.querySelector('#navigation-styles')) return;
+
+  const style = document.createElement('style');
+  style.id = 'navigation-styles';
+  style.textContent = `
+    /* Only keep smooth scroll behavior and logo cursor */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Logo hover effect */
+    .logo {
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+      filter: brightness(1.1);
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+// Initialize footer navigation
+function initFooterNavigation() {
+  const footerNavItems = document.querySelectorAll('.footer-nav-item');
+
+  footerNavItems.forEach(item => {
+    item.addEventListener('click', function(e) {
+      const text = this.textContent.trim();
+
+      // Only handle internal navigation, let external links work normally
+      if (text === 'Kirish' || text === 'Ommaviy oferta') {
+        return; // Let these links work as normal
+      }
+
+      e.preventDefault();
+
+      switch (text) {
+        case 'Asosiy sahifa':
+          scrollToSection('hero');
+          break;
+        case 'Ma\'lumot':
+          scrollToSection('platform-features');
+          break;
+        case 'Tariflar':
+          scrollToSection('pricing-section');
+          break;
+        case 'Aloqa':
+          scrollToSection('advice-section');
+          break;
+        default:
+          console.log('Unknown footer navigation item:', text);
+      }
+
+      // Scroll to top first to ensure visibility
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+
+      // Then scroll to the specific section after a small delay
+      setTimeout(() => {
+        switch (text) {
+          case 'Asosiy sahifa':
+            scrollToSection('hero');
+            break;
+          case 'Ma\'lumot':
+            scrollToSection('platform-features');
+            break;
+          case 'Tariflar':
+            scrollToSection('pricing-section');
+            break;
+          case 'Aloqa':
+            scrollToSection('advice-section');
+            break;
+        }
+      }, 100);
+    });
   });
 }
