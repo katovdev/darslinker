@@ -9,6 +9,9 @@ async function connectToDB() {
     console.error(
       `An error occured from connecting to MongoDB database: ${error.message}`
     );
+    throw new Error(
+      `An error occured from connecting to MongoDB database: ${error.message}`
+    );
   }
 }
 

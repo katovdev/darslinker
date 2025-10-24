@@ -358,7 +358,7 @@ authRouter.post("/register", validate(registerSchema), register);
  *               $ref: '#/components/schemas/ErrorResponse'
  *             example:
  *               success: false
- *               message: OTP code has expired. Please request a new one.
+ *               message: OTP code has expired. Please request a new one
  *       429:
  *         description: Too many attempts
  *         content:

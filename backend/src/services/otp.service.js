@@ -32,7 +32,7 @@ export async function createAndSendOtp({
   try {
     // --- 1. Generate OTP and expiration time
     const otp = generateOtp(parseInt(OTP_LENGTH || "6", 10));
-    const expiresInSeconds = parseInt(OTP_EXPIRES_SECONDS || "300", 10);
+    const expiresInSeconds = parseInt(OTP_EXPIRES_SECONDS || "1800", 10);
     const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
 
     // --- 2. Hash OTP if enabled
@@ -184,7 +184,7 @@ export async function verifyOtp({ identifier, otp, purpose = "register" }) {
 }
 
 const OTP_LENGTH_INT = parseInt(OTP_LENGTH || "6", 10);
-const OTP_EXPIRES_SEC = parseInt(OTP_EXPIRES_SECONDS || "300", 10);
+const OTP_EXPIRES_SEC = parseInt(OTP_EXPIRES_SECONDS || "1800", 10);
 /**
  * Resend an OTP for an identifier and purpose
  * @param {Object} options
