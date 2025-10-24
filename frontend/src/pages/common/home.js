@@ -132,13 +132,14 @@ export function initHomePage() {
         <h2 class="section-title">Platformaning Asosiy Imkoniyatlari</h2>
 
         <div class="platform-features-grid">
+         <div class="course-3d-icon">
+              <img src="/images/3D Black Chrome Shape (3) 1.png" alt="3D Course Icon" class="course-icon-image" />
+            </div>
           <div class="platform-feature-card course-card">
             <h4>1. Tez va oson kurs joylash</h4>
 
             <!-- 3D Course Icon on left side -->
-            <div class="course-3d-icon">
-              <img src="/images/3D Black Chrome Shape (3) 1.png" alt="3D Course Icon" class="course-icon-image" />
-            </div>
+           
           </div>
           <div class="platform-feature-card">
             <h4>2. O'quvchilar Nazorati</h4>
@@ -153,13 +154,14 @@ export function initHomePage() {
           <div class="platform-feature-card">
             <h4>5. Sun'iy intellekt</h4>
           </div>
+          <div class="glass-decoration">
+              <img src="/images/gradient glass (20) 1 (1).png" alt="Glass Decoration" class="glass-deco-image" />
+            </div>
           <div class="platform-feature-card brending-card">
             <h4>6. Brendaga moslash</h4>
 
             <!-- Decorative Glass Element next to card -->
-            <div class="glass-decoration">
-              <img src="/images/gradient glass (20) 1 (1).png" alt="Glass Decoration" class="glass-deco-image" />
-            </div>
+            
           </div>
 
           <div class="platform-feature-card">

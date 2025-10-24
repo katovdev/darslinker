@@ -390,7 +390,14 @@ body {
   bottom: 170px;
   right: 10px;
   opacity: 0.7;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.analytics-3d-icon:hover {
+  transform: scale(1.1) rotate(5deg);
+  opacity: 1;
 }
 
 /* Behind card - blurred */
@@ -418,6 +425,10 @@ body {
   filter: brightness(0.9) saturate(120%);
   transition: all 0.3s ease;
   animation: analyticsFloat3D 5s ease-in-out infinite;
+}
+
+.analytics-3d-icon:hover .analytics-icon-image-clear {
+  filter: brightness(1.2) saturate(150%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
 }
 
 .analytics-card:hover .analytics-icon-image,
@@ -603,11 +614,18 @@ body {
 /* Course 3D Icon */
 .course-3d-icon {
   position: absolute;
-  left: -250px;
-  top: -30px;
+  left: 10px;
+  top: 950px;
   z-index: 10;
   opacity: 0.6;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.course-3d-icon:hover {
+  transform: scale(1.1) rotate(5deg);
+  opacity: 1;
 }
 
 .course-icon-image {
@@ -617,6 +635,10 @@ body {
   filter: brightness(0.8) saturate(150%);
   transition: all 0.3s ease;
   animation: courseFloat 5s ease-in-out infinite;
+}
+
+.course-3d-icon:hover .course-icon-image {
+  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
 }
 
 .course-card:hover .course-icon-image {
@@ -634,11 +656,18 @@ body {
 /* Glass Decoration Element */
 .glass-decoration {
   position: absolute;
-  right: -250px;
-  top: -30px;
+  right: 20px;
+  top: 1100px;
   z-index: 10;
   opacity: 0.6;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.glass-decoration:hover {
+  transform: scale(1.1) rotate(5deg);
+  opacity: 1;
 }
 
 .glass-deco-image {
@@ -648,6 +677,10 @@ body {
   filter: brightness(0.8) saturate(150%);
   transition: all 0.3s ease;
   animation: glassFloat 4s ease-in-out infinite;
+}
+
+.glass-decoration:hover .glass-deco-image {
+  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
 }
 
 .brending-card:hover .glass-deco-image {
@@ -674,7 +707,14 @@ body {
   top: 550px;
   z-index: 10;
   opacity: 0.6;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.minimal-glass-decoration:hover {
+  transform: scale(1.1) rotate(5deg);
+  opacity: 1;
 }
 
 .minimal-glass-image {
@@ -686,21 +726,10 @@ body {
   animation: minimalGlassFloat 4s ease-in-out infinite;
 }
 
-/* Blur effect for the part over the card */
-.minimal-glass-decoration::before {
-  content: "";
-  position: absolute;
-  top: -260px;
-  left: 0;
-  width: 100%;
-  height: 260px;
-  background: inherit;
-  backdrop-filter: blur(15px) saturate(180%);
-  -webkit-backdrop-filter: blur(15px) saturate(180%);
-  border-radius: inherit;
-  z-index: 1;
-  pointer-events: none;
+.minimal-glass-decoration:hover .minimal-glass-image {
+  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
 }
+
 
 .minimal-glass-decoration .minimal-glass-image {
   position: relative;
@@ -719,7 +748,14 @@ body {
   top: 100px;
   z-index: 10;
   opacity: 0.6;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.korporativ-glass-decoration:hover {
+  transform: scale(1.1) rotate(5deg);
+  opacity: 1;
 }
 
 .korporativ-glass-image {
@@ -729,6 +765,10 @@ body {
   filter: brightness(0.8) saturate(150%);
   transition: all 0.3s ease;
   animation: korporativGlassFloat 4s ease-in-out infinite;
+}
+
+.korporativ-glass-decoration:hover .korporativ-glass-image {
+  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
 }
 
 .korporativ-card:hover .korporativ-glass-image {
@@ -1618,7 +1658,14 @@ body {
   top: 140px;
   z-index: 100;
   opacity: 1;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.samarali-dars-decoration:hover {
+  transform: scale(1.1) rotate(5deg);
+  opacity: 1;
 }
 
 .samarali-dars-image {
@@ -1628,6 +1675,10 @@ body {
   filter: brightness(0.8) saturate(150%);
   transition: all 0.3s ease;
   animation: samaraliDarsFloat 4s ease-in-out infinite;
+}
+
+.samarali-dars-decoration:hover .samarali-dars-image {
+  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
 }
 
 .samarali-dars-card:hover .samarali-dars-image {
@@ -1648,7 +1699,14 @@ body {
   top: 390px;
   z-index: 100;
   opacity: 1;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.oxirgi-dars-decoration:hover {
+  transform: scale(1.1) rotate(5deg);
+  opacity: 1;
 }
 
 .oxirgi-dars-image {
@@ -1658,6 +1716,10 @@ body {
   filter: brightness(0.8) saturate(150%);
   transition: all 0.3s ease;
   animation: oxirgiDarsFloat 4s ease-in-out infinite;
+}
+
+.oxirgi-dars-decoration:hover .oxirgi-dars-image {
+  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
 }
 
 .oxirgi-dars-card:hover .oxirgi-dars-image {
@@ -1884,6 +1946,15 @@ body {
     right: -10px;
   }
 
+  .analytics-3d-icon{
+   transform: scale(1.1) rotate(5deg);
+  opacity: 1;}
+
+.analytics-3d-icon:hover .analytics-icon-image {
+    filter: drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
+  }
+
+
   .analytics-icon-image {
     width: 80px;
     height: 80px;
@@ -1902,6 +1973,12 @@ body {
   .glass-decoration {
     right: -40px;
     top: -20px;
+  }
+
+  .glass-decoration{
+    transform: scale(1.1) rotate(5deg);
+    opacity: 1;
+
   }
 
   .glass-deco-image {
