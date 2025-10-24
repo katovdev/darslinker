@@ -116,26 +116,54 @@ export function initRegisterPage() {
             <!-- Password -->
             <div class="form-group">
               <label class="form-label">Parol</label>
-              <input
-                type="password"
-                class="form-input"
-                placeholder="Parol kiriting"
-                id="passwordInput"
-                required
-              />
+              <div class="password-input-wrapper">
+                <input
+                  type="password"
+                  class="form-input password-input-field"
+                  placeholder="Parol kiriting"
+                  id="passwordInput"
+                  required
+                />
+                <button type="button" class="password-toggle-btn" id="passwordToggle">
+                  <svg class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                  </svg>
+                  <svg class="eye-hide hidden" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <line x1="2" y1="2" x2="22" y2="22" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </button>
+              </div>
               <div class="input-error" id="passwordError"></div>
             </div>
 
             <!-- Confirm Password -->
             <div class="form-group">
               <label class="form-label">Parolni tasdiqlang</label>
-              <input
-                type="password"
-                class="form-input"
-                placeholder="Parolni tasdiqlang"
-                id="confirmPasswordInput"
-                required
-              />
+              <div class="password-input-wrapper">
+                <input
+                  type="password"
+                  class="form-input password-input-field"
+                  placeholder="Parolni tasdiqlang"
+                  id="confirmPasswordInput"
+                  required
+                />
+                <button type="button" class="password-toggle-btn" id="confirmPasswordToggle">
+                  <svg class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                  </svg>
+                  <svg class="eye-hide hidden" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <line x1="2" y1="2" x2="22" y2="22" stroke="currentColor" stroke-width="2"/>
+                  </svg>
+                </button>
+              </div>
               <div class="input-error" id="confirmPasswordError"></div>
             </div>
           </div>
@@ -437,6 +465,44 @@ function addRegisterPageStyles() {
       box-sizing: border-box;
     }
 
+    .password-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-input-field {
+      padding-right: 50px;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 14px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s ease;
+      z-index: 1;
+    }
+
+    .password-toggle-btn:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .password-toggle-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .password-toggle-btn .hidden {
+      display: none;
+    }
+
     .form-input:focus {
       border-color: #7EA2D4;
       box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
@@ -444,6 +510,22 @@ function addRegisterPageStyles() {
 
     .form-input::placeholder {
       color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Override browser autocomplete styles */
+    .form-input:-webkit-autofill,
+    .form-input:-webkit-autofill:hover,
+    .form-input:-webkit-autofill:focus,
+    .form-input:-webkit-autofill:active,
+    .password-input-field:-webkit-autofill,
+    .password-input-field:-webkit-autofill:hover,
+    .password-input-field:-webkit-autofill:focus,
+    .password-input-field:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px rgba(60, 60, 80, 0.5) inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      caret-color: #ffffff !important;
+      transition: background-color 5000s ease-in-out 0s !important;
+      background-color: rgba(60, 60, 80, 0.5) !important;
     }
 
     .phone-input {
@@ -495,6 +577,18 @@ function addRegisterPageStyles() {
 
     .phone-number-input::placeholder {
       color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Override browser autocomplete styles for phone input */
+    .phone-number-input:-webkit-autofill,
+    .phone-number-input:-webkit-autofill:hover,
+    .phone-number-input:-webkit-autofill:focus,
+    .phone-number-input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      caret-color: #ffffff !important;
+      transition: background-color 5000s ease-in-out 0s !important;
+      background-color: transparent !important;
     }
 
     .register-submit-btn {
@@ -651,6 +745,10 @@ function initRegisterPageFunctionality() {
   const passwordInput = document.getElementById('passwordInput');
   const confirmPasswordInput = document.getElementById('confirmPasswordInput');
 
+  // Password toggle buttons
+  const passwordToggle = document.getElementById('passwordToggle');
+  const confirmPasswordToggle = document.getElementById('confirmPasswordToggle');
+
   // Error elements
   const firstNameError = document.getElementById('firstNameError');
   const lastNameError = document.getElementById('lastNameError');
@@ -658,6 +756,15 @@ function initRegisterPageFunctionality() {
   const emailError = document.getElementById('emailError');
   const passwordError = document.getElementById('passwordError');
   const confirmPasswordError = document.getElementById('confirmPasswordError');
+
+  // Password toggle functionality
+  passwordToggle.addEventListener('click', () => {
+    togglePasswordVisibility(passwordInput, passwordToggle);
+  });
+
+  confirmPasswordToggle.addEventListener('click', () => {
+    togglePasswordVisibility(confirmPasswordInput, confirmPasswordToggle);
+  });
 
   // Toggle between phone and email registration
   phoneToggle.addEventListener('click', () => {
@@ -1030,5 +1137,20 @@ function initRegisterNeonDots() {
       Math.random() * 100 + '%',
       85 + Math.random() * 15 + '%' // 85-100% from top
     );
+  }
+}
+
+function togglePasswordVisibility(inputField, toggleButton) {
+  const eyeShow = toggleButton.querySelector('.eye-show');
+  const eyeHide = toggleButton.querySelector('.eye-hide');
+
+  if (inputField.type === 'password') {
+    inputField.type = 'text';
+    eyeShow.classList.add('hidden');
+    eyeHide.classList.remove('hidden');
+  } else {
+    inputField.type = 'password';
+    eyeShow.classList.remove('hidden');
+    eyeHide.classList.add('hidden');
   }
 }

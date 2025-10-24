@@ -67,6 +67,7 @@ export function initLoginPage() {
                   id="phoneInput"
                 />
               </div>
+              <div class="input-error" id="phoneError"></div>
             </div>
 
             <!-- Email Input (hidden by default) -->
@@ -77,6 +78,7 @@ export function initLoginPage() {
                 placeholder="example@email.com"
                 id="emailInput"
               />
+              <div class="input-error" id="emailError"></div>
             </div>
           </div>
 
@@ -434,6 +436,35 @@ function addLoginPageStyles() {
       color: rgba(255, 255, 255, 0.5);
     }
 
+    /* Override browser autocomplete styles */
+    .phone-number-input:-webkit-autofill,
+    .phone-number-input:-webkit-autofill:hover,
+    .phone-number-input:-webkit-autofill:focus,
+    .phone-number-input:-webkit-autofill:active,
+    .email-input:-webkit-autofill,
+    .email-input:-webkit-autofill:hover,
+    .email-input:-webkit-autofill:focus,
+    .email-input:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px rgba(60, 60, 80, 0.5) inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      caret-color: #ffffff !important;
+      transition: background-color 5000s ease-in-out 0s !important;
+      background-color: rgba(60, 60, 80, 0.5) !important;
+    }
+
+    /* Input Error Messages */
+    .input-error {
+      color: #dc3545;
+      font-size: 0.8rem;
+      margin-top: 5px;
+      margin-left: 4px;
+      display: none;
+    }
+
+    .input-error.show {
+      display: block;
+    }
+
     .login-submit-btn {
       width: 200px;
       padding: 13px;
@@ -532,6 +563,52 @@ function initLoginPageFunctionality() {
   const inputLabel = document.getElementById('inputLabel');
   const loginSubmit = document.getElementById('loginSubmit');
 
+  // Error elements
+  const phoneError = document.getElementById('phoneError');
+  const emailError = document.getElementById('emailError');
+
+  // Validation functions
+  function showError(errorElement, message) {
+    errorElement.textContent = message;
+    errorElement.classList.add('show');
+  }
+
+  function hideError(errorElement) {
+    errorElement.classList.remove('show');
+  }
+
+  function validatePhone() {
+    const phoneInput = document.getElementById('phoneInput');
+    const phoneValue = phoneInput.value.trim().replace(/\s/g, '');
+
+    if (!phoneValue) {
+      showError(phoneError, 'Telefon raqam kiritilishi shart');
+      return false;
+    } else if (phoneValue.length !== 9) {
+      showError(phoneError, 'Iltimos, 9 ta raqam kiriting');
+      return false;
+    } else {
+      hideError(phoneError);
+      return true;
+    }
+  }
+
+  function validateEmail() {
+    const emailInput = document.getElementById('emailInput');
+    const emailValue = emailInput.value.trim();
+
+    if (!emailValue) {
+      showError(emailError, 'Email kiritilishi shart');
+      return false;
+    } else if (!isValidEmail(emailValue)) {
+      showError(emailError, 'To\'g\'ri email kiriting');
+      return false;
+    } else {
+      hideError(emailError);
+      return true;
+    }
+  }
+
   // Toggle between phone and email input
   phoneToggle.addEventListener('click', () => {
     phoneToggle.classList.add('active');
@@ -539,6 +616,9 @@ function initLoginPageFunctionality() {
     phoneContainer.classList.remove('hidden');
     emailContainer.classList.add('hidden');
     inputLabel.textContent = 'Telefon raqam';
+    // Clear errors when switching
+    hideError(phoneError);
+    hideError(emailError);
   });
 
   emailToggle.addEventListener('click', () => {
@@ -547,6 +627,9 @@ function initLoginPageFunctionality() {
     emailContainer.classList.remove('hidden');
     phoneContainer.classList.add('hidden');
     inputLabel.textContent = 'Email';
+    // Clear errors when switching
+    hideError(phoneError);
+    hideError(emailError);
   });
 
   // Handle form submission
@@ -555,32 +638,25 @@ function initLoginPageFunctionality() {
 
     const isPhoneMode = phoneToggle.classList.contains('active');
     let userIdentifier = '';
+    let isValid = false;
 
     if (isPhoneMode) {
-      const phoneInput = document.getElementById('phoneInput');
-      const phoneValue = phoneInput.value.trim();
-
-      if (!phoneValue) {
-        alert('Iltimos, telefon raqamingizni kiriting!');
-        return;
+      isValid = validatePhone();
+      if (isValid) {
+        const phoneInput = document.getElementById('phoneInput');
+        const phoneValue = phoneInput.value.trim().replace(/\s/g, '');
+        userIdentifier = '+998' + phoneValue;
       }
-
-      userIdentifier = '+998' + phoneValue.replace(/\s/g, '');
     } else {
-      const emailInput = document.getElementById('emailInput');
-      const emailValue = emailInput.value.trim();
-
-      if (!emailValue) {
-        alert('Iltimos, emailingizni kiriting!');
-        return;
+      isValid = validateEmail();
+      if (isValid) {
+        const emailInput = document.getElementById('emailInput');
+        userIdentifier = emailInput.value.trim();
       }
+    }
 
-      if (!isValidEmail(emailValue)) {
-        alert('Iltimos, to\'g\'ri email kiriting!');
-        return;
-      }
-
-      userIdentifier = emailValue;
+    if (!isValid) {
+      return; // Don't proceed if validation fails
     }
 
     // Add loading state
@@ -612,11 +688,17 @@ function initLoginPageFunctionality() {
 
         router.navigate('/register');
       }
+
+      // Reset button state
+      loginSubmit.textContent = 'Kirish';
+      loginSubmit.disabled = false;
     }, 1000);
   });
 
-  // Format phone number as user types
+  // Format phone number as user types and validate
   const phoneInput = document.getElementById('phoneInput');
+  const emailInput = document.getElementById('emailInput');
+
   phoneInput.addEventListener('input', (e) => {
     let value = e.target.value.replace(/\D/g, '');
 
@@ -634,7 +716,23 @@ function initLoginPageFunctionality() {
     }
 
     e.target.value = value;
+
+    // Clear error when user starts typing
+    if (phoneError.classList.contains('show')) {
+      hideError(phoneError);
+    }
   });
+
+  phoneInput.addEventListener('blur', validatePhone);
+
+  emailInput.addEventListener('input', () => {
+    // Clear error when user starts typing
+    if (emailError.classList.contains('show')) {
+      hideError(emailError);
+    }
+  });
+
+  emailInput.addEventListener('blur', validateEmail);
 }
 
 function isValidEmail(email) {

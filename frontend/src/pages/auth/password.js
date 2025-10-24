@@ -43,12 +43,33 @@ export function initPasswordPage() {
           <!-- Password Input Section -->
           <div class="password-input-section">
             <label class="password-label">Parol</label>
-            <input
-              type="password"
-              class="password-input"
-              placeholder="Parolingizni kiriting"
-              id="passwordInput"
-            />
+            <div class="password-input-wrapper">
+              <input
+                type="password"
+                class="password-input password-input-field"
+                placeholder="Parolingizni kiriting"
+                id="passwordInput"
+              />
+              <button type="button" class="password-toggle-btn" id="passwordToggle">
+                <svg class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                </svg>
+                <svg class="eye-hide hidden" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61" stroke="currentColor" stroke-width="2" fill="none"/>
+                  <line x1="2" y1="2" x2="22" y2="22" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Forgot Password Link -->
+          <div class="forgot-password-section">
+            <a href="#" class="forgot-password-link" id="forgotPasswordLink">
+              Parolni unutdingizmi?
+            </a>
           </div>
 
           <!-- Login Button -->
@@ -197,7 +218,26 @@ function addPasswordPageStyles() {
     }
 
     .password-input-section {
+      margin-bottom: 16px;
+    }
+
+    .forgot-password-section {
+      text-align: center;
       margin-bottom: 32px;
+    }
+
+    .forgot-password-link {
+      color: #7EA2D4;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .forgot-password-link:hover {
+      color: #5A85C7;
+      text-decoration: underline;
     }
 
     .password-label {
@@ -221,6 +261,44 @@ function addPasswordPageStyles() {
       box-sizing: border-box;
     }
 
+    .password-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .password-input-field {
+      padding-right: 55px;
+    }
+
+    .password-toggle-btn {
+      position: absolute;
+      right: 16px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s ease;
+      z-index: 1;
+    }
+
+    .password-toggle-btn:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .password-toggle-btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .password-toggle-btn .hidden {
+      display: none;
+    }
+
     .password-input:focus {
       border-color: #7EA2D4;
       box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
@@ -228,6 +306,22 @@ function addPasswordPageStyles() {
 
     .password-input::placeholder {
       color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Override browser autocomplete styles */
+    .password-input:-webkit-autofill,
+    .password-input:-webkit-autofill:hover,
+    .password-input:-webkit-autofill:focus,
+    .password-input:-webkit-autofill:active,
+    .password-input-field:-webkit-autofill,
+    .password-input-field:-webkit-autofill:hover,
+    .password-input-field:-webkit-autofill:focus,
+    .password-input-field:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 1000px rgba(60, 60, 80, 0.5) inset !important;
+      -webkit-text-fill-color: #ffffff !important;
+      caret-color: #ffffff !important;
+      transition: background-color 5000s ease-in-out 0s !important;
+      background-color: rgba(60, 60, 80, 0.5) !important;
     }
 
     .password-submit-btn {
@@ -283,6 +377,11 @@ function addPasswordPageStyles() {
     .toast.error {
       background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
       box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+    }
+
+    .toast.info {
+      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+      box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
     }
 
     .toast.show {
@@ -352,9 +451,22 @@ function addPasswordPageStyles() {
 function initPasswordPageFunctionality(userIdentifier) {
   const passwordInput = document.getElementById('passwordInput');
   const passwordSubmit = document.getElementById('passwordSubmit');
+  const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+  const passwordToggle = document.getElementById('passwordToggle');
 
   // Focus on password input
   passwordInput.focus();
+
+  // Password toggle functionality
+  passwordToggle.addEventListener('click', () => {
+    togglePasswordVisibility(passwordInput, passwordToggle);
+  });
+
+  // Handle forgot password click
+  forgotPasswordLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    showInfoToast('SMS tasdiqlash tez orada qo\'shiladi');
+  });
 
   // Handle Enter key press
   passwordInput.addEventListener('keypress', (e) => {
@@ -453,4 +565,41 @@ function showErrorToast(message) {
       }
     }, 300);
   }, 3000);
+}
+
+function showInfoToast(message) {
+  const toast = document.createElement('div');
+  toast.className = 'toast info';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Show toast
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+
+  // Hide and remove toast
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}
+
+function togglePasswordVisibility(inputField, toggleButton) {
+  const eyeShow = toggleButton.querySelector('.eye-show');
+  const eyeHide = toggleButton.querySelector('.eye-hide');
+
+  if (inputField.type === 'password') {
+    inputField.type = 'text';
+    eyeShow.classList.add('hidden');
+    eyeHide.classList.remove('hidden');
+  } else {
+    inputField.type = 'password';
+    eyeShow.classList.remove('hidden');
+    eyeHide.classList.add('hidden');
+  }
 }
