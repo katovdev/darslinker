@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validation.middleware.js";
-import { registerSchema } from "../validations/user.validation.js";
+import { loginSchema, registerSchema } from "../validations/user.validation.js";
 import {
   register,
   verifyRegistrationOtp,
   resendRegistrationOtp,
+  login,
 } from "../controllers/auth.controller.js";
 
 const userRouter = Router();
@@ -484,5 +485,143 @@ userRouter.post("/verify-registration-otp", verifyRegistrationOtp);
  *                   error: Detailed error message
  */
 userRouter.post("/resend-registration-otp", resendRegistrationOtp);
+
+/**
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: User login
+ *     description: Authenticate user with email/phone and password. Returns JWT access and refresh tokens upon successful authentication. The user account must be in 'active' status (verified via OTP) to login.
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - identifier
+ *               - password
+ *             properties:
+ *               identifier:
+ *                 oneOf:
+ *                   - type: string
+ *                     format: email
+ *                     description: User's email address
+ *                   - type: string
+ *                     pattern: '^(\+998)?[0-9]{9,12}$'
+ *                     description: User's phone number (Uzbekistan format)
+ *                 example: john.doe@example.com
+ *               password:
+ *                 type: string
+ *                 description: User's password
+ *                 example: Pass@123
+ *           examples:
+ *             loginWithEmail:
+ *               summary: Login with email address
+ *               value:
+ *                 identifier: john.doe@example.com
+ *                 password: Pass@123
+ *             loginWithPhone:
+ *               summary: Login with phone number
+ *               value:
+ *                 identifier: "+998901234567"
+ *                 password: Teacher@456
+ *     responses:
+ *       200:
+ *         description: Login successful - Returns JWT tokens and user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Logged In successfully
+ *                 accessToken:
+ *                   type: string
+ *                   description: JWT access token (expires in 12 hours) - Contains userId, email, phone, role, status
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNDYxMTA5MH0.abc123xyz789
+ *                 refreshToken:
+ *                   type: string
+ *                   description: JWT refresh token (expires in 7 days) - Contains userId, email, phone, role, status
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNTE3MjY5MH0.def456uvw123
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     user:
+ *                       $ref: '#/components/schemas/UserResponse'
+ *             example:
+ *               success: true
+ *               message: Logged In successfully
+ *               accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNDYxMTA5MH0.abc123xyz789
+ *               refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNTE3MjY5MH0.def456uvw123
+ *               data:
+ *                 user:
+ *                   _id: 507f1f77bcf86cd799439011
+ *                   firstName: John
+ *                   lastName: Doe
+ *                   email: john.doe@example.com
+ *                   status: active
+ *                   role: student
+ *                   createdAt: 2024-01-15T10:30:00Z
+ *                   updatedAt: 2024-01-15T10:30:00Z
+ *       400:
+ *         description: Validation error - Invalid input format
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               invalidIdentifier:
+ *                 summary: Invalid email or phone format
+ *                 value:
+ *                   success: false
+ *                   message: Validation failed
+ *                   errors:
+ *                     - field: identifier
+ *                       message: Please provide a valid email or phone number
+ *               missingPassword:
+ *                 summary: Password not provided
+ *                 value:
+ *                   success: false
+ *                   message: Validation failed
+ *                   errors:
+ *                     - field: password
+ *                       message: Password is required
+ *       401:
+ *         description: Unauthorized - Invalid credentials
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: Invalid credentials
+ *       403:
+ *         description: Forbidden - Account not active (pending verification)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: Account not active. Please verify your account
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: An error occurred while log in to system
+ *               error: Detailed error message
+ */
+userRouter.post("/login", validate(loginSchema), login);
 
 export default userRouter;
