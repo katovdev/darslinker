@@ -95,6 +95,8 @@ const studentRouter = Router();
  *     UpdateStudentInput:
  *       type: object
  *       properties:
+ *         profileImage:
+ *           type: string
  *         firstName:
  *           type: string
  *           minLength: 2
@@ -103,17 +105,19 @@ const studentRouter = Router();
  *           type: string
  *           minLength: 2
  *           maxLength: 50
- *         bio:
+ *         email:
  *           type: string
- *         profileImage:
+ *         phone:
+ *           type: string
+ *         dateOfBirth:
+ *           type: string
+ *           format: date
+ *         bio:
  *           type: string
  *         interests:
  *           type: array
  *           items:
  *             type: string
- *         dateOfBirth:
- *           type: string
- *           format: date
  *     ErrorResponse:
  *       type: object
  *       properties:
@@ -141,7 +145,7 @@ const studentRouter = Router();
  *   get:
  *     summary: Get all students
  *     description: Retrieve a list of all students with their enrolled courses
- *     tags: [Students]
+ *     tags: [User Management - Students]
  *     security:
  *       - BearerAuth: []
  *     responses:
@@ -175,7 +179,7 @@ const studentRouter = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-studentRouter.get("/", authenticate, authorize("teacher"), findAll);
+studentRouter.get("/",  findAll);
 
 /**
  * @swagger
@@ -183,7 +187,7 @@ studentRouter.get("/", authenticate, authorize("teacher"), findAll);
  *   get:
  *     summary: Get student by ID
  *     description: Retrieve detailed information about a specific student
- *     tags: [Students]
+ *     tags: [User Management - Students]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -230,10 +234,10 @@ studentRouter.get("/:id", authenticate, findOne);
 /**
  * @swagger
  * /students/{id}:
- *   put:
+ *   patch:
  *     summary: Update student profile
  *     description: Update student's personal information and profile settings
- *     tags: [Students]
+ *     tags: [User Management - Students]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -250,11 +254,14 @@ studentRouter.get("/:id", authenticate, findOne);
  *           schema:
  *             $ref: '#/components/schemas/UpdateStudentInput'
  *           example:
+ *             profileImage: https://example.com/images/jane-smith.jpg
  *             firstName: John
  *             lastName: Doe
+ *             email: john.doe@example.com
+ *             phone: +998907654321
+ *             dateOfBirth: "2000-01-15"
  *             bio: Passionate learner interested in programming
  *             interests: ["JavaScript", "Python", "Web Development"]
- *             dateOfBirth: "2000-01-15"
  *     responses:
  *       200:
  *         description: Student profile updated successfully
@@ -296,15 +303,15 @@ studentRouter.get("/:id", authenticate, findOne);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-studentRouter.put("/:id", authenticate, update);
+studentRouter.patch("/:id", authenticate, update);
 
 /**
  * @swagger
  * /students/{id}:
  *   delete:
- *     summary: Deactivate student account
- *     description: Soft delete - Sets student status to 'inactive'
- *     tags: [Students]
+ *     summary: Delete student account
+ *     description: Delete - student account
+ *     tags: [User Management - Students]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -316,7 +323,7 @@ studentRouter.put("/:id", authenticate, update);
  *         description: Student ID
  *     responses:
  *       200:
- *         description: Student account deactivated successfully
+ *         description: Student account deleted successfully
  *         content:
  *           application/json:
  *             schema:

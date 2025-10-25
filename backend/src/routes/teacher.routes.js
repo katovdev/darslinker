@@ -1,10 +1,5 @@
 import { Router } from "express";
-import {
-  findAll,
-  findOne,
-  update,
-  remove,
-} from "../controllers/teacher.controller.js";
+import { findAll, findOne, update } from "../controllers/teacher.controller.js";
 import {
   authenticate,
   isOwnerOrAdmin,
@@ -122,45 +117,57 @@ const teacherRouter = Router();
  *     UpdateTeacherInput:
  *       type: object
  *       properties:
+ *         profileImage:
+ *           type: string
+ *           description: Profile image URL
  *         firstName:
  *           type: string
  *           minLength: 2
  *           maxLength: 50
+ *           description: Teacher's first name
  *         lastName:
  *           type: string
  *           minLength: 2
  *           maxLength: 50
- *         bio:
- *           type: string
+ *           description: Teacher's last name
  *         specialization:
  *           type: string
- *         profileImage:
+ *           description: Teacher's subject or field specialization
+ *         bio: 
  *           type: string
- *         certificates:
- *           type: array
- *           items:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               issuer:
- *                 type: string
- *               issueDate:
- *                 type: string
- *                 format: date
- *               url:
- *                 type: string
+ *           description: Teacher biography or introduction
+ *         city:
+ *           type: string
+ *           description: Teacher's city
+ *         country:
+ *           type: string
+ *           description: Teacher's country
+ *         email:
+ *           type: string
+ *           format: email
+ *           description: Teacher's email address (must be unique)
+ *         phone:
+ *           type: string
+ *           description: Teacher's phone number (must be unique)
+ *         telegram username:
+ *           type: string
+ *           description: Teacher's telegram username
  *         paymentMethods:
  *           type: object
+ *           description: Payment methods for receiving earnings
  *           properties:
  *             click:
  *               type: string
+ *               description: Click payment account number
  *             payme:
  *               type: string
+ *               description: Payme payment account number
  *             uzum:
  *               type: string
+ *               description: Uzum payment account number
  *             bankAccount:
  *               type: string
+ *               description: Bank account number
  */
 
 /**
@@ -169,7 +176,7 @@ const teacherRouter = Router();
  *   get:
  *     summary: Get all teachers
  *     description: Retrieve a list of all teachers with their courses and ratings
- *     tags: [Teachers]
+ *     tags: [User Management - Teachers]
  *     security:
  *       - BearerAuth: []
  *     responses:
@@ -205,7 +212,7 @@ teacherRouter.get("/", authenticate, findAll);
  *   get:
  *     summary: Get teacher by ID
  *     description: Retrieve detailed information about a specific teacher including courses and reviews
- *     tags: [Teachers]
+ *     tags: [User Management - Teachers]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -252,10 +259,10 @@ teacherRouter.get("/:id", authenticate, findOne);
 /**
  * @swagger
  * /teachers/{id}:
- *   put:
+ *   patch:
  *     summary: Update teacher profile
  *     description: Update teacher's personal information, specialization, and payment settings
- *     tags: [Teachers]
+ *     tags: [User Management - Teachers]
  *     security:
  *       - BearerAuth: []
  *     parameters:
@@ -272,13 +279,20 @@ teacherRouter.get("/:id", authenticate, findOne);
  *           schema:
  *             $ref: '#/components/schemas/UpdateTeacherInput'
  *           example:
+ *             profileImage: https://example.com/images/jane-smith.jpg
  *             firstName: Jane
  *             lastName: Smith
- *             bio: Experienced educator with 10+ years in web development
  *             specialization: Full Stack Web Development
+ *             bio: Experienced educator with 10+ years in web development
+ *             city: Tashkent
+ *             country: Uzbekistan
+ *             email: jane.smith@example.com
+ *             phone: "+998901234567"
+ *             telegram_username: https://t.me/john_teacher
  *             paymentMethods:
  *               click: "123456789"
  *               payme: "987654321"
+ *               uzum: "555444333"
  *     responses:
  *       200:
  *         description: Teacher profile updated successfully
@@ -292,15 +306,58 @@ teacherRouter.get("/:id", authenticate, findOne);
  *                   example: true
  *                 message:
  *                   type: string
- *                   example: Teacher updated successfully
+ *                   example: Teacher profile updated successfully
  *                 data:
- *                   $ref: '#/components/schemas/Teacher'
+ *                   type: object
+ *                   properties:
+ *                     teacher:
+ *                       $ref: '#/components/schemas/Teacher'
  *       400:
- *         description: Bad Request - Validation error or invalid ID
+ *         description: Bad Request - Validation error, invalid ID format, or invalid data
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Validation failed
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       field:
+ *                         type: string
+ *                       message:
+ *                         type: string
+ *             examples:
+ *               invalidId:
+ *                 summary: Invalid ID format
+ *                 value:
+ *                   success: false
+ *                   message: Invalid teacher ID format
+ *               invalidCertificates:
+ *                 summary: Invalid certificates format
+ *                 value:
+ *                   success: false
+ *                   message: Certificates must be an array
+ *               invalidPaymentMethods:
+ *                 summary: Invalid payment methods format
+ *                 value:
+ *                   success: false
+ *                   message: Payment methods must be an object
+ *               validationError:
+ *                 summary: Field validation errors
+ *                 value:
+ *                   success: false
+ *                   message: Validation failed
+ *                   errors:
+ *                     - field: firstName
+ *                       message: First name must be at least 2 characters
  *       401:
  *         description: Unauthorized - Invalid or missing token
  *         content:
@@ -318,29 +375,16 @@ teacherRouter.get("/:id", authenticate, findOne);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- */
-teacherRouter.put("/:id", authenticate, isOwnerOrAdmin, update);
-
-/**
- * @swagger
- * /teachers/{id}:
- *   delete:
- *     summary: Deactivate teacher account
- *     description: Soft delete - Sets teacher status to 'inactive' while preserving course and earnings data
- *     tags: [Teachers]
- *     security:
- *       - BearerAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Teacher ID
- *     responses:
- *       200:
- *         description: Teacher account deactivated successfully
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Teacher not found
+ *       409:
+ *         description: Conflict - Email or phone already in use by another user
  *         content:
  *           application/json:
  *             schema:
@@ -348,37 +392,36 @@ teacherRouter.put("/:id", authenticate, isOwnerOrAdmin, update);
  *               properties:
  *                 success:
  *                   type: boolean
- *                   example: true
+ *                   example: false
  *                 message:
  *                   type: string
- *                   example: Teacher removed successfully
- *                 data:
- *                   $ref: '#/components/schemas/Teacher'
- *       400:
- *         description: Bad Request - Invalid teacher ID format
+ *             examples:
+ *               emailInUse:
+ *                 summary: Email already exists
+ *                 value:
+ *                   success: false
+ *                   message: This email is already in use by another user
+ *               phoneInUse:
+ *                 summary: Phone already exists
+ *                 value:
+ *                   success: false
+ *                   message: This phone number is already in use by another user
+ *       500:
+ *         description: Internal Server Error - An unexpected error occurred
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       401:
- *         description: Unauthorized - Invalid or missing token
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       403:
- *         description: Forbidden - Cannot delete other user's account
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *       404:
- *         description: Teacher not found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: An error occurred while updating teacher profile
+ *                 error:
+ *                   type: string
  */
-teacherRouter.delete("/:id", authenticate, isOwnerOrAdmin, remove);
+teacherRouter.patch("/:id", authenticate, isOwnerOrAdmin, update);
 
 export default teacherRouter;

@@ -17,6 +17,20 @@ const swaggerDefinition = {
       description: "Local Development Server",
     },
   ],
+  tags: [
+    {
+      name: "Auth",
+      description: "Authentication and authorization endpoints - Register, login, OTP verification, and password management",
+    },
+    {
+      name: "User Management - Students",
+      description: "Student management endpoints - CRUD operations for student profiles, enrolled courses, and progress tracking",
+    },
+    {
+      name: "User Management - Teachers",
+      description: "Teacher management endpoints - CRUD operations for teacher profiles, courses, earnings, and ratings",
+    },
+  ],
   components: {
     securitySchemes: {
       BearerAuth: {

@@ -1,12 +1,15 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validation.middleware.js";
-import { loginSchema, registerSchema } from "../validations/user.validation.js";
+import { changePasswordSchema, loginSchema, registerSchema } from "../validations/user.validation.js";
 import {
   register,
   verifyRegistrationOtp,
   resendRegistrationOtp,
   login,
+  changePassword,
+  checkUser,
 } from "../controllers/auth.controller.js";
+import { authenticate } from "../middlewares/auth.middleware.js";
 
 const authRouter = Router();
 
@@ -165,6 +168,99 @@ const authRouter = Router();
  *   name: Auth
  *   description: Authorization and authentication endpoints
  */
+
+/**
+ * @swagger
+ * /auth/check-user:
+ *   post:
+ *     summary: Check if user identifier exists
+ *     description: Verify whether a user with the given email address or phone number already exists in the system. This endpoint helps frontend applications determine whether to show login or registration form based on the identifier provided.
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - identifier
+ *             properties:
+ *               identifier:
+ *                 type: string
+ *                 description: User's email address or phone number to check
+ *                 example: john.doe@example.com
+ *           examples:
+ *             checkWithEmail:
+ *               summary: Check user with email
+ *               value:
+ *                 identifier: john.doe@example.com
+ *             checkWithPhone:
+ *               summary: Check user with phone number
+ *               value:
+ *                 identifier: "+998901234567"
+ *     responses:
+ *       200:
+ *         description: Request processed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 exists:
+ *                   type: boolean
+ *                   description: True if user exists, false otherwise
+ *                   example: false
+ *                 next:
+ *                   type: string
+ *                   description: Indicates next step for frontend - "register" if user doesn't exist, "login" if user exists
+ *                   enum: [register, login]
+ *                   example: register
+ *             examples:
+ *               userNotExists:
+ *                 summary: User not found - show registration
+ *                 value:
+ *                   success: true
+ *                   exists: false
+ *                   next: register
+ *               userExists:
+ *                 summary: User found - show login
+ *                 value:
+ *                   success: true
+ *                   exists: true
+ *                   next: login
+ *       400:
+ *         description: Bad request - Missing or invalid identifier
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               missingIdentifier:
+ *                 summary: Identifier not provided
+ *                 value:
+ *                   success: false
+ *                   message: Identifier is required
+ *               invalidIdentifier:
+ *                 summary: Invalid identifier format
+ *                 value:
+ *                   success: false
+ *                   message: Please provide a valid email address or phone number
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: An error occurred while checking the user
+ *               error: Detailed error message
+ */
+authRouter.post("/check-user", checkUser);
 
 /**
  * @swagger
@@ -571,28 +667,25 @@ authRouter.post("/resend-registration-otp", resendRegistrationOtp);
  *                   createdAt: 2024-01-15T10:30:00Z
  *                   updatedAt: 2024-01-15T10:30:00Z
  *       400:
- *         description: Validation error - Invalid input format
+ *         description: Bad request - Missing required fields
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  *             examples:
- *               invalidIdentifier:
- *                 summary: Invalid email or phone format
+ *               missingFields:
+ *                 summary: Identifier or password not provided
+ *                 value:
+ *                   success: false
+ *                   message: Identifier and password are required
+ *               validationError:
+ *                 summary: Validation failed
  *                 value:
  *                   success: false
  *                   message: Validation failed
  *                   errors:
  *                     - field: identifier
  *                       message: Please provide a valid email or phone number
- *               missingPassword:
- *                 summary: Password not provided
- *                 value:
- *                   success: false
- *                   message: Validation failed
- *                   errors:
- *                     - field: password
- *                       message: Password is required
  *       401:
  *         description: Unauthorized - Invalid credentials
  *         content:
@@ -623,5 +716,125 @@ authRouter.post("/resend-registration-otp", resendRegistrationOtp);
  *               error: Detailed error message
  */
 authRouter.post("/login", validate(loginSchema), login);
+
+/**
+ * @swagger
+ * /auth/change-password:
+ *   patch:
+ *     summary: Change user password
+ *     description: Change password for authenticated user. User must provide current password and new password. New password must meet security requirements (minimum 8 characters, contain uppercase, lowercase, number, and special character).
+ *     tags: [Auth]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *               - confirmNewPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 description: User's current password
+ *                 example: OldPass@123
+ *               newPassword:
+ *                 type: string
+ *                 minLength: 8
+ *                 maxLength: 128
+ *                 pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]'
+ *                 description: New password (must contain uppercase, lowercase, number, and special character)
+ *                 example: NewPass@456
+ *               confirmPassword:
+ *                 type: string
+ *                 description: Confirmation of new password (must match newPassword)
+ *                 example: NewPass@456
+ *           examples:
+ *             changePassword:
+ *               summary: Change password example
+ *               value:
+ *                 currentPassword: OldPass@123
+ *                 newPassword: NewPass@456
+ *                 confirmPassword: NewPass@456
+ *     responses:
+ *       200:
+ *         description: Password changed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Password changed successfully
+ *             example:
+ *               success: true
+ *               message: Password changed successfully
+ *       400:
+ *         description: Bad request - Validation error or passwords don't match
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               passwordMismatch:
+ *                 summary: New passwords don't match
+ *                 value:
+ *                   success: false
+ *                   message: New password and confirmation password do not match
+ *               invalidPassword:
+ *                 summary: Invalid password format
+ *                 value:
+ *                   success: false
+ *                   message: Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)
+ *               samePassword:
+ *                 summary: New password same as current
+ *                 value:
+ *                   success: false
+ *                   message: New password must be different from current password
+ *       401:
+ *         description: Unauthorized - Invalid current password or no authentication token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               invalidCurrentPassword:
+ *                 summary: Current password is incorrect
+ *                 value:
+ *                   success: false
+ *                   message: Current password is incorrect
+ *               noToken:
+ *                 summary: No authentication token provided
+ *                 value:
+ *                   success: false
+ *                   message: Authentication token required
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: An error occurred while changing password
+ *               error: Detailed error message
+ */
+authRouter.patch("/change-password", authenticate, validate(changePasswordSchema), changePassword);
 
 export default authRouter;
