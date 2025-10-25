@@ -3,7 +3,6 @@ import mongoose from "mongoose";
 const otpSchema = new mongoose.Schema(
   {
     identifier: {
-      // email or phone in normalized form
       type: String,
       required: true,
       index: true,
@@ -21,7 +20,7 @@ const otpSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
       required: true,
-      index: { expires: 0 }, // TTL expiration based on expiresAt field value
+      index: { expires: 0 },
     },
     verified: {
       type: Boolean,

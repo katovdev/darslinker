@@ -51,6 +51,8 @@ const teacherSchema = new mongoose.Schema(
     aiSettings: {
       enableAIAssistant: { type: Boolean, default: true },
     },
+    city: { type: String },
+    country: { type: String },
   },
   { timestamps: true, versionKey: false }
 );

@@ -1,4 +1,6 @@
 import User from "../models/user.model.js";
+import Student from "../models/student.model.js";
+import Teacher from "../models/teacher.model.js";
 import bcrypt from "bcrypt";
 
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
@@ -12,6 +14,55 @@ import {
   generateRefreshToken,
 } from "../utils/token.utils.js";
 import { BCRYPT_SALT_ROUNDS } from "../../config/env.js";
+
+/**
+ * Check if user exists with the given identifier (email or phone)
+ * @route POST /auth/check-user
+ * @access Public
+ */
+async function checkUser(req, res) {
+  try {
+    const { identifier } = req.body;
+
+    if (!identifier) {
+      return res.status(400).json({
+        success: false,
+        message: "Identifier is required",
+      });
+    }
+
+    const isEmail = identifier.includes("@");
+    const normalizedIdentifier = isEmail
+      ? normalizeEmail(identifier)
+      : normalizePhone(identifier);
+
+    const existingUser = await User.findOne({
+      [isEmail ? "email" : "phone"]: normalizedIdentifier,
+    });
+
+    if (existingUser) {
+      return res.status(200).json({
+        success: true,
+        exists: true,
+        next: "login",
+        message: "User found. Please enter your password in a login endpoint",
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        exists: false,
+        next: "register",
+        message: "User not found. Please complete registration",
+      });
+    }
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "An error occurred while checking the user",
+      error: error.message,
+    });
+  }
+}
 
 /**
  * Register a new user (student or teacher)
@@ -46,15 +97,36 @@ async function register(req, res) {
       parseInt(BCRYPT_SALT_ROUNDS || "10", 10)
     );
 
-    const newUser = await User.create({
-      firstName,
-      lastName,
-      email: normalizedEmail,
-      phone: normalizedPhone,
-      password: hashedPassword,
-      role: role || "student",
-      status: "pending",
-    });
+    // Create user based on role using discriminator models
+    const userRole = role || "student";
+    let newUser;
+
+    if (userRole === "student") {
+      newUser = await Student.create({
+        firstName,
+        lastName,
+        email: normalizedEmail,
+        phone: normalizedPhone,
+        password: hashedPassword,
+        role: "student",
+        status: "pending",
+      });
+    } else if (userRole === "teacher") {
+      newUser = await Teacher.create({
+        firstName,
+        lastName,
+        email: normalizedEmail,
+        phone: normalizedPhone,
+        password: hashedPassword,
+        role: "teacher",
+        status: "pending",
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid role. Must be 'student' or 'teacher'",
+      });
+    }
 
     const identifier = normalizedEmail || normalizedPhone;
     const channel = normalizedEmail ? "email" : "sms";
@@ -137,13 +209,9 @@ async function verifyRegistrationOtp(req, res) {
       });
     }
 
-    const userResponse = result?.data?.toObject();
-    delete userResponse.password;
-
     return res.status(200).json({
       success: true,
       message: "OTP Code verified successfully",
-      data: { user: userResponse },
     });
   } catch (error) {
     return res.status(400).json({
@@ -231,13 +299,20 @@ async function resendRegistrationOtp(req, res) {
 }
 
 /**
- * User login with email address or phone number
+ * User login with email address or phone number and password
  * @route POST /auth/login
  * @access Public
  */
 async function login(req, res) {
   try {
     const { identifier, password } = req.body;
+
+    if (!identifier || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Identifier and password are required",
+      });
+    }
 
     const isEmail = identifier.includes("@");
     const normalizedIdentifier = isEmail
@@ -255,19 +330,21 @@ async function login(req, res) {
       });
     }
 
+    const isPasswordMatch = await bcrypt.compare(
+      password,
+      existingUser.password
+    );
+
+    if (!isPasswordMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
     if (existingUser.status !== "active") {
       return res.status(403).json({
         success: false,
-        message: "Account not active. Please verify your account",
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, existingUser.password);
-
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: "Wrong password",
+        message: "Account not active. Please verify your account first",
       });
     }
 
@@ -284,16 +361,98 @@ async function login(req, res) {
 
     return res.status(200).json({
       success: true,
+      message: "Logged in successfully",
       accessToken,
       refreshToken,
     });
   } catch (error) {
-    return res.status(400).json({
+    return res.status(500).json({
       success: false,
-      message: "An error occurred while log in to system",
+      message: "An error occurred while logging in",
       error: error.message,
     });
   }
 }
 
-export { register, verifyRegistrationOtp, resendRegistrationOtp, login };
+/**
+ * Change user password
+ * @route PATCH /auth/change-password
+ * @access Private (requires authentication)
+ */
+async function changePassword(req, res) {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+    const userId = req.user.userId;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Current password, new password, and confirmation are required",
+      });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password and confirmation password do not match",
+      });
+    }
+
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be different from current password",
+      });
+    }
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const isCurrentPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+
+    if (!isCurrentPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(
+      newPassword,
+      parseInt(BCRYPT_SALT_ROUNDS || "10", 10)
+    );
+
+    user.password = hashedNewPassword;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "An error occurred while changing password",
+      error: error.message,
+    });
+  }
+}
+
+export {
+  checkUser,
+  register,
+  verifyRegistrationOtp,
+  resendRegistrationOtp,
+  login,
+  changePassword,
+};
