@@ -11,10 +11,8 @@ async function findAll(req, res) {
 
     return res.status(200).json({
       success: true,
-      data: {
-        count: teachers.length,
-        teachers,
-      },
+      count: teachers.length,
+      teachers,
     });
   } catch (error) {
     return res.status(400).json({
@@ -47,7 +45,7 @@ async function findOne(req, res) {
 
     return res.status(200).json({
       success: true,
-      data: { teacher },
+      teacher,
     });
   } catch (error) {
     return res.status(400).json({
@@ -200,7 +198,7 @@ async function update(req, res) {
     return res.status(200).json({
       success: true,
       message: "Teacher profile updated successfully",
-      data: { teacher: updatedTeacher },
+      teacher: updatedTeacher,
     });
   } catch (error) {
     if (error.name === "ValidationError") {

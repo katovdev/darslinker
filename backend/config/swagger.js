@@ -20,15 +20,28 @@ const swaggerDefinition = {
   tags: [
     {
       name: "Auth",
-      description: "Authentication and authorization endpoints - Register, login, OTP verification, and password management",
+      description:
+        "Authentication and authorization endpoints - Register, login, OTP verification, and password management",
     },
     {
       name: "User Management - Students",
-      description: "Student management endpoints - CRUD operations for student profiles, enrolled courses, and progress tracking",
+      description:
+        "Student management endpoints - CRUD operations for student profiles, enrolled courses, and progress tracking",
     },
     {
       name: "User Management - Teachers",
-      description: "Teacher management endpoints - CRUD operations for teacher profiles, courses, earnings, and ratings",
+      description:
+        "Teacher management endpoints - CRUD operations for teacher profiles, courses, earnings, and ratings",
+    },
+    {
+      name: "Course Management - Courses",
+      description:
+        "Course management endpoints - CRUD operations for courses, catalog management, pricing, and course details",
+    },
+    {
+      name: "Module & Lesson Management - Modules",
+      description:
+        "Module management endpoints - CRUD operations for course modules, organizing course content into structured sections",
     },
   ],
   components: {
