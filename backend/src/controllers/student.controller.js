@@ -11,10 +11,8 @@ async function findAll(req, res) {
 
     return res.status(200).json({
       success: true,
-      data: {
-        count: students.length,
-        students,
-      },
+      count: students.length,
+      students,
     });
   } catch (error) {
     return res.status(400).json({
@@ -47,7 +45,7 @@ async function findOne(req, res) {
 
     return res.status(200).json({
       success: true,
-      data: { student },
+      student,
     });
   } catch (error) {
     return res.status(400).json({
@@ -197,7 +195,7 @@ async function update(req, res) {
     return res.status(200).json({
       success: true,
       message: "Student profile updated successfully",
-      data: { student: updatedStudent },
+      student: updatedStudent,
     });
   } catch (error) {
     if (error.name === "ValidationError") {
@@ -252,7 +250,6 @@ async function remove(req, res) {
     return res.status(200).json({
       success: true,
       message: "Student account deleted successfully",
-      data: { student },
     });
   } catch (error) {
     return res.status(400).json({

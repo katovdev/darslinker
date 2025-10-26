@@ -148,9 +148,7 @@ async function register(req, res) {
       success: true,
       message:
         "User registered successfully. OTP has been sent for verification",
-      data: {
-        user: userResponse,
-      },
+      users: userResponse,
     });
   } catch (error) {
     if (error.code === 11000) {

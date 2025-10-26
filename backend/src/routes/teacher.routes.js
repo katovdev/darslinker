@@ -4,6 +4,12 @@ import {
   authenticate,
   isOwnerOrAdmin,
 } from "../middlewares/auth.middleware.js";
+import { validate } from "../middlewares/validation.middleware.js";
+import {
+  teacherIdSchema,
+  teacherQuerySchema,
+  updateTeacherProfileSchema,
+} from "../validations/teacher.validation.js";
 
 const teacherRouter = Router();
 
@@ -133,7 +139,7 @@ const teacherRouter = Router();
  *         specialization:
  *           type: string
  *           description: Teacher's subject or field specialization
- *         bio: 
+ *         bio:
  *           type: string
  *           description: Teacher biography or introduction
  *         city:
@@ -204,7 +210,12 @@ const teacherRouter = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-teacherRouter.get("/", authenticate, findAll);
+teacherRouter.get(
+  "/",
+  validate(teacherQuerySchema, "query"),
+  authenticate,
+  findAll
+);
 
 /**
  * @swagger
@@ -254,7 +265,12 @@ teacherRouter.get("/", authenticate, findAll);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-teacherRouter.get("/:id", authenticate, findOne);
+teacherRouter.get(
+  "/:id",
+  validate(teacherIdSchema, "params"),
+  authenticate,
+  findOne
+);
 
 /**
  * @swagger
@@ -422,6 +438,13 @@ teacherRouter.get("/:id", authenticate, findOne);
  *                 error:
  *                   type: string
  */
-teacherRouter.patch("/:id", authenticate, isOwnerOrAdmin, update);
+teacherRouter.patch(
+  "/:id",
+  validate(teacherIdSchema, "params"),
+  validate(updateTeacherProfileSchema),
+  authenticate,
+  isOwnerOrAdmin,
+  update
+);
 
 export default teacherRouter;

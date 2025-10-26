@@ -1,6 +1,10 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validation.middleware.js";
-import { changePasswordSchema, loginSchema, registerSchema } from "../validations/user.validation.js";
+import {
+  changePasswordSchema,
+  loginSchema,
+  registerSchema,
+} from "../validations/user.validation.js";
 import {
   register,
   verifyRegistrationOtp,
@@ -835,6 +839,11 @@ authRouter.post("/login", validate(loginSchema), login);
  *               message: An error occurred while changing password
  *               error: Detailed error message
  */
-authRouter.patch("/change-password", authenticate, validate(changePasswordSchema), changePassword);
+authRouter.patch(
+  "/change-password",
+  authenticate,
+  validate(changePasswordSchema),
+  changePassword
+);
 
 export default authRouter;

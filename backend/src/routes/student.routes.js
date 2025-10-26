@@ -5,7 +5,13 @@ import {
   update,
   remove,
 } from "../controllers/student.controller.js";
-import { authenticate, authorize } from "../middlewares/auth.middleware.js";
+import { authenticate } from "../middlewares/auth.middleware.js";
+import { validate } from "../middlewares/validation.middleware.js";
+import {
+  studentIdSchema,
+  studentQuerySchema,
+  updateStudentProfileSchema,
+} from "../validations/student.validation.js";
 
 const studentRouter = Router();
 
@@ -179,7 +185,7 @@ const studentRouter = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-studentRouter.get("/",  findAll);
+studentRouter.get("/", validate(studentQuerySchema, "query"), findAll);
 
 /**
  * @swagger
@@ -229,7 +235,12 @@ studentRouter.get("/",  findAll);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-studentRouter.get("/:id", authenticate, findOne);
+studentRouter.get(
+  "/:id",
+  validate(studentIdSchema, "params"),
+  authenticate,
+  findOne
+);
 
 /**
  * @swagger
@@ -303,7 +314,13 @@ studentRouter.get("/:id", authenticate, findOne);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-studentRouter.patch("/:id", authenticate, update);
+studentRouter.patch(
+  "/:id",
+  validate(studentIdSchema, "params"),
+  validate(updateStudentProfileSchema),
+  authenticate,
+  update
+);
 
 /**
  * @swagger
@@ -362,6 +379,11 @@ studentRouter.patch("/:id", authenticate, update);
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-studentRouter.delete("/:id", authenticate, remove);
+studentRouter.delete(
+  "/:id",
+  validate(studentIdSchema, "params"),
+  authenticate,
+  remove
+);
 
 export default studentRouter;
