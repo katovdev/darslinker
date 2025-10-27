@@ -11,7 +11,6 @@ import {
 import { validate } from "../middlewares/validation.middleware.js";
 import {
   courseIdSchema,
-  courseQuerySchema,
   createCourseSchema,
   updateCourseSchema,
 } from "../validations/course.validation.js";
@@ -449,8 +448,8 @@ courseRouter.post("/", validate(createCourseSchema), create);
  *         name: courseType
  *         schema:
  *           type: string
- *           enum: [paid, free]
- *         description: Filter by course type (paid or free)
+ *           enum: [paid, free, active, draft, archived]
+ *         description: Filter by course type (paid, free, active, draft, archived)
  *         example: free
  *       - in: query
  *         name: language
@@ -567,7 +566,7 @@ courseRouter.post("/", validate(createCourseSchema), create);
  *               message: An error occurred while finding all courses
  *               error: Detailed error message
  */
-courseRouter.get("/", validate(courseQuerySchema, "query"), findAll);
+courseRouter.get("/", findAll);
 
 /**
  * @swagger

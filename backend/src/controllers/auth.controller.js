@@ -1,6 +1,14 @@
 import User from "../models/user.model.js";
 import Student from "../models/student.model.js";
 import Teacher from "../models/teacher.model.js";
+import Session from "../models/session.model.js";
+
+import {
+  parseDeviceInfo,
+  getSessionExpiryDate,
+  createDeviceFingerprint,
+} from "../utils/device.utils.js";
+
 import bcrypt from "bcrypt";
 
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
@@ -346,6 +354,18 @@ async function login(req, res) {
       });
     }
 
+    const deviceInfo = parseDeviceInfo(req.headers["user-agent"]);
+    const deviceFingerprint = createDeviceFingerprint(deviceInfo);
+
+    const activeSessions = await Session.find({
+      userId: existingUser._id,
+    }).sort({ createdAt: 1 });
+
+    if (activeSessions.length >= 2) {
+      const oldestSession = activeSessions[0];
+      await Session.deleteOne({ _id: oldestSession._id });
+    }
+
     const tokenPayload = {
       userId: existingUser._id.toString(),
       email: existingUser.email,
@@ -357,6 +377,25 @@ async function login(req, res) {
     const accessToken = generateAccessToken(tokenPayload);
     const refreshToken = generateRefreshToken(tokenPayload);
 
+    const sessionData = {
+      userId: existingUser._id,
+      ipAddress: req.ip,
+      deviceInfo: deviceInfo,
+      deviceFingerprint: deviceFingerprint,
+      userAgent: req.headers["user-agent"],
+      token: refreshToken,
+      expiresAt: getSessionExpiryDate(),
+    };
+
+    await Session.findOneAndUpdate(
+      {
+        userId: existingUser._id,
+        deviceFingerprint: deviceFingerprint,
+      },
+      sessionData,
+      { upsert: true, new: true }
+    );
+
     return res.status(200).json({
       success: true,
       message: "Logged in successfully",
@@ -364,7 +403,7 @@ async function login(req, res) {
       refreshToken,
     });
   } catch (error) {
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
       message: "An error occurred while logging in",
       error: error.message,
@@ -446,6 +485,37 @@ async function changePassword(req, res) {
   }
 }
 
+async function logout(req, res) {
+  try {
+    const userId = req.user.userId;
+
+    const deviceInfo = parseDeviceInfo(req.headers["user-agent"]);
+    const deviceFingerprint = createDeviceFingerprint(deviceInfo);
+
+    const deletedSession = await Session.findOneAndDelete({
+      userId: userId,
+      deviceFingerprint: deviceFingerprint,
+    });
+
+    if (!deletedSession) {
+      return res.status(404).json({
+        success: false,
+        message: "Session not found. You may already be logged out",
+      });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: "An error occurred while logging out from system",
+      error: error.message,
+    });
+  }
+}
+
 export {
   checkUser,
   register,
@@ -453,4 +523,5 @@ export {
   resendRegistrationOtp,
   login,
   changePassword,
+  logout,
 };
