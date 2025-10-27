@@ -9,8 +9,28 @@ class BlogApp {
   init() {
     console.log('Initializing Blog Frontend...');
 
-    // Initialize blog page
-    initBlogPage();
+    // Check if URL contains article parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const articleId = urlParams.get('article');
+
+    if (articleId) {
+      // If article ID is in URL, show that specific article
+      console.log('Loading article:', articleId);
+
+      // First initialize the blog page structure
+      initBlogPage();
+
+      // Then open the specific article
+      // Wait a bit for the page to initialize
+      setTimeout(() => {
+        if (window.openArticle) {
+          window.openArticle(articleId);
+        }
+      }, 100);
+    } else {
+      // Initialize blog page normally (show all articles)
+      initBlogPage();
+    }
   }
 }
 
