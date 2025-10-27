@@ -63,7 +63,7 @@ async function loadArticles() {
   }
 
   try {
-    const response = await fetch('http://localhost:5001/api/blogs');
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/blogs`);
     const data = await response.json();
 
     if (data.message === 'success' && data.data.length > 0) {
@@ -180,7 +180,7 @@ window.openArticle = async function(articleId) {
 
 async function showArticlePage(articleId) {
   try {
-    const response = await fetch(`http://localhost:5001/api/blogs/${articleId}`);
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/blogs/${articleId}`);
     const data = await response.json();
 
     if (data.message === 'success') {
@@ -269,7 +269,7 @@ async function showArticlePage(articleId) {
       window.scrollTo(0, 0);
 
       // Track view
-      fetch(`http://localhost:5001/api/blogs/${articleId}/view`, {
+      fetch(`${import.meta.env.VITE_API_URL}/blogs/${articleId}/view`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       }).catch(err => console.log('View tracking failed:', err));
@@ -621,7 +621,7 @@ function addArticlePageStyles() {
 // Function to load related articles automatically
 async function loadRelatedArticles(currentArticle) {
   try {
-    const response = await fetch('http://localhost:5001/api/blogs');
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/blogs`);
     const data = await response.json();
 
     if (data.message === 'success') {
