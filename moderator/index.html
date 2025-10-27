@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Darslinker Moderator Panel</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">dars<span class="logo-highlight">linker</span></div>
+            </div>
+           
+            <div class="header-right">
+                <button class="super-admin-btn">Super Admin</button>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-section="blog">
+                    Blog
+                </button>
+                <button class="nav-item" data-section="analytics">
+                    Analytics
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Blog Section -->
+            <section id="blog-section" class="content-section active">
+                <div class="section-header">
+                    <h2>Blog Management</h2>
+                    <button class="btn-primary" id="new-post-btn">
+                        + New Post
+                    </button>
+                </div>
+
+                <div class="posts-container">
+                    <div class="posts-grid" id="posts-grid">
+                        <!-- Posts will be loaded here -->
+                        <div class="loading">Loading posts...</div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- Analytics Section -->
+            <section id="analytics-section" class="content-section">
+                <h2>Analytics</h2>
+                <div class="analytics-grid">
+                    <div class="stat-card">
+                        <h3>Total Posts</h3>
+                        <p class="stat-number" id="total-posts">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Views</h3>
+                        <p class="stat-number" id="total-views">0</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Modals -->
+        <div id="post-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-title">New Post</h3>
+                    <button class="modal-close">&times;</button>
+                </div>
+                <form id="post-form" class="post-form">
+                    <!-- Basic Information -->
+                    <div class="form-section">
+                        <h4 class="section-title">Basic Information</h4>
+
+                        <div class="form-group">
+                            <label for="post-title">Article Title *</label>
+                            <input type="text" id="post-title" name="title" required placeholder="Enter article title">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="post-description">Brief Description *</label>
+                            <textarea id="post-description" name="description" rows="3" required placeholder="Brief description of the article (maximum 15 words)" maxlength="150"></textarea>
+                            <small class="form-help">This will be shown as preview text to users (max 15 words)</small>
+                            <small class="form-help" id="word-count">0/15 words</small>
+                        </div>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="form-section">
+                        <h4 class="section-title">Tags</h4>
+                        <div class="form-group">
+                            <label for="post-tags">Tags</label>
+                            <input type="text" id="post-tags" name="tags" placeholder="e.g. education, mathematics, tutorial">
+                            <small class="form-help">Separate tags with commas</small>
+                        </div>
+                    </div>
+
+                    <!-- SEO Settings -->
+                    <div class="form-section">
+                        <h4 class="section-title">SEO Settings</h4>
+                        <div class="form-group">
+                            <label for="meta-title">SEO Meta Title</label>
+                            <input type="text" id="meta-title" name="metaTitle" placeholder="SEO optimized title">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="meta-description">SEO Meta Description</label>
+                            <textarea id="meta-description" name="metaDescription" rows="2" placeholder="Brief description for search engines"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Content Sections -->
+                    <div class="form-section">
+                        <h4 class="section-title">Article Content</h4>
+                        <div id="content-sections">
+                            <!-- Sections will be added here dynamically -->
+                        </div>
+                        <button type="button" class="btn-secondary" id="add-section-btn">+ Add Section</button>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Save Article</button>
+                        <button type="button" class="btn-secondary modal-close">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+import { InjectModel } from '@nestjs/mongoose';
+import { Blog, BlogDocument } from './models';
+import { isValidObjectId, Model } from 'mongoose';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateBlogDto, UpdateBlogDto } from './dtos';
+import { Category, CategoryDocument } from '../category/models/category.model';
+import { Request } from 'express';
+
+@Injectable()
+export class BlogService {
+  constructor(
+    @InjectModel(Blog.name) private readonly blogModel: Model<BlogDocument>,
+    @InjectModel(Category.name)
+    private readonly categoryModel: Model<CategoryDocument>,
+  ) {}
+
+  async getAll(search?: string) {
+    const filter: any = { isArchive: false };
+
+    if (search) {
+      filter.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { subtitle: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    const data = await this.blogModel.find(filter).populate('categoryId', 'name slug').sort({ createdAt: -1 });
+
+    return {
+      message: 'success',
+      data,
+    };
+  }
+
+  async getArchive() {
+    const data = await this.blogModel.find({ isArchive: true }).populate('categoryId', 'name slug').sort({ createdAt: -1 });
+    return {
+      message: 'success',
+      data,
+    };
+  }
+
+  async getById(id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException("Noto'g'ri ID format");
+    }
+
+    const foundBlog = await this.blogModel.findById(id).populate('categoryId', 'name slug description');
+
+    if (!foundBlog) {
+      throw new NotFoundException('Blog topilmadi');
+    }
+
+    return {
+      message: 'success',
+      blog: foundBlog,
+    };
+  }
+
+  async create(payload: CreateBlogDto) {
+    let categoryId = null;
+
+    // Only validate and check category if categoryId is provided
+    if (payload.categoryId) {
+      if (!isValidObjectId(payload.categoryId)) {
+        throw new BadRequestException('Error Format ID');
+      }
+
+      const foundCategory = await this.categoryModel.findById(payload.categoryId);
+
+      if (!foundCategory) {
+        throw new BadRequestException('Bunday kategory topilmadi');
+      }
+
+      categoryId = foundCategory._id;
+    }
+
+    try {
+      const newBlog = await this.blogModel.create({
+        title: payload.header.title,
+        subtitle: payload.header.subtitle,
+        sections: payload.sections,
+        tags: payload.tags || [],
+        seo: payload.seo || {},
+        categoryId: categoryId,
+      });
+
+      return {
+        message: 'success',
+        blog: newBlog,
+      };
+    } catch (error) {
+      console.error(error);
+      throw new BadRequestException(error.message || 'Blog yaratishda xatolik');
+    }
+  }
+
+  async updateBlog(id: string, payload: UpdateBlogDto) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException("Noto'g'ri ID format");
+    }
+
+    let categoryId = undefined;
+
+    // Only validate and check category if categoryId is provided
+    if (payload.categoryId) {
+      if (!isValidObjectId(payload.categoryId)) {
+        throw new BadRequestException("Noto'g'ri categoryId format");
+      }
+
+      const foundCategory = await this.categoryModel.findById(payload.categoryId);
+
+      if (!foundCategory) {
+        throw new BadRequestException('Bunday kategory topilmadi');
+      }
+
+      categoryId = foundCategory._id;
+    }
+
+    const updateData: any = {};
+
+    if (payload.header) {
+      updateData.title = payload.header.title;
+      updateData.subtitle = payload.header.subtitle;
+    }
+
+    if (payload.sections) {
+      updateData.sections = payload.sections;
+    }
+
+    if (payload.tags) {
+      updateData.tags = payload.tags;
+    }
+
+    if (payload.seo) {
+      updateData.seo = payload.seo;
+    }
+
+    // Only update categoryId if it was provided
+    if (categoryId !== undefined) {
+      updateData.categoryId = categoryId;
+    }
+
+    const update = await this.blogModel.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true },
+    );
+
+    if (!update) {
+      throw new NotFoundException('Blog Topilmadi');
+    }
+
+    return {
+      message: 'success',
+      blog: update,
+    };
+  }
+
+  async makeArchive(id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException("Noto'g'ri ID format");
+    }
+
+    const data = await this.blogModel.findById(id);
+
+    if (data?.isArchive === true) {
+      throw new BadRequestException('Bu blog allaqachon arxivda');
+    }
+
+    const foundBlog = await this.blogModel.findByIdAndUpdate(
+      id,
+      { isArchive: true },
+      { new: true },
+    );
+    if (!foundBlog) {
+      throw new NotFoundException('Blog Tobilmadi');
+    }
+
+    return {
+      message: 'success',
+    };
+  }
+
+  async exitArchive(id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException("Noto'g'ri ID format");
+    }
+
+    const data = await this.blogModel.findById(id);
+
+    if (data?.isArchive === false) {
+      throw new BadRequestException('Bu blog allaqachon archivedan chiqgan');
+    }
+
+    const foundBlog = await this.blogModel.findByIdAndUpdate(
+      id,
+      { isArchive: false },
+      { new: true },
+    );
+    if (!foundBlog) {
+      throw new NotFoundException('Blog Tobilmadi');
+    }
+
+    return {
+      message: 'success',
+    };
+  }
+
+  async viewBlog(id: string, payload: { userId: string }) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('Error ID Format');
+    }
+
+    const reqIp = payload.userId ?? "";
+
+    const blog = await this.blogModel.findById(id);
+
+    if (!blog) {
+      throw new NotFoundException('Blog Not Found');
+    }
+
+    blog.multiViews += 1;
+
+    if (!blog.uniqueViews.includes(reqIp)) {
+      blog.uniqueViews.push(reqIp);
+    }
+
+    await blog.save();
+
+    return {
+      message: 'success',
+    };
+  }
+
+  async getSameTag(id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException('Error Format ID');
+    }
+
+    const foundBlog = await this.blogModel.findById(id);
+
+    if (!foundBlog) {
+      throw new NotFoundException('Blog Not Found');
+    }
+
+    const tagValues = foundBlog.tags.map((t) => t.value);
+
+    if (!tagValues.length) {
+      return {
+        message: 'success',
+        data: [],
+      };
+    }
+
+    const sameTagBlogs = await this.blogModel.find({
+      _id: { $ne: foundBlog._id },
+      'tags.value': { $in: tagValues },
+    }).populate('categoryId', 'name slug');
+
+    return {
+      message: 'success',
+      count: sameTagBlogs.length,
+      data: sameTagBlogs,
+    };
+  }
+
+  async delete(id: string) {
+    if (!isValidObjectId(id)) {
+      throw new BadRequestException("Noto'g'ri ID format");
+    }
+
+    const deleted = await this.blogModel.findByIdAndDelete(id);
+
+    if (!deleted) {
+      throw new NotFoundException('Blog topilmadi');
+    }
+
+    return {
+      message: 'success',
+    };
+  }
+}
