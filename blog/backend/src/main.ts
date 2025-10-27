@@ -8,9 +8,11 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors({
     origin: [
-      'http://localhost:3002',  // Blog frontend
-      'http://localhost:3001',  // Moderator interface (old)
-      'http://localhost:3003',  // Moderator interface (new)
+      'http://localhost:3002',  // Blog frontend (dev)
+      'http://localhost:3001',  // Moderator interface (old dev)
+      'http://localhost:3003',  // Moderator interface (new dev)
+      'https://verdant-bubblegum-cd3991.netlify.app',  // Blog frontend (prod)
+      'https://heartfelt-centaur-5fc321.netlify.app',  // Moderator interface (prod)
     ],
     credentials: true,
   });
