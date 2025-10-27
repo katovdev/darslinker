@@ -27,7 +27,7 @@
                     Blog
                 </button>
                 <button class="nav-item" data-section="analytics">
-                    Analytics
+                    Analitika
                 </button>
             </nav>
         </aside>
@@ -37,16 +37,16 @@
             <!-- Blog Section -->
             <section id="blog-section" class="content-section active">
                 <div class="section-header">
-                    <h2>Blog Management</h2>
+                    <h2>Blog boshqaruvi</h2>
                     <button class="btn-primary" id="new-post-btn">
-                        + New Post
+                        + Yangi post
                     </button>
                 </div>
 
                 <div class="posts-container">
                     <div class="posts-grid" id="posts-grid">
                         <!-- Posts will be loaded here -->
-                        <div class="loading">Loading posts...</div>
+                        <div class="loading">Postlar yuklanmoqda...</div>
                     </div>
                 </div>
             </section>
@@ -54,14 +54,14 @@
 
             <!-- Analytics Section -->
             <section id="analytics-section" class="content-section">
-                <h2>Analytics</h2>
+                <h2>Analitika</h2>
                 <div class="analytics-grid">
                     <div class="stat-card">
-                        <h3>Total Posts</h3>
+                        <h3>Jami postlar</h3>
                         <p class="stat-number" id="total-posts">0</p>
                     </div>
                     <div class="stat-card">
-                        <h3>Total Views</h3>
+                        <h3>Jami ko'rishlar</h3>
                         <p class="stat-number" id="total-views">0</p>
                     </div>
                 </div>
@@ -73,63 +73,63 @@
         <div id="post-modal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h3 id="modal-title">New Post</h3>
+                    <h3 id="modal-title">Yangi post</h3>
                     <button class="modal-close">&times;</button>
                 </div>
                 <form id="post-form" class="post-form">
                     <!-- Basic Information -->
                     <div class="form-section">
-                        <h4 class="section-title">Basic Information</h4>
+                        <h4 class="section-title">Asosiy ma'lumotlar</h4>
 
                         <div class="form-group">
-                            <label for="post-title">Article Title *</label>
-                            <input type="text" id="post-title" name="title" required placeholder="Enter article title">
+                            <label for="post-title">Maqola sarlavhasi *</label>
+                            <input type="text" id="post-title" name="title" required placeholder="Maqola sarlavhasini kiriting">
                         </div>
 
                         <div class="form-group">
-                            <label for="post-description">Brief Description *</label>
-                            <textarea id="post-description" name="description" rows="3" required placeholder="Brief description of the article (maximum 15 words)" maxlength="150"></textarea>
-                            <small class="form-help">This will be shown as preview text to users (max 15 words)</small>
-                            <small class="form-help" id="word-count">0/15 words</small>
+                            <label for="post-description">Qisqa tavsif *</label>
+                            <textarea id="post-description" name="description" rows="3" required placeholder="Maqolaning qisqa tavsifi (maksimum 15 so'z)" maxlength="150"></textarea>
+                            <small class="form-help">Bu foydalanuvchilarga oldindan ko'rinadigan matn bo'ladi (maksimum 15 so'z)</small>
+                            <small class="form-help" id="word-count">0/15 so'z</small>
                         </div>
                     </div>
 
                     <!-- Tags -->
                     <div class="form-section">
-                        <h4 class="section-title">Tags</h4>
+                        <h4 class="section-title">Teglar</h4>
                         <div class="form-group">
-                            <label for="post-tags">Tags</label>
-                            <input type="text" id="post-tags" name="tags" placeholder="e.g. education, mathematics, tutorial">
-                            <small class="form-help">Separate tags with commas</small>
+                            <label for="post-tags">Teglar</label>
+                            <input type="text" id="post-tags" name="tags" placeholder="masalan: ta'lim, matematika, darslik">
+                            <small class="form-help">Teglarni vergul bilan ajrating</small>
                         </div>
                     </div>
 
                     <!-- SEO Settings -->
                     <div class="form-section">
-                        <h4 class="section-title">SEO Settings</h4>
+                        <h4 class="section-title">SEO sozlamalari</h4>
                         <div class="form-group">
-                            <label for="meta-title">SEO Meta Title</label>
-                            <input type="text" id="meta-title" name="metaTitle" placeholder="SEO optimized title">
+                            <label for="meta-title">SEO meta sarlavha</label>
+                            <input type="text" id="meta-title" name="metaTitle" placeholder="SEO optimallashtirilgan sarlavha">
                         </div>
 
                         <div class="form-group">
-                            <label for="meta-description">SEO Meta Description</label>
-                            <textarea id="meta-description" name="metaDescription" rows="2" placeholder="Brief description for search engines"></textarea>
+                            <label for="meta-description">SEO meta tavsif</label>
+                            <textarea id="meta-description" name="metaDescription" rows="2" placeholder="Qidiruv tizimlari uchun qisqa tavsif"></textarea>
                         </div>
                     </div>
 
                     <!-- Content Sections -->
                     <div class="form-section">
-                        <h4 class="section-title">Article Content</h4>
+                        <h4 class="section-title">Maqola mazmuni</h4>
                         <div id="content-sections">
                             <!-- Sections will be added here dynamically -->
                         </div>
-                        <button type="button" class="btn-secondary" id="add-section-btn">+ Add Section</button>
+                        <button type="button" class="btn-secondary" id="add-section-btn">+ Bo'lim qo'shish</button>
                     </div>
 
                     <div class="form-actions">
-                        <button type="submit" class="btn-primary">Save Article</button>
-                        <button type="button" class="btn-secondary modal-close">Cancel</button>
+                        <button type="submit" class="btn-primary">Maqolani saqlash</button>
+                        <button type="button" class="btn-secondary modal-close">Bekor qilish</button>
                     </div>
                 </form>
             </div>

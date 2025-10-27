@@ -1,0 +1,9 @@
+# Redirect root to /blog
+/ /blog 301
+
+# Handle blog routes
+/blog/* /index.html 200
+/blog /index.html 200
+
+# Handle article direct links
+/?article=* /index.html 200

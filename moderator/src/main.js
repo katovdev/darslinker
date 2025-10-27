@@ -113,13 +113,13 @@ class ModeratorApp {
       const words = text ? text.split(/\s+/).filter(word => word.length > 0) : [];
       const wordCount = words.length;
 
-      wordCountDisplay.textContent = `${wordCount}/15 words`;
+      wordCountDisplay.textContent = `${wordCount}/15 so\'z`;
 
       if (wordCount > 15) {
         // Trim to 15 words
         const trimmedText = words.slice(0, 15).join(' ');
         descriptionField.value = trimmedText;
-        wordCountDisplay.textContent = '15/15 words';
+        wordCountDisplay.textContent = '15/15 so\'z';
         wordCountDisplay.style.color = '#e74c3c';
       } else if (wordCount >= 12) {
         wordCountDisplay.style.color = '#f39c12';
@@ -144,28 +144,28 @@ class ModeratorApp {
     sectionDiv.className = 'content-section-item';
     sectionDiv.innerHTML = `
       <div class="section-header">
-        <h5 class="section-number">Section ${sectionCount}</h5>
-        <button type="button" class="btn-remove" onclick="this.parentElement.parentElement.remove()">Remove</button>
+        <h5 class="section-number">Bo'lim ${sectionCount}</h5>
+        <button type="button" class="btn-remove" onclick="this.parentElement.parentElement.remove()">O'chirish</button>
       </div>
 
       <div class="form-group">
-        <label>Section Header *</label>
-        <input type="text" name="section-header-${sectionCount}" placeholder="Enter section header" class="section-header-input" required>
+        <label>Bo'lim sarlavhasi *</label>
+        <input type="text" name="section-header-${sectionCount}" placeholder="Bo'lim sarlavhasini kiriting" class="section-header-input" required>
       </div>
 
       <div class="form-group">
-        <label>Header 2 (Optional)</label>
-        <input type="text" name="section-h2-${sectionCount}" placeholder="Enter H2 heading (optional)" class="section-h2-input">
+        <label>Sarlavha 2 (ixtiyoriy)</label>
+        <input type="text" name="section-h2-${sectionCount}" placeholder="H2 sarlavhasini kiriting (ixtiyoriy)" class="section-h2-input">
       </div>
 
       <div class="form-group">
-        <label>Header 3 (Optional)</label>
-        <input type="text" name="section-h3-${sectionCount}" placeholder="Enter H3 heading (optional)" class="section-h3-input">
+        <label>Sarlavha 3 (ixtiyoriy)</label>
+        <input type="text" name="section-h3-${sectionCount}" placeholder="H3 sarlavhasini kiriting (ixtiyoriy)" class="section-h3-input">
       </div>
 
       <div class="form-group">
-        <label>Paragraph *</label>
-        <textarea name="section-content-${sectionCount}" rows="6" placeholder="Enter paragraph content" class="section-content-input" required></textarea>
+        <label>Paragraf *</label>
+        <textarea name="section-content-${sectionCount}" rows="6" placeholder="Paragraf mazmunini kiriting" class="section-content-input" required></textarea>
       </div>
     `;
 
@@ -175,21 +175,21 @@ class ModeratorApp {
   // Blog Management
   async loadBlogs() {
     const postsGrid = document.getElementById('posts-grid');
-    postsGrid.innerHTML = '<div class="loading">Loading posts...</div>';
+    postsGrid.innerHTML = '<div class="loading">Postlar yuklanmoqda...</div>';
 
     try {
       const response = await api.get('/blogs');
       const posts = response.data.data;
 
       if (posts.length === 0) {
-        postsGrid.innerHTML = '<div class="loading">No posts found. Create your first post!</div>';
+        postsGrid.innerHTML = '<div class="loading">Hech qanday post topilmadi. Birinchi postingizni yarating!</div>';
         return;
       }
 
       postsGrid.innerHTML = posts.map(post => this.createPostCard(post)).join('');
     } catch (error) {
       console.error('Error loading posts:', error);
-      postsGrid.innerHTML = '<div class="loading">Error loading posts. Please check your backend connection.</div>';
+      postsGrid.innerHTML = '<div class="loading">Postlar yuklanishida xatolik. Backend ulanishini tekshiring.</div>';
     }
   }
 
@@ -210,8 +210,8 @@ class ModeratorApp {
         </div>
         <div class="post-actions">
           <button class="btn-icon preview-btn" onclick="moderatorApp.previewPost('${post.id}')">Batafsil o'qish</button>
-          <button class="btn-icon" onclick="moderatorApp.editPost('${post.id}')">Edit</button>
-          <button class="btn-icon" onclick="moderatorApp.deletePost('${post.id}')">Delete</button>
+          <button class="btn-icon" onclick="moderatorApp.editPost('${post.id}')">Tahrirlash</button>
+          <button class="btn-icon" onclick="moderatorApp.deletePost('${post.id}')">O'chirish</button>
         </div>
       </div>
     `;
@@ -224,11 +224,11 @@ class ModeratorApp {
     const sectionsContainer = document.getElementById('content-sections');
 
     if (post) {
-      title.textContent = 'Edit Article';
+      title.textContent = 'Maqolani tahrirlash';
       this.fillPostForm(post);
       currentEditingPost = post;
     } else {
-      title.textContent = 'New Article';
+      title.textContent = 'Yangi maqola';
       form.reset();
       sectionsContainer.innerHTML = '';
       currentEditingPost = null;
@@ -333,17 +333,17 @@ class ModeratorApp {
     try {
       if (currentEditingPost) {
         await api.put(`/blogs/${currentEditingPost.id}`, data);
-        this.showSuccessMessage('Article updated successfully!');
+        this.showSuccessMessage('Maqola muvaffaqiyatli yangilandi!');
       } else {
         await api.post('/blogs', data);
-        this.showSuccessMessage('Article created successfully!');
+        this.showSuccessMessage('Maqola muvaffaqiyatli yaratildi!');
       }
 
       document.getElementById('post-modal').classList.remove('active');
       this.loadBlogs();
     } catch (error) {
       console.error('Error saving post:', error);
-      this.showErrorMessage('Error saving article: ' + (error.response?.data?.message || error.message));
+      this.showErrorMessage('Maqolani saqlashda xatolik: ' + (error.response?.data?.message || error.message));
     }
   }
 
@@ -354,20 +354,20 @@ class ModeratorApp {
       this.openPostModal(response.data.blog);
     } catch (error) {
       console.error('Error loading post:', error);
-      this.showErrorMessage('Error loading post');
+      this.showErrorMessage('Postni yuklashda xatolik');
     }
   }
 
   async deletePost(postId) {
-    const confirmed = await this.showConfirmModal('Are you sure you want to delete this post?', 'This action cannot be undone.');
+    const confirmed = await this.showConfirmModal('Ushbu postni o\'chirishni xohlaysizmi?', 'Bu amalni bekor qilib bo\'lmaydi.');
     if (confirmed) {
       try {
         await api.delete(`/blogs/${postId}`);
-        this.showSuccessMessage('Post deleted successfully!');
+        this.showSuccessMessage('Post muvaffaqiyatli o\'chirildi!');
         this.loadBlogs();
       } catch (error) {
         console.error('Error deleting post:', error);
-        this.showErrorMessage('Error deleting post');
+        this.showErrorMessage('Postni o\'chirishda xatolik');
       }
     }
   }
@@ -424,7 +424,7 @@ class ModeratorApp {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
               </svg>
-              Back to Dashboard
+              Boshqaruv paneliga qaytish
             </button>
           </div>
 
@@ -463,7 +463,7 @@ class ModeratorApp {
 
     } catch (error) {
       console.error('Error loading post preview:', error);
-      this.showErrorMessage('Error loading post preview');
+      this.showErrorMessage('Post oldin ko\'rishini yuklashda xatolik');
     }
   }
 
@@ -651,30 +651,30 @@ class ModeratorApp {
       <!-- Blog Section -->
       <section id="blog-section" class="content-section active">
         <div class="section-header">
-          <h2>Blog Management</h2>
+          <h2>Blog boshqaruvi</h2>
           <button class="btn-primary" id="new-post-btn">
-            + New Post
+            + Yangi post
           </button>
         </div>
 
         <div class="posts-container">
           <div class="posts-grid" id="posts-grid">
             <!-- Posts will be loaded here -->
-            <div class="loading">Loading posts...</div>
+            <div class="loading">Postlar yuklanmoqda...</div>
           </div>
         </div>
       </section>
 
       <!-- Analytics Section -->
       <section id="analytics-section" class="content-section">
-        <h2>Analytics</h2>
+        <h2>Analitika</h2>
         <div class="analytics-grid">
           <div class="stat-card">
-            <h3>Total Posts</h3>
+            <h3>Jami postlar</h3>
             <p class="stat-number" id="total-posts">0</p>
           </div>
           <div class="stat-card">
-            <h3>Total Views</h3>
+            <h3>Jami ko'rishlar</h3>
             <p class="stat-number" id="total-views">0</p>
           </div>
         </div>
@@ -707,8 +707,8 @@ class ModeratorApp {
             <p>${message}</p>
           </div>
           <div class="modal-footer">
-            <button class="btn-cancel" onclick="this.closest('.custom-modal-overlay').remove(); window.confirmResolve(false)">Cancel</button>
-            <button class="btn-confirm" onclick="this.closest('.custom-modal-overlay').remove(); window.confirmResolve(true)">Delete</button>
+            <button class="btn-cancel" onclick="this.closest('.custom-modal-overlay').remove(); window.confirmResolve(false)">Bekor qilish</button>
+            <button class="btn-confirm" onclick="this.closest('.custom-modal-overlay').remove(); window.confirmResolve(true)">O'chirish</button>
           </div>
         </div>
       `;
