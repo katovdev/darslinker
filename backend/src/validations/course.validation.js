@@ -62,9 +62,13 @@ export const createCourseSchema = Joi.object({
     "string.uri": "Video URL must be a valid URL",
   }),
 
-  courseType: Joi.string().valid("paid", "free").default("free").messages({
-    "any.only": "Course type must be either 'paid' or 'free'",
-  }),
+  courseType: Joi.string()
+    .valid("paid", "free", "active", "draft", "archived")
+    .default("free")
+    .messages({
+      "any.only":
+        "Course type must be either 'paid', 'free', 'active', 'draft', 'archived'",
+    }),
 
   coursePrice: Joi.number().min(0).required().messages({
     "number.base": "Course price must be a number",

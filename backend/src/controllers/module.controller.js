@@ -155,7 +155,6 @@ async function findOne(req, res) {
 
     return res.status(200).json({
       success: true,
-      message: "Module retrieved successfully",
       module,
     });
   } catch (error) {

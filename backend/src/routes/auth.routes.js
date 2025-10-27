@@ -12,6 +12,7 @@ import {
   login,
   changePassword,
   checkUser,
+  logout,
 } from "../controllers/auth.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 
@@ -845,5 +846,37 @@ authRouter.patch(
   validate(changePasswordSchema),
   changePassword
 );
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Logout from current device
+ *     description: Logout user from the current device by deleting the session
+ *     tags: [Auth]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Logged out successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Logged out successfully
+ *       401:
+ *         description: Unauthorized - No token or invalid token
+ *       404:
+ *         description: Session not found
+ *       500:
+ *         description: Internal server error
+ */
+authRouter.post("/logout", authenticate, logout);
 
 export default authRouter;

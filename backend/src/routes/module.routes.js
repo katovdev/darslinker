@@ -12,7 +12,6 @@ import {
   createModuleSchema,
   updateModuleSchema,
   moduleIdSchema,
-  moduleQuerySchema,
   getModulesByCourseSchema,
 } from "../validations/module.validation.js";
 
@@ -298,7 +297,7 @@ moduleRouter.post("/", validate(createModuleSchema), create);
  *                   message: "An error occurred while finding all modules"
  *                   error: "Database error details"
  */
-moduleRouter.get("/", validate(moduleQuerySchema, "query"), findAll);
+moduleRouter.get("/", findAll);
 
 /**
  * @swagger
