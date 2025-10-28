@@ -224,6 +224,10 @@ class AuthSystem {
 class ModeratorApp {
   constructor() {
     this.currentSection = 'blog';
+    this.currentTags = []; // Store current tags
+    this.maxTags = 15; // Maximum allowed tags
+    this.currentSeoKeywords = []; // Store current SEO keywords
+    this.maxSeoKeywords = 10; // Maximum allowed SEO keywords
     this.init();
   }
 
@@ -290,6 +294,12 @@ class ModeratorApp {
     // Setup word count validation
     this.setupWordCountValidation();
 
+    // Setup tag input events
+    this.setupTagInputEvents();
+
+    // Setup SEO keyword input events
+    this.setupSeoKeywordInputEvents();
+
     // Close modals
     document.querySelectorAll('.modal-close').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -335,6 +345,221 @@ class ModeratorApp {
     });
   }
 
+  // Tag Management System
+  addTag() {
+    const tagInput = document.getElementById('tag-input');
+    const tagValue = tagInput.value.trim();
+
+    // Validation
+    if (!tagValue) {
+      this.showErrorMessage('Tag bo\'sh bo\'lishi mumkin emas!');
+      return;
+    }
+
+    if (tagValue.length < 2) {
+      this.showErrorMessage('Tag kamida 2 ta harf bo\'lishi kerak!');
+      return;
+    }
+
+    if (this.currentTags.length >= this.maxTags) {
+      this.showErrorMessage(`Maksimal ${this.maxTags} ta tag qo'shishingiz mumkin!`);
+      return;
+    }
+
+    // Check for duplicates
+    const normalizedTag = tagValue.toLowerCase();
+    if (this.currentTags.some(tag => tag.value === normalizedTag)) {
+      this.showErrorMessage('Bu tag allaqachon mavjud!');
+      return;
+    }
+
+    // Add tag
+    const newTag = {
+      label: tagValue,
+      value: normalizedTag
+    };
+
+    this.currentTags.push(newTag);
+    this.updateTagsDisplay();
+    this.updateHiddenTagInput();
+
+    // Clear input
+    tagInput.value = '';
+    tagInput.focus();
+  }
+
+  removeTag(index) {
+    if (index >= 0 && index < this.currentTags.length) {
+      this.currentTags.splice(index, 1);
+      this.updateTagsDisplay();
+      this.updateHiddenTagInput();
+    }
+  }
+
+  updateTagsDisplay() {
+    const tagsDisplay = document.getElementById('tags-display');
+
+    if (this.currentTags.length === 0) {
+      tagsDisplay.innerHTML = '<div class="no-tags">Hech qanday tag qo\'shilmagan</div>';
+      return;
+    }
+
+    tagsDisplay.innerHTML = this.currentTags.map((tag, index) => `
+      <div class="tag-chip">
+        <span class="tag-text">${tag.label}</span>
+        <button type="button" class="tag-remove" onclick="moderatorApp.removeTag(${index})" title="Tag ni o'chirish">×</button>
+      </div>
+    `).join('');
+  }
+
+  updateHiddenTagInput() {
+    const hiddenInput = document.getElementById('post-tags');
+    hiddenInput.value = this.currentTags.map(tag => tag.value).join(',');
+  }
+
+  setupTagInputEvents() {
+    const tagInput = document.getElementById('tag-input');
+
+    // Enter key to add tag
+    tagInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.addTag();
+      }
+    });
+
+    // Input validation
+    tagInput.addEventListener('input', (e) => {
+      // Only allow alphanumeric characters and basic punctuation
+      const value = e.target.value;
+      const cleanValue = value.replace(/[^a-zA-Z0-9а-яё\u0400-\u04ff\s'-]/gi, '');
+      if (value !== cleanValue) {
+        e.target.value = cleanValue;
+      }
+    });
+  }
+
+  loadTagsFromPost(post) {
+    // Clear current tags
+    this.currentTags = [];
+
+    // Load tags from post
+    if (post.tags && post.tags.length > 0) {
+      this.currentTags = post.tags.map(tag => ({
+        label: tag.label || tag.value,
+        value: tag.value
+      }));
+    }
+
+    this.updateTagsDisplay();
+    this.updateHiddenTagInput();
+  }
+
+  // SEO Keywords Management System
+  addSeoKeyword() {
+    const keywordInput = document.getElementById('seo-keyword-input');
+    const keywordValue = keywordInput.value.trim();
+
+    // Validation
+    if (!keywordValue) {
+      this.showErrorMessage('SEO so\'z bo\'sh bo\'lishi mumkin emas!');
+      return;
+    }
+
+    if (keywordValue.length < 2) {
+      this.showErrorMessage('SEO so\'z kamida 2 ta harf bo\'lishi kerak!');
+      return;
+    }
+
+    if (this.currentSeoKeywords.length >= this.maxSeoKeywords) {
+      this.showErrorMessage(`Maksimal ${this.maxSeoKeywords} ta SEO so'z qo'shishingiz mumkin!`);
+      return;
+    }
+
+    // Check for duplicates
+    const normalizedKeyword = keywordValue.toLowerCase();
+    if (this.currentSeoKeywords.includes(normalizedKeyword)) {
+      this.showErrorMessage('Bu SEO so\'z allaqachon mavjud!');
+      return;
+    }
+
+    // Add keyword
+    this.currentSeoKeywords.push(normalizedKeyword);
+    this.updateSeoKeywordsDisplay();
+    this.updateHiddenSeoKeywordInput();
+
+    // Clear input
+    keywordInput.value = '';
+    keywordInput.focus();
+  }
+
+  removeSeoKeyword(index) {
+    if (index >= 0 && index < this.currentSeoKeywords.length) {
+      this.currentSeoKeywords.splice(index, 1);
+      this.updateSeoKeywordsDisplay();
+      this.updateHiddenSeoKeywordInput();
+    }
+  }
+
+  updateSeoKeywordsDisplay() {
+    const keywordsDisplay = document.getElementById('seo-keywords-display');
+
+    if (this.currentSeoKeywords.length === 0) {
+      keywordsDisplay.innerHTML = '<div class="no-seo-keywords">Hech qanday SEO so\'z qo\'shilmagan</div>';
+      return;
+    }
+
+    keywordsDisplay.innerHTML = this.currentSeoKeywords.map((keyword, index) => `
+      <div class="seo-keyword-chip">
+        <span class="seo-keyword-text">${keyword}</span>
+        <button type="button" class="seo-keyword-remove" onclick="moderatorApp.removeSeoKeyword(${index})" title="SEO so'zni o'chirish">×</button>
+      </div>
+    `).join('');
+  }
+
+  updateHiddenSeoKeywordInput() {
+    const hiddenInput = document.getElementById('meta-keywords');
+    hiddenInput.value = this.currentSeoKeywords.join(',');
+  }
+
+  setupSeoKeywordInputEvents() {
+    const keywordInput = document.getElementById('seo-keyword-input');
+
+    // Enter key to add keyword
+    keywordInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        this.addSeoKeyword();
+      }
+    });
+
+    // Input validation
+    keywordInput.addEventListener('input', (e) => {
+      // Only allow alphanumeric characters and basic punctuation
+      const value = e.target.value;
+      const cleanValue = value.replace(/[^a-zA-Z0-9а-яё\u0400-\u04ff\s'-]/gi, '');
+      if (value !== cleanValue) {
+        e.target.value = cleanValue;
+      }
+    });
+  }
+
+  loadSeoKeywordsFromPost(post) {
+    // Clear current keywords
+    this.currentSeoKeywords = [];
+
+    // Load keywords from post (check both old and new structure)
+    if (post.seoKeywords && post.seoKeywords.length > 0) {
+      this.currentSeoKeywords = [...post.seoKeywords];
+    } else if (post.seo && post.seo.keywords && post.seo.keywords.length > 0) {
+      // Backward compatibility with old structure
+      this.currentSeoKeywords = [...post.seo.keywords];
+    }
+
+    this.updateSeoKeywordsDisplay();
+    this.updateHiddenSeoKeywordInput();
+  }
+
   setupAddSectionButton() {
     const addSectionBtn = document.getElementById('add-section-btn');
     addSectionBtn.addEventListener('click', () => {
@@ -348,6 +573,7 @@ class ModeratorApp {
 
     const sectionDiv = document.createElement('div');
     sectionDiv.className = 'content-section-item';
+    sectionDiv.dataset.sectionId = sectionCount;
     sectionDiv.innerHTML = `
       <div class="section-header">
         <h5 class="section-number">Bo'lim ${sectionCount}</h5>
@@ -355,27 +581,88 @@ class ModeratorApp {
       </div>
 
       <div class="form-group">
-        <label>Bo'lim sarlavhasi *</label>
-        <input type="text" name="section-header-${sectionCount}" placeholder="Bo'lim sarlavhasini kiriting" class="section-header-input" required>
+        <label>Bo'lim sarlavhasi</label>
+        <input type="text" name="section-header-${sectionCount}" placeholder="Bo'lim sarlavhasini kiriting" class="section-header-input">
       </div>
 
-      <div class="form-group">
-        <label>Sarlavha 2 (ixtiyoriy)</label>
-        <input type="text" name="section-h2-${sectionCount}" placeholder="H2 sarlavhasini kiriting (ixtiyoriy)" class="section-h2-input">
+      <!-- H2 Section Container -->
+      <div class="subsection-container" id="h2-container-${sectionCount}">
+        <div class="subsection-header">
+          <label>H2 Sarlavhalar</label>
+          <button type="button" class="btn-add-subsection" onclick="moderatorApp.addH2Subsection(${sectionCount})">
+            <span>+</span> H2 qo'shish
+          </button>
+        </div>
+        <div class="subsections-list" id="h2-list-${sectionCount}">
+          <!-- H2 subsections will be added here -->
+        </div>
       </div>
 
-      <div class="form-group">
-        <label>Sarlavha 3 (ixtiyoriy)</label>
-        <input type="text" name="section-h3-${sectionCount}" placeholder="H3 sarlavhasini kiriting (ixtiyoriy)" class="section-h3-input">
-      </div>
-
-      <div class="form-group">
-        <label>Paragraf *</label>
-        <textarea name="section-content-${sectionCount}" rows="6" placeholder="Paragraf mazmunini kiriting" class="section-content-input" required></textarea>
+      <!-- H3 Section Container -->
+      <div class="subsection-container" id="h3-container-${sectionCount}">
+        <div class="subsection-header">
+          <label>H3 Sarlavhalar</label>
+          <button type="button" class="btn-add-subsection" onclick="moderatorApp.addH3Subsection(${sectionCount})">
+            <span>+</span> H3 qo'shish
+          </button>
+        </div>
+        <div class="subsections-list" id="h3-list-${sectionCount}">
+          <!-- H3 subsections will be added here -->
+        </div>
       </div>
     `;
 
     sectionsContainer.appendChild(sectionDiv);
+  }
+
+  // Add H2 subsection dynamically
+  addH2Subsection(sectionId) {
+    const h2List = document.getElementById(`h2-list-${sectionId}`);
+    const h2Count = h2List.children.length + 1;
+    const h2Id = `section-${sectionId}-h2-${h2Count}`;
+
+    const h2Div = document.createElement('div');
+    h2Div.className = 'subsection-item';
+    h2Div.innerHTML = `
+      <div class="subsection-controls">
+        <button type="button" class="btn-remove-small" onclick="this.parentElement.parentElement.remove()">×</button>
+      </div>
+      <div class="form-group">
+        <label>H2 Sarlavha</label>
+        <input type="text" name="${h2Id}-header" placeholder="H2 sarlavhasini kiriting" class="subsection-input">
+      </div>
+      <div class="form-group">
+        <label>H2 Paragraf</label>
+        <textarea name="${h2Id}-content" rows="4" placeholder="H2 paragraf mazmunini kiriting" class="subsection-textarea"></textarea>
+      </div>
+    `;
+
+    h2List.appendChild(h2Div);
+  }
+
+  // Add H3 subsection dynamically
+  addH3Subsection(sectionId) {
+    const h3List = document.getElementById(`h3-list-${sectionId}`);
+    const h3Count = h3List.children.length + 1;
+    const h3Id = `section-${sectionId}-h3-${h3Count}`;
+
+    const h3Div = document.createElement('div');
+    h3Div.className = 'subsection-item';
+    h3Div.innerHTML = `
+      <div class="subsection-controls">
+        <button type="button" class="btn-remove-small" onclick="this.parentElement.parentElement.remove()">×</button>
+      </div>
+      <div class="form-group">
+        <label>H3 Sarlavha</label>
+        <input type="text" name="${h3Id}-header" placeholder="H3 sarlavhasini kiriting" class="subsection-input">
+      </div>
+      <div class="form-group">
+        <label>H3 Paragraf</label>
+        <textarea name="${h3Id}-content" rows="3" placeholder="H3 paragraf mazmunini kiriting" class="subsection-textarea"></textarea>
+      </div>
+    `;
+
+    h3List.appendChild(h3Div);
   }
 
   // Blog Management
@@ -437,6 +724,17 @@ class ModeratorApp {
       title.textContent = 'Yangi maqola';
       form.reset();
       sectionsContainer.innerHTML = '';
+
+      // Clear tags for new post
+      this.currentTags = [];
+      this.updateTagsDisplay();
+      this.updateHiddenTagInput();
+
+      // Clear SEO keywords for new post
+      this.currentSeoKeywords = [];
+      this.updateSeoKeywordsDisplay();
+      this.updateHiddenSeoKeywordInput();
+
       currentEditingPost = null;
 
       // Add first section automatically for new posts
@@ -453,34 +751,91 @@ class ModeratorApp {
       // Fill basic information
       document.getElementById('post-title').value = post.title || '';
       document.getElementById('post-description').value = post.subtitle || '';
-      document.getElementById('post-tags').value = post.tags?.map(t => t.value).join(', ') || '';
-      document.getElementById('meta-title').value = post.seo?.metaTitle || '';
-      document.getElementById('meta-description').value = post.seo?.metaDescription || '';
+
+      // Load tags into new system
+      this.loadTagsFromPost(post);
+
+      // Load SEO keywords into new system
+      this.loadSeoKeywordsFromPost(post);
 
       // Clear existing sections
       const sectionsContainer = document.getElementById('content-sections');
       sectionsContainer.innerHTML = '';
 
-      // Add sections from post data
+      // Add sections from post data with new dynamic structure
       if (post.sections && post.sections.length > 0) {
-        post.sections.forEach((section, index) => {
-          this.addContentSection();
-          const sectionNumber = index + 1;
+        // Group sections by type
+        const mainSections = [];
+        const h2Sections = [];
+        const h3Sections = [];
 
-          // Fill section data
+        post.sections.forEach(section => {
           if (section.header) {
-            document.querySelector(`input[name="section-header-${sectionNumber}"]`).value = section.header;
-          }
-          if (section.h2) {
-            document.querySelector(`input[name="section-h2-${sectionNumber}"]`).value = section.h2;
-          }
-          if (section.h3) {
-            document.querySelector(`input[name="section-h3-${sectionNumber}"]`).value = section.h3;
-          }
-          if (section.content) {
-            document.querySelector(`textarea[name="section-content-${sectionNumber}"]`).value = section.content;
+            mainSections.push(section);
+          } else if (section.h2) {
+            h2Sections.push(section);
+          } else if (section.h3) {
+            h3Sections.push(section);
           }
         });
+
+        // Create main sections first
+        let sectionCounter = 0;
+        mainSections.forEach(section => {
+          this.addContentSection();
+          sectionCounter++;
+
+          // Fill main section data
+          if (section.header) {
+            document.querySelector(`input[name="section-header-${sectionCounter}"]`).value = section.header;
+          }
+          // Note: No content field anymore, only header
+        });
+
+        // Add H2 sections to the first main section (for backward compatibility)
+        if (h2Sections.length > 0 && sectionCounter > 0) {
+          h2Sections.forEach((h2Section, index) => {
+            this.addH2Subsection(1); // Add to first section
+            const h2Index = index + 1;
+
+            setTimeout(() => {
+              const h2HeaderInput = document.querySelector(`input[name="section-1-h2-${h2Index}-header"]`);
+              const h2ContentInput = document.querySelector(`textarea[name="section-1-h2-${h2Index}-content"]`);
+
+              if (h2HeaderInput && h2Section.h2) {
+                h2HeaderInput.value = h2Section.h2;
+              }
+              if (h2ContentInput && h2Section.content) {
+                h2ContentInput.value = h2Section.content;
+              }
+            }, 50);
+          });
+        }
+
+        // Add H3 sections to the first main section (for backward compatibility)
+        if (h3Sections.length > 0 && sectionCounter > 0) {
+          h3Sections.forEach((h3Section, index) => {
+            this.addH3Subsection(1); // Add to first section
+            const h3Index = index + 1;
+
+            setTimeout(() => {
+              const h3HeaderInput = document.querySelector(`input[name="section-1-h3-${h3Index}-header"]`);
+              const h3ContentInput = document.querySelector(`textarea[name="section-1-h3-${h3Index}-content"]`);
+
+              if (h3HeaderInput && h3Section.h3) {
+                h3HeaderInput.value = h3Section.h3;
+              }
+              if (h3ContentInput && h3Section.content) {
+                h3ContentInput.value = h3Section.content;
+              }
+            }, 100);
+          });
+        }
+
+        // If no main sections, create at least one
+        if (mainSections.length === 0) {
+          this.addContentSection();
+        }
       } else {
         // Add at least one section if no sections exist
         this.addContentSection();
@@ -495,27 +850,54 @@ class ModeratorApp {
 
     const formData = new FormData(e.target);
 
-    // Collect all sections
+    // Collect all sections with new dynamic structure
     const sections = [];
     const sectionsContainer = document.getElementById('content-sections');
 
     for (let i = 1; i <= sectionsContainer.children.length; i++) {
       const sectionHeader = formData.get(`section-header-${i}`);
-      const sectionH2 = formData.get(`section-h2-${i}`);
-      const sectionH3 = formData.get(`section-h3-${i}`);
-      const sectionContent = formData.get(`section-content-${i}`);
 
-      if (sectionHeader && sectionContent) {
+      // Add main section if header exists (now optional)
+      if (sectionHeader && sectionHeader.trim()) {
         const section = {
-          header: sectionHeader,
-          content: sectionContent
+          header: sectionHeader.trim(),
+          content: '' // Empty content as we don't have main paragraph anymore
         };
-
-        // Add optional headers if they exist
-        if (sectionH2) section.h2 = sectionH2;
-        if (sectionH3) section.h3 = sectionH3;
-
         sections.push(section);
+      }
+
+      // Always collect H2 subsections (even if main header is empty)
+      const h2List = document.getElementById(`h2-list-${i}`);
+      if (h2List && h2List.children.length > 0) {
+        for (let j = 1; j <= h2List.children.length; j++) {
+          const h2Header = formData.get(`section-${i}-h2-${j}-header`);
+          const h2Content = formData.get(`section-${i}-h2-${j}-content`);
+
+          if (h2Header && h2Header.trim()) {
+            const h2Section = {
+              h2: h2Header.trim(),
+              content: h2Content || ''
+            };
+            sections.push(h2Section);
+          }
+        }
+      }
+
+      // Always collect H3 subsections (even if main header is empty)
+      const h3List = document.getElementById(`h3-list-${i}`);
+      if (h3List && h3List.children.length > 0) {
+        for (let j = 1; j <= h3List.children.length; j++) {
+          const h3Header = formData.get(`section-${i}-h3-${j}-header`);
+          const h3Content = formData.get(`section-${i}-h3-${j}-content`);
+
+          if (h3Header && h3Header.trim()) {
+            const h3Section = {
+              h3: h3Header.trim(),
+              content: h3Content || ''
+            };
+            sections.push(h3Section);
+          }
+        }
       }
     }
 
@@ -525,14 +907,9 @@ class ModeratorApp {
         subtitle: formData.get('description')  // Changed from subtitle to description
       },
       sections: sections,
-      tags: formData.get('tags') ? formData.get('tags').split(',').map(tag => ({
-        label: tag.trim(),
-        value: tag.trim().toLowerCase()
-      })).filter(tag => tag.label) : [],
+      tags: this.currentTags,
       seo: {
-        metaTitle: formData.get('metaTitle') || '',
-        metaDescription: formData.get('metaDescription') || '',
-        keywords: formData.get('tags') ? formData.get('tags').split(',').map(tag => tag.trim()).filter(tag => tag) : []
+        keywords: this.currentSeoKeywords
       }
     };
 
@@ -1083,13 +1460,75 @@ class ModeratorApp {
       const blogsResponse = await api.get('/blogs');
       const posts = blogsResponse.data.data;
 
+      // Calculate totals
+      const totalPosts = posts.length;
       const totalViews = posts.reduce((sum, post) => sum + (post.multiViews || 0), 0);
 
-      document.getElementById('total-posts').textContent = posts.length;
-      document.getElementById('total-views').textContent = totalViews;
+      // For now, we'll simulate some analytics data since backend might not have all this data yet
+      const analyticsData = this.processAnalyticsData(posts);
+
+      // Calculate unique visitors from table data to match
+      const totalUniqueVisitors = analyticsData.reduce((sum, row) => sum + row.uniqueVisitors, 0);
+
+      // Populate analytics table
+      this.populateAnalyticsTable(analyticsData);
+
+      // Update summary cards
+      this.updateSummaryCards({
+        totalPosts,
+        totalViews,
+        uniqueVisitors: totalUniqueVisitors
+      });
+
     } catch (error) {
       console.error('Error loading analytics:', error);
+      this.showAnalyticsError();
     }
+  }
+
+  processAnalyticsData(posts) {
+    // Process posts data and create analytics rows
+    const blogPages = posts.map(post => ({
+      page: post.title.length > 30 ? post.title.substring(0, 30) + '...' : post.title,
+      uniqueVisitors: post.uniqueViews ? post.uniqueViews.length : 0, // Real unique visitors count
+      pageViews: post.multiViews || 0
+    }));
+
+    return blogPages; // Show only blog posts
+  }
+
+
+  populateAnalyticsTable(data) {
+    const tableBody = document.getElementById('analytics-table-body');
+
+    if (data.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="3" class="loading-row">Ma\'lumot topilmadi</td></tr>';
+      return;
+    }
+
+    tableBody.innerHTML = data.map(row => `
+      <tr>
+        <td>${row.page}</td>
+        <td>${row.uniqueVisitors.toLocaleString()}</td>
+        <td>${row.pageViews.toLocaleString()}</td>
+      </tr>
+    `).join('');
+  }
+
+  updateSummaryCards(summary) {
+    document.getElementById('total-posts').textContent = summary.totalPosts;
+    document.getElementById('total-views').textContent = summary.totalViews.toLocaleString();
+    document.getElementById('unique-visitors').textContent = summary.uniqueVisitors.toLocaleString();
+  }
+
+  showAnalyticsError() {
+    const tableBody = document.getElementById('analytics-table-body');
+    tableBody.innerHTML = '<tr><td colspan="3" class="loading-row">Ma\'lumotlarni yuklashda xatolik yuz berdi</td></tr>';
+
+    // Reset summary cards
+    document.getElementById('total-posts').textContent = '0';
+    document.getElementById('total-views').textContent = '0';
+    document.getElementById('unique-visitors').textContent = '0';
   }
 }
 

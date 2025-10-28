@@ -600,6 +600,36 @@ body {
   opacity: 0.15;
   filter: blur(12px);
   transition: all 0.3s ease;
+  /* Ensure perfect circle on all devices */
+  aspect-ratio: 1;
+  box-sizing: border-box;
+}
+
+/* Mobile responsive neon dots - much smaller and cleaner */
+@media (max-width: 768px) {
+  .neon-dot {
+    width: 25px;
+    height: 25px;
+    opacity: 0.08;
+    filter: blur(8px);
+  }
+
+  .neon-dot.white {
+    opacity: 0.06;
+  }
+}
+
+@media (max-width: 480px) {
+  .neon-dot {
+    width: 18px;
+    height: 18px;
+    opacity: 0.06;
+    filter: blur(6px);
+  }
+
+  .neon-dot.white {
+    opacity: 0.04;
+  }
 }
 
 .neon-dot.white {

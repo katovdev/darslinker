@@ -10,8 +10,81 @@ let allArticles = [];
 let currentPage = 0;
 const articlesPerPage = 6;
 
+// View tracking variables
+let currentViewTimer = null;
+let currentArticleId = null;
+let viewEligible = false;
+const VIEW_DELAY = 10000; // 10 seconds
+
+// View tracking functions
+function startViewTimer(articleId) {
+  // Clear any existing timer
+  clearViewTimer();
+
+  // Set current article
+  currentArticleId = articleId;
+  viewEligible = false;
+
+  console.log(`Starting view timer for article ${articleId} (${VIEW_DELAY / 1000} seconds)`);
+
+  // Start new timer
+  currentViewTimer = setTimeout(() => {
+    viewEligible = true;
+    console.log(`View timer completed for article ${articleId} - eligible for view tracking`);
+  }, VIEW_DELAY);
+}
+
+function clearViewTimer() {
+  if (currentViewTimer) {
+    clearTimeout(currentViewTimer);
+    currentViewTimer = null;
+  }
+  viewEligible = false;
+}
+
+function trackViewIfEligible() {
+  if (viewEligible && currentArticleId) {
+    console.log(`Tracking view for article ${currentArticleId}`);
+
+    fetch(`${API_URL}/blogs/${currentArticleId}/view`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    }).then(() => {
+      console.log(`View tracked successfully for article ${currentArticleId}`);
+    }).catch(err => {
+      console.error('View tracking failed:', err);
+    });
+
+    // Reset tracking state
+    clearViewTimer();
+    currentArticleId = null;
+  }
+}
+
+function setupPageUnloadTracking() {
+  // Track view on page unload (browser close, navigation, etc.)
+  window.addEventListener('beforeunload', () => {
+    if (viewEligible && currentArticleId) {
+      // Use sendBeacon for reliable tracking on page unload
+      const data = JSON.stringify({});
+      navigator.sendBeacon(`${API_URL}/blogs/${currentArticleId}/view`, data);
+      console.log(`View tracked via beacon for article ${currentArticleId} on page unload`);
+    }
+  });
+
+  // Also track on visibility change (tab switching)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') {
+      trackViewIfEligible();
+    }
+  });
+}
+
 export function initBlogPage() {
   const contentArea = document.querySelector('#content');
+
+  // Setup page unload tracking (for when user closes browser/tab)
+  setupPageUnloadTracking();
 
   contentArea.innerHTML = `
     <!-- Blog Articles Section -->
@@ -293,11 +366,11 @@ async function showArticlePage(articleId) {
       // Scroll to top of page
       window.scrollTo(0, 0);
 
-      // Track view
-      fetch(`${API_URL}/blogs/${articleId}/view`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      }).catch(err => console.log('View tracking failed:', err));
+      // Track previous article if eligible before starting new one
+      trackViewIfEligible();
+
+      // Start view tracking timer (10 seconds)
+      startViewTimer(articleId);
 
       // Load related articles automatically
       await loadRelatedArticles(article);
@@ -840,6 +913,9 @@ async function loadRelatedArticles(currentArticle) {
 
 // Function to go back to blogs
 window.goBackToBlogs = function() {
+  // Track view if eligible before leaving
+  trackViewIfEligible();
+
   // Remove article page styles
   const articleStyles = document.getElementById('article-page-styles');
   if (articleStyles) {

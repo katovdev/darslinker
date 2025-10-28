@@ -105,14 +105,39 @@
             <!-- Analytics Section -->
             <section id="analytics-section" class="content-section">
                 <h2>Analitika</h2>
-                <div class="analytics-grid">
-                    <div class="stat-card">
-                        <h3>Jami postlar</h3>
-                        <p class="stat-number" id="total-posts">0</p>
+
+                <!-- Analytics Table -->
+                <div class="analytics-table-container">
+                    <table class="analytics-table">
+                        <thead>
+                            <tr>
+                                <th>Page</th>
+                                <th>Unique Visitors</th>
+                                <th>Page Views</th>
+                            </tr>
+                        </thead>
+                        <tbody id="analytics-table-body">
+                            <!-- Data will be populated here -->
+                            <tr>
+                                <td colspan="3" class="loading-row">Ma'lumotlar yuklanmoqda...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="analytics-summary">
+                    <div class="summary-card">
+                        <h3>Total Posts</h3>
+                        <p class="summary-number" id="total-posts">0</p>
                     </div>
-                    <div class="stat-card">
-                        <h3>Jami ko'rishlar</h3>
-                        <p class="stat-number" id="total-views">0</p>
+                    <div class="summary-card">
+                        <h3>Total Views</h3>
+                        <p class="summary-number" id="total-views">0</p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Unique Visitors</h3>
+                        <p class="summary-number" id="unique-visitors">0</p>
                     </div>
                 </div>
             </section>
@@ -148,9 +173,21 @@
                     <div class="form-section">
                         <h4 class="section-title">Teglar</h4>
                         <div class="form-group">
-                            <label for="post-tags">Teglar</label>
-                            <input type="text" id="post-tags" name="tags" placeholder="masalan: ta'lim, matematika, darslik">
-                            <small class="form-help">Teglarni vergul bilan ajrating</small>
+                            <!-- Tag Display Area -->
+                            <div class="tags-display" id="tags-display">
+                                <!-- Tags will be displayed here -->
+                            </div>
+
+                            <!-- Tag Input Section -->
+                            <label for="tag-input">Tag qo'shish</label>
+                            <div class="tag-input-container">
+                                <input type="text" id="tag-input" placeholder="tag kiriting" maxlength="20">
+                                <button type="button" class="btn-add-tag" onclick="moderatorApp.addTag()">Qo'shish</button>
+                            </div>
+                            <small class="form-help">Max 15 ta tag qo'shish mumkin.</small>
+
+                            <!-- Hidden input for form submission -->
+                            <input type="hidden" id="post-tags" name="tags" value="">
                         </div>
                     </div>
 
@@ -158,13 +195,21 @@
                     <div class="form-section">
                         <h4 class="section-title">SEO sozlamalari</h4>
                         <div class="form-group">
-                            <label for="meta-title">SEO meta sarlavha</label>
-                            <input type="text" id="meta-title" name="metaTitle" placeholder="SEO optimallashtirilgan sarlavha">
-                        </div>
+                            <!-- SEO Keywords Display Area -->
+                            <div class="seo-keywords-display" id="seo-keywords-display">
+                                <!-- SEO keywords will be displayed here -->
+                            </div>
 
-                        <div class="form-group">
-                            <label for="meta-description">SEO meta tavsif</label>
-                            <textarea id="meta-description" name="metaDescription" rows="2" placeholder="Qidiruv tizimlari uchun qisqa tavsif"></textarea>
+                            <!-- SEO Keyword Input Section -->
+                            <label for="seo-keyword-input">SEO so'z qo'shish</label>
+                            <div class="seo-keyword-input-container">
+                                <input type="text" id="seo-keyword-input" placeholder="SEO so'z kiriting" maxlength="25">
+                                <button type="button" class="btn-add-seo-keyword" onclick="moderatorApp.addSeoKeyword()">Qo'shish</button>
+                            </div>
+                            <small class="form-help">Max 10 ta SEO so'z qo'shish mumkin.</small>
+
+                            <!-- Hidden input for form submission -->
+                            <input type="hidden" id="meta-keywords" name="metaKeywords" value="">
                         </div>
                     </div>
 
