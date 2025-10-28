@@ -43,6 +43,16 @@ const swaggerDefinition = {
       description:
         "Module management endpoints - CRUD operations for course modules, organizing course content into structured sections",
     },
+    {
+      name: "Module & Lesson Management - Lessons",
+      description:
+        "Lesson management endpoints - CRUD operations for module lessons, organizing module content into structured sections",
+    },
+    {
+      name: "Homework & Assignment Management - Assignments",
+      description:
+        "Assignment management endpoints - CRUD operations for homework assignments, organizing assignment content into structured sections",
+    },
   ],
   components: {
     securitySchemes: {

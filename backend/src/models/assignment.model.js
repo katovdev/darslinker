@@ -8,7 +8,7 @@ const submissionSchema = new mongoose.Schema(
       required: true,
     },
     submittedAt: { type: Date, default: Date.now },
-    files: [{ type: String }], // URL or path
+    files: [{ type: String }],
     grade: { type: Number },
     feedback: { type: String },
   },
@@ -25,7 +25,7 @@ const assignmentSchema = new mongoose.Schema(
     title: { type: String, required: true, trim: true },
     description: { type: String },
     dueDate: { type: Date, required: true },
-    resources: [{ type: String }], // URL or path to extra materials
+    resources: [{ type: String }],
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Teacher",
@@ -34,7 +34,7 @@ const assignmentSchema = new mongoose.Schema(
     maxGrade: { type: Number, required: true, default: 0 },
     status: {
       type: String,
-      enum: ["pending", "active", "closed"],
+      enum: ["pending", "graded"],
       default: "pending",
     },
     submissions: [submissionSchema],

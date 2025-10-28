@@ -7,7 +7,6 @@ import {
 import { validate } from "../middlewares/validation.middleware.js";
 import {
   teacherIdSchema,
-  teacherQuerySchema,
   updateTeacherProfileSchema,
 } from "../validations/teacher.validation.js";
 
@@ -210,12 +209,7 @@ const teacherRouter = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-teacherRouter.get(
-  "/",
-  validate(teacherQuerySchema, "query"),
-  authenticate,
-  findAll
-);
+teacherRouter.get("/", authenticate, findAll);
 
 /**
  * @swagger

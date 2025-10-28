@@ -1,12 +1,11 @@
-import mongoose from "mongoose";
 import Course from "../models/course.model.js";
 import {
   uploadToCloudinary,
   uploadVideoToCloudinary,
-  deleteFromCloudinary,
 } from "../../config/cloudinary.js";
 import fs from "fs";
 import { promisify } from "util";
+import { validateAndFindById } from "../utils/model.utils.js";
 
 const unlinkAsync = promisify(fs.unlink);
 
@@ -154,24 +153,17 @@ async function findOne(req, res) {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid course ID format",
-      });
-    }
-
-    const course = await Course.findById(id);
-    if (!course) {
+    const course = await validateAndFindById(Course, id, "Course");
+    if (!course.success) {
       return res
-        .status(404)
-        .json({ success: false, message: "Course not found" });
+        .status(course.error.status)
+        .json({ success: false, message: course.error.message });
     }
 
     return res.status(200).json({
       success: true,
       message: "Course retrieved successfully",
-      data: course,
+      data: course.data,
     });
   } catch (error) {
     return res.status(400).json({
@@ -192,23 +184,14 @@ async function update(req, res) {
     const { id } = req.params;
     const updateData = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid course ID format",
-      });
+    const course = await validateAndFindById(Course, id, "Course");
+    if (!course.success) {
+      return res
+        .status(course.error.status)
+        .json({ success: false, message: course.error.message });
     }
 
-    const existingCourse = await Course.findById(id);
-
-    if (!existingCourse) {
-      return res.status(404).json({
-        success: false,
-        message: "Course not found",
-      });
-    }
-
-    if (updateData.title && updateData.title !== existingCourse.title) {
+    if (updateData.title && updateData.title !== course.data.title) {
       const duplicateCourse = await Course.findOne({
         title: updateData.title.trim(),
         _id: { $ne: id },
@@ -251,21 +234,14 @@ async function remove(req, res) {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid course ID format",
-      });
+    const deletedCourse = await validateAndFindById(Course, id, "Course");
+    if (!deletedCourse.success) {
+      return res
+        .status(deletedCourse.error.status)
+        .json({ success: false, message: deletedCourse.error.message });
     }
 
-    const deletedCourse = await Course.findByIdAndDelete(id);
-
-    if (!deletedCourse) {
-      return res.status(404).json({
-        success: false,
-        message: "Course not found",
-      });
-    }
+    await Course.findByIdAndDelete(id);
 
     return res.status(200).json({
       success: true,

@@ -22,6 +22,7 @@ import {
   generateRefreshToken,
 } from "../utils/token.utils.js";
 import { BCRYPT_SALT_ROUNDS } from "../../config/env.js";
+import { validateAndFindById } from "../utils/model.utils.js";
 
 /**
  * Check if user exists with the given identifier (email or phone)
@@ -443,12 +444,12 @@ async function changePassword(req, res) {
       });
     }
 
-    const user = await User.findById(userId);
+    const user = await validateAndFindById(User, userId, "User");
 
-    if (!user) {
-      return res.status(404).json({
+    if (!user.success) {
+      return res.status(user.error.status).json({
         success: false,
-        message: "User not found",
+        message: user.error.message,
       });
     }
 

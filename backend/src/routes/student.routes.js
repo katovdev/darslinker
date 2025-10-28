@@ -9,7 +9,6 @@ import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validation.middleware.js";
 import {
   studentIdSchema,
-  studentQuerySchema,
   updateStudentProfileSchema,
 } from "../validations/student.validation.js";
 
@@ -185,7 +184,7 @@ const studentRouter = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-studentRouter.get("/", validate(studentQuerySchema, "query"), findAll);
+studentRouter.get("/", findAll);
 
 /**
  * @swagger
