@@ -11,6 +11,7 @@ async function bootstrap() {
       'http://localhost:3002',  // Blog frontend (dev)
       'http://localhost:3001',  // Moderator interface (old dev)
       'http://localhost:3003',  // Moderator interface (new dev)
+      'http://localhost:3004',  // Blog frontend (current dev)
       'https://verdant-bubblegum-cd3991.netlify.app',  // Blog frontend (prod)
       'https://heartfelt-centaur-5fc321.netlify.app',  // Moderator interface (prod)
     ],
