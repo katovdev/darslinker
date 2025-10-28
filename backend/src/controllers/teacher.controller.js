@@ -4,215 +4,175 @@ import User from "../models/user.model.js";
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
 import { validateAndFindById } from "../utils/model.utils.js";
 
-async function findAll(req, res) {
-  try {
-    const teachers = await Teacher.find().select("-password");
+import { catchAsync } from "../middlewares/error.middleware.js";
+import {
+  BadRequestError,
+  ConflictError,
+  NotFoundError,
+  ValidationError,
+} from "../utils/error.utils.js";
 
-    return res.status(200).json({
-      success: true,
-      count: teachers.length,
-      teachers,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: "An error occurred while finding all teachers",
-      error: error.message,
-    });
-  }
-}
+/**
+ * Get all teachers with filtering and pagination
+ * @route GET /teachers
+ * @access Public
+ */
+const findAll = catchAsync(async (req, res) => {
+  const teachers = await Teacher.find().select("-password");
 
-async function findOne(req, res) {
-  try {
-    const { id } = req.params;
+  res.status(200).json({
+    success: true,
+    count: teachers.length,
+    teachers,
+  });
+});
 
-    const teacher = await validateAndFindById(Teacher, id, "Teacher");
+const findOne = catchAsync(async (req, res) => {
+  const { id } = req.params;
 
-    if (!teacher.success) {
-      return res.status(teacher.error.status).json({
-        success: false,
-        message: teacher.error.message,
-      });
+  const teacher = await validateAndFindById(Teacher, id, "Teacher");
+
+  if (!teacher.success) {
+    if (teacher.error.status === 400) {
+      throw new BadRequestError(teacher.error.message);
+    } else if (teacher.error.status === 404) {
+      throw new NotFoundError(teacher.error.message);
     }
-
-    return res.status(200).json({
-      success: true,
-      teacher: teacher.data,
-    });
-  } catch (error) {
-    return res.status(400).json({
-      success: false,
-      message: "An error occurred while finding only one teacher",
-      error: error.message,
-    });
   }
-}
+
+  res.status(200).json({
+    success: true,
+    teacher: teacher.data,
+  });
+});
 
 /**
  * Update teacher profile
  * User can update: firstName, lastName, email, phone, profileImage, bio, specialization, certificates, paymentMethods
  */
-async function update(req, res) {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
+const update = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
 
-    const existingTeacher = await validateAndFindById(Teacher, id, "Teacher");
+  const existingTeacher = await validateAndFindById(Teacher, id, "Teacher");
 
-    if (!existingTeacher.success) {
-      return res.status(existingTeacher.error.status).json({
-        success: false,
-        message: existingTeacher.error.message,
-      });
+  if (!existingTeacher.success) {
+    if (existingTeacher.error.status === 400) {
+      throw new BadRequestError(existingTeacher.error.message);
+    } else if (existingTeacher.error.status === 404) {
+      throw new NotFoundError(existingTeacher.error.message);
     }
+  }
 
-    const forbiddenFields = [
-      "password",
-      "role",
-      "status",
-      "ratingAverage",
-      "reviewsCount",
-      "reviews",
-      "courseCount",
-      "studentCount",
-      "totalEarnings",
-      "balance",
-      "payouts",
-      "courses",
-      "_id",
-      "__v",
-      "__t",
-      "createdAt",
-      "updatedAt",
-    ];
+  const forbiddenFields = [
+    "password",
+    "role",
+    "status",
+    "ratingAverage",
+    "reviewsCount",
+    "reviews",
+    "courseCount",
+    "studentCount",
+    "totalEarnings",
+    "balance",
+    "payouts",
+    "courses",
+    "_id",
+    "__v",
+    "__t",
+    "createdAt",
+    "updatedAt",
+  ];
 
-    forbiddenFields.forEach((field) => {
-      if (updates[field] !== undefined) {
-        delete updates[field];
-      }
+  forbiddenFields.forEach((field) => {
+    if (updates[field] !== undefined) {
+      delete updates[field];
+    }
+  });
+
+  if (updates.email && updates.email !== existingTeacher.data.email) {
+    const normalizedEmail = normalizeEmail(updates.email);
+
+    const emailExists = await User.findOne({
+      email: normalizedEmail,
+      _id: { $ne: id },
     });
 
-    if (updates.email && updates.email !== existingTeacher.data.email) {
-      const normalizedEmail = normalizeEmail(updates.email);
-
-      const emailExists = await User.findOne({
-        email: normalizedEmail,
-        _id: { $ne: id },
-      });
-
-      if (emailExists) {
-        return res.status(409).json({
-          success: false,
-          message: "This email is already in use by another user",
-        });
-      }
-
-      updates.email = normalizedEmail;
+    if (emailExists) {
+      throw new ConflictError("This email is already in use by another user");
     }
 
-    if (updates.phone && updates.phone !== existingTeacher.data.phone) {
-      const normalizedPhone = normalizePhone(updates.phone);
+    updates.email = normalizedEmail;
+  }
 
-      const phoneExists = await User.findOne({
-        phone: normalizedPhone,
-        _id: { $ne: id },
-      });
+  if (updates.phone && updates.phone !== existingTeacher.data.phone) {
+    const normalizedPhone = normalizePhone(updates.phone);
 
-      if (phoneExists) {
-        return res.status(409).json({
-          success: false,
-          message: "This phone number is already in use by another user",
-        });
-      }
-
-      updates.phone = normalizedPhone;
-    }
-
-    if (updates.certificates !== undefined) {
-      if (!Array.isArray(updates.certificates)) {
-        return res.status(400).json({
-          success: false,
-          message: "Certificates must be an array",
-        });
-      }
-
-      updates.certificates = updates.certificates.filter((cert) => {
-        if (!cert || typeof cert !== "object") return false;
-
-        if (cert.title) cert.title = String(cert.title).trim();
-        if (cert.issuer) cert.issuer = String(cert.issuer).trim();
-        if (cert.url) cert.url = String(cert.url).trim();
-
-        return cert.title && cert.issuer;
-      });
-    }
-
-    if (updates.paymentMethods !== undefined) {
-      if (
-        typeof updates.paymentMethods !== "object" ||
-        Array.isArray(updates.paymentMethods)
-      ) {
-        return res.status(400).json({
-          success: false,
-          message: "Payment methods must be an object",
-        });
-      }
-
-      const allowedMethods = ["click", "payme", "uzum", "bankAccount"];
-      const sanitized = {};
-
-      allowedMethods.forEach((method) => {
-        if (updates.paymentMethods[method]) {
-          sanitized[method] = String(updates.paymentMethods[method]).trim();
-        }
-      });
-
-      updates.paymentMethods = sanitized;
-    }
-
-    const updatedTeacher = await Teacher.findByIdAndUpdate(
-      id,
-      { $set: updates },
-      {
-        new: true,
-        runValidators: true,
-        select: "-password",
-      }
-    );
-
-    return res.status(200).json({
-      success: true,
-      message: "Teacher profile updated successfully",
-      teacher: updatedTeacher,
+    const phoneExists = await User.findOne({
+      phone: normalizedPhone,
+      _id: { $ne: id },
     });
-  } catch (error) {
-    if (error.name === "ValidationError") {
-      const errors = Object.values(error.errors).map((err) => ({
-        field: err.path,
-        message: err.message,
-      }));
 
-      return res.status(400).json({
-        success: false,
-        message: "Validation failed",
-        errors,
-      });
+    if (phoneExists) {
+      throw new ConflictError(
+        "This phone number is already in use by another user"
+      );
     }
 
-    if (error.code === 11000) {
-      const field = Object.keys(error.keyPattern)[0];
-      return res.status(409).json({
-        success: false,
-        message: `This ${field} is already in use`,
-      });
+    updates.phone = normalizedPhone;
+  }
+
+  if (updates.certificates !== undefined) {
+    if (!Array.isArray(updates.certificates)) {
+      throw new ValidationError("Certificates must be an array");
     }
 
-    return res.status(400).json({
-      success: false,
-      message: "An error occurred while updating teacher profile",
-      error: error.message,
+    updates.certificates = updates.certificates.filter((cert) => {
+      if (!cert || typeof cert !== "object") return false;
+
+      if (cert.title) cert.title = String(cert.title).trim();
+      if (cert.issuer) cert.issuer = String(cert.issuer).trim();
+      if (cert.url) cert.url = String(cert.url).trim();
+
+      return cert.title && cert.issuer;
     });
   }
-}
+
+  if (updates.paymentMethods !== undefined) {
+    if (
+      typeof updates.paymentMethods !== "object" ||
+      Array.isArray(updates.paymentMethods)
+    ) {
+      throw new ValidationError("Payment methods must be an object");
+    }
+
+    const allowedMethods = ["click", "payme", "uzum", "bankAccount"];
+    const sanitized = {};
+
+    allowedMethods.forEach((method) => {
+      if (updates.paymentMethods[method]) {
+        sanitized[method] = String(updates.paymentMethods[method]).trim();
+      }
+    });
+
+    updates.paymentMethods = sanitized;
+  }
+
+  const updatedTeacher = await Teacher.findByIdAndUpdate(
+    id,
+    { $set: updates },
+    {
+      new: true,
+      runValidators: true,
+      select: "-password",
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Teacher profile updated successfully",
+    teacher: updatedTeacher,
+  });
+});
 
 export { findAll, findOne, update };
