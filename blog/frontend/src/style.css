@@ -402,9 +402,10 @@ body {
 
 .article-stats {
   display: flex;
-  gap: 15px;
+  justify-content: space-between;
   font-size: 0.85rem;
   color: #a0a0a0;
+  width: 100%;
 }
 
 .views {
@@ -511,6 +512,14 @@ body {
     flex-direction: column;
     gap: 15px;
     align-items: flex-start;
+  }
+
+  .article-stats {
+    width: 100%;
+  }
+
+  .related-stats {
+    width: 100%;
   }
 
   body {
@@ -710,4 +719,29 @@ body {
 
 .neon-dot:nth-child(8n) {
   animation-delay: -3.5s;
+}
+
+/* Related Articles Stats */
+.related-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  width: 100%;
+}
+
+.related-views {
+  color: #7EA2D4;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.related-views svg {
+  opacity: 0.8;
+}
+
+.related-date {
+  color: #8a8a8a;
 }

@@ -117,6 +117,12 @@ function updateLoadMoreButton() {
 function createArticleCard(article, index) {
   const card = document.createElement('div');
   card.className = 'article-card';
+  card.style.cursor = 'pointer';
+
+  // Make entire card clickable
+  card.addEventListener('click', () => {
+    openArticle(article.id);
+  });
 
   // Format date to DD/MM/YYYY
   const date = new Date(article.createdAt).toLocaleDateString('en-GB');
@@ -143,9 +149,6 @@ function createArticleCard(article, index) {
         </span>
         <span class="date">${date}</span>
       </div>
-      <button class="read-more-btn" onclick="openArticle('${article.id}')">
-        Batafsil o'qish
-      </button>
     </div>
   `;
 
@@ -330,7 +333,7 @@ function addArticlePageStyles() {
     .full-article-page ~ * .logo {
       position: static !important;
       transform: none !important;
-      margin: 0 auto !important;
+      margin: 0 !important;
     }
 
     /* Header buttons group styling */
@@ -588,9 +591,10 @@ function addArticlePageStyles() {
 
     .related-stats {
       display: flex;
-      flex-direction: column;
-      gap: 0.3rem;
+      justify-content: space-between;
+      align-items: center;
       font-size: 0.8rem;
+      width: 100%;
     }
 
     .related-views {
@@ -688,16 +692,61 @@ function addArticlePageStyles() {
         padding: 10px 20px;
       }
 
-      /* Mobile header buttons styling */
+      /* Mobile header layout - Article page override */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: row !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          gap: 10px !important;
+          padding: 0 20px !important;
+        }
+
+        .logo {
+          font-size: 24px !important;
+          margin: 0 !important;
+        }
+
+        .main-header {
+          height: 60px !important;
+          padding: 0 !important;
+        }
+
+        /* Force mobile button sizes */
+        .header-buttons-group .share-btn-header {
+          width: 50px !important;
+          height: 28px !important;
+          padding: 4px !important;
+          font-size: 10px !important;
+          border-radius: 6px !important;
+          min-width: 28px !important;
+        }
+
+        .header-buttons-group .back-to-blogs-btn-header {
+          width: 50px !important;
+          height: 28px !important;
+          padding: 4px !important;
+          font-size: 10px !important;
+          border-radius: 6px !important;
+          min-width: 28px !important;
+        }
+      }
+
       .header-buttons-group {
-        gap: 8px;
-        flex-wrap: wrap;
+        gap: 6px;
+        flex-wrap: nowrap;
+        margin-left: auto !important;
       }
 
       .share-btn-header {
-        padding: 10px 14px;
-        font-size: 12px;
-        border-radius: 20px;
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+        border-radius: 8px !important;
+        width: 28px !important;
+        height: 28px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
 
       .share-btn-header span {
@@ -705,8 +754,14 @@ function addArticlePageStyles() {
       }
 
       .back-to-blogs-btn-header {
-        padding: 8px 12px;
-        font-size: 12px;
+        padding: 6px 8px !important;
+        font-size: 11px !important;
+        border-radius: 8px !important;
+        width: 28px !important;
+        height: 28px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
       }
 
       .back-to-blogs-btn-header span {
@@ -745,7 +800,7 @@ async function loadRelatedArticles(currentArticle) {
           const content = article.subtitle || 'No description available';
 
           return `
-            <div class="related-article-card">
+            <div class="related-article-card" onclick="openArticle('${article.id}')" style="cursor: pointer;">
               <h4 class="related-article-title">${article.title}</h4>
               <p class="related-article-excerpt">${content}</p>
               <div class="related-article-meta">
@@ -758,9 +813,6 @@ async function loadRelatedArticles(currentArticle) {
                   </span>
                   <span class="related-date">${date}</span>
                 </div>
-                <button class="related-read-btn" onclick="openArticle('${article.id}')">
-                  Batafsil o'qish
-                </button>
               </div>
             </div>
           `;
