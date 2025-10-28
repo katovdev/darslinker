@@ -7,8 +7,8 @@
   "type": "module",
   "main": "main.js",
   "scripts": {
-    "dev": "node --watch main.js",
-    "start": "node --watch main.js",
+    "dev": "SET NODE_ENV=development && node --watch main.js",
+    "start": "SET NODE_ENV=production && node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
