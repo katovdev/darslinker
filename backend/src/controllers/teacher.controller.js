@@ -1,9 +1,8 @@
 import Teacher from "../models/teacher.model.js";
 import User from "../models/user.model.js";
 
-import mongoose from "mongoose";
-
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
+import { validateAndFindById } from "../utils/model.utils.js";
 
 async function findAll(req, res) {
   try {
@@ -27,25 +26,18 @@ async function findOne(req, res) {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid teacher ID format",
-      });
-    }
+    const teacher = await validateAndFindById(Teacher, id, "Teacher");
 
-    const teacher = await Teacher.findById(id);
-
-    if (!teacher) {
-      return res.status(404).json({
+    if (!teacher.success) {
+      return res.status(teacher.error.status).json({
         success: false,
-        message: "Teacher not found",
+        message: teacher.error.message,
       });
     }
 
     return res.status(200).json({
       success: true,
-      teacher,
+      teacher: teacher.data,
     });
   } catch (error) {
     return res.status(400).json({
@@ -65,19 +57,12 @@ async function update(req, res) {
     const { id } = req.params;
     const updates = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid teacher ID format",
-      });
-    }
+    const existingTeacher = await validateAndFindById(Teacher, id, "Teacher");
 
-    const existingTeacher = await Teacher.findById(id);
-
-    if (!existingTeacher) {
-      return res.status(404).json({
+    if (!existingTeacher.success) {
+      return res.status(existingTeacher.error.status).json({
         success: false,
-        message: "Teacher not found",
+        message: existingTeacher.error.message,
       });
     }
 
@@ -107,7 +92,7 @@ async function update(req, res) {
       }
     });
 
-    if (updates.email && updates.email !== existingTeacher.email) {
+    if (updates.email && updates.email !== existingTeacher.data.email) {
       const normalizedEmail = normalizeEmail(updates.email);
 
       const emailExists = await User.findOne({
@@ -125,7 +110,7 @@ async function update(req, res) {
       updates.email = normalizedEmail;
     }
 
-    if (updates.phone && updates.phone !== existingTeacher.phone) {
+    if (updates.phone && updates.phone !== existingTeacher.data.phone) {
       const normalizedPhone = normalizePhone(updates.phone);
 
       const phoneExists = await User.findOne({
@@ -222,7 +207,7 @@ async function update(req, res) {
       });
     }
 
-    return res.status(500).json({
+    return res.status(400).json({
       success: false,
       message: "An error occurred while updating teacher profile",
       error: error.message,

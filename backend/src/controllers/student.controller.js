@@ -1,7 +1,8 @@
 import Student from "../models/student.model.js";
 import User from "../models/user.model.js";
-import mongoose from "mongoose";
+
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
+import { validateAndFindById } from "../utils/model.utils.js";
 
 async function findAll(req, res) {
   try {
@@ -27,25 +28,18 @@ async function findOne(req, res) {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid student ID format",
-      });
-    }
+    const student = await validateAndFindById(Student, id, "Student");
 
-    const student = await Student.findById(id);
-
-    if (!student) {
-      return res.status(404).json({
+    if (!student.success) {
+      return res.status(student.error.status).json({
         success: false,
-        message: "Student not found",
+        message: student.error.message,
       });
     }
 
     return res.status(200).json({
       success: true,
-      student,
+      student: student.data,
     });
   } catch (error) {
     return res.status(400).json({
@@ -65,20 +59,12 @@ async function update(req, res) {
     const { id } = req.params;
     const updates = req.body;
 
-    // 1. Validate student ID format
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid student ID format",
-      });
-    }
+    const existingStudent = await validateAndFindById(Student, id, "Student");
 
-    const existingStudent = await Student.findById(id);
-
-    if (!existingStudent) {
-      return res.status(404).json({
+    if (!existingStudent.success) {
+      return res.status(existingStudent.error.status).json({
         success: false,
-        message: "Student not found",
+        message: existingStudent.error.message,
       });
     }
 
@@ -109,7 +95,7 @@ async function update(req, res) {
       }
     });
 
-    if (updates.email && updates.email !== existingStudent.email) {
+    if (updates.email && updates.email !== existingStudent.data.email) {
       const normalizedEmail = normalizeEmail(updates.email);
 
       const emailExists = await User.findOne({
@@ -127,7 +113,7 @@ async function update(req, res) {
       updates.email = normalizedEmail;
     }
 
-    if (updates.phone && updates.phone !== existingStudent.phone) {
+    if (updates.phone && updates.phone !== existingStudent.data.phone) {
       const normalizedPhone = normalizePhone(updates.phone);
 
       const phoneExists = await User.findOne({
@@ -231,21 +217,16 @@ async function remove(req, res) {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
+    const deletedStudent = await validateAndFindById(Student, id, "Student");
+
+    if (!deletedStudent.success) {
+      return res.status(deletedStudent.error.status).json({
         success: false,
-        message: "Invalid student ID format",
+        message: deletedStudent.error.message,
       });
     }
 
-    const student = await Student.findByIdAndDelete(id);
-
-    if (!student) {
-      return res.status(404).json({
-        success: false,
-        message: "Student not found",
-      });
-    }
+    await Student.findByIdAndDelete(id);
 
     return res.status(200).json({
       success: true,

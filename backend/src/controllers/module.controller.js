@@ -1,7 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { model } from "mongoose";
 
 import Module from "../models/module.model.js";
 import Course from "../models/course.model.js";
+import { validateAndFindById, validateObjectId } from "../utils/model.utils.js";
 
 /**
  * Create a new module
@@ -12,19 +13,11 @@ async function create(req, res) {
   try {
     const { courseId, title, description, order, durationMinutes } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(courseId)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid course ID format",
-      });
-    }
-
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({
-        success: false,
-        message: "Course not found",
-      });
+    const course = await validateAndFindById(Course, courseId, "Course");
+    if (!course.success) {
+      return res
+        .status(course.error.status)
+        .json({ success: false, message: course.error.message });
     }
 
     const existingModule = await Module.findOne({
@@ -80,11 +73,11 @@ async function findAll(req, res) {
     const filter = {};
 
     if (courseId) {
-      if (!mongoose.Types.ObjectId.isValid(courseId)) {
-        return res.status(400).json({
-          success: false,
-          message: "Invalid course ID format",
-        });
+      const validation = validateObjectId(courseId, "Course");
+      if (!validation.valid) {
+        return res
+          .status(validation.error.status)
+          .json({ success: false, message: validation.error.message });
       }
       filter.courseId = courseId;
     }
@@ -137,25 +130,20 @@ async function findOne(req, res) {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid module ID format",
-      });
-    }
+    const module = await validateAndFindById(Module, id, "Module", {
+      populate: "courseId",
+    });
 
-    const module = await Module.findById(id).populate("courseId");
-
-    if (!module) {
-      return res.status(404).json({
+    if (!module.success) {
+      return res.status(module.error.status).json({
         success: false,
-        message: "Module not found",
+        message: module.error.message,
       });
     }
 
     return res.status(200).json({
       success: true,
-      module,
+      module: module.data,
     });
   } catch (error) {
     return res.status(400).json({
@@ -175,18 +163,11 @@ async function findByCourse(req, res) {
   try {
     const { courseId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(courseId)) {
-      return res.status(400).json({
+    const course = await validateAndFindById(Course, courseId, "Course");
+    if (!course.success) {
+      return res.status(course.error.status).json({
         success: false,
-        message: "Invalid course ID format",
-      });
-    }
-
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({
-        success: false,
-        message: "Course not found",
+        message: course.error.message,
       });
     }
 
@@ -216,25 +197,18 @@ async function update(req, res) {
     const { id } = req.params;
     const updateData = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
+    const existingModule = await validateAndFindById(Module, id, "Module");
+
+    if (!existingModule.success) {
+      return res.status(existingModule.error.status).json({
         success: false,
-        message: "Invalid module ID format",
+        message: existingModule.error.message,
       });
     }
 
-    const existingModule = await Module.findById(id);
-
-    if (!existingModule) {
-      return res.status(404).json({
-        success: false,
-        message: "Module not found",
-      });
-    }
-
-    if (updateData.title && updateData.title !== existingModule.title) {
+    if (updateData.title && updateData.title !== existingModule.data.title) {
       const duplicateModule = await Module.findOne({
-        courseId: existingModule.courseId,
+        courseId: existingModule.data.courseId,
         title: updateData.title.trim(),
         _id: { $ne: id },
       });
@@ -276,21 +250,16 @@ async function remove(req, res) {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({
+    const deletedModule = await validateAndFindById(Module, id, "Module");
+
+    if (!deletedModule.success) {
+      return res.status(deletedModule.error.status).json({
         success: false,
-        message: "Invalid module ID format",
+        message: deletedModule.error.message,
       });
     }
 
-    const deletedModule = await Module.findByIdAndDelete(id);
-
-    if (!deletedModule) {
-      return res.status(404).json({
-        success: false,
-        message: "Module not found",
-      });
-    }
+    await Module.findByIdAndDelete(id);
 
     return res.status(200).json({
       success: true,
