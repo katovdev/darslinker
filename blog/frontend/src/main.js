@@ -9,6 +9,19 @@ class BlogApp {
   init() {
     console.log('Initializing Blog Frontend...');
 
+    // Set URL path to /blog if we're on root path
+    if (window.location.pathname === '/' || window.location.pathname === '') {
+      const baseUrl = window.location.origin;
+      const searchParams = window.location.search;
+      const hash = window.location.hash;
+
+      // Construct new URL with /blog path
+      const newUrl = `${baseUrl}/blog${searchParams}${hash}`;
+
+      // Update URL without page reload
+      window.history.replaceState({}, '', newUrl);
+    }
+
     // Check if URL contains article parameter
     const urlParams = new URLSearchParams(window.location.search);
     const articleId = urlParams.get('article');
