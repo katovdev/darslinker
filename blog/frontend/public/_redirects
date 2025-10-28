@@ -1,9 +1,11 @@
-# Redirect root to /blog
-/ /blog 301
-
-# Handle blog routes
+# Handle blog routes (main blog at /blog)
 /blog/* /index.html 200
 /blog /index.html 200
 
 # Handle article direct links
-/?article=* /index.html 200
+/blog?article=* /index.html 200
+/?article=* /blog?article=:splat 301
+
+# Future: main site will be served at root
+# For now, redirect root to blog
+/ /blog 301

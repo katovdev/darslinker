@@ -209,7 +209,7 @@ export function resetToDefaultSEO() {
     title: 'Darslinker Blog - O\'qituvchilar uchun maqolalar',
     description: 'O\'qituvchilar uchun foydali maqolalar, pedagogik maslahatlar va ta\'lim sohasidagi eng so\'nggi yangiliklarni o\'qing. Video dars joylash, onlayn dars yaratish va o\'qituvchilar uchun platforma haqida ma\'lumotlar.',
     keywords: 'video dars joylash, onlayn dars joylash, onlayn dars yaratish, o\'qituvchilar uchun platforma, o\'quv markazi uchun platforma, onlayn dars yozish usullari, onlayn dars tayyorlash, video dars sotish, ta\'lim, o\'qituvchi, dars, maqola, pedagogika, metodika, Darslinker, blog',
-    url: 'https://darslinker.uz',
+    url: 'https://darslinker.uz/blog',
     type: 'website',
     image: 'https://darslinker.uz/og-image.jpg'
   });
@@ -219,7 +219,7 @@ export function resetToDefaultSEO() {
  * Generate SEO data for article (Hybrid: Manual first, Auto fallback)
  */
 export function generateArticleSEO(article) {
-  const articleUrl = `https://darslinker.uz?article=${article.id}`;
+  const articleUrl = `https://darslinker.uz/blog?article=${article.id}`;
 
   // Get article tags
   const tags = article.tags ? article.tags.map(tag => tag.value || tag) : [];

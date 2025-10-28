@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://darslinker.uz/sitemap.xml
+Sitemap: https://darslinker.uz/blog/sitemap.xml
 
 # Crawl-delay for polite crawling
 Crawl-delay: 1

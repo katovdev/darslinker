@@ -246,7 +246,7 @@ async function showArticlePage(articleId) {
       }
 
       // Update browser URL for sharing
-      const articleUrl = `${window.location.origin}/?article=${articleId}`;
+      const articleUrl = `${window.location.origin}/blog?article=${articleId}`;
       window.history.pushState({ articleId }, article.title, articleUrl);
 
       // Replace entire content with article page
@@ -852,8 +852,8 @@ window.goBackToBlogs = function() {
     headerButtonsGroup.remove();
   }
 
-  // Reset URL to home
-  window.history.pushState({}, '', window.location.origin);
+  // Reset URL to blog home
+  window.history.pushState({}, '', `${window.location.origin}/blog`);
 
   // Restore blog page instead of reloading
   initBlogPage();
