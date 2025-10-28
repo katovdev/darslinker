@@ -27,10 +27,7 @@ class App {
   }
 
   setupRoutes() {
-    router.register('/', () => {
-      // Redirect to blog when accessing root domain
-      router.navigate('/blog');
-    });
+    router.register('/', initHomePage);
     router.register('/login', initLoginPage);
     router.register('/password', initPasswordPage);
     router.register('/register', initRegisterPage);
