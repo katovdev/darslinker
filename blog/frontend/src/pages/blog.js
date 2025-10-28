@@ -3,6 +3,7 @@ import darslinkerLogo from '../assets/images/darslinker.png';
 import image0010 from '../assets/images/0010 1.png';
 import image0005 from '../assets/images/0005 1.png';
 import { API_URL } from '../config.js';
+import { updateSEO, resetToDefaultSEO, generateArticleSEO } from '../utils/seo.js';
 
 // Global variables for pagination
 let allArticles = [];
@@ -43,6 +44,9 @@ export function initBlogPage() {
   // Reset pagination
   allArticles = [];
   currentPage = 0;
+
+  // Reset SEO to default (homepage)
+  resetToDefaultSEO();
 
   // Load initial articles
   loadArticles();
@@ -281,6 +285,10 @@ async function showArticlePage(articleId) {
 
       // Add article page styles
       addArticlePageStyles();
+
+      // Update SEO for this article
+      const seoData = generateArticleSEO(article);
+      updateSEO(seoData);
 
       // Scroll to top of page
       window.scrollTo(0, 0);
