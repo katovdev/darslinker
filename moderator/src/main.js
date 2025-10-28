@@ -15,6 +15,212 @@ const api = axios.create({
 // Global state
 let currentEditingPost = null;
 
+// Authentication Configuration
+const VALID_CREDENTIALS = {
+  phone: '+998 99 000 99 00',
+  password: 'moderator_darslinker'
+};
+
+// Authentication System
+class AuthSystem {
+  constructor() {
+    this.isAuthenticated = this.checkAuthStatus();
+    this.init();
+  }
+
+  init() {
+    if (this.isAuthenticated) {
+      this.showModeratorInterface();
+    } else {
+      this.showLoginPage();
+    }
+    this.setupLoginForm();
+  }
+
+  checkAuthStatus() {
+    return localStorage.getItem('moderator_authenticated') === 'true';
+  }
+
+  showLoginPage() {
+    document.getElementById('login-page').style.display = 'flex';
+    document.getElementById('moderator-interface').style.display = 'none';
+
+    // Focus on phone input
+    setTimeout(() => {
+      const phoneInput = document.getElementById('phone-number');
+      phoneInput.focus();
+    }, 100);
+  }
+
+  showModeratorInterface() {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('moderator-interface').style.display = 'block';
+    // Initialize moderator app if not already initialized
+    if (!window.moderatorApp) {
+      window.moderatorApp = new ModeratorApp();
+    }
+  }
+
+  setupLoginForm() {
+    const loginForm = document.getElementById('login-form');
+    const phoneInput = document.getElementById('phone-number');
+    const passwordInput = document.getElementById('password');
+    const passwordToggle = document.getElementById('password-toggle');
+    const eyeIcon = passwordToggle.querySelector('.eye-icon');
+    const eyeOffIcon = passwordToggle.querySelector('.eye-off-icon');
+    const errorDiv = document.getElementById('login-error');
+
+    // Format phone input - new logic for separated input
+    phoneInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
+
+      // Limit to 9 digits max
+      if (value.length > 9) {
+        value = value.substring(0, 9);
+      }
+
+      // Format the number without +998 prefix
+      const formatted = this.formatPhoneNumberOnly(value);
+      e.target.value = formatted;
+    });
+
+    // Password visibility toggle
+    passwordToggle.addEventListener('click', () => {
+      const isPassword = passwordInput.type === 'password';
+
+      if (isPassword) {
+        // Show password
+        passwordInput.type = 'text';
+        eyeIcon.style.display = 'none';
+        eyeOffIcon.style.display = 'block';
+      } else {
+        // Hide password
+        passwordInput.type = 'password';
+        eyeIcon.style.display = 'block';
+        eyeOffIcon.style.display = 'none';
+      }
+
+      // Keep focus on input
+      passwordInput.focus();
+    });
+
+    // Handle form submission
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const fullPhoneNumber = '+998 ' + phoneInput.value;
+      this.handleLogin(fullPhoneNumber, passwordInput.value, errorDiv);
+    });
+  }
+
+  formatPhoneNumber(value) {
+    if (value.length === 0) return '+998 ';
+
+    let formatted = '+998 ';
+
+    // Add first 2 digits
+    if (value.length >= 1) {
+      formatted += value.substring(0, Math.min(2, value.length));
+    }
+
+    // Add space and next 3 digits
+    if (value.length >= 3) {
+      formatted += ' ' + value.substring(2, Math.min(5, value.length));
+    }
+
+    // Add space and next 2 digits
+    if (value.length >= 6) {
+      formatted += ' ' + value.substring(5, Math.min(7, value.length));
+    }
+
+    // Add space and last 2 digits
+    if (value.length >= 8) {
+      formatted += ' ' + value.substring(7, Math.min(9, value.length));
+    }
+
+    return formatted;
+  }
+
+  formatPhoneNumberOnly(value) {
+    if (value.length === 0) return '';
+
+    let formatted = '';
+
+    // Add first 2 digits
+    if (value.length >= 1) {
+      formatted += value.substring(0, Math.min(2, value.length));
+    }
+
+    // Add space and next 3 digits
+    if (value.length >= 3) {
+      formatted += ' ' + value.substring(2, Math.min(5, value.length));
+    }
+
+    // Add space and next 2 digits
+    if (value.length >= 6) {
+      formatted += ' ' + value.substring(5, Math.min(7, value.length));
+    }
+
+    // Add space and last 2 digits
+    if (value.length >= 8) {
+      formatted += ' ' + value.substring(7, Math.min(9, value.length));
+    }
+
+    return formatted;
+  }
+
+  handleLogin(phone, password, errorDiv) {
+    // Hide previous error
+    errorDiv.style.display = 'none';
+
+    // Validate credentials
+    if (phone === VALID_CREDENTIALS.phone && password === VALID_CREDENTIALS.password) {
+      // Successful login
+      localStorage.setItem('moderator_authenticated', 'true');
+      this.isAuthenticated = true;
+      this.showModeratorInterface();
+    } else {
+      // Invalid credentials
+      errorDiv.style.display = 'block';
+
+      // Clear password field
+      document.getElementById('password').value = '';
+
+      // Shake animation for error
+      errorDiv.style.animation = 'shake 0.5s ease-in-out';
+      setTimeout(() => {
+        errorDiv.style.animation = '';
+      }, 500);
+    }
+  }
+
+  logout() {
+    localStorage.removeItem('moderator_authenticated');
+    this.isAuthenticated = false;
+    this.showLoginPage();
+
+    // Clear form
+    document.getElementById('phone-number').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('login-error').style.display = 'none';
+
+    // Reset password visibility toggle
+    const passwordInput = document.getElementById('password');
+    const passwordToggle = document.getElementById('password-toggle');
+    const eyeIcon = passwordToggle.querySelector('.eye-icon');
+    const eyeOffIcon = passwordToggle.querySelector('.eye-off-icon');
+
+    passwordInput.type = 'password';
+    eyeIcon.style.display = 'block';
+    eyeOffIcon.style.display = 'none';
+
+    // Reset cursor position
+    setTimeout(() => {
+      const phoneInput = document.getElementById('phone-number');
+      phoneInput.focus();
+    }, 100);
+  }
+}
+
 class ModeratorApp {
   constructor() {
     this.currentSection = 'blog';
@@ -889,10 +1095,11 @@ class ModeratorApp {
 
 // Initialize app
 let moderatorApp;
+let authSystem;
 
 document.addEventListener('DOMContentLoaded', () => {
-  moderatorApp = new ModeratorApp();
-  window.moderatorApp = moderatorApp; // Make it globally accessible
+  authSystem = new AuthSystem();
+  window.authSystem = authSystem; // Make it globally accessible for logout
 });
 
 export { api };

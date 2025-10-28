@@ -15,8 +15,7 @@ async function bootstrap() {
       'https://verdant-bubblegum-cd3991.netlify.app',  // Blog frontend (prod)
       'https://heartfelt-centaur-5fc321.netlify.app',  // Moderator interface (prod)
       'https://moderator.darslinker.uz',  // Moderator interface (custom domain)
-      'https://darslinker.uz',  // Main domain
-      'https://darslinker.uz/blog',  // Blog subfolder (current)
+      'https://darslinker.uz',  // Main domain + blog subfolder
     ],
     credentials: true,
   });
