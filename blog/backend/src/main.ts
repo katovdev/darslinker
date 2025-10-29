@@ -13,7 +13,7 @@ async function bootstrap() {
       'http://localhost:3001',  // Moderator interface (old dev)
       'http://localhost:3003',  // Moderator interface (new dev)
       'http://localhost:3004',  // Blog frontend (current dev)
-      'https://darslinker.vercel.app',  // Blog frontend (prod)
+      'https://darslinker-mvhe.vercel.app',  // Blog frontend (prod)
       'https://heartfelt-centaur-5fc321.netlify.app',  // Moderator interface (prod)
       'https://moderator.darslinker.uz',  // Moderator interface (custom domain)
       'https://darslinker.uz',  // Main domain + blog subfolder
