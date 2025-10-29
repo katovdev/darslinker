@@ -464,17 +464,17 @@ function addArticlePageStyles() {
 
     .share-btn-header:hover {
       background: linear-gradient(135deg, #4a7bb8, #6891c4, #4a7bb8);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(126, 162, 212, 0.5);
+      // transform: translateY(-2px);
+      // box-shadow: 0 8px 25px rgba(126, 162, 212, 0.5);
     }
 
     .share-btn-header svg {
       transition: transform 0.3s ease;
     }
 
-    .share-btn-header:hover svg {
-      transform: rotate(360deg) scale(1.1);
-    }
+    // .share-btn-header:hover svg {
+    //   transform: rotate(360deg) scale(1.1);
+    // }
 
     /* Back button header - Border design */
     .back-to-blogs-btn-header {
@@ -499,8 +499,8 @@ function addArticlePageStyles() {
     .back-to-blogs-btn-header:hover {
       background: #7EA2D4;
       color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(126, 162, 212, 0.3);
+      // transform: translateY(-2px);
+      // box-shadow: 0 5px 15px rgba(126, 162, 212, 0.3);
     }
 
     .article-container {
