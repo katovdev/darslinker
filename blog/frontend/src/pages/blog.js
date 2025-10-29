@@ -137,7 +137,7 @@ async function loadArticles() {
 
   // Only show loading for initial load
   if (currentPage === 0) {
-    articlesGrid.innerHTML = '<div class="loading">Loading articles...</div>';
+    articlesGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Maqolalar yuklanmoqda...</div>';
   }
 
   try {
@@ -155,12 +155,12 @@ async function loadArticles() {
       displayArticlesPage();
       updateLoadMoreButton();
     } else {
-      articlesGrid.innerHTML = '<div class="loading">No articles found. Create your first article in the moderator panel!</div>';
+      articlesGrid.innerHTML = '<div class="loading">Hech qanday maqola topilmadi.</div>';
       loadMoreBtn.style.display = 'none';
     }
   } catch (error) {
     console.error('Error loading articles:', error);
-    articlesGrid.innerHTML = '<div class="loading">Error loading articles. Please check the backend connection.</div>';
+    articlesGrid.innerHTML = '<div class="loading">Maqolalarni yuklashda xatolik yuz berdi.</div>';
     loadMoreBtn.style.display = 'none';
   }
 }

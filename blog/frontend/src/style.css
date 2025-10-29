@@ -775,3 +775,29 @@ body {
 .related-date {
   color: #8a8a8a;
 }
+
+/* Loading Spinner Styles */
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 2rem;
+  color: #7EA2D4;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(126, 162, 212, 0.3);
+  border-top: 2px solid #7EA2D4;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
