@@ -764,76 +764,40 @@ class ModeratorApp {
 
       // Add sections from post data with new dynamic structure
       if (post.sections && post.sections.length > 0) {
-        // Group sections by type
-        const mainSections = [];
-        const h2Sections = [];
-        const h3Sections = [];
-
+        let sectionCounter = 0;
         post.sections.forEach(section => {
           if (section.header) {
-            mainSections.push(section);
-          } else if (section.h2) {
-            h2Sections.push(section);
-          } else if (section.h3) {
-            h3Sections.push(section);
-          }
-        });
-
-        // Create main sections first
-        let sectionCounter = 0;
-        mainSections.forEach(section => {
-          this.addContentSection();
-          sectionCounter++;
-
-          // Fill main section data
-          if (section.header) {
+            this.addContentSection();
+            sectionCounter++;
             document.querySelector(`input[name="section-header-${sectionCounter}"]`).value = section.header;
+          } else if (section.h2) {
+            if (sectionCounter === 0) {
+              this.addContentSection();
+              sectionCounter++;
+            }
+            const h2List = document.getElementById(`h2-list-${sectionCounter}`);
+            const h2Count = h2List.children.length + 1;
+            this.addH2Subsection(sectionCounter);
+            const h2HeaderInput = document.querySelector(`input[name="section-${sectionCounter}-h2-${h2Count}-header"]`);
+            const h2ContentInput = document.querySelector(`textarea[name="section-${sectionCounter}-h2-${h2Count}-content"]`);
+            if (h2HeaderInput) h2HeaderInput.value = section.h2;
+            if (h2ContentInput) h2ContentInput.value = section.content;
+          } else if (section.h3) {
+            if (sectionCounter === 0) {
+              this.addContentSection();
+              sectionCounter++;
+            }
+            const h3List = document.getElementById(`h3-list-${sectionCounter}`);
+            const h3Count = h3List.children.length + 1;
+            this.addH3Subsection(sectionCounter);
+            const h3HeaderInput = document.querySelector(`input[name="section-${sectionCounter}-h3-${h3Count}-header"]`);
+            const h3ContentInput = document.querySelector(`textarea[name="section-${sectionCounter}-h3-${h3Count}-content"]`);
+            if (h3HeaderInput) h3HeaderInput.value = section.h3;
+            if (h3ContentInput) h3ContentInput.value = section.content;
           }
-          // Note: No content field anymore, only header
         });
 
-        // Add H2 sections to the first main section (for backward compatibility)
-        if (h2Sections.length > 0 && sectionCounter > 0) {
-          h2Sections.forEach((h2Section, index) => {
-            this.addH2Subsection(1); // Add to first section
-            const h2Index = index + 1;
-
-            setTimeout(() => {
-              const h2HeaderInput = document.querySelector(`input[name="section-1-h2-${h2Index}-header"]`);
-              const h2ContentInput = document.querySelector(`textarea[name="section-1-h2-${h2Index}-content"]`);
-
-              if (h2HeaderInput && h2Section.h2) {
-                h2HeaderInput.value = h2Section.h2;
-              }
-              if (h2ContentInput && h2Section.content) {
-                h2ContentInput.value = h2Section.content;
-              }
-            }, 50);
-          });
-        }
-
-        // Add H3 sections to the first main section (for backward compatibility)
-        if (h3Sections.length > 0 && sectionCounter > 0) {
-          h3Sections.forEach((h3Section, index) => {
-            this.addH3Subsection(1); // Add to first section
-            const h3Index = index + 1;
-
-            setTimeout(() => {
-              const h3HeaderInput = document.querySelector(`input[name="section-1-h3-${h3Index}-header"]`);
-              const h3ContentInput = document.querySelector(`textarea[name="section-1-h3-${h3Index}-content"]`);
-
-              if (h3HeaderInput && h3Section.h3) {
-                h3HeaderInput.value = h3Section.h3;
-              }
-              if (h3ContentInput && h3Section.content) {
-                h3ContentInput.value = h3Section.content;
-              }
-            }, 100);
-          });
-        }
-
-        // If no main sections, create at least one
-        if (mainSections.length === 0) {
+        if (sectionCounter === 0) {
           this.addContentSection();
         }
       } else {
