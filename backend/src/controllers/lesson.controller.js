@@ -1,16 +1,14 @@
-import mongoose from "mongoose";
-
 import Lesson from "../models/lesson.model.js";
 import Module from "../models/module.model.js";
 
-import { validateAndFindById, validateObjectId } from "../utils/model.utils.js";
+import {
+  handleValidationResult,
+  validateAndFindById,
+  validateObjectId,
+} from "../utils/model.utils.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
-import {
-  BadRequestError,
-  ConflictError,
-  NotFoundError,
-} from "../utils/error.utils.js";
+import { ConflictError } from "../utils/error.utils.js";
 
 /**
  * Create a new lesson
@@ -22,13 +20,7 @@ const create = catchAsync(async (req, res) => {
     req.body;
 
   const findModule = await validateAndFindById(Module, moduleId, "Module");
-  if (!findModule.success) {
-    if (findModule.error.status === 400) {
-      throw new BadRequestError(findModule.error.message);
-    } else if (findModule.error.status === 404) {
-      throw new NotFoundError(findModule.error.message);
-    }
-  }
+  const findModuleData = handleValidationResult(findModule);
 
   const lesson = await Lesson.create({
     moduleId,
@@ -63,13 +55,7 @@ const findAll = catchAsync(async (req, res) => {
 
   if (moduleId) {
     const validation = validateObjectId(moduleId, "Module");
-    if (!validation.valid) {
-      if (validation.error.status === 400) {
-        throw new BadRequestError(validation.error.message);
-      } else if (validation.error.status === 404) {
-        throw new NotFoundError(validation.error.message);
-      }
-    }
+    const validationData = handleValidationResult(validation);
     filter.moduleId = moduleId;
   }
 
@@ -116,15 +102,9 @@ const findOne = catchAsync(async (req, res) => {
   const lesson = await validateAndFindById(Lesson, id, "Lesson", {
     populate: "moduleId",
   });
-  if (!lesson.success) {
-    if (lesson.error.status === 400) {
-      throw new BadRequestError(lesson.error.message);
-    } else if (lesson.error.status === 404) {
-      throw new NotFoundError(lesson.error.message);
-    }
-  }
+  const lessonData = handleValidationResult(lesson);
 
-  res.status(200).json({ success: true, lesson: lesson.data });
+  res.status(200).json({ success: true, lesson: lessonData });
 });
 
 /**
@@ -136,13 +116,7 @@ const findByModule = catchAsync(async (req, res) => {
   const { moduleId } = req.params;
 
   const module = await validateAndFindById(Module, moduleId, "Module");
-  if (!module.success) {
-    if (module.error.status === 400) {
-      throw new BadRequestError(module.error.message);
-    } else if (module.error.status === 404) {
-      throw new NotFoundError(module.error.message);
-    }
-  }
+  const moduleData = handleValidationResult(module);
 
   const lessons = await Lesson.find({ moduleId })
     .populate("moduleId")
@@ -168,17 +142,11 @@ const update = catchAsync(async (req, res) => {
   const existingLesson = await validateAndFindById(Lesson, id, "Lesson", {
     populate: "moduleId",
   });
-  if (!existingLesson.success) {
-    if (existingLesson.error.status === 400) {
-      throw new BadRequestError(existingLesson.error.message);
-    } else if (existingLesson.error.status === 404) {
-      throw new NotFoundError(existingLesson.error.message);
-    }
-  }
+  const existingLessonData = handleValidationResult(existingLesson);
 
-  if (updateData.title && updateData.title !== existingLesson.data.title) {
+  if (updateData.title && updateData.title !== existingLessonData.title) {
     const duplicateLesson = await Lesson.findOne({
-      moduleId: existingLesson.data.moduleId,
+      moduleId: existingLessonData.moduleId,
       title: updateData.title.trim(),
       _id: { $ne: id },
     });
@@ -210,13 +178,7 @@ const remove = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const deletedLesson = await validateAndFindById(Lesson, id, "Lesson");
-  if (!deletedLesson.success) {
-    if (deletedLesson.error.status === 400) {
-      throw new BadRequestError(deletedLesson.error.message);
-    } else if (deletedLesson.error.status === 404) {
-      throw new NotFoundError(deletedLesson.error.message);
-    }
-  }
+  const deletedLessonData = handleValidationResult(deletedLesson);
 
   await Lesson.findByIdAndDelete(id);
 

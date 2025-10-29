@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import logger from "./logger.js";
+
 import { MONGODB_ATLAS_URL, NODE_ENV } from "./env.js";
 
 /**
@@ -14,45 +16,29 @@ const connectToDB = async () => {
 
     const conn = await mongoose.connect(MONGODB_ATLAS_URL, options);
 
-    console.log(`✅ MongoDB connected: ${conn.connection.host}`);
-    console.log(`📊 Database: ${conn.connection.name}`);
+    logger.info("MongoDB connected", {
+      host: conn.connection.host,
+      database: conn.connection.name,
+    });
 
     mongoose.connection.on("connected", () => {
-      if (NODE_ENV === "development") {
-        console.log("🔗 Mongoose connected to MongoDB");
-      }
+      logger.info("Mongoose reconnected to MongoDB");
     });
 
     mongoose.connection.on("error", (err) => {
-      console.error(`❌ MongoDB connection error: ${err.message}`);
-      if (NODE_ENV === "development") {
-        console.error("Error details:", err);
-      }
+      logger.error("MongoDB connection error", {
+        message: err.message,
+      });
     });
 
     mongoose.connection.on("disconnected", () => {
-      console.warn("⚠️  MongoDB disconnected. Attempting to reconnect...");
-    });
-
-    process.on("SIGINT", async () => {
-      try {
-        await mongoose.connection.close();
-        console.log("🔌 MongoDB connection closed through app termination");
-        process.exit(0);
-      } catch (err) {
-        console.error("❌ Error closing MongoDB connection:", err.message);
-        process.exit(1);
-      }
+      logger.warn("MongoDB disconnected. Attempting to reconnect...");
     });
   } catch (error) {
-    console.error("❌ Failed to connect to MongoDB");
-    console.error(`Error: ${error.message}`);
-
-    if (NODE_ENV === "development") {
-      console.error("Full error details:", error);
-    }
-
-    console.error("🚫 Server cannot start without database connection");
+    logger.error("Failed to connect to MongoDB", {
+      message: error.message,
+      stack: error.stack,
+    });
     process.exit(1);
   }
 };

@@ -2,7 +2,10 @@ import Teacher from "../models/teacher.model.js";
 import User from "../models/user.model.js";
 
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
-import { validateAndFindById } from "../utils/model.utils.js";
+import {
+  handleValidationResult,
+  validateAndFindById,
+} from "../utils/model.utils.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
 import {
@@ -31,18 +34,11 @@ const findOne = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const teacher = await validateAndFindById(Teacher, id, "Teacher");
-
-  if (!teacher.success) {
-    if (teacher.error.status === 400) {
-      throw new BadRequestError(teacher.error.message);
-    } else if (teacher.error.status === 404) {
-      throw new NotFoundError(teacher.error.message);
-    }
-  }
+  const teacherData = handleValidationResult(teacher);
 
   res.status(200).json({
     success: true,
-    teacher: teacher.data,
+    teacher: teacherData,
   });
 });
 
@@ -55,14 +51,7 @@ const update = catchAsync(async (req, res) => {
   const updates = req.body;
 
   const existingTeacher = await validateAndFindById(Teacher, id, "Teacher");
-
-  if (!existingTeacher.success) {
-    if (existingTeacher.error.status === 400) {
-      throw new BadRequestError(existingTeacher.error.message);
-    } else if (existingTeacher.error.status === 404) {
-      throw new NotFoundError(existingTeacher.error.message);
-    }
-  }
+  const existingTeacherData = handleValidationResult(existingTeacher);
 
   const forbiddenFields = [
     "password",
@@ -90,7 +79,7 @@ const update = catchAsync(async (req, res) => {
     }
   });
 
-  if (updates.email && updates.email !== existingTeacher.data.email) {
+  if (updates.email && updates.email !== existingTeacherData.email) {
     const normalizedEmail = normalizeEmail(updates.email);
 
     const emailExists = await User.findOne({
@@ -105,7 +94,7 @@ const update = catchAsync(async (req, res) => {
     updates.email = normalizedEmail;
   }
 
-  if (updates.phone && updates.phone !== existingTeacher.data.phone) {
+  if (updates.phone && updates.phone !== existingTeacherData.phone) {
     const normalizedPhone = normalizePhone(updates.phone);
 
     const phoneExists = await User.findOne({

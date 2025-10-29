@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+import { BadRequestError, NotFoundError } from "./error.utils.js";
+
 /**
  * Validate ObjectId and find document by ID
  * @param {mongoose.Model} Model - Mongoose model to search in
@@ -82,4 +84,16 @@ function validateObjectId(id, entityName) {
   };
 }
 
-export { validateAndFindById, validateObjectId };
+function handleValidationResult(result) {
+  if (!result.success) {
+    if (result.error.status === 400) {
+      throw new BadRequestError(result.error.message);
+    } else if (result.error.status === 404) {
+      throw new NotFoundError(result.error.message);
+    }
+    throw new BadRequestError(result.error.message);
+  }
+  return result.data;
+}
+
+export { validateAndFindById, validateObjectId, handleValidationResult };

@@ -44,4 +44,9 @@ const assignmentSchema = new mongoose.Schema(
 
 const Assignment = mongoose.model("Assignment", assignmentSchema);
 
+assignmentSchema.index({ courseId: 1 });
+assignmentSchema.index({ dueDate: 1 });
+assignmentSchema.index({ createdBy: 1 });
+assignmentSchema.index({ status: 1 });
+
 export default Assignment;

@@ -184,7 +184,7 @@ const studentRouter = Router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-studentRouter.get("/", findAll);
+studentRouter.get("/", authenticate, findAll);
 
 /**
  * @swagger

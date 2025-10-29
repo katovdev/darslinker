@@ -1,10 +1,11 @@
 import { Router } from "express";
 import { validate } from "../middlewares/validation.middleware.js";
 import {
-  changePasswordSchema,
-  loginSchema,
+  checkUserSchema,
   registerSchema,
-} from "../validations/user.validation.js";
+  loginSchema,
+  changePasswordSchema,
+} from "../validations/auth.validation.js";
 import {
   register,
   verifyRegistrationOtp,
@@ -265,7 +266,7 @@ const authRouter = Router();
  *               message: An error occurred while checking the user
  *               error: Detailed error message
  */
-authRouter.post("/check-user", checkUser);
+authRouter.post("/check-user", validate(checkUserSchema), checkUser);
 
 /**
  * @swagger

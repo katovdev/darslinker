@@ -7,7 +7,11 @@ import {
 } from "../utils/error.utils.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
-import { validateAndFindById, validateObjectId } from "../utils/model.utils.js";
+import {
+  handleValidationResult,
+  validateAndFindById,
+  validateObjectId,
+} from "../utils/model.utils.js";
 
 /**
  * Create a new assignment
@@ -26,13 +30,7 @@ const create = catchAsync(async (req, res) => {
   } = req.body;
 
   const findCourse = await validateAndFindById(Course, courseId, "Course");
-  if (!findCourse.success) {
-    if (findCourse.error.status === 400) {
-      throw new BadRequestError(findCourse.error.message);
-    } else if (findCourse.error.status === 404) {
-      throw new NotFoundError(findCourse.error.message);
-    }
-  }
+  const findCourseData = handleValidationResult(findCourse);
 
   const assignment = await Assignment.create({
     courseId,
@@ -70,13 +68,7 @@ const findAll = catchAsync(async (req, res) => {
 
   if (courseId) {
     const validation = validateObjectId(courseId, "Course");
-    if (!validation.valid) {
-      if (validation.error.status === 400) {
-        throw new BadRequestError(validation.error.message);
-      } else if (validation.error.status === 404) {
-        throw new NotFoundError(validation.error.message);
-      }
-    }
+    const validationData = handleValidationResult(validation);
     filter.courseId = courseId;
   }
 
@@ -126,22 +118,16 @@ const submitAssignment = catchAsync(async (req, res) => {
     id,
     "Assignment"
   );
-  if (!findAssignment.success) {
-    if (findAssignment.error.status === 400) {
-      throw new BadRequestError(findAssignment.error.message);
-    } else if (findAssignment.error.status === 404) {
-      throw new NotFoundError(findAssignment.error.message);
-    }
-  }
+  const findAssignmentData = handleValidationResult(findAssignment);
 
   const currentDate = new Date();
-  const dueDate = new Date(findAssignment.data.dueDate);
+  const dueDate = new Date(findAssignmentData.dueDate);
 
   if (currentDate > dueDate) {
     throw new BadRequestError("Assignment submission has passed");
   }
 
-  const existingSubmission = findAssignment.data.submissions.find(
+  const existingSubmission = findAssignmentData.submissions.find(
     (sub) => sub.studentId.toString() === studentId
   );
   if (existingSubmission) {
@@ -179,15 +165,9 @@ const gradeAssignment = catchAsync(async (req, res) => {
     id,
     "Assignment"
   );
-  if (!findAssignment.success) {
-    if (findAssignment.error.status === 400) {
-      throw new BadRequestError(findAssignment.error.message);
-    } else if (findAssignment.error.status === 404) {
-      throw new NotFoundError(findAssignment.error.message);
-    }
-  }
+  const findAssignmentData = handleValidationResult(findAssignment);
 
-  const submissionIndex = findAssignment.data.submissions.findIndex(
+  const submissionIndex = findAssignmentData.submissions.findIndex(
     (sub) => sub.studentId.toString() === studentId
   );
 
@@ -195,9 +175,9 @@ const gradeAssignment = catchAsync(async (req, res) => {
     throw new NotFoundError("Student submission not found for this assignment");
   }
 
-  if (grade > findAssignment.data.maxGrade) {
+  if (grade > findAssignmentData.maxGrade) {
     throw new BadRequestError(
-      `Grade cannot exceed maximum grade of ${findAssignment.data.maxGrade}`
+      `Grade cannot exceed maximum grade of ${findAssignmentData.maxGrade}`
     );
   }
 

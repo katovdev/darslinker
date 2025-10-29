@@ -18,4 +18,6 @@ const lessonSchema = new mongoose.Schema(
 
 const Lesson = mongoose.model("Lesson", lessonSchema);
 
+lessonSchema.index({ moduleId: 1, order: 1 });
+
 export default Lesson;

@@ -7,7 +7,7 @@ const courseSchema = new mongoose.Schema(
       required: [true, "Course title is required"],
       trim: true,
     },
-    shortDesciption: {
+    shortDescription: {
       type: String,
       required: [true, "Course short description is required"],
       trim: true,
@@ -50,6 +50,11 @@ const courseSchema = new mongoose.Schema(
       enum: ["paid", "free", "active", "draft", "archived"],
       default: "free",
     },
+    status: {
+      type: String,
+      enum: ["active", "draft", "archived"],
+      default: "draft",
+    },
     coursePrice: {
       type: Number,
       required: [true, "Course price is required"],
@@ -66,5 +71,13 @@ const courseSchema = new mongoose.Schema(
 );
 
 const Course = mongoose.model("Course", courseSchema);
+
+courseSchema.index({ title: 1 });
+courseSchema.index({ category: 1 });
+courseSchema.index({ level: 1 });
+courseSchema.index({ courseType: 1 });
+courseSchema.index({ createdAt: 1 });
+courseSchema.index({ category: 1, level: 1 });
+courseSchema.index({ courseType: 1, status: 1 });
 
 export default Course;
