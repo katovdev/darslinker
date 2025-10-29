@@ -5,13 +5,12 @@ import {
 } from "../../config/cloudinary.js";
 import fs from "fs";
 import { promisify } from "util";
-import { validateAndFindById } from "../utils/model.utils.js";
-import { catchAsync } from "../middlewares/error.middleware.js";
 import {
-  BadRequestError,
-  ConflictError,
-  NotFoundError,
-} from "../utils/error.utils.js";
+  handleValidationResult,
+  validateAndFindById,
+} from "../utils/model.utils.js";
+import { catchAsync } from "../middlewares/error.middleware.js";
+import { BadRequestError, ConflictError } from "../utils/error.utils.js";
 
 const unlinkAsync = promisify(fs.unlink);
 
@@ -41,7 +40,7 @@ const create = catchAsync(async (req, res) => {
     throw new ConflictError("A course with this title already exists");
   }
 
-  const newCourse = await Course.create({
+  const course = await Course.create({
     title,
     shortDescription,
     fullDescription,
@@ -59,7 +58,7 @@ const create = catchAsync(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Course created successfully",
-    data: newCourse,
+    course,
   });
 });
 
@@ -148,17 +147,11 @@ const findOne = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const course = await validateAndFindById(Course, id, "Course");
-  if (!course.success) {
-    if (course.error.status === 400) {
-      throw new BadRequestError(course.error.message);
-    } else if (course.error.status === 404) {
-      throw new NotFoundError(course.error.message);
-    }
-  }
+  const courseData = handleValidationResult(course);
 
   res.status(200).json({
     success: true,
-    data: course.data,
+    course: courseData,
   });
 });
 
@@ -172,11 +165,9 @@ const update = catchAsync(async (req, res) => {
   const updateData = req.body;
 
   const course = await validateAndFindById(Course, id, "Course");
-  if (!course.success) {
-    throw new NotFoundError("Course not found");
-  }
+  const courseData = handleValidationResult(course);
 
-  if (updateData.title && updateData.title !== course.data.title) {
+  if (updateData.title && updateData.title !== courseData.title) {
     const duplicateCourse = await Course.findOne({
       title: updateData.title.trim(),
       _id: { $ne: id },
@@ -196,7 +187,7 @@ const update = catchAsync(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "Course updated successfully",
-    data: updatedCourse,
+    course: updatedCourse,
   });
 });
 
@@ -209,9 +200,7 @@ const remove = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const deletedCourse = await validateAndFindById(Course, id, "Course");
-  if (!deletedCourse.success) {
-    throw new NotFoundError("Course not found");
-  }
+  const deletedCourseData = handleValidationResult(deletedCourse);
 
   await Course.findByIdAndDelete(id);
 

@@ -1,6 +1,10 @@
 import Module from "../models/module.model.js";
 import Course from "../models/course.model.js";
-import { validateAndFindById, validateObjectId } from "../utils/model.utils.js";
+import {
+  handleValidationResult,
+  validateAndFindById,
+  validateObjectId,
+} from "../utils/model.utils.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
 import {
@@ -18,13 +22,7 @@ const create = catchAsync(async (req, res) => {
   const { courseId, title, description, order, durationMinutes } = req.body;
 
   const course = await validateAndFindById(Course, courseId, "Course");
-  if (!course.success) {
-    if (course.error.status === 400) {
-      throw new BadRequestError(course.error.message);
-    } else if (course.error.status === 404) {
-      throw new NotFoundError(course.error.message);
-    }
-  }
+  const courseData = handleValidationResult(course);
 
   const existingModule = await Module.findOne({
     courseId,
@@ -71,13 +69,7 @@ const findAll = catchAsync(async (req, res) => {
 
   if (courseId) {
     const validation = validateObjectId(courseId, "Course");
-    if (!validation.valid) {
-      if (validation.error.status === 400) {
-        throw new BadRequestError(validation.error.message);
-      } else if (validation.error.status === 404) {
-        throw new NotFoundError(validation.error.message);
-      }
-    }
+    const validationData = handleValidationResult(validation);
     filter.courseId = courseId;
   }
 
@@ -124,18 +116,11 @@ const findOne = catchAsync(async (req, res) => {
   const module = await validateAndFindById(Module, id, "Module", {
     populate: "courseId",
   });
-
-  if (!module.success) {
-    if (module.error.status === 400) {
-      throw new BadRequestError(module.error.message);
-    } else if (module.error.status === 404) {
-      throw new NotFoundError(module.error.message);
-    }
-  }
+  const moduleData = handleValidationResult(module);
 
   res.status(200).json({
     success: true,
-    module: module.data,
+    module: moduleData,
   });
 });
 
@@ -148,13 +133,7 @@ const findByCourse = catchAsync(async (req, res) => {
   const { courseId } = req.params;
 
   const course = await validateAndFindById(Course, courseId, "Course");
-  if (!course.success) {
-    if (course.error.status === 400) {
-      throw new BadRequestError(course.error.message);
-    } else if (course.error.status === 404) {
-      throw new NotFoundError(course.error.message);
-    }
-  }
+  const courseData = handleValidationResult(course);
 
   const modules = await Module.find({ courseId }).sort({ order: 1 }).lean();
 
@@ -175,18 +154,11 @@ const update = catchAsync(async (req, res) => {
   const updateData = req.body;
 
   const existingModule = await validateAndFindById(Module, id, "Module");
+  const existingModuleData = handleValidationResult(existingModule);
 
-  if (!existingModule.success) {
-    if (existingModule.error.status === 400) {
-      throw new BadRequestError(existingModule.error.message);
-    } else if (existingModule.error.status === 404) {
-      throw new NotFoundError(existingModule.error.message);
-    }
-  }
-
-  if (updateData.title && updateData.title !== existingModule.data.title) {
+  if (updateData.title && updateData.title !== existingModuleData.title) {
     const duplicateModule = await Module.findOne({
-      courseId: existingModule.data.courseId,
+      courseId: existingModuleData.courseId,
       title: updateData.title.trim(),
       _id: { $ne: id },
     });
@@ -220,14 +192,7 @@ const remove = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const deletedModule = await validateAndFindById(Module, id, "Module");
-
-  if (!deletedModule.success) {
-    if (deletedModule.error.status === 400) {
-      throw new BadRequestError(deletedModule.error.message);
-    } else if (deletedModule.error.status === 404) {
-      throw new NotFoundError(deletedModule.error.message);
-    }
-  }
+  const deletedModuleData = handleValidationResult(deletedModule);
 
   await Module.findByIdAndDelete(id);
 

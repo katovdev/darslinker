@@ -10,6 +10,8 @@ import {
   notFoundHandler,
 } from "./src/middlewares/error.middleware.js";
 
+import logger from "./config/logger.js";
+
 connectToDB();
 
 const app = express();
@@ -26,4 +28,8 @@ app.listen(PORT, () => {
   console.log(`🚀 Server started successfully on port ${PORT}`);
   console.log(`📚 Swagger URL: http://localhost:${PORT}/api-docs`);
   console.log(`🔧 Environment: ${NODE_ENV || "development"}`);
+
+  logger.info(`Server started successfully on port ${PORT}`, {
+    environment: NODE_ENV,
+  });
 });

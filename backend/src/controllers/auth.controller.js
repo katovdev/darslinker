@@ -22,7 +22,10 @@ import {
   generateRefreshToken,
 } from "../utils/token.utils.js";
 import { BCRYPT_SALT_ROUNDS } from "../../config/env.js";
-import { validateAndFindById } from "../utils/model.utils.js";
+import {
+  handleValidationResult,
+  validateAndFindById,
+} from "../utils/model.utils.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
 import {
@@ -46,7 +49,8 @@ const checkUser = catchAsync(async (req, res) => {
     throw new BadRequestError("Identifier is required");
   }
 
-  const isEmail = identifier.includes("@");
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isEmail = emailRegex.test(identifier);
   const normalizedIdentifier = isEmail
     ? normalizeEmail(identifier)
     : normalizePhone(identifier);
@@ -56,7 +60,7 @@ const checkUser = catchAsync(async (req, res) => {
   });
 
   if (existingUser) {
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       exists: true,
       next: "login",
@@ -147,7 +151,7 @@ const register = catchAsync(async (req, res) => {
   res.status(200).json({
     success: true,
     message: "User registered successfully. OTP has been sent for verification",
-    users: userResponse,
+    user: userResponse,
   });
 });
 
@@ -363,17 +367,9 @@ const changePassword = catchAsync(async (req, res) => {
   }
 
   const result = await validateAndFindById(User, userId, "User");
+  const resultData = handleValidationResult(result);
 
-  if (!result.success) {
-    if (result.error.status === 400) {
-      throw new BadRequestError(result.error.message);
-    } else if (result.error.status === 404) {
-      throw new NotFoundError(result.error.message);
-    }
-    throw new BadRequestError(result.error.message);
-  }
-
-  const user = result.data;
+  const user = resultData;
 
   const isCurrentPasswordValid = await bcrypt.compare(
     currentPassword,

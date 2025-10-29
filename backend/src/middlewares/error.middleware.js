@@ -1,5 +1,6 @@
 import { AppError } from "../utils/error.utils.js";
 import { NODE_ENV } from "../../config/env.js";
+import logger from "../../config/logger.js";
 
 /**
  * Send error response for development environment
@@ -78,7 +79,7 @@ const handleJWTError = () =>
   new AppError("Invalid token. Please log in again!", 401);
 
 const handleJWTExpiredError = () =>
-  new AppError("Your token has expired! Please log in again.", 401);
+  new AppError("Your token has expired! Please log in again", 401);
 
 /**
  * Handle Joi Validation Errors
@@ -110,19 +111,20 @@ const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
+  logger.error("Error occured", {
+    message: err.message,
+    statusCode: err.statusCode,
+    stack: err.stack,
+    url: req.originalUrl,
+    method: req.method,
+    ip: req.ip,
+    user: req.user?.userId || "anonymous",
+  });
+
   if (NODE_ENV === "development") {
     sendErrorDev(err, res);
-  } else if (NODE_ENV === "production") {
-    let error = err;
-
-    if (err.name === "CastError") error = handleCastErrorDB(err);
-    if (err.code === 11000) error = handleDuplicateFieldsDB(err);
-    if (err.name === "ValidationError") error = handleValidationErrorDB(err);
-    if (err.name === "JsonWebTokenError") error = handleJWTError();
-    if (err.name === "TokenExpiredError") error = handleJWTExpiredError();
-    if (err.isJoi) error = handleJoiValidationError(err);
-
-    sendErrorProd(error, res);
+  } else {
+    sendErrorProd(err, res);
   }
 };
 

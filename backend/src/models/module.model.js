@@ -17,4 +17,6 @@ const moduleSchema = new mongoose.Schema(
 
 const Module = mongoose.model("Module", moduleSchema);
 
+moduleSchema.index({ courseId: 1, order: 1 });
+
 export default Module;

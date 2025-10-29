@@ -2,7 +2,10 @@ import Student from "../models/student.model.js";
 import User from "../models/user.model.js";
 
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
-import { validateAndFindById } from "../utils/model.utils.js";
+import {
+  handleValidationResult,
+  validateAndFindById,
+} from "../utils/model.utils.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
 import {
@@ -36,18 +39,11 @@ const findOne = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const student = await validateAndFindById(Student, id, "Student");
-
-  if (!student.success) {
-    if (student.error.status === 400) {
-      throw new BadRequestError(student.error.message);
-    } else if (student.error.status === 404) {
-      throw new NotFoundError(student.error.message);
-    }
-  }
+  const studentData = handleValidationResult(student);
 
   res.status(200).json({
     success: true,
-    student: student.data,
+    student: studentData,
   });
 });
 
@@ -60,14 +56,7 @@ const update = catchAsync(async (req, res) => {
   const updates = req.body;
 
   const existingStudent = await validateAndFindById(Student, id, "Student");
-
-  if (!existingStudent.success) {
-    if (existingStudent.error.status === 400) {
-      throw new BadRequestError(existingStudent.error.message);
-    } else if (existingStudent.error.status === 404) {
-      throw new NotFoundError(existingStudent.error.message);
-    }
-  }
+  const existingStudentData = handleValidationResult(existingStudent);
 
   const forbiddenFields = [
     "password",
@@ -96,7 +85,7 @@ const update = catchAsync(async (req, res) => {
     }
   });
 
-  if (updates.email && updates.email !== existingStudent.data.email) {
+  if (updates.email && updates.email !== existingStudentData.email) {
     const normalizedEmail = normalizeEmail(updates.email);
 
     const emailExists = await User.findOne({
@@ -110,7 +99,7 @@ const update = catchAsync(async (req, res) => {
     updates.email = normalizedEmail;
   }
 
-  if (updates.phone && updates.phone !== existingStudent.data.phone) {
+  if (updates.phone && updates.phone !== existingStudentData.phone) {
     const normalizedPhone = normalizePhone(updates.phone);
 
     const phoneExists = await User.findOne({
@@ -174,21 +163,14 @@ const update = catchAsync(async (req, res) => {
 
 /**
  * Delete student by ID
- * @route DELETE /stusent/:id
+ * @route DELETE /student/:id
  * @access Public
  */
 const remove = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const deletedStudent = await validateAndFindById(Student, id, "Student");
-
-  if (!deletedStudent.success) {
-    if (deletedStudent.error.status === 400) {
-      throw new BadRequestError(deletedStudent.error.message);
-    } else if (deletedStudent.error.status === 404) {
-      throw new NotFoundError(deletedStudent.error.message);
-    }
-  }
+  const deletedStudentData = handleValidationResult(deletedStudent);
 
   await Student.findByIdAndDelete(id);
 

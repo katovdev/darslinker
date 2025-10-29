@@ -12,7 +12,7 @@ export const createCourseSchema = Joi.object({
     "any.required": "Course title is required",
   }),
 
-  shortDesciption: Joi.string().trim().min(10).max(300).required().messages({
+  shortDescription: Joi.string().trim().min(10).max(300).required().messages({
     "string.empty": "Course short description is required",
     "string.min":
       "Course short description must be at least 10 characters long",
@@ -62,13 +62,11 @@ export const createCourseSchema = Joi.object({
     "string.uri": "Video URL must be a valid URL",
   }),
 
-  courseType: Joi.string()
-    .valid("paid", "free", "active", "draft", "archived")
-    .default("free")
-    .messages({
-      "any.only":
-        "Course type must be either 'paid', 'free', 'active', 'draft', 'archived'",
-    }),
+  courseType: Joi.string().valid("paid", "free").default("free").messages({
+    "any.only": "Course type must be either 'paid', 'free'",
+  }),
+
+  status: Joi.string().valid("active", "draft", "archived").default("draft"),
 
   coursePrice: Joi.number().min(0).required().messages({
     "number.base": "Course price must be a number",
@@ -103,7 +101,7 @@ export const updateCourseSchema = Joi.object({
     "string.max": "Course title cannot exceed 200 characters",
   }),
 
-  shortDesciption: Joi.string().trim().min(10).max(300).optional().messages({
+  shortDescription: Joi.string().trim().min(10).max(300).optional().messages({
     "string.min":
       "Course short description must be at least 10 characters long",
     "string.max": "Course short description cannot exceed 300 characters",
@@ -145,6 +143,8 @@ export const updateCourseSchema = Joi.object({
   courseType: Joi.string().valid("paid", "free").optional().messages({
     "any.only": "Course type must be either 'paid' or 'free'",
   }),
+
+  status: Joi.string().valid("active", "draft", "archived").default("draft"),
 
   coursePrice: Joi.number().min(0).optional().messages({
     "number.base": "Course price must be a number",
