@@ -1,4 +1,5 @@
 import Course from "../models/course.model.js";
+import logger from "../../config/logger.js";
 import {
   uploadToCloudinary,
   uploadVideoToCloudinary,
@@ -53,6 +54,13 @@ const create = catchAsync(async (req, res) => {
     courseType: courseType || "free",
     coursePrice: Number(coursePrice),
     discountPrice: discountPrice ? Number(discountPrice) : null,
+  });
+
+  logger.info("Course created successfully", {
+    courseId: course._id,
+    title: course.title,
+    category: course.category,
+    courseType: course.courseType,
   });
 
   res.status(200).json({
@@ -184,6 +192,11 @@ const update = catchAsync(async (req, res) => {
     { new: true, runValidators: true }
   );
 
+  logger.info("Course updated successfully", {
+    courseId: id,
+    updatedFields: Object.keys(updateData),
+  });
+
   res.status(200).json({
     success: true,
     message: "Course updated successfully",
@@ -203,6 +216,11 @@ const remove = catchAsync(async (req, res) => {
   const deletedCourseData = handleValidationResult(deletedCourse);
 
   await Course.findByIdAndDelete(id);
+
+  logger.info("Course deleted successfully", {
+    courseId: id,
+    title: deletedCourseData.title,
+  });
 
   res.status(200).json({
     success: true,
@@ -227,6 +245,11 @@ const uploadImage = catchAsync(async (req, res) => {
   if (!uploadResult.success) {
     throw new BadRequestError("Failed to upload image to Cloudinary");
   }
+
+  logger.info("Course image uploaded to Cloudinary", {
+    publicId: uploadResult.public_id,
+    url: uploadResult.url,
+  });
 
   res.status(200).json({
     success: true,
@@ -258,6 +281,11 @@ const uploadVideo = catchAsync(async (req, res) => {
   if (!uploadResult.success) {
     throw new BadRequestError("Failed to upload video to Cloudinary");
   }
+
+  logger.info("Course video uploaded to Cloudinary", {
+    publicId: uploadResult.public_id,
+    url: uploadResult.url,
+  });
 
   res.status(200).json({
     success: true,

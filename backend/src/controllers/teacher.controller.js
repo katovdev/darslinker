@@ -1,5 +1,6 @@
 import Teacher from "../models/teacher.model.js";
 import User from "../models/user.model.js";
+import logger from "../../config/logger.js";
 
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
 import {
@@ -8,12 +9,7 @@ import {
 } from "../utils/model.utils.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
-import {
-  BadRequestError,
-  ConflictError,
-  NotFoundError,
-  ValidationError,
-} from "../utils/error.utils.js";
+import { ConflictError, ValidationError } from "../utils/error.utils.js";
 
 /**
  * Get all teachers with filtering and pagination
@@ -156,6 +152,11 @@ const update = catchAsync(async (req, res) => {
       select: "-password",
     }
   );
+
+  logger.info("Teacher profile updated", {
+    teacherId: id,
+    updatedFields: Object.keys(updates),
+  });
 
   res.status(200).json({
     success: true,

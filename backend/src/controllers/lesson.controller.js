@@ -1,5 +1,6 @@
 import Lesson from "../models/lesson.model.js";
 import Module from "../models/module.model.js";
+import logger from "../../config/logger.js";
 
 import {
   handleValidationResult,
@@ -29,6 +30,12 @@ const create = catchAsync(async (req, res) => {
     videoUrl,
     order: order || 0,
     durationMinutes: durationMinutes || 0,
+  });
+
+  logger.info("Lesson created successfully", {
+    lessonId: lesson._id,
+    moduleId,
+    title: lesson.title,
   });
 
   res
@@ -164,6 +171,11 @@ const update = catchAsync(async (req, res) => {
     { new: true, runValidators: true }
   ).populate("moduleId");
 
+  logger.info("Lesson updated successfully", {
+    lessonId: id,
+    updatedFields: Object.keys(updateData),
+  });
+
   res
     .status(200)
     .json({ success: true, message: "Lesson updated successfully", lesson });
@@ -181,6 +193,10 @@ const remove = catchAsync(async (req, res) => {
   const deletedLessonData = handleValidationResult(deletedLesson);
 
   await Lesson.findByIdAndDelete(id);
+
+  logger.info("Lesson deleted successfully", {
+    lessonId: id,
+  });
 
   res
     .status(200)
