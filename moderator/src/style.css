@@ -89,11 +89,11 @@ body {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
+/* 
 .super-admin-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(126, 162, 212, 0.3);
-}
+} */
 
 /* Sidebar */
 .sidebar {
@@ -355,10 +355,10 @@ body {
   color: var(--text-white);
   background: transparent;
 }
-
+/* 
 .analytics-table tbody tr:hover {
   background: rgba(126, 162, 212, 0.1);
-}
+} */
 
 .loading-row {
   text-align: center;
@@ -384,11 +384,11 @@ body {
   transition: all 0.3s ease;
 }
 
-.summary-card:hover {
+/* .summary-card:hover {
   border-color: rgba(126, 162, 212, 0.5);
   background: rgba(58, 56, 56, 0.6);
   transform: translateY(-2px);
-}
+} */
 
 .summary-card h3 {
   color: var(--text-light);
