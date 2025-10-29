@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import logger from "../../config/logger.js";
 
 import User from "../models/user.model.js";
 import Student from "../models/student.model.js";
@@ -55,11 +56,21 @@ const checkUser = catchAsync(async (req, res) => {
     ? normalizeEmail(identifier)
     : normalizePhone(identifier);
 
+  logger.info("Checking user existence", {
+    identifier: normalizedIdentifier,
+    type: isEmail ? "email" : "phone",
+  });
+
   const existingUser = await User.findOne({
     [isEmail ? "email" : "phone"]: normalizedIdentifier,
   });
 
   if (existingUser) {
+    logger.info("User found", {
+      userId: existingUser._id,
+      identifier: normalizedIdentifier,
+    });
+
     res.status(200).json({
       success: true,
       exists: true,
@@ -67,6 +78,10 @@ const checkUser = catchAsync(async (req, res) => {
       message: "User found. Please enter your password in a login endpoint",
     });
   } else {
+    logger.info("User not found - registration required", {
+      identifier: normalizedIdentifier,
+    });
+
     res.status(200).json({
       success: true,
       exists: false,
@@ -86,6 +101,12 @@ const register = catchAsync(async (req, res) => {
 
   const normalizedEmail = email ? normalizeEmail(email) : undefined;
   const normalizedPhone = phone ? normalizePhone(phone) : undefined;
+
+  logger.info("User registration attempt", {
+    email: normalizedEmail,
+    phone: normalizedPhone,
+    role: role || "student",
+  });
 
   const existingUser = await User.findOne({
     $or: [
@@ -148,6 +169,13 @@ const register = catchAsync(async (req, res) => {
   const userResponse = newUser.toObject();
   delete userResponse.password;
 
+  logger.info("User registered successfully - OTP sent", {
+    userId: newUser._id,
+    email: normalizedEmail,
+    phone: normalizedPhone,
+    role: userRole,
+  });
+
   res.status(200).json({
     success: true,
     message: "User registered successfully. OTP has been sent for verification",
@@ -174,6 +202,11 @@ const verifyRegistrationOtp = catchAsync(async (req, res) => {
     ? normalizeEmail(identifier)
     : normalizePhone(identifier);
 
+  logger.info("OTP verification attempt", {
+    identifier: normalizedIdentifier,
+    purpose: "register",
+  });
+
   const result = await verifyOtp({
     identifier: normalizedIdentifier,
     otp,
@@ -181,6 +214,11 @@ const verifyRegistrationOtp = catchAsync(async (req, res) => {
   });
 
   if (!result.success) {
+    logger.warn("OTP verification failed", {
+      identifier: normalizedIdentifier,
+      reason: result.message,
+    });
+
     if (result.message.includes("expired")) {
       throw new BadRequestError("OTP has expired. Please request a new one");
     }
@@ -191,6 +229,11 @@ const verifyRegistrationOtp = catchAsync(async (req, res) => {
     }
     throw new BadRequestError(result.message);
   }
+
+  logger.info("OTP verified successfully - Account activated", {
+    identifier: normalizedIdentifier,
+    userId: result.data?.user?._id,
+  });
 
   res.status(200).json({
     success: true,
@@ -215,6 +258,11 @@ const resendRegistrationOtp = catchAsync(async (req, res) => {
 
   const identifier = normalizedEmail || normalizedPhone;
   const channel = normalizedEmail ? "email" : "sms";
+
+  logger.info("OTP resend requested", {
+    identifier,
+    channel,
+  });
 
   const existingUser = await User.findOne({
     $or: [
@@ -244,8 +292,17 @@ const resendRegistrationOtp = catchAsync(async (req, res) => {
   });
 
   if (!result.success) {
+    logger.error("Failed to resend OTP", {
+      identifier,
+      error: result.message,
+    });
     throw new BadRequestError(result.message || "Failed to resend OTP Code");
   }
+
+  logger.info("OTP resent successfully", {
+    identifier,
+    channel,
+  });
 
   res.status(200).json({
     success: true,
@@ -270,20 +327,40 @@ const login = catchAsync(async (req, res) => {
     ? normalizeEmail(identifier)
     : normalizePhone(identifier);
 
+  logger.info("Login attempt", {
+    identifier: normalizedIdentifier,
+    ip: req.ip,
+    userAgent: req.headers["user-agent"],
+  });
+
   const existingUser = await User.findOne({
     [isEmail ? "email" : "phone"]: normalizedIdentifier,
   });
 
   if (!existingUser) {
+    logger.warn("Login failed - User not found", {
+      identifier: normalizedIdentifier,
+      ip: req.ip,
+    });
     throw new UnauthorizedError("Invalid email address or phone number");
   }
 
   const isPasswordMatch = await bcrypt.compare(password, existingUser.password);
 
   if (!isPasswordMatch) {
+    logger.warn("Login failed - Invalid password", {
+      userId: existingUser._id,
+      identifier: normalizedIdentifier,
+      ip: req.ip,
+    });
     throw new UnauthorizedError("Invalid credentials");
   }
   if (existingUser.status !== "active") {
+    logger.warn("Login failed - Account not active", {
+      userId: existingUser._id,
+      status: existingUser.status,
+      ip: req.ip,
+    });
     throw new ForbiddenError(
       "Account not active. Please verify your account first"
     );
@@ -331,6 +408,14 @@ const login = catchAsync(async (req, res) => {
     { upsert: true, new: true }
   );
 
+  logger.info("Login successful", {
+    userId: existingUser._id,
+    email: existingUser.email,
+    role: existingUser.role,
+    deviceType: deviceInfo.type,
+    ip: req.ip,
+  });
+
   res.status(200).json({
     success: true,
     message: "Logged in successfully",
@@ -347,6 +432,10 @@ const login = catchAsync(async (req, res) => {
 const changePassword = catchAsync(async (req, res) => {
   const { currentPassword, newPassword, confirmPassword } = req.body;
   const userId = req.user.userId;
+
+  logger.info("Password change attempt", {
+    userId,
+  });
 
   if (!currentPassword || !newPassword || !confirmPassword) {
     throw new ValidationError(
@@ -388,6 +477,11 @@ const changePassword = catchAsync(async (req, res) => {
   user.password = hashedNewPassword;
   await user.save();
 
+  logger.info("Password changed successfully", {
+    userId,
+    email: user.email,
+  });
+
   res.status(200).json({
     success: true,
     message: "Password changed successfully",
@@ -402,6 +496,11 @@ const changePassword = catchAsync(async (req, res) => {
 const logout = catchAsync(async (req, res) => {
   const userId = req.user.userId;
 
+  logger.info("Logout attempt", {
+    userId,
+    ip: req.ip,
+  });
+
   const deviceInfo = parseDeviceInfo(req.headers["user-agent"]);
   const deviceFingerprint = createDeviceFingerprint(deviceInfo);
 
@@ -411,8 +510,18 @@ const logout = catchAsync(async (req, res) => {
   });
 
   if (!deletedSession) {
+    logger.warn("Logout failed - Session not found", {
+      userId,
+      deviceFingerprint,
+    });
     throw new NotFoundError("Session not found. You may already be logged out");
   }
+
+  logger.info("Logout successful", {
+    userId,
+    deviceType: deviceInfo.type,
+    sessionId: deletedSession._id,
+  });
 
   res.status(200).json({ success: true, message: "Logged out successfully" });
 });

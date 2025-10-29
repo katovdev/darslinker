@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import logger from "./logger.js";
 
-import { MONGODB_ATLAS_URL, NODE_ENV } from "./env.js";
+import { MONGODB_ATLAS_URL } from "./env.js";
 
 /**
  * Connect to MongoDB database with error handling

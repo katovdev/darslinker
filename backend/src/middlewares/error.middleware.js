@@ -1,5 +1,6 @@
 import { AppError } from "../utils/error.utils.js";
 import { NODE_ENV } from "../../config/env.js";
+
 import logger from "../../config/logger.js";
 
 /**
@@ -29,9 +30,13 @@ const sendErrorProd = (err, res) => {
       ...(err.errors && { errors: err.errors }),
     });
   } else {
-    console.error("ERROR", err);
+    logger.error("Unexpected error in production", {
+      message: err.message,
+      stack: err.stack,
+      name: err.name,
+    });
 
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       status: "error",
       message: "Something went wrong!",
@@ -111,14 +116,15 @@ const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  logger.error("Error occured", {
+  logger.error("Error occurred", {
     message: err.message,
     statusCode: err.statusCode,
     stack: err.stack,
     url: req.originalUrl,
     method: req.method,
     ip: req.ip,
-    user: req.user?.userId || "anonymous",
+    userId: req.user?.userId || "anonymous",
+    errorName: err.name,
   });
 
   if (NODE_ENV === "development") {
@@ -159,4 +165,14 @@ const notFoundHandler = (req, res, next) => {
   next(err);
 };
 
-export { globalErrorHandler, catchAsync, notFoundHandler };
+export {
+  globalErrorHandler,
+  catchAsync,
+  notFoundHandler,
+  handleJWTError,
+  handleJWTExpiredError,
+  handleJoiValidationError,
+  handleCastErrorDB,
+  handleDuplicateFieldsDB,
+  handleValidationErrorDB,
+};

@@ -13,6 +13,7 @@ import {
   OTP_LENGTH,
   OTP_MAX_ATTEMPTS,
 } from "../../config/env.js";
+import logger from "../../config/logger.js";
 
 /**
  * Create and send OTP via email or SMS
@@ -30,12 +31,12 @@ export async function createAndSendOtp({
   meta = {},
 }) {
   try {
-    // --- 1. Generate OTP and expiration time
+    logger.info("Creating OTP", { identifier, purpose, channel });
+
     const otp = generateOtp(parseInt(OTP_LENGTH || "6", 10));
     const expiresInSeconds = parseInt(OTP_EXPIRES_SECONDS || "1800", 10);
     const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
 
-    // --- 2. Hash OTP if enabled
     let otpToStore = otp;
     if (HASH_OTP !== "false") {
       try {
@@ -44,12 +45,15 @@ export async function createAndSendOtp({
           parseInt(BCRYPT_SALT_ROUNDS || "10", 10)
         );
       } catch (hashError) {
-        console.error("Failed to hash OTP Code:", hashError);
+        logger.error("Failed to hash OTP Code", {
+          error: hashError.message,
+          identifier,
+          purpose,
+        });
         throw new Error("Internal error while securing OTP Code");
       }
     }
 
-    // --- 3. Save OTP to DB
     const doc = await Otp.create({
       identifier,
       otpHash: otpToStore,
@@ -58,7 +62,12 @@ export async function createAndSendOtp({
       meta: { ...meta, channel },
     });
 
-    // --- 4. Send OTP based on channel
+    logger.debug("OTP saved to database", {
+      otpId: doc._id,
+      identifier,
+      expiresAt: doc.expiresAt,
+    });
+
     const message = `Your verification code is <b>${otp}</b>. It will expire in <b>${Math.floor(
       expiresInSeconds / 60
     )}</b> minutes`;
@@ -66,20 +75,24 @@ export async function createAndSendOtp({
     try {
       if (channel === "email") {
         await emailService.sendEmail(identifier, "Verification Code", message);
+        logger.info("OTP sent via email", { identifier, purpose });
       } else if (channel === "sms") {
         await smsService.sendSms(identifier, message);
+        logger.info("OTP sent via SMS", { identifier, purpose });
       } else {
-        // fallback: email
         await emailService.sendEmail(identifier, "Verification Code", message);
       }
     } catch (sendError) {
-      // If sending failed, delete OTP record to avoid useless DB entries
       await Otp.findByIdAndDelete(doc._id);
-      console.error("Failed to send OTP Code: ", sendError);
+      logger.error("Failed to send OTP Code", {
+        error: sendError.message,
+        identifier,
+        channel,
+        purpose,
+      });
       throw new Error("Failed to send OTP Code message");
     }
 
-    // --- 5. Return safe response (no otp code returned)
     return {
       id: doc._id,
       identifier: doc.identifier,
@@ -88,11 +101,11 @@ export async function createAndSendOtp({
       message: `OTP Code sent successfully via ${channel}`,
     };
   } catch (error) {
-    return {
-      success: false,
-      message: "Failed to create and send OTP Code",
+    logger.error("OTP creation failed", {
       error: error.message,
-    };
+      identifier,
+      purpose,
+    });
   }
 }
 

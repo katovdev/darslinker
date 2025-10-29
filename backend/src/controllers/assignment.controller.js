@@ -1,17 +1,18 @@
 import Assignment from "../models/assignment.model.js";
 import Course from "../models/course.model.js";
+import logger from "../../config/logger.js";
+
 import {
   BadRequestError,
   ConflictError,
   NotFoundError,
 } from "../utils/error.utils.js";
-
-import { catchAsync } from "../middlewares/error.middleware.js";
 import {
   handleValidationResult,
   validateAndFindById,
   validateObjectId,
 } from "../utils/model.utils.js";
+import { catchAsync } from "../middlewares/error.middleware.js";
 
 /**
  * Create a new assignment
@@ -40,6 +41,13 @@ const create = catchAsync(async (req, res) => {
     resources,
     createdBy,
     maxGrade: Number(maxGrade),
+  });
+
+  logger.info("Assignment created successfully", {
+    assignmentId: assignment._id,
+    courseId,
+    title: assignment.title,
+    createdBy,
   });
 
   res.status(200).json({
@@ -144,6 +152,12 @@ const submitAssignment = catchAsync(async (req, res) => {
     { new: true, runValidators: true }
   ).populate("courseId createdBy submissions.studentId");
 
+  logger.info("Assignment submitted by student", {
+    assignmentId: id,
+    studentId,
+    filesCount: files?.length || 0,
+  });
+
   res.status(200).json({
     success: true,
     message: "Assignment submitted successfully",
@@ -203,6 +217,13 @@ const gradeAssignment = catchAsync(async (req, res) => {
     updatedAssignment.status = "graded";
     await updatedAssignment.save();
   }
+
+  logger.info("Assignment graded by teacher", {
+    assignmentId: id,
+    studentId,
+    grade,
+    maxGrade: findAssignmentData.maxGrade,
+  });
 
   res.status(200).json({
     success: true,

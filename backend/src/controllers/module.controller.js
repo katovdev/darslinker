@@ -1,5 +1,6 @@
 import Module from "../models/module.model.js";
 import Course from "../models/course.model.js";
+import logger from "../../config/logger.js";
 import {
   handleValidationResult,
   validateAndFindById,
@@ -7,11 +8,7 @@ import {
 } from "../utils/model.utils.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
-import {
-  BadRequestError,
-  ConflictError,
-  NotFoundError,
-} from "../utils/error.utils.js";
+import { ConflictError } from "../utils/error.utils.js";
 
 /**
  * Create a new module
@@ -41,6 +38,12 @@ const create = catchAsync(async (req, res) => {
     description,
     order: order || 0,
     durationMinutes: durationMinutes || 0,
+  });
+
+  logger.info("Module created successfully", {
+    moduleId: module._id,
+    courseId,
+    title: module.title,
   });
 
   res.status(200).json({
@@ -176,6 +179,11 @@ const update = catchAsync(async (req, res) => {
     { new: true, runValidators: true }
   ).populate("courseId");
 
+  logger.info("Module updated successfully", {
+    moduleId: id,
+    updatedFields: Object.keys(updateData),
+  });
+
   res.status(200).json({
     success: true,
     message: "Module updated successfully",
@@ -195,6 +203,11 @@ const remove = catchAsync(async (req, res) => {
   const deletedModuleData = handleValidationResult(deletedModule);
 
   await Module.findByIdAndDelete(id);
+
+  logger.info("Module deleted successfully", {
+    moduleId: id,
+    title: deletedModuleData.title,
+  });
 
   res.status(200).json({
     success: true,

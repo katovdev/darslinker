@@ -1,5 +1,6 @@
 import Student from "../models/student.model.js";
 import User from "../models/user.model.js";
+import logger from "../../config/logger.js";
 
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
 import {
@@ -8,12 +9,7 @@ import {
 } from "../utils/model.utils.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
-import {
-  BadRequestError,
-  ConflictError,
-  NotFoundError,
-  ValidationError,
-} from "../utils/error.utils.js";
+import { ConflictError, ValidationError } from "../utils/error.utils.js";
 
 /**
  * Get all students with filtering and pagination
@@ -154,6 +150,11 @@ const update = catchAsync(async (req, res) => {
     }
   );
 
+  logger.info("Student profile updated", {
+    studentId: id,
+    updatedFields: Object.keys(updates),
+  });
+
   res.status(200).json({
     success: true,
     message: "Student profile updated successfully",
@@ -173,6 +174,10 @@ const remove = catchAsync(async (req, res) => {
   const deletedStudentData = handleValidationResult(deletedStudent);
 
   await Student.findByIdAndDelete(id);
+
+  logger.info("Student account deleted", {
+    studentId: id,
+  });
 
   res.status(200).json({
     success: true,
