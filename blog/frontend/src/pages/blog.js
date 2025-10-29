@@ -591,6 +591,7 @@ function addArticlePageStyles() {
       color: #e0e0e0;
       margin-bottom: 2rem;
       text-align: justify;
+      white-space: pre-wrap;
     }
 
 
