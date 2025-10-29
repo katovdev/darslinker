@@ -5,10 +5,10 @@ import image0005 from '../assets/images/0005 1.png';
 import { API_URL } from '../config.js';
 import { updateSEO, resetToDefaultSEO, generateArticleSEO } from '../utils/seo.js';
 
-// Global variables for pagination
+
+// Global variables for articles
 let allArticles = [];
-let currentPage = 0;
-const articlesPerPage = 6;
+
 
 // View tracking variables
 let currentViewTimer = null;
@@ -87,6 +87,20 @@ export function initBlogPage() {
   setupPageUnloadTracking();
 
   contentArea.innerHTML = `
+    <!-- Header -->
+    <header class="main-header">
+      <div class="header-content">
+        <div class="logo-container">
+          <div class="logo header-title" onclick="navigateToHome()">dars<span class="highlight">linker</span></div>
+        </div>
+
+        <nav class="header-nav">
+          <a href="#" class="nav-link" onclick="navigateToHome(); return false;">Asosiy</a>
+          <a href="#" class="nav-link active" onclick="return false;">Blog</a>
+        </nav>
+      </div>
+    </header>
+
     <!-- Blog Articles Section -->
     <section class="articles-section">
       <div class="container">
@@ -101,11 +115,7 @@ export function initBlogPage() {
         </div>
 
         <div class="articles-grid" id="articlesGrid">
-          <!-- Articles will be loaded here -->
-        </div>
-
-        <div class="load-more-section">
-          <button class="btn-load-more" id="loadMoreBtn">Ko'proq yuklash</button>
+          <!-- All articles will be loaded here -->
         </div>
       </div>
     </section>
@@ -114,31 +124,36 @@ export function initBlogPage() {
     <div class="neon-dots-container" id="neonDotsContainer"></div>
   `;
 
-  // Reset pagination
+  // Reset articles array
   allArticles = [];
-  currentPage = 0;
 
   // Reset SEO to default (homepage)
   resetToDefaultSEO();
 
-  // Load initial articles
+  // Load all articles
   loadArticles();
-
-  // Initialize load more functionality
-  initLoadMore();
 
   // Initialize neon dots
   createNeonDots();
+
+  // Add blog page header styles
+  addBlogPageStyles();
 }
+
+// Function to navigate to home page
+window.navigateToHome = function() {
+  // Track view if eligible before leaving
+  trackViewIfEligible();
+
+  // Navigate to home page
+  window.location.href = `${window.location.origin}/`;
+};
 
 async function loadArticles() {
   const articlesGrid = document.getElementById('articlesGrid');
-  const loadMoreBtn = document.getElementById('loadMoreBtn');
 
-  // Only show loading for initial load
-  if (currentPage === 0) {
-    articlesGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Maqolalar yuklanmoqda...</div>';
-  }
+  // Show loading
+  articlesGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Maqolalar yuklanmoqda...</div>';
 
   try {
     const response = await fetch(`${API_URL}/blogs`);
@@ -147,48 +162,27 @@ async function loadArticles() {
     if (data.message === 'success' && data.data.length > 0) {
       allArticles = data.data;
 
-      // Clear grid for initial load
-      if (currentPage === 0) {
-        articlesGrid.innerHTML = '';
-      }
+      // Clear grid
+      articlesGrid.innerHTML = '';
 
-      displayArticlesPage();
-      updateLoadMoreButton();
+      // Display all articles at once
+      displayAllArticles();
     } else {
       articlesGrid.innerHTML = '<div class="loading">Hech qanday maqola topilmadi.</div>';
-      loadMoreBtn.style.display = 'none';
     }
   } catch (error) {
     console.error('Error loading articles:', error);
     articlesGrid.innerHTML = '<div class="loading">Maqolalarni yuklashda xatolik yuz berdi.</div>';
-    loadMoreBtn.style.display = 'none';
   }
 }
 
-function displayArticlesPage() {
+function displayAllArticles() {
   const articlesGrid = document.getElementById('articlesGrid');
-  const startIndex = currentPage * articlesPerPage;
-  const endIndex = startIndex + articlesPerPage;
-  const articlesToShow = allArticles.slice(startIndex, endIndex);
 
-  articlesToShow.forEach((article, index) => {
-    const articleCard = createArticleCard(article, startIndex + index);
+  allArticles.forEach((article, index) => {
+    const articleCard = createArticleCard(article, index);
     articlesGrid.appendChild(articleCard);
   });
-
-  currentPage++;
-}
-
-function updateLoadMoreButton() {
-  const loadMoreBtn = document.getElementById('loadMoreBtn');
-  const totalShown = currentPage * articlesPerPage;
-
-  if (totalShown >= allArticles.length) {
-    loadMoreBtn.style.display = 'none';
-  } else {
-    loadMoreBtn.style.display = 'block';
-    loadMoreBtn.textContent = 'Ko\'proq yuklash';
-  }
 }
 
 function createArticleCard(article, index) {
@@ -232,26 +226,7 @@ function createArticleCard(article, index) {
   return card;
 }
 
-function initLoadMore() {
-  const loadMoreBtn = document.getElementById('loadMoreBtn');
-
-  loadMoreBtn.addEventListener('click', function() {
-    // Show loading state
-    const originalText = this.textContent;
-    this.textContent = 'Yuklanmoqda...';
-    this.disabled = true;
-
-    // Add delay for smooth UX
-    setTimeout(() => {
-      // Load next page
-      displayArticlesPage();
-      updateLoadMoreButton();
-
-      // Reset button state
-      this.disabled = false;
-    }, 500);
-  });
-}
+// Load more functionality removed - now showing all articles at once
 
 // Global function for reading articles
 window.openArticle = async function(articleId) {
@@ -319,7 +294,7 @@ async function showArticlePage(articleId) {
       }
 
       // Update browser URL for sharing
-      const articleUrl = `${window.location.origin}/blog?article=${articleId}`;
+      const articleUrl = `${window.location.origin}/blog/${articleId}`;
       window.history.pushState({ articleId }, article.title, articleUrl);
 
       // Replace entire content with article page
@@ -401,7 +376,13 @@ function addArticlePageStyles() {
 
     /* Hide header title on article page */
     .full-article-page ~ * .header-title,
-    .header-title {
+    .full-article-page .header-title {
+      display: none !important;
+    }
+
+    /* Also hide any additional titles on article page */
+    .full-article-page h2.landing-title,
+    .full-article-page .landing-title {
       display: none !important;
     }
 
@@ -855,6 +836,123 @@ function addArticlePageStyles() {
   document.head.appendChild(style);
 }
 
+function addBlogPageStyles() {
+  // Remove existing blog page styles if any
+  const existingStyle = document.getElementById('blog-page-styles');
+  if (existingStyle) {
+    existingStyle.remove();
+  }
+
+  const style = document.createElement('style');
+  style.id = 'blog-page-styles';
+  style.textContent = `
+    /* Blog Page Header Styles */
+    .main-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(35, 35, 35, 0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+      z-index: 1000;
+      padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      flex: 0 0 auto;
+    }
+
+    .logo {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      transition: text-shadow 0.3s ease;
+      user-select: none;
+    }
+
+    .logo .highlight {
+      color: #7EA2D4;
+    }
+
+    .logo:hover {
+      text-shadow: 0 0 20px rgba(126, 162, 212, 0.5);
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .nav-link {
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 500;
+      padding: 10px 15px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .nav-link:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .nav-link.active {
+      color: #ffffff;
+    }
+
+    .nav-link:active {
+      color: rgba(255, 255, 255, 1);
+      transform: translateY(0);
+    }
+
+    /* Adjust articles section to account for fixed header */
+    .articles-section {
+      padding-top: 20px;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .header-content {
+        padding: 1rem;
+      }
+
+      .logo {
+        font-size: 1.5rem;
+      }
+
+      .nav-link {
+        padding: 8px 12px;
+        font-size: 16px;
+      }
+
+      .header-nav {
+        gap: 0.5rem;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
 // Function to load related articles automatically
 async function loadRelatedArticles(currentArticle) {
   try {
@@ -990,7 +1088,7 @@ function createNeonDots() {
 
 // Simple Web Share API Function
 window.openShareModal = async function(articleId, articleTitle) {
-  const articleUrl = `${window.location.origin}/?article=${articleId}`;
+  const articleUrl = `${window.location.origin}/blog/${articleId}`;
 
   // Use Web Share API when available (modern browsers and mobile devices)
   if (navigator.share) {

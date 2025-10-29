@@ -5,7 +5,7 @@ export const getApiUrl = () => {
 
   if (isDevelopment) {
     // Use local backend in development
-    return 'http://localhost:5001/api';
+    return 'http://localhost:5002/api';
   } else {
     // Use production backend in production
     return 'https://darslinker-7.onrender.com/api';

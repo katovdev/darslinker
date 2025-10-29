@@ -36,7 +36,7 @@ body {
   background-origin: border-box;
   background-clip: padding-box, border-box;
   transition: all 0.3s ease;
-  height: 80px;
+  height: 70px;
   display: flex;
   align-items: center;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(126, 162, 212, 0.1);
@@ -82,34 +82,11 @@ body {
   font-weight: 600;
   color: #ffffff;
   margin: 0;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   white-space: nowrap;
 }
 
-.header-title::before {
-  content: '';
-  position: absolute;
-  left: -20px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2px;
-  height: 30px;
-  background: linear-gradient(to bottom, transparent, #7EA2D4, transparent);
-}
-
-.header-title::after {
-  content: '';
-  position: absolute;
-  right: -20px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2px;
-  height: 30px;
-  background: linear-gradient(to bottom, transparent, #7EA2D4, transparent);
-}
+/* Remove the lines and centering for landing page logo */
 
 
 /* Responsive Header */
@@ -159,7 +136,7 @@ body {
 
 /* Articles Section */
 .articles-section {
-  padding: 40px 0;
+  padding: 1px 0;
   min-height: calc(80vh - 60px);
   position: relative;
   overflow: hidden;

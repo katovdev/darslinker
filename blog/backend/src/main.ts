@@ -8,6 +8,7 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors({
     origin: [
+      'http://localhost:3000',  // Blog frontend with landing page (dev)
       'http://localhost:3002',  // Blog frontend (dev)
       'http://localhost:3001',  // Moderator interface (old dev)
       'http://localhost:3003',  // Moderator interface (new dev)

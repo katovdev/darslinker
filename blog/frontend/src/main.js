@@ -1,5 +1,6 @@
 import './style.css';
 import { initBlogPage } from './pages/blog.js';
+import { initLandingPage } from './pages/landing.js';
 
 class BlogApp {
   constructor() {
@@ -9,40 +10,48 @@ class BlogApp {
   init() {
     console.log('Initializing Blog Frontend...');
 
-    // Set URL path to /blog if we're on root path
-    if (window.location.pathname === '/' || window.location.pathname === '') {
-      const baseUrl = window.location.origin;
-      const searchParams = window.location.search;
-      const hash = window.location.hash;
-
-      // Construct new URL with /blog path
-      const newUrl = `${baseUrl}/blog${searchParams}${hash}`;
-
-      // Update URL without page reload
-      window.history.replaceState({}, '', newUrl);
-    }
-
-    // Check if URL contains article parameter
+    const currentPath = window.location.pathname;
     const urlParams = new URLSearchParams(window.location.search);
     const articleId = urlParams.get('article');
 
-    if (articleId) {
-      // If article ID is in URL, show that specific article
-      console.log('Loading article:', articleId);
+    // Check for new URL format /blog/articleId
+    const blogPathMatch = currentPath.match(/^\/blog\/([^\/]+)$/);
+    const articleIdFromPath = blogPathMatch ? blogPathMatch[1] : null;
 
-      // First initialize the blog page structure
-      initBlogPage();
+    if (articleId || articleIdFromPath) {
+      // If article ID is in URL (either old or new format), show that specific article
+      const targetArticleId = articleIdFromPath || articleId;
+      console.log('Loading article:', targetArticleId);
+
+      // Check if we're on root path or blog path
+      if (currentPath === '/' || currentPath === '' || articleId) {
+        // Initialize landing page structure first for old format or root
+        initLandingPage();
+      } else {
+        // Initialize blog page structure first for new format
+        initBlogPage();
+      }
 
       // Then open the specific article
       // Wait a bit for the page to initialize
       setTimeout(() => {
         if (window.openArticle) {
-          window.openArticle(articleId);
+          window.openArticle(targetArticleId);
         }
       }, 100);
     } else {
-      // Initialize blog page normally (show all articles)
-      initBlogPage();
+      // Check what page to show based on URL path
+      if (currentPath === '/blog') {
+        // Show blog page with all articles
+        initBlogPage();
+      } else if (currentPath === '/' || currentPath === '') {
+        // Show landing page with 6 articles
+        initLandingPage();
+      } else {
+        // Default to landing page for any other path
+        window.history.replaceState({}, '', '/');
+        initLandingPage();
+      }
     }
   }
 }
