@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Main blog page -->
+  <url>
+    <loc>https://darslinker.uz/blog</loc>
+    <lastmod>2025-10-29T06:37:10Z</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Home page -->
+  <url>
+    <loc>https://darslinker.uz/</loc>
+    <lastmod>2025-10-29T06:37:10Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Individual blog posts -->
+  <url>
+    <loc>https://darslinker.uz/blog/69018a63fca5a5dedbb78fb7</loc>
+    <lastmod>2025-10-29T03:30:43Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://darslinker.uz/blog/6900e3a1595b4858ad859a41</loc>
+    <lastmod>2025-10-28T15:39:13Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://darslinker.uz/blog/6901b5b1e251249c7866ff8e</loc>
+    <lastmod>2025-10-29T06:35:29Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://darslinker.uz/blog/6901b5bae251249c7866ff9c</loc>
+    <lastmod>2025-10-29T06:35:38Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://darslinker.uz/blog/6901b5d3e251249c7866ffab</loc>
+    <lastmod>2025-10-29T06:36:03Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://darslinker.uz/blog/6901b616e251249c7866ffbb</loc>
+    <lastmod>2025-10-29T06:37:10Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
