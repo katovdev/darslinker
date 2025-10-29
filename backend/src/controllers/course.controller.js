@@ -23,7 +23,7 @@ const unlinkAsync = promisify(fs.unlink);
 const create = catchAsync(async (req, res) => {
   const {
     title,
-    shortDesciption,
+    shortDescription,
     fullDescription,
     category,
     level,
@@ -43,7 +43,7 @@ const create = catchAsync(async (req, res) => {
 
   const newCourse = await Course.create({
     title,
-    shortDesciption,
+    shortDescription,
     fullDescription,
     category,
     level,
@@ -110,7 +110,7 @@ const findAll = catchAsync(async (req, res) => {
   if (search) {
     filter.$or = [
       { title: { $regex: search, $options: "i" } },
-      { shortDesciption: { $regex: search, $options: "i" } },
+      { shortDescription: { $regex: search, $options: "i" } },
       { fullDescription: { $regex: search, $options: "i" } },
     ];
   }

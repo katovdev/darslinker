@@ -1,4 +1,5 @@
 import { AppError } from "../utils/error.utils.js";
+import { NODE_ENV } from "../../config/env.js";
 
 /**
  * Send error response for development environment
@@ -29,7 +30,7 @@ const sendErrorProd = (err, res) => {
   } else {
     console.error("ERROR", err);
 
-    res.status(500).json({
+    res.status(400).json({
       success: false,
       status: "error",
       message: "Something went wrong!",
@@ -109,9 +110,9 @@ const globalErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
 
-  if (process.env.NODE_ENV === "development") {
+  if (NODE_ENV === "development") {
     sendErrorDev(err, res);
-  } else if (process.env.NODE_ENV === "production") {
+  } else if (NODE_ENV === "production") {
     let error = err;
 
     if (err.name === "CastError") error = handleCastErrorDB(err);
