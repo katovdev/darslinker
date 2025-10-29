@@ -1,0 +1,44 @@
+name: Update Sitemap
+
+on:
+  schedule:
+    # Run daily at 06:00 UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch: # Allow manual trigger
+  push:
+    branches: [main]
+    paths:
+      - 'blog/backend/src/blog/**'
+
+jobs:
+  update-sitemap:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Update sitemap
+        run: |
+          cd blog
+          node update-sitemap.js
+        env:
+          BACKEND_URL: https://darslinker.uz/api
+
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add blog/frontend/public/sitemap.xml blog/frontend/dist/sitemap.xml
+          git diff --staged --quiet || git commit -m "🤖 Auto-update sitemap with latest blog posts"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
