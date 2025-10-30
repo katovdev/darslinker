@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  createStudentProfile,
   findAll,
   findOne,
   update,
@@ -8,6 +9,7 @@ import {
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validation.middleware.js";
 import {
+  createStudentProfileSchema,
   studentIdSchema,
   updateStudentProfileSchema,
 } from "../validations/student.validation.js";
@@ -142,7 +144,99 @@ const studentRouter = Router();
  *                 type: string
  *               message:
  *                 type: string
+ *     CreateStudentProfileInput:
+ *       type: object
+ *       properties:
+ *         profileImage:
+ *           type: string
+ *           description: Profile image URL
+ *         bio:
+ *           type: string
+ *           minLength: 10
+ *           maxLength: 500
+ *           description: Student biography or introduction
+ *         interests:
+ *           type: array
+ *           items:
+ *             type: string
+ *           maxItems: 10
+ *           description: Student's interests (max 10)
  */
+
+/**
+ * @swagger
+ * /students/create-profile:
+ *   post:
+ *     summary: Create student profile
+ *     description: Create a new student profile for the authenticated user. User must have student role and not have an existing profile.
+ *     tags: [User Management - Students]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateStudentProfileInput'
+ *           example:
+ *             profileImage: https://example.com/images/student.jpg
+ *             bio: Passionate learner interested in programming and web development
+ *             interests: ["JavaScript", "Python", "Web Development", "Machine Learning"]
+ *     responses:
+ *       201:
+ *         description: Student profile created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Student profile created successfully
+ *                 student:
+ *                   $ref: '#/components/schemas/Student'
+ *       400:
+ *         description: Bad Request - Validation error or user is not a student
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Only students can create student profiles
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: Conflict - Student profile already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Student profile already exists for this user
+ */
+studentRouter.post(
+  "/create-profile",
+  authenticate,
+  validate(createStudentProfileSchema),
+  createStudentProfile
+);
 
 /**
  * @swagger

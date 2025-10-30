@@ -1,6 +1,43 @@
 import Joi from "joi";
 
 /**
+ * Teacher Profile Creation Validation Schema
+ * Validates teacher profile creation data
+ */
+export const createTeacherProfileSchema = Joi.object({
+  profileImage: Joi.string().trim().uri().optional().allow("").messages({
+    "string.uri": "Profile image must be a valid URL",
+  }),
+
+  bio: Joi.string().trim().min(10).max(1000).optional().allow("").messages({
+    "string.min": "Bio must be at least 10 characters long",
+    "string.max": "Bio cannot exceed 1000 characters",
+  }),
+
+  specialization: Joi.string()
+    .trim()
+    .min(2)
+    .max(100)
+    .required()
+    .messages({
+      "string.empty": "Specialization is required",
+      "string.min": "Specialization must be at least 2 characters long",
+      "string.max": "Specialization cannot exceed 100 characters",
+      "any.required": "Specialization is required",
+    }),
+
+  city: Joi.string().trim().min(2).max(100).optional().allow("").messages({
+    "string.min": "City must be at least 2 characters long",
+    "string.max": "City cannot exceed 100 characters",
+  }),
+
+  country: Joi.string().trim().min(2).max(100).optional().allow("").messages({
+    "string.min": "Country must be at least 2 characters long",
+    "string.max": "Country cannot exceed 100 characters",
+  }),
+});
+
+/**
  * Teacher Profile Creation/Update Validation Schema
  * Validates teacher-specific profile data
  */
