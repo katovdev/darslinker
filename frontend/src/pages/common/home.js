@@ -6,6 +6,9 @@ export function initHomePage() {
   // Clean up pricing page styles when returning to home
   cleanupPricingStyles();
 
+  // Scroll to top when page loads
+  window.scrollTo(0, 0);
+
   const app = document.querySelector('#app');
 
   // Make router available globally for onclick handlers

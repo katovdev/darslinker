@@ -15,6 +15,8 @@ export class Router {
   navigate(path) {
     window.history.pushState({}, '', path);
     this.route(path);
+    // Scroll to top after navigation
+    window.scrollTo(0, 0);
   }
 
   route(path) {
@@ -22,6 +24,8 @@ export class Router {
     if (handler) {
       this.currentRoute = path;
       handler();
+      // Scroll to top after route change
+      window.scrollTo(0, 0);
     } else {
       console.warn(`No handler found for route: ${path}`);
     }

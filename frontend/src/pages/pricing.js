@@ -13,6 +13,9 @@ export function initPricingPage() {
   // Clean up any existing pricing styles first
   cleanupPricingStyles();
 
+  // Scroll to top when page loads
+  window.scrollTo(0, 0);
+
   const app = document.querySelector('#app');
 
   // Make router available globally for onclick handlers
@@ -20,19 +23,273 @@ export function initPricingPage() {
 
   app.innerHTML = `
     <div class="pricing-page-container">
+      <!-- Back Button -->
+      <button class="back-btn-top-right" onclick="router.navigate('/'); return false;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
+        </svg>
+      </button>
+
       <!-- Pricing Section -->
       <section class="pricing-section">
         <div class="container">
           <h2 class="section-title">Tariflar & Narxlar</h2>
 
+          <div class="pricing-grid">
+            <!-- Minimal Plan -->
+            <div class="pricing-card minimal-card">
+
+              <div class="pricing-header minimal">
+                <h3>Minimal</h3>
+              </div>
+              <div class="pricing-features">
+                <div class="feature-item">
+                  <span>Kurs joylash soni</span>
+                  <span class="feature-value">2</span>
+                </div>
+                <div class="feature-item">
+                  <span>Admin qo'shish</span>
+                  <span class="feature-value">3</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar bazasi</span>
+                  <span class="feature-value">∞</span>
+                </div>
+                <div class="feature-item">
+                  <span>Qo'llab-quvvatlash</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar analitikasi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item disabled">
+                  <span>Onlayn uchrashuv</span>
+                  <span class="feature-check">✗</span>
+                </div>
+                <div class="feature-item disabled">
+                  <span>Sertifikat generatsiyasi</span>
+                  <span class="feature-check">✗</span>
+                </div>
+                <div class="feature-item disabled">
+                  <span>O'quvchilar bilan chat</span>
+                  <span class="feature-check">✗</span>
+                </div>
+                <div class="feature-item disabled">
+                  <span>To'lov tizimi integratsyasi</span>
+                  <span class="feature-check">✗</span>
+                </div>
+                <div class="feature-item disabled">
+                  <span>Sun'iy intellekt</span>
+                  <span class="feature-check">✗</span>
+                </div>
+                <div class="feature-item disabled">
+                  <span>Kontent xavfsizligi</span>
+                  <span class="feature-check">✗</span>
+                </div>
+                <div class="feature-item disabled">
+                  <span>Brendga mos dizayn</span>
+                  <span class="feature-check">✗</span>
+                </div>
+              </div>
+              <div class="pricing-price minimal">470 000 so'm</div>
+            </div>
+
+            <!-- Standard Plan -->
+            <div class="pricing-card">
+              <span class="tavsiya-badge">Tavsiya</span>
+              <div class="pricing-header standard">
+                <h3>Standard</h3>
+              </div>
+              <div class="pricing-features">
+                <div class="feature-item">
+                  <span>Kurs joylash soni</span>
+                  <span class="feature-value">4</span>
+                </div>
+                <div class="feature-item">
+                  <span>Admin qo'shish</span>
+                  <span class="feature-value">6</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar bazasi</span>
+                  <span class="feature-value">∞</span>
+                </div>
+                <div class="feature-item">
+                  <span>Qo'llab-quvvatlash</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar analitikasi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Onlayn uchrashuv</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Sertifikat generatsiyasi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar bilan chat</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>To'lov tizimi integratsyasi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Sun'iy intellekt</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item disabled">
+                  <span>Kontent xavfsizligi</span>
+                  <span class="feature-check">✗</span>
+                </div>
+                <div class="feature-item disabled">
+                  <span>Brendga mos dizayn</span>
+                  <span class="feature-check">✗</span>
+                </div>
+              </div>
+              <div class="pricing-price standard">870 000 so'm</div>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="pricing-card">
+              <div class="pricing-header pro">
+                <h3>Pro</h3>
+              </div>
+              <div class="pricing-features">
+                <div class="feature-item">
+                  <span>Kurs joylash soni</span>
+                  <span class="feature-value">8</span>
+                </div>
+                <div class="feature-item">
+                  <span>Admin qo'shish</span>
+                  <span class="feature-value">12</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar bazasi</span>
+                  <span class="feature-value">∞</span>
+                </div>
+                <div class="feature-item">
+                  <span>Qo'llab-quvvatlash</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar analitikasi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Onlayn uchrashuv</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Sertifikat generatsiyasi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar bilan chat</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>To'lov tizimi integratsyasi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Sun'iy intellekt</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Kontent xavfsizligi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Brendga mos dizayn</span>
+                  <span class="feature-check">✓</span>
+                </div>
+              </div>
+              <div class="pricing-price pro">1 270 000 so'm</div>
+            </div>
+
+            <!-- Korporativ Plan -->
+            <div class="pricing-card korporativ-card">
+
+              <div class="pricing-header korporativ">
+                <h3>Korporativ</h3>
+              </div>
+              <div class="pricing-features">
+                <div class="feature-item">
+                  <span>Kurs joylash soni</span>
+                  <span class="feature-value">∞</span>
+                </div>
+                <div class="feature-item">
+                  <span>Admin qo'shish</span>
+                  <span class="feature-value">∞</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar bazasi</span>
+                  <span class="feature-value">∞</span>
+                </div>
+                <div class="feature-item">
+                  <span>Qo'llab-quvvatlash</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Shaxsiy Domein</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Onlayn uchrashuv</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Pro tarif imkoniyatlari</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>SEO - Google'da qidiruv</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>O'quvchilar bilan chat</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>To'lov tizimi integratsyasi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Sun'iy intellekt</span>
+                  <span class="feature-check">✓</span>
+                </div>
+                <div class="feature-item">
+                  <span>Kontent xavfsizligi</span>
+                  <span class="feature-check">✓</span>
+                </div>
+              </div>
+              <div class="pricing-price korporativ">Maxsus narx</div>
+            </div>
+          </div>
+
         <!-- Payment Methods -->
         <div class="payment-methods-section">
-          <div class="payment-methods">
-            <img src="/images/Group 47.png" alt="Uzum" class="payment-logo" />
-            <img src="/images/Group 39.png" alt="Payme" class="payment-logo" />
-            <img src="/images/Group 38.png" alt="Click" class="payment-logo" />
-            <img src="/images/Group 48.png" alt="Mastercard" class="payment-logo" />
-            <img src="/images/Group 36.png" alt="Visa" class="payment-logo" />
+          <div class="payment-carousel-container">
+            <div class="payment-carousel">
+              <div class="payment-logos-track">
+                <img src="/images/Group 47.png" alt="Uzum" class="payment-logo" />
+                <img src="/images/Group 39.png" alt="Payme" class="payment-logo" />
+                <img src="/images/Group 38.png" alt="Click" class="payment-logo" />
+                <img src="/images/Group 48.png" alt="Mastercard" class="payment-logo" />
+                <img src="/images/Group 36.png" alt="Visa" class="payment-logo" />
+                <!-- Duplicate for seamless loop -->
+                <img src="/images/Group 47.png" alt="Uzum" class="payment-logo" />
+                <img src="/images/Group 39.png" alt="Payme" class="payment-logo" />
+                <img src="/images/Group 38.png" alt="Click" class="payment-logo" />
+                <img src="/images/Group 48.png" alt="Mastercard" class="payment-logo" />
+                <img src="/images/Group 36.png" alt="Visa" class="payment-logo" />
+              </div>
+            </div>
           </div>
         </div>
 
@@ -423,7 +680,7 @@ export function initPricingPage() {
 
                 <!-- 11. Korporativ -->
                 <tr class="category-header">
-                  <td colspan="5" class="category-title">11. Korporativ</td>
+                  <td colspan="5" class="category-title">9. Korporativ</td>
                 </tr>
                 <tr>
                   <td class="feature-name">Pro tarif imkoniyatlari</td>
@@ -486,12 +743,63 @@ function addPricingPageStyles() {
   style.id = 'pricing-page-styles';
   style.textContent = `
     /* Pricing Page Specific Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      overflow-x: hidden;
+    }
+
     .pricing-page-container {
       background: #232323;
       color: white;
       margin: 0;
       padding: 0;
       min-height: 100vh;
+      position: relative;
+      top: 0;
+      width: 100%;
+    }
+
+    /* Back Button Top Left */
+    .back-btn-top-right {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(126, 162, 212, 0.8);
+      color: white;
+      border: none;
+      padding: 8px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(126, 162, 212, 0.3);
+      z-index: 1000;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-btn-top-right:hover {
+      background: rgba(126, 162, 212, 1);
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(126, 162, 212, 0.4);
+    }
+
+    .back-btn-top-right svg {
+      transition: transform 0.3s ease;
+    }
+
+    .back-btn-top-right:hover svg {
+      transform: translateX(-2px);
     }
 
     /* Back Button */
@@ -536,7 +844,8 @@ function addPricingPageStyles() {
       min-height: 100vh;
       background: #232323;
       color: white;
-      padding: 80px 0 50px 0;
+      padding: 0;
+      margin: 0;
       position: relative;
       overflow: hidden;
     }
@@ -545,30 +854,51 @@ function addPricingPageStyles() {
       text-align: center;
       margin: 3rem 0;
       padding: 2rem 0;
+      overflow: hidden;
     }
 
-    .pricing-page-container .payment-methods {
+    .pricing-page-container .payment-carousel-container {
+      width: 60%;
+      max-width: 600px;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .pricing-page-container .payment-carousel {
+      width: 100%;
+      overflow: hidden;
+    }
+
+    .pricing-page-container .payment-logos-track {
       display: flex;
-      justify-content: center;
       align-items: center;
-      gap: 2rem;
-      flex-wrap: wrap;
+      gap: 3rem;
+      animation: scrollLogos 20s linear infinite;
+      width: fit-content;
     }
 
     .pricing-page-container .payment-logo {
       height: 40px;
       width: auto;
-      transition: transform 0.3s ease;
+      flex-shrink: 0;
+      opacity: 1;
+      pointer-events: none;
     }
 
-    .pricing-page-container .payment-logo:hover {
-      transform: scale(1.1);
+    @keyframes scrollLogos {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
     }
 
     /* Detailed Features Table */
     .pricing-page-container .detailed-features-section {
-      margin: 4rem 0;
-      padding: 2rem 0;
+      margin: 2rem 0;
+      padding: 1rem 0;
     }
 
     .pricing-page-container .detailed-title {
@@ -596,7 +926,7 @@ function addPricingPageStyles() {
 
     .pricing-page-container .features-table th,
     .pricing-page-container .features-table td {
-      padding: 1rem;
+      padding: 0.5rem 1rem 0.5rem 1rem;
       text-align: center;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
@@ -635,7 +965,7 @@ function addPricingPageStyles() {
       font-size: 1.1rem;
       color: #7EA2D4;
       text-align: left !important;
-      padding: 1.5rem 1rem;
+      padding: 0.8rem 1rem;
     }
 
     .pricing-page-container .feature-name {
@@ -668,14 +998,14 @@ function addPricingPageStyles() {
       font-size: 1rem;
     }
 
-    /* Hover effects */
-    .pricing-page-container .features-table tbody tr:hover {
-      background: rgba(126, 162, 212, 0.05);
-    }
+    // /* Hover effects */
+    // .pricing-page-container .features-table tbody tr:hover {
+    //   background: rgba(126, 162, 212, 0.05);
+    // }
 
-    .pricing-page-container .features-table tbody tr:hover .feature-cell {
-      background: rgba(126, 162, 212, 0.1);
-    }
+    // .pricing-page-container .features-table tbody tr:hover .feature-cell {
+    //   background: rgba(126, 162, 212, 0.1);
+    // }
 
     /* Mobile responsive for table */
     @media (max-width: 768px) {
@@ -714,7 +1044,7 @@ function addPricingPageStyles() {
     .pricing-page-container .container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 0 2rem;
+      padding: 2rem 2rem 0 2rem;
     }
 
     .pricing-page-container .section-title {
@@ -728,54 +1058,71 @@ function addPricingPageStyles() {
 
     .pricing-page-container .pricing-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
       margin-bottom: 3rem;
       position: relative;
     }
 
     /* All other pricing card styles copied from home page... */
-    .pricing-card {
-      background: rgba(58, 56, 56, 0.3);
-      border: 2px solid rgba(126, 162, 212, 0.4);
-      border-radius: 16px;
-      padding: 2rem;
+    .pricing-page-container .pricing-card {
+      background: rgba(58, 56, 56, 0.2);
+      border: 1px #7ea2d4;
+      border-radius: 20px;
+      padding: 10px 8px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       transition: all 0.3s ease;
+      position: relative;
+      overflow: visible;
       height: auto;
-      min-height: 400px;
+      min-height: 320px;
       display: flex;
       flex-direction: column;
-      position: relative;
     }
 
-    .pricing-card:hover {
+    .pricing-page-container .pricing-card:hover {
+      background: rgba(58, 56, 56, 0.3);
+      border-color: #7ea2d4;
       transform: translateY(-10px);
-      border-color: #7EA2D4;
-      box-shadow: 0 20px 40px rgba(126, 162, 212, 0.3);
-      background: rgba(58, 56, 56, 0.5);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
     }
 
-    .tavsiya-badge {
+    .pricing-page-container .tavsiya-badge {
       position: absolute;
-      top: -10px;
-      right: 20px;
-      background: linear-gradient(135deg, #538bdb, #7ea2d4);
-      color: white;
-      padding: 5px 15px;
-      border-radius: 20px;
-      font-size: 0.8rem;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(
+        135deg,
+        rgba(90, 154, 154, 0.2),
+        rgba(90, 154, 154, 0.1)
+      );
+      color: #ffffff;
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-size: 8px;
       font-weight: 600;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(90, 154, 154, 0.3);
       z-index: 10;
     }
 
-    .pricing-header {
-      text-align: center;
-      margin-bottom: 1.5rem;
+    .pricing-page-container .pricing-card:hover .tavsiya-badge {
+      transform: translateX(-50%) translateY(-2px);
+      box-shadow: 0 5px 15px rgba(90, 154, 154, 0.5),
+        0 2px 6px rgba(90, 154, 154, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.4);
     }
 
-    .pricing-header h3 {
-      font-size: 2rem;
-      font-weight: 700;
+    .pricing-page-container .pricing-header {
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .pricing-page-container .pricing-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #ffffff;
       margin: 0;
     }
 
@@ -784,93 +1131,93 @@ function addPricingPageStyles() {
     .pricing-header.pro h3 { color: #f59e0b; }
     .pricing-header.korporativ h3 { color: #8b5cf6; }
 
-    .pricing-features {
+    .pricing-page-container .pricing-features {
+      margin-bottom: 10px;
       flex: 1;
-      margin-bottom: 2rem;
     }
 
-    .feature-item {
+    .pricing-page-container .feature-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 0.8rem 0;
+      padding: 4px 0;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      font-size: 0.9rem;
+      font-size: 10px;
+      color: #ffffff;
     }
 
-    .feature-item.disabled {
+    .pricing-page-container .feature-item:last-child {
+      border-bottom: none;
+    }
+
+    .pricing-page-container .feature-item.disabled {
       opacity: 0.5;
+      color: #a0a0a0;
     }
 
-    .feature-value {
+    .pricing-page-container .feature-value {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .pricing-page-container .feature-check {
       font-weight: 700;
-      color: #7EA2D4;
-      font-size: 1.1rem;
+      font-size: 14px;
     }
 
-    .feature-check {
-      font-weight: 700;
-      font-size: 1.2rem;
+    .pricing-page-container .feature-item:not(.disabled) .feature-check {
+      color: #4ade80;
     }
 
-    .feature-item:not(.disabled) .feature-check {
-      color: #10b981;
+    .pricing-page-container .feature-item.disabled .feature-check {
+      color: #ff6b6b;
     }
 
-    .feature-item.disabled .feature-check {
-      color: #ef4444;
-    }
-
-    .pricing-price {
+    .pricing-page-container .pricing-price {
       text-align: center;
-      font-size: 1.8rem;
-      font-weight: 700;
-      padding: 1rem;
+      font-size: 12px;
+      font-weight: bold;
+      color: #ffffff !important;
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 8px;
+      padding: 4px;
+      backdrop-filter: blur(10px);
       margin-top: auto;
     }
 
-    .pricing-price.minimal {
-      background: rgba(126, 162, 212, 0.1);
-      color: #7EA2D4;
+    .pricing-page-container .pricing-price.minimal {
+      background: linear-gradient(
+        135deg,
+        rgba(139, 115, 85, 0.2),
+        rgba(139, 115, 85, 0.1)
+      );
+      border: 2px solid rgba(139, 115, 85, 0.2);
     }
-    .pricing-price.standard {
-      background: rgba(16, 185, 129, 0.1);
-      color: #10b981;
+    .pricing-page-container .pricing-price.standard {
+      background: linear-gradient(
+        135deg,
+        rgba(90, 154, 154, 0.2),
+        rgba(90, 154, 154, 0.1)
+      );
+      border: 2px solid rgba(90, 154, 154, 0.2);
     }
-    .pricing-price.pro {
-      background: rgba(245, 158, 11, 0.1);
-      color: #f59e0b;
+    .pricing-page-container .pricing-price.pro {
+      background: linear-gradient(
+        135deg,
+        rgba(107, 155, 107, 0.2),
+        rgba(107, 155, 107, 0.1)
+      );
+      border: 2px solid rgba(107, 155, 107, 0.2);
     }
-    .pricing-price.korporativ {
-      background: rgba(139, 92, 246, 0.1);
-      color: #8b5cf6;
-    }
-
-    /* Glass decorations */
-    .minimal-glass-decoration,
-    .korporativ-glass-decoration {
-      position: absolute;
-      pointer-events: none;
-      z-index: 1;
-    }
-
-    .minimal-glass-decoration {
-      top: -50px;
-      left: -30px;
-    }
-
-    .korporativ-glass-decoration {
-      bottom: -50px;
-      right: -30px;
+    .pricing-page-container .pricing-price.korporativ {
+      background: linear-gradient(
+        135deg,
+        rgba(122, 122, 122, 0.2),
+        rgba(122, 122, 122, 0.1)
+      );
+      border: 2px solid rgba(122, 122, 122, 0.2);
     }
 
-    .minimal-glass-image,
-    .korporativ-glass-image {
-      width: 80px;
-      height: auto;
-      opacity: 0.7;
-    }
 
 
     /* Footer styles */
@@ -993,8 +1340,15 @@ function addPricingPageStyles() {
     /* Mobile Responsive */
     @media (max-width: 768px) {
       .pricing-page-container .pricing-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.8rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .pricing-page-container .pricing-grid {
         grid-template-columns: 1fr;
-        gap: 1.5rem;
+        gap: 1rem;
       }
 
       .pricing-page-container .container {
@@ -1005,12 +1359,41 @@ function addPricingPageStyles() {
         font-size: 2rem;
       }
 
-      .pricing-page-container .payment-methods {
-        gap: 1rem;
+      .pricing-page-container .payment-carousel-container {
+        width: 80%;
+      }
+
+      .pricing-page-container .payment-logos-track {
+        gap: 2rem;
       }
 
       .pricing-page-container .payment-logo {
         height: 30px;
+      }
+
+      .back-btn-top-right {
+        width: 36px;
+        height: 36px;
+        top: 15px;
+        left: 15px;
+      }
+
+      .back-btn-top-right svg {
+        width: 14px;
+        height: 14px;
+      }
+
+      .pricing-page-container .pricing-card {
+        padding: 25px 20px;
+      }
+
+      .pricing-page-container .pricing-header h3 {
+        font-size: 16px;
+      }
+
+      .pricing-page-container .pricing-price {
+        font-size: 20px;
+        padding: 12px;
       }
 
       .header .container {
