@@ -17,6 +17,7 @@ async function bootstrap() {
       'https://heartfelt-centaur-5fc321.netlify.app',  // Moderator interface (prod)
       'https://moderator.darslinker.uz',  // Moderator interface (custom domain)
       'https://darslinker.uz',  // Main domain + blog subfolder
+      'https://www.darslinker.uz',  // Main domain with www
     ],
     credentials: true,
   });
