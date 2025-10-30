@@ -1,15 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/blog",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/blog/(.*)",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/(.*)",
+      "source": "/((?!src|assets|vite\\.svg|.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)).*)",
       "destination": "/index.html"
     }
   ]
