@@ -1,6 +1,35 @@
 import Joi from "joi";
 
 /**
+ * Student Profile Creation Validation Schema
+ * Validates student profile creation data
+ */
+export const createStudentProfileSchema = Joi.object({
+  profileImage: Joi.string().trim().uri().optional().allow("").messages({
+    "string.uri": "Profile image must be a valid URL",
+  }),
+
+  bio: Joi.string().trim().min(10).max(500).optional().allow("").messages({
+    "string.min": "Bio must be at least 10 characters long",
+    "string.max": "Bio cannot exceed 500 characters",
+  }),
+
+  interests: Joi.array()
+    .items(
+      Joi.string().trim().min(2).max(50).messages({
+        "string.min": "Each interest must be at least 2 characters long",
+        "string.max": "Each interest cannot exceed 50 characters",
+      })
+    )
+    .max(10)
+    .optional()
+    .messages({
+      "array.base": "Interests must be an array",
+      "array.max": "Cannot have more than 10 interests",
+    }),
+});
+
+/**
  * Student Profile Creation/Update Validation Schema
  * Validates student-specific profile data
  */

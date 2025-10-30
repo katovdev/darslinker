@@ -12,6 +12,68 @@ import { catchAsync } from "../middlewares/error.middleware.js";
 import { ConflictError, ValidationError } from "../utils/error.utils.js";
 
 /**
+ * Create a teacher profile
+ * @route POST /teachers/create-profile
+ * @access Private (Authenticated teachers only)
+ */
+const createTeacherProfile = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  const userRole = req.user.role;
+
+  if (userRole !== "teacher") {
+    logger.warn("Profile creation failed - User is not a teacher", {
+      userId,
+      role: userRole,
+    });
+    throw new ValidationError("Only teachers can create teacher profiles");
+  }
+
+  const existingProfile = await Teacher.findById(userId);
+  if (existingProfile) {
+    logger.warn("Profile creation failed - Profile already exists", {
+      userId,
+    });
+    throw new ConflictError("Teacher profile already exists for this user");
+  }
+
+  const { profileImage, specialization, bio, city, country } = req.body;
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ValidationError("User not found");
+  }
+
+  const newTeacher = await Teacher.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        profileImage: profileImage || "",
+        specialization,
+        bio: bio || "",
+        city: city || "",
+        country: country || "",
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
+      select: "-password",
+    }
+  );
+
+  logger.info("Teacher profile created successfully", {
+    teacherId: userId,
+    specialization,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Teacher profile created successfully",
+    teacher: newTeacher,
+  });
+});
+
+/**
  * Get all teachers with filtering and pagination
  * @route GET /teachers
  * @access Public
@@ -165,4 +227,4 @@ const update = catchAsync(async (req, res) => {
   });
 });
 
-export { findAll, findOne, update };
+export { createTeacherProfile, findAll, findOne, update };

@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { findAll, findOne, update } from "../controllers/teacher.controller.js";
+import { createTeacherProfile, findAll, findOne, update } from "../controllers/teacher.controller.js";
 import {
   authenticate,
   isOwnerOrAdmin,
 } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validation.middleware.js";
 import {
+  createTeacherProfileSchema,
   teacherIdSchema,
   updateTeacherProfileSchema,
 } from "../validations/teacher.validation.js";
@@ -173,7 +174,108 @@ const teacherRouter = Router();
  *             bankAccount:
  *               type: string
  *               description: Bank account number
+ *     CreateTeacherProfileInput:
+ *       type: object
+ *       required:
+ *         - specialization
+ *       properties:
+ *         profileImage:
+ *           type: string
+ *           description: Profile image URL
+ *         specialization:
+ *           type: string
+ *           minLength: 2
+ *           maxLength: 100
+ *           description: Teacher's subject or field specialization (required)
+ *         bio:
+ *           type: string
+ *           minLength: 10
+ *           maxLength: 1000
+ *           description: Teacher biography or introduction
+ *         city:
+ *           type: string
+ *           description: Teacher's city
+ *         country:
+ *           type: string
+ *           description: Teacher's country
  */
+
+/**
+ * @swagger
+ * /teachers/create-profile:
+ *   post:
+ *     summary: Create teacher profile
+ *     description: Create a new teacher profile for the authenticated user. User must have teacher role and not have an existing profile.
+ *     tags: [User Management - Teachers]
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateTeacherProfileInput'
+ *           example:
+ *             profileImage: https://example.com/images/teacher.jpg
+ *             specialization: Mathematics and Physics
+ *             bio: Experienced mathematics teacher with 10+ years of teaching experience
+ *             city: Tashkent
+ *             country: Uzbekistan
+ *     responses:
+ *       201:
+ *         description: Teacher profile created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Teacher profile created successfully
+ *                 teacher:
+ *                   $ref: '#/components/schemas/Teacher'
+ *       400:
+ *         description: Bad Request - Validation error or user is not a teacher
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Only teachers can create teacher profiles
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       409:
+ *         description: Conflict - Teacher profile already exists
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Teacher profile already exists for this user
+ */
+teacherRouter.post(
+  "/create-profile",
+  authenticate,
+  validate(createTeacherProfileSchema),
+  createTeacherProfile
+);
 
 /**
  * @swagger

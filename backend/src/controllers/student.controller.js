@@ -12,6 +12,82 @@ import { catchAsync } from "../middlewares/error.middleware.js";
 import { ConflictError, ValidationError } from "../utils/error.utils.js";
 
 /**
+ * Create a student profile
+ * @route POST /students/create-profile
+ * @access Private (Authenticated students only)
+ */
+const createStudentProfile = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  const userRole = req.user.role;
+
+  // Check if user is a student
+  if (userRole !== "student") {
+    logger.warn("Profile creation failed - User is not a student", {
+      userId,
+      role: userRole,
+    });
+    throw new ValidationError("Only students can create student profiles");
+  }
+
+  // Check if student profile already exists
+  const existingProfile = await Student.findById(userId);
+  if (existingProfile) {
+    logger.warn("Profile creation failed - Profile already exists", {
+      userId,
+    });
+    throw new ConflictError("Student profile already exists for this user");
+  }
+
+  const { profileImage, bio, interests } = req.body;
+
+  // Get user data from User model
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new ValidationError("User not found");
+  }
+
+  // Sanitize interests array - remove duplicates and empty values
+  let sanitizedInterests = [];
+  if (interests && Array.isArray(interests)) {
+    sanitizedInterests = [
+      ...new Set(
+        interests
+          .filter((interest) => interest && String(interest).trim())
+          .map((interest) => String(interest).trim())
+      ),
+    ];
+  }
+
+  // Create student profile using the existing user ID
+  const newStudent = await Student.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        profileImage: profileImage || "",
+        bio: bio || "",
+        interests: sanitizedInterests,
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
+      select: "-password",
+    }
+  );
+
+  logger.info("Student profile created successfully", {
+    studentId: userId,
+    interestsCount: sanitizedInterests.length,
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Student profile created successfully",
+    student: newStudent,
+  });
+});
+
+/**
  * Get all students with filtering and pagination
  * @route GET /students
  * @access Public
@@ -185,4 +261,4 @@ const remove = catchAsync(async (req, res) => {
   });
 });
 
-export { findAll, findOne, update, remove };
+export { createStudentProfile, findAll, findOne, update, remove };

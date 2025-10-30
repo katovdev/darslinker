@@ -53,6 +53,7 @@ const teacherSchema = new mongoose.Schema(
     },
     city: { type: String },
     country: { type: String },
+    telegramUsername: { type: String, required: true },
   },
   { timestamps: true, versionKey: false }
 );
