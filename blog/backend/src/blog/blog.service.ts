@@ -29,13 +29,7 @@ export class BlogService {
       ];
     }
 
-    // Optimized query with limited fields for listing
-    const data = await this.blogModel
-      .find(filter)
-      .select('title subtitle createdAt updatedAt multiViews tags categoryId')
-      .populate('categoryId', 'name slug')
-      .sort({ createdAt: -1 })
-      .lean(); // Use lean() for better performance
+    const data = await this.blogModel.find(filter).populate('categoryId', 'name slug').sort({ createdAt: -1 });
 
     return {
       message: 'success',
@@ -249,7 +243,7 @@ export class BlogService {
       throw new BadRequestException('Error Format ID');
     }
 
-    const foundBlog = await this.blogModel.findById(id).select('tags').lean();
+    const foundBlog = await this.blogModel.findById(id);
 
     if (!foundBlog) {
       throw new NotFoundException('Blog Not Found');
@@ -264,17 +258,10 @@ export class BlogService {
       };
     }
 
-    // Optimized related blogs query - limit to 6 results and only needed fields
-    const sameTagBlogs = await this.blogModel
-      .find({
-        _id: { $ne: foundBlog._id },
-        'tags.value': { $in: tagValues },
-        isArchive: false
-      })
-      .select('title subtitle createdAt multiViews tags categoryId')
-      .populate('categoryId', 'name slug')
-      .limit(6)
-      .lean();
+    const sameTagBlogs = await this.blogModel.find({
+      _id: { $ne: foundBlog._id },
+      'tags.value': { $in: tagValues },
+    }).populate('categoryId', 'name slug');
 
     return {
       message: 'success',

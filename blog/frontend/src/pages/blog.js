@@ -8,43 +8,6 @@ import { updateSEO, resetToDefaultSEO, generateArticleSEO } from '../utils/seo.j
 
 // Global variables for articles
 let allArticles = [];
-let articlesCache = null;
-let cacheTimestamp = null;
-const CACHE_DURATION = 2 * 60 * 1000; // 2 minutes cache (shorter)
-
-// Function to clear cache manually
-window.clearBlogCache = function() {
-  articlesCache = null;
-  cacheTimestamp = null;
-  console.log('Blog cache cleared manually');
-};
-
-// Function to force refresh articles
-window.refreshArticles = async function() {
-  clearBlogCache();
-  await loadArticles(true); // Force refresh
-
-  // Show success message briefly
-  const refreshBtn = document.querySelector('.refresh-btn');
-  if (refreshBtn) {
-    const originalHTML = refreshBtn.innerHTML;
-    refreshBtn.innerHTML = `
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
-      </svg>
-    `;
-    refreshBtn.style.background = '#4ade80';
-    refreshBtn.style.borderColor = '#4ade80';
-    refreshBtn.style.color = 'white';
-
-    setTimeout(() => {
-      refreshBtn.innerHTML = originalHTML;
-      refreshBtn.style.background = 'rgba(126, 162, 212, 0.1)';
-      refreshBtn.style.borderColor = '#7EA2D4';
-      refreshBtn.style.color = '#7EA2D4';
-    }, 1500);
-  }
-};
 
 
 // View tracking variables
@@ -134,11 +97,6 @@ export function initBlogPage() {
         <nav class="header-nav">
           <a href="#" class="nav-link" onclick="navigateToHome(); return false;">Asosiy</a>
           <a href="#" class="nav-link active" onclick="return false;">Blog</a>
-          <button class="refresh-btn" onclick="refreshArticles()" title="Yangi maqolalarni yuklash">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
-            </svg>
-          </button>
         </nav>
       </div>
     </header>
@@ -191,16 +149,8 @@ window.navigateToHome = function() {
   window.location.href = `${window.location.origin}/`;
 };
 
-async function loadArticles(forceRefresh = false) {
+async function loadArticles() {
   const articlesGrid = document.getElementById('articlesGrid');
-
-  // Check cache first (unless force refresh)
-  if (!forceRefresh && articlesCache && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION)) {
-    console.log('Loading articles from cache');
-    allArticles = articlesCache;
-    displayAllArticles();
-    return;
-  }
 
   // Show loading
   articlesGrid.innerHTML = '<div class="loading"><div class="loading-spinner"></div>Maqolalar yuklanmoqda...</div>';
@@ -211,14 +161,6 @@ async function loadArticles(forceRefresh = false) {
 
     if (data.message === 'success' && data.data.length > 0) {
       allArticles = data.data;
-
-      // Cache the data only if it's different from previous cache
-      const isNewData = !articlesCache || JSON.stringify(articlesCache) !== JSON.stringify(data.data);
-      if (isNewData) {
-        articlesCache = data.data;
-        cacheTimestamp = Date.now();
-        console.log('New articles data cached');
-      }
 
       // Clear grid
       articlesGrid.innerHTML = '';
@@ -250,7 +192,7 @@ function createArticleCard(article, index) {
 
   // Make entire card clickable
   card.addEventListener('click', () => {
-    openArticle(article._id || article.id);
+    openArticle(article.id);
   });
 
   // Format date to DD/MM/YYYY
@@ -982,32 +924,6 @@ function addBlogPageStyles() {
       transform: translateY(0);
     }
 
-    /* Refresh button styles */
-    .refresh-btn {
-      background: rgba(126, 162, 212, 0.1);
-      border: 2px solid #7EA2D4;
-      color: #7EA2D4;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 14px;
-      margin-left: 1rem;
-    }
-
-    .refresh-btn:hover {
-      background: #7EA2D4;
-      color: white;
-      transform: rotate(180deg);
-    }
-
-    .refresh-btn svg {
-      transition: transform 0.3s ease;
-    }
-
     /* Adjust articles section to account for fixed header */
     .articles-section {
       padding-top: 20px;
@@ -1037,43 +953,53 @@ function addBlogPageStyles() {
   document.head.appendChild(style);
 }
 
-// Function to load related articles automatically - optimized version
+// Function to load related articles automatically
 async function loadRelatedArticles(currentArticle) {
   try {
-    // Use dedicated related articles endpoint for better performance
-    const response = await fetch(`${API_URL}/blogs/${currentArticle._id}/related`);
+    const response = await fetch(`${API_URL}/blogs`);
     const data = await response.json();
 
-    const relatedGrid = document.getElementById('related-articles-grid');
+    if (data.message === 'success') {
+      // Get all tag values from current article
+      const currentTags = currentArticle.tags.map(tag => tag.value);
 
-    if (data.message === 'success' && data.data.length > 0) {
-      // Show maximum 3 related articles
-      const articlesToShow = data.data.slice(0, 3);
+      // Filter articles that have any matching tag and exclude current article
+      const relatedArticles = data.data.filter(article =>
+        article.id !== window.currentArticleId &&
+        article.tags.some(tag => currentTags.includes(tag.value))
+      );
 
-      relatedGrid.innerHTML = articlesToShow.map(article => {
-        const date = new Date(article.createdAt).toLocaleDateString('en-GB');
-        const content = article.subtitle || 'No description available';
+      const relatedGrid = document.getElementById('related-articles-grid');
 
-        return `
-          <div class="related-article-card" onclick="openArticle('${article._id}')" style="cursor: pointer;">
-            <h4 class="related-article-title">${article.title}</h4>
-            <p class="related-article-excerpt">${content}</p>
-            <div class="related-article-meta">
-              <div class="related-stats">
-                <span class="related-views">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                  </svg>
-                  ${(article.multiViews || 0).toLocaleString()}
-                </span>
-                <span class="related-date">${date}</span>
+      if (relatedArticles.length > 0) {
+        // Show maximum 3 related articles
+        const articlesToShow = relatedArticles.slice(0, 3);
+
+        relatedGrid.innerHTML = articlesToShow.map(article => {
+          const date = new Date(article.createdAt).toLocaleDateString('en-GB');
+          const content = article.subtitle || 'No description available';
+
+          return `
+            <div class="related-article-card" onclick="openArticle('${article.id}')" style="cursor: pointer;">
+              <h4 class="related-article-title">${article.title}</h4>
+              <p class="related-article-excerpt">${content}</p>
+              <div class="related-article-meta">
+                <div class="related-stats">
+                  <span class="related-views">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                    </svg>
+                    ${(article.multiViews || 0).toLocaleString()}
+                  </span>
+                  <span class="related-date">${date}</span>
+                </div>
               </div>
             </div>
-          </div>
-        `;
-      }).join('');
-    } else {
-      relatedGrid.innerHTML = '<p class="no-related">Bu mavzu bo\'yicha boshqa maqolalar topilmadi.</p>';
+          `;
+        }).join('');
+      } else {
+        relatedGrid.innerHTML = '<p class="no-related">Bu mavzu bo\'yicha boshqa maqolalar topilmadi.</p>';
+      }
     }
   } catch (error) {
     console.error('Error loading related articles:', error);

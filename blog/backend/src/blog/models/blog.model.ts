@@ -69,11 +69,3 @@ export class Blog {
 }
 
 export const BlogSchema = SchemaFactory.createForClass(Blog);
-
-// Add database indexes for better performance
-BlogSchema.index({ isArchive: 1, createdAt: -1 }); // Composite index for filtering and sorting
-BlogSchema.index({ 'tags.value': 1 }); // Index for tag-based queries
-BlogSchema.index({ title: 'text', subtitle: 'text' }); // Text search index
-BlogSchema.index({ categoryId: 1 }); // Index for category filtering
-BlogSchema.index({ multiViews: -1 }); // Index for popular posts
-BlogSchema.index({ updatedAt: -1 }); // Index for sitemap generation
