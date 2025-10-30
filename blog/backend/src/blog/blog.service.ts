@@ -285,4 +285,44 @@ export class BlogService {
       message: 'success',
     };
   }
+
+  async generateSitemap(): Promise<string> {
+    const blogs = await this.blogModel.find({ isArchive: false }).sort({ updatedAt: -1 });
+
+    let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Main blog page -->
+  <url>
+    <loc>https://darslinker.uz/blog</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Home page -->
+  <url>
+    <loc>https://darslinker.uz/</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Individual blog posts -->`;
+
+    for (const blog of blogs) {
+      const lastmod = blog.updatedAt ? blog.updatedAt.toISOString() : new Date().toISOString();
+      sitemap += `
+  <url>
+    <loc>https://darslinker.uz/blog/${blog._id}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>`;
+    }
+
+    sitemap += `
+</urlset>`;
+
+    return sitemap;
+  }
 }

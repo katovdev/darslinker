@@ -10,10 +10,11 @@ import {
   HttpCode,
   HttpStatus,
   Req,
+  Res,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto, UpdateBlogDto } from './dtos';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 @Controller('blogs')
 export class BlogController {
@@ -85,5 +86,13 @@ export class BlogController {
   @HttpCode(HttpStatus.OK)
   async deleteBlog(@Param('id') id: string) {
     return this.blogService.delete(id);
+  }
+
+  // Generate sitemap (public)
+  @Get('sitemap.xml')
+  async generateSitemap(@Res() res: Response) {
+    const sitemap = await this.blogService.generateSitemap();
+    res.set('Content-Type', 'application/xml');
+    return res.send(sitemap);
   }
 }
