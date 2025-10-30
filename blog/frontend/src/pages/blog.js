@@ -371,7 +371,7 @@ function addArticlePageStyles() {
       min-height: 100vh;
       background: #232323;
       color: white;
-      padding: 2rem 0;
+      padding: 8px 0;
     }
 
     /* Hide header title on article page */

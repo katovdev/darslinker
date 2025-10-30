@@ -886,7 +886,7 @@ function addArticlePageStyles() {
       min-height: 100vh;
       background: #232323;
       color: white;
-      padding: 6rem 0 2rem 0;
+      padding: 1rem 0 2rem 0;
     }
 
     /* Hide header title and landing title on article page */
