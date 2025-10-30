@@ -1,7 +1,11 @@
 import { router } from '../../utils/router.js';
 import { store } from '../../utils/store.js';
+import { cleanupPricingStyles } from '../pricing.js';
 
 export function initHomePage() {
+  // Clean up pricing page styles when returning to home
+  cleanupPricingStyles();
+
   const app = document.querySelector('#app');
 
   // Make router available globally for onclick handlers
@@ -193,7 +197,7 @@ export function initHomePage() {
             </div>
           <!-- Minimal Plan -->
           <div class="pricing-card minimal-card">
-            
+
             <div class="pricing-header minimal">
               <h3>Minimal</h3>
             </div>
@@ -204,15 +208,11 @@ export function initHomePage() {
               </div>
               <div class="feature-item">
                 <span>Admin qo'shish</span>
-                <span class="feature-value">1</span>
+                <span class="feature-value">3</span>
               </div>
               <div class="feature-item">
                 <span>O'quvchilar bazasi</span>
                 <span class="feature-value">∞</span>
-              </div>
-              <div class="feature-item">
-                <span>Onlayn uchrashuv</span>
-                <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
                 <span>Qo'llab-quvvatlash</span>
@@ -221,6 +221,10 @@ export function initHomePage() {
               <div class="feature-item">
                 <span>O'quvchilar analitikasi</span>
                 <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item disabled">
+                <span>Onlayn uchrashuv</span>
+                <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
                 <span>Sertifikat generatsiyasi</span>
@@ -270,15 +274,15 @@ export function initHomePage() {
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Onlayn uchrashuv</span>
-                <span class="feature-check">✓</span>
-              </div>
-              <div class="feature-item">
                 <span>Qo'llab-quvvatlash</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
                 <span>O'quvchilar analitikasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span>Onlayn uchrashuv</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
@@ -293,9 +297,9 @@ export function initHomePage() {
                 <span>To'lov tizimi integratsyasi</span>
                 <span class="feature-check">✓</span>
               </div>
-              <div class="feature-item disabled">
+              <div class="feature-item">
                 <span>Sun'iy intellekt</span>
-                <span class="feature-check">✗</span>
+                <span class="feature-check">✓</span>
               </div>
               <div class="feature-item disabled">
                 <span>Kontent xavfsizligi</span>
@@ -328,15 +332,15 @@ export function initHomePage() {
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Onlayn uchrashuv</span>
-                <span class="feature-check">✓</span>
-              </div>
-              <div class="feature-item">
                 <span>Qo'llab-quvvatlash</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
                 <span>O'quvchilar analitikasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span>Onlayn uchrashuv</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
@@ -390,15 +394,15 @@ export function initHomePage() {
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Onlayn uchrashuv</span>
-                <span class="feature-check">✓</span>
-              </div>
-              <div class="feature-item">
                 <span>Qo'llab-quvvatlash</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
                 <span>Shaxsiy Domein</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span>Onlayn uchrashuv</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
@@ -431,7 +435,7 @@ export function initHomePage() {
         </div>
 
         <div class="pricing-action">
-          <button class="btn-pricing">Tariflar bo'yicha to'liq ma'lumat</button>
+          <button class="btn-pricing" onclick="router.navigate('/pricing'); return false;">Ta'riflar bo'yicha to'liq ma'lumot</button>
         </div>
       </div>
     </section>
@@ -1261,6 +1265,12 @@ function initNavigation() {
 
       const text = this.textContent.trim();
 
+      // Remove active class from all nav items
+      navItems.forEach(navItem => navItem.classList.remove('active'));
+
+      // Add active class to clicked item
+      this.classList.add('active');
+
       switch (text) {
         case 'Asosiy':
           scrollToSection('hero');
@@ -1283,8 +1293,66 @@ function initNavigation() {
     });
   });
 
+  // Initialize scroll-based active detection
+  initScrollActiveDetection();
+
   // Initialize footer navigation
   initFooterNavigation();
+}
+
+
+// Set active navigation item
+function setActiveNavItem(activeText) {
+  const navItems = document.querySelectorAll('.nav-item');
+
+  navItems.forEach(item => {
+    item.classList.remove('active');
+    if (item.textContent.trim() === activeText) {
+      item.classList.add('active');
+    }
+  });
+}
+
+// Scroll-based active section detection
+function initScrollActiveDetection() {
+  const sections = [
+    { element: document.querySelector('.hero'), name: 'Asosiy' },
+    { element: document.querySelector('.platform-features'), name: 'Ma\'lumot' },
+    { element: document.querySelector('.pricing-section'), name: 'Tariflar' },
+    { element: document.querySelector('.articles-section'), name: 'Bloglar' },
+    { element: document.querySelector('.advice-section'), name: 'Aloqa' }
+  ].filter(section => section.element); // Filter out null elements
+
+  let ticking = false;
+
+  function updateActiveNav() {
+    const scrollPos = window.scrollY + 150; // 150px offset for header
+    let currentSection = 'Asosiy'; // Default to first section
+
+    // Find which section we're currently in
+    for (let i = sections.length - 1; i >= 0; i--) {
+      const section = sections[i];
+      if (scrollPos >= section.element.offsetTop) {
+        currentSection = section.name;
+        break;
+      }
+    }
+
+    setActiveNavItem(currentSection);
+    ticking = false;
+  }
+
+  function requestTick() {
+    if (!ticking) {
+      requestAnimationFrame(updateActiveNav);
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', requestTick);
+
+  // Set initial active state
+  updateActiveNav();
 }
 
 // Smooth scroll to section
@@ -1309,7 +1377,7 @@ function addNavigationStyles() {
   const style = document.createElement('style');
   style.id = 'navigation-styles';
   style.textContent = `
-    /* Only keep smooth scroll behavior and logo cursor */
+    /* Smooth scroll behavior */
     html {
       scroll-behavior: smooth;
     }
@@ -1322,6 +1390,21 @@ function addNavigationStyles() {
     .logo:hover {
       transform: scale(1.05);
       filter: brightness(1.1);
+    }
+
+    /* Navigation item hover - 70% white */
+    .nav-item:hover {
+      color: rgba(255, 255, 255, 0.7) !important;
+    }
+
+    /* Navigation item active (clicked) - 100% white */
+    .nav-item.active {
+      color: rgba(255, 255, 255, 1) !important;
+    }
+
+    /* Make sure active state overrides hover */
+    .nav-item.active:hover {
+      color: rgba(255, 255, 255, 1) !important;
     }
   `;
 

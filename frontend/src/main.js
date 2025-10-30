@@ -8,6 +8,7 @@ import { initLoginPage } from './pages/auth/login.js';
 import { initPasswordPage } from './pages/auth/password.js';
 import { initRegisterPage } from './pages/auth/register.js';
 import { initDashboard } from './pages/common/dashboard.js';
+import { initPricingPage } from './pages/pricing.js';
 
 class App {
   constructor() {
@@ -32,6 +33,7 @@ class App {
     router.register('/password', initPasswordPage);
     router.register('/register', initRegisterPage);
     router.register('/dashboard', initDashboard);
+    router.register('/pricing', initPricingPage);
 
     router.register('*', () => {
       document.querySelector('#app').innerHTML = `
