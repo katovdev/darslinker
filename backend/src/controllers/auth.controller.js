@@ -65,6 +65,12 @@ const checkUser = catchAsync(async (req, res) => {
       exists: true,
       next: "login",
       message: "User found. Please enter your password in a login endpoint",
+      user: {
+        firstName: existingUser.firstName,
+        lastName: existingUser.lastName,
+        email: existingUser.email,
+        phone: existingUser.phone
+      }
     });
   } else {
     res.status(200).json({

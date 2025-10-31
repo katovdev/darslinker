@@ -1,5 +1,5 @@
 import { router } from '../../utils/router.js';
-import { authenticateUser } from '../../utils/mockDatabase.js';
+import { apiService } from '../../utils/api.js';
 
 export function initPasswordPage() {
   const app = document.querySelector('#app');
@@ -38,7 +38,7 @@ export function initPasswordPage() {
       <!-- Password Modal -->
       <div class="password-modal">
         <div class="password-card">
-          <h2 class="user-name">${userData.firstName} ${userData.lastName}</h2>
+          <h2 class="user-name">${capitalizeFirstLetter(userData.firstName)} ${capitalizeFirstLetter(userData.lastName)}</h2>
 
           <!-- Password Input Section -->
           <div class="password-input-section">
@@ -493,33 +493,55 @@ function initPasswordPageFunctionality(userIdentifier) {
     passwordSubmit.textContent = 'Kirilmoqda...';
     passwordSubmit.disabled = true;
 
-    // Simulate authentication
-    setTimeout(() => {
-      const user = authenticateUser(userIdentifier, passwordValue);
+    // Authenticate using real API
+    apiService.login(userIdentifier, passwordValue)
+      .then(response => {
+        if (response.success) {
+          // Show success toast
+          showSuccessToast('Kirish muvaffaqiyatli!');
 
-      if (user) {
-        // Show success toast
-        showSuccessToast('Kirish muvaffaqiyatli!');
+          // Store tokens and user data
+          localStorage.setItem('accessToken', response.accessToken);
+          localStorage.setItem('refreshToken', response.refreshToken);
+          sessionStorage.setItem('currentUser', JSON.stringify(response.user));
+          sessionStorage.removeItem('tempUserData');
+          sessionStorage.removeItem('userIdentifier');
 
-        // Store user data in session
-        sessionStorage.setItem('currentUser', JSON.stringify(user));
-        sessionStorage.removeItem('tempUserData');
-        sessionStorage.removeItem('userIdentifier');
+          // Reset button state and navigate to dashboard
+          passwordSubmit.textContent = 'Kirish';
+          passwordSubmit.disabled = false;
+          passwordInput.value = '';
 
-        // Reset button state
-        passwordSubmit.textContent = 'Kirish';
-        passwordSubmit.disabled = false;
-        passwordInput.value = '';
-      } else {
-        showErrorToast('Parol noto\'g\'ri! Qaytadan urinib ko\'ring.');
+          // Navigate to dashboard after short delay
+          setTimeout(() => {
+            // Restore body scroll before navigation
+            document.body.style.overflow = '';
+            document.body.style.height = '';
+            router.navigate('/dashboard');
+          }, 1500);
+        }
+      })
+      .catch(error => {
+        console.error('Login error:', error);
+
+        // Show specific error message
+        let errorMessage = 'Parol noto\'g\'ri! Qaytadan urinib ko\'ring.';
+        if (error.message.includes('Invalid credentials') || error.message.includes('password')) {
+          errorMessage = 'Parol noto\'g\'ri! Qaytadan urinib ko\'ring.';
+        } else if (error.message.includes('User not found')) {
+          errorMessage = 'Foydalanuvchi topilmadi!';
+        } else {
+          errorMessage = 'Xatolik yuz berdi. Qaytadan urinib ko\'ring.';
+        }
+
+        showErrorToast(errorMessage);
 
         // Reset button state
         passwordSubmit.textContent = 'Kirish';
         passwordSubmit.disabled = false;
         passwordInput.value = '';
         passwordInput.focus();
-      }
-    }, 1000);
+      });
   }
 }
 
@@ -602,4 +624,9 @@ function togglePasswordVisibility(inputField, toggleButton) {
     eyeShow.classList.remove('hidden');
     eyeHide.classList.add('hidden');
   }
+}
+
+function capitalizeFirstLetter(string) {
+  if (!string) return '';
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
 }

@@ -5,9 +5,7 @@ export const config = {
     version: '1.0.0'
   },
   api: {
-    baseUrl: process.env.NODE_ENV === 'development'
-      ? 'http://localhost:3000/api'
-      : 'https://darslinker.uz/api'
+    baseUrl: 'http://localhost:8001/api'
   },
   routes: {
     home: '/',

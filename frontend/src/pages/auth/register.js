@@ -1,5 +1,5 @@
 import { router } from '../../utils/router.js';
-import { registerUser, findUserByPhoneOrEmail } from '../../utils/mockDatabase.js';
+import { apiService } from '../../utils/api.js';
 
 export function initRegisterPage() {
   const app = document.querySelector('#app');
@@ -120,7 +120,7 @@ export function initRegisterPage() {
                 <input
                   type="password"
                   class="form-input password-input-field"
-                  placeholder="Parol kiriting"
+                  placeholder="Kamida 8 ta belgi, katta-kichik harf, raqam va @$!%*?&"
                   id="passwordInput"
                   required
                 />
@@ -901,8 +901,14 @@ function initRegisterPageFunctionality() {
     if (!value) {
       showError(passwordError, 'Parol kiritilishi shart');
       return false;
-    } else if (value.length < 6) {
-      showError(passwordError, 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak!');
+    } else if (value.length < 8) {
+      showError(passwordError, 'Parol kamida 8 ta belgidan iborat bo\'lishi kerak!');
+      return false;
+    } else if (value.length > 128) {
+      showError(passwordError, 'Parol 128 ta belgidan ko\'p bo\'lmasligi kerak!');
+      return false;
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(value)) {
+      showError(passwordError, 'Parol katta harf, kichik harf, raqam va maxsus belgi (@$!%*?&) o\'z ichiga olishi kerak!');
       return false;
     } else {
       hideError(passwordError);
@@ -952,7 +958,7 @@ function initRegisterPageFunctionality() {
     handleRegistration();
   });
 
-  function handleRegistration() {
+  async function handleRegistration() {
     const isPhoneMode = phoneToggle.classList.contains('active');
 
     // Run all validations
@@ -980,55 +986,331 @@ function initRegisterPageFunctionality() {
     const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
-    const userIdentifier = isPhoneMode ? phone : email;
-
-    // Check if user already exists
-    const existingUser = findUserByPhoneOrEmail(userIdentifier);
-    if (existingUser) {
-      showErrorToast('Bu telefon raqam yoki email allaqachon ro\'yxatdan o\'tgan!');
-      return;
-    }
+    const userIdentifier = isPhoneMode ? `+998${phone}` : email;
 
     // Add loading state
     registerSubmit.textContent = 'Ro\'yxatdan o\'tilmoqda...';
     registerSubmit.disabled = true;
 
-    // Simulate registration
-    setTimeout(() => {
+    try {
+      // First check if user already exists
+      const checkResult = await apiService.checkUser(userIdentifier);
+
+      if (checkResult.exists) {
+        showErrorToast('Bu telefon raqam yoki email allaqachon ro\'yxatdan o\'tgan!');
+        registerSubmit.textContent = 'Ro\'yxatdan o\'tish';
+        registerSubmit.disabled = false;
+        return;
+      }
+
+      // Prepare user data for registration
       const userData = {
         firstName,
         lastName,
-        phone: isPhoneMode ? phone : '',
-        email: isPhoneMode ? '' : email,
-        password
+        password,
+        role: 'student' // Default role
       };
 
-      const newUser = registerUser(userData);
+      // Add phone or email based on mode
+      if (isPhoneMode) {
+        userData.phone = `+998${phone}`;
+      } else {
+        userData.email = email;
+      }
 
-      // Clear session storage
-      sessionStorage.removeItem('registerIdentifier');
-      sessionStorage.removeItem('registerMode');
+      // Register the user
+      const registerResult = await apiService.register(userData);
 
-      // Show success toast
-      showSuccessToast('Ro\'yxatdan o\'tish muvaffaqiyatli!');
+      if (registerResult.success) {
+        // Store registration data for OTP verification
+        sessionStorage.setItem('registrationIdentifier', userIdentifier);
+        sessionStorage.setItem('awaitingOtpVerification', 'true');
 
-      // Reset form and button
+        // Show success message and redirect to OTP verification
+        showSuccessToast('Ro\'yxatdan o\'tish muvaffaqiyatli! OTP kod yuborildi.');
+
+        // Create and show OTP verification modal
+        showOtpVerificationModal(userIdentifier);
+      }
+
+    } catch (error) {
+      console.error('Registration error:', error);
+      showErrorToast(error.message || 'Ro\'yxatdan o\'tishda xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
+    } finally {
+      // Reset button state
       registerSubmit.textContent = 'Ro\'yxatdan o\'tish';
       registerSubmit.disabled = false;
-
-      // Reset form inputs
-      firstNameInput.value = '';
-      lastNameInput.value = '';
-      phoneInput.value = '';
-      emailInput.value = '';
-      passwordInput.value = '';
-      confirmPasswordInput.value = '';
-    }, 1500);
+    }
   }
 
   function isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  }
+
+  function showOtpVerificationModal(identifier) {
+    // Create OTP verification modal
+    const otpModal = document.createElement('div');
+    otpModal.className = 'otp-modal-overlay';
+    otpModal.innerHTML = `
+      <div class="otp-modal">
+        <div class="otp-header">
+          <h3>Tasdiqlash kodi</h3>
+          <p>Tasdiqlash kodi ${identifier.includes('@') ? 'emailingizga' : 'telefon raqamingizga'} yuborildi</p>
+        </div>
+        <div class="otp-input-container">
+          <input type="text" class="otp-input" maxlength="6" placeholder="000000" id="otpCodeInput">
+        </div>
+        <div class="otp-actions">
+          <button class="otp-verify-btn" id="verifyOtpBtn">Tasdiqlash</button>
+          <button class="otp-resend-btn" id="resendOtpBtn">Qayta yuborish</button>
+        </div>
+        <button class="otp-close-btn" id="closeOtpModal">&times;</button>
+      </div>
+    `;
+
+    // Add OTP modal styles
+    const otpStyles = document.createElement('style');
+    otpStyles.textContent = `
+      .otp-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .otp-modal {
+        background: rgba(90, 90, 90, 0.1);
+        backdrop-filter: blur(50px);
+        border-radius: 24px;
+        padding: 32px;
+        width: 400px;
+        max-width: 90vw;
+        border: 1px solid #7EA2D4;
+        position: relative;
+      }
+
+      .otp-header h3 {
+        color: #ffffff;
+        font-size: 1.4rem;
+        margin: 0 0 8px 0;
+        text-align: center;
+      }
+
+      .otp-header p {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        margin: 0 0 24px 0;
+        text-align: center;
+      }
+
+      .otp-input-container {
+        margin-bottom: 24px;
+      }
+
+      .otp-input {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(60, 60, 80, 0.5);
+        border: 1px solid #7EA2D4;
+        border-radius: 25px;
+        color: #ffffff;
+        font-size: 1.2rem;
+        text-align: center;
+        letter-spacing: 4px;
+        outline: none;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+      }
+
+      .otp-input:focus {
+        border-color: #7EA2D4;
+        box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+      }
+
+      .otp-input::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+      }
+
+      .otp-actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 16px;
+      }
+
+      .otp-verify-btn, .otp-resend-btn {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .otp-verify-btn {
+        background: linear-gradient(135deg, #7EA2D4 0%, #5A85C7 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
+      }
+
+      .otp-verify-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(126, 162, 212, 0.4);
+      }
+
+      .otp-verify-btn:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      .otp-resend-btn {
+        background: rgba(60, 60, 80, 0.5);
+        color: #ffffff;
+        border: 1px solid #7EA2D4;
+      }
+
+      .otp-resend-btn:hover {
+        background: rgba(70, 70, 90, 0.7);
+      }
+
+      .otp-close-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.3s ease;
+      }
+
+      .otp-close-btn:hover {
+        color: rgba(255, 255, 255, 0.9);
+      }
+    `;
+
+    document.head.appendChild(otpStyles);
+    document.body.appendChild(otpModal);
+
+    // Get OTP modal elements
+    const otpInput = document.getElementById('otpCodeInput');
+    const verifyBtn = document.getElementById('verifyOtpBtn');
+    const resendBtn = document.getElementById('resendOtpBtn');
+    const closeBtn = document.getElementById('closeOtpModal');
+
+    // Focus on input
+    setTimeout(() => otpInput.focus(), 100);
+
+    // Auto-format OTP input (only numbers)
+    otpInput.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^0-9]/g, '');
+    });
+
+    // Verify OTP
+    verifyBtn.addEventListener('click', async () => {
+      const otpCode = otpInput.value.trim();
+      if (otpCode.length !== 6) {
+        showErrorToast('Iltimos, 6 raqamli OTP kodni kiriting');
+        return;
+      }
+
+      verifyBtn.textContent = 'Tekshirilmoqda...';
+      verifyBtn.disabled = true;
+
+      try {
+        const result = await apiService.verifyRegistrationOtp(identifier, otpCode);
+        if (result.success) {
+          showSuccessToast('Ro\'yxatdan o\'tish yakunlandi!');
+
+          // Clear session storage
+          sessionStorage.removeItem('registrationIdentifier');
+          sessionStorage.removeItem('awaitingOtpVerification');
+          sessionStorage.removeItem('registerIdentifier');
+          sessionStorage.removeItem('registerMode');
+
+          // Close modal and reset form
+          document.body.removeChild(otpModal);
+          document.head.removeChild(otpStyles);
+
+          // Reset form inputs
+          firstNameInput.value = '';
+          lastNameInput.value = '';
+          phoneInput.value = '';
+          emailInput.value = '';
+          passwordInput.value = '';
+          confirmPasswordInput.value = '';
+
+          // Navigate to dashboard after successful registration
+          setTimeout(() => {
+            router.navigate('/dashboard');
+          }, 2000);
+        }
+      } catch (error) {
+        console.error('OTP verification error:', error);
+        showErrorToast(error.message || 'OTP tasdiqlashda xatolik yuz berdi');
+      } finally {
+        verifyBtn.textContent = 'Tasdiqlash';
+        verifyBtn.disabled = false;
+      }
+    });
+
+    // Resend OTP
+    resendBtn.addEventListener('click', async () => {
+      resendBtn.textContent = 'Yuborilmoqda...';
+      resendBtn.disabled = true;
+
+      try {
+        const result = await apiService.resendRegistrationOtp(identifier);
+        if (result.success) {
+          showSuccessToast('OTP kod qayta yuborildi');
+          otpInput.value = '';
+          otpInput.focus();
+        }
+      } catch (error) {
+        console.error('Resend OTP error:', error);
+        showErrorToast(error.message || 'OTP qayta yuborishda xatolik yuz berdi');
+      } finally {
+        resendBtn.textContent = 'Qayta yuborish';
+        resendBtn.disabled = false;
+      }
+    });
+
+    // Close modal
+    closeBtn.addEventListener('click', () => {
+      document.body.removeChild(otpModal);
+      document.head.removeChild(otpStyles);
+    });
+
+    // Close on overlay click
+    otpModal.addEventListener('click', (e) => {
+      if (e.target === otpModal) {
+        document.body.removeChild(otpModal);
+        document.head.removeChild(otpStyles);
+      }
+    });
+
+    // Enter key to verify
+    otpInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && otpInput.value.length === 6) {
+        verifyBtn.click();
+      }
+    });
   }
 }
 

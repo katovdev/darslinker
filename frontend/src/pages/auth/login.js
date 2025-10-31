@@ -1,5 +1,5 @@
 import { router } from '../../utils/router.js';
-import { findUserByPhoneOrEmail } from '../../utils/mockDatabase.js';
+import { apiService } from '../../utils/api.js';
 
 export function initLoginPage() {
   const app = document.querySelector('#app');
@@ -663,36 +663,46 @@ function initLoginPageFunctionality() {
     loginSubmit.textContent = 'Tekshirilmoqda...';
     loginSubmit.disabled = true;
 
-    // Check if user exists
-    setTimeout(() => {
-      const existingUser = findUserByPhoneOrEmail(userIdentifier);
+    // Check if user exists using real API
+    apiService.checkUser(userIdentifier)
+      .then(response => {
+        if (response.exists) {
+          // User exists, store temp data and go to password page
+          sessionStorage.setItem('tempUserData', JSON.stringify(response.user));
+          sessionStorage.setItem('userIdentifier', userIdentifier);
 
-      if (existingUser) {
-        // User exists, store temp data and go to password page
-        sessionStorage.setItem('tempUserData', JSON.stringify(existingUser));
-        sessionStorage.setItem('userIdentifier', userIdentifier);
+          // Restore body scroll before navigation
+          document.body.style.overflow = '';
+          document.body.style.height = '';
 
-        // Restore body scroll before navigation
-        document.body.style.overflow = '';
-        document.body.style.height = '';
+          router.navigate('/password');
+        } else {
+          // User doesn't exist, go to register page
+          sessionStorage.setItem('registerIdentifier', userIdentifier);
+          sessionStorage.setItem('registerMode', isPhoneMode ? 'phone' : 'email');
 
-        router.navigate('/password');
-      } else {
-        // User doesn't exist, go to register page
-        sessionStorage.setItem('registerIdentifier', userIdentifier);
-        sessionStorage.setItem('registerMode', isPhoneMode ? 'phone' : 'email');
+          // Restore body scroll before navigation
+          document.body.style.overflow = '';
+          document.body.style.height = '';
 
-        // Restore body scroll before navigation
-        document.body.style.overflow = '';
-        document.body.style.height = '';
+          router.navigate('/register');
+        }
 
-        router.navigate('/register');
-      }
+        // Reset button state
+        loginSubmit.textContent = 'Kirish';
+        loginSubmit.disabled = false;
+      })
+      .catch(error => {
+        console.error('Error checking user:', error);
 
-      // Reset button state
-      loginSubmit.textContent = 'Kirish';
-      loginSubmit.disabled = false;
-    }, 1000);
+        // Show error message
+        const errorElement = isPhoneMode ? phoneError : emailError;
+        showError(errorElement, 'Xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
+
+        // Reset button state
+        loginSubmit.textContent = 'Kirish';
+        loginSubmit.disabled = false;
+      });
   });
 
   // Format phone number as user types and validate
