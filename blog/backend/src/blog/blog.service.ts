@@ -212,12 +212,10 @@ export class BlogService {
     };
   }
 
-  async viewBlog(id: string, payload: { userId: string }) {
+  async viewBlog(id: string, payload: { userId: string, userAgent?: string, fingerprint?: string }) {
     if (!isValidObjectId(id)) {
       throw new BadRequestException('Error ID Format');
     }
-
-    const reqIp = payload.userId ?? "";
 
     const blog = await this.blogModel.findById(id);
 
@@ -225,10 +223,22 @@ export class BlogService {
       throw new NotFoundException('Blog Not Found');
     }
 
+    // Always increment total views
     blog.multiViews += 1;
 
-    if (!blog.uniqueViews.includes(reqIp)) {
-      blog.uniqueViews.push(reqIp);
+    // Create a unique identifier for this visitor
+    let uniqueId = payload.userId || "anonymous";
+
+    // If we have additional data, create a more unique fingerprint
+    if (payload.userAgent || payload.fingerprint) {
+      const crypto = require('crypto');
+      const dataToHash = `${uniqueId}-${payload.userAgent || ''}-${payload.fingerprint || ''}`;
+      uniqueId = crypto.createHash('md5').update(dataToHash).digest('hex').substring(0, 16);
+    }
+
+    // Check if this unique visitor has already viewed this blog
+    if (!blog.uniqueViews.includes(uniqueId)) {
+      blog.uniqueViews.push(uniqueId);
     }
 
     await blog.save();

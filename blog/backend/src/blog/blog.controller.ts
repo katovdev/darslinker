@@ -64,9 +64,19 @@ export class BlogController {
   @Post(':id/view')
   @HttpCode(HttpStatus.OK)
   async viewBlog(@Param('id') id: string, @Req() req: Request) {
-    // You can extract user IP or user ID here
-    const userId = req.ip || req.connection.remoteAddress || 'anonymous';
-    return this.blogService.viewBlog(id, { userId });
+    // Extract user identification data
+    const userId = req.ip || req.socket?.remoteAddress || req.connection?.remoteAddress || 'anonymous';
+    const userAgent = req.get('User-Agent') || '';
+
+    // Get forwarded IPs if behind proxy
+    const forwardedFor = req.get('X-Forwarded-For');
+    const realIp = forwardedFor ? forwardedFor.split(',')[0].trim() : userId;
+
+    return this.blogService.viewBlog(id, {
+      userId: realIp,
+      userAgent,
+      fingerprint: req.get('X-Fingerprint') || ''
+    });
   }
 
   // Archive blog (admin only - for moderator)
