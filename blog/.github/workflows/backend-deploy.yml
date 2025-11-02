@@ -6,17 +6,17 @@ on:
       - main
       - develop
     paths:
-      - 'backend/**'
-      - '.github/workflows/backend-deploy.yml'
+      - "backend/**"
+      - ".github/workflows/backend-deploy.yml"
   pull_request:
     branches:
       - main
     paths:
-      - 'backend/**'
+      - "backend/**"
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '18'
+  NODE_VERSION: "18"
   APP_NAME: darslinker-backend
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
@@ -72,7 +72,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies

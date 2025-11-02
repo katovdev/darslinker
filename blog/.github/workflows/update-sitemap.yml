@@ -3,12 +3,12 @@ name: Update Sitemap
 on:
   schedule:
     # Run daily at 06:00 UTC
-    - cron: '0 6 * * *'
+    - cron: "0 6 * * *"
   workflow_dispatch: # Allow manual trigger
   push:
     branches: [main]
     paths:
-      - 'blog/backend/src/blog/**'
+      - "blog/backend/src/blog/**"
 
 jobs:
   update-sitemap:
@@ -21,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: "18"
 
       - name: Update sitemap
         run: |
