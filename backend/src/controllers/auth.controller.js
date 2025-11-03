@@ -422,11 +422,23 @@ const login = catchAsync(async (req, res) => {
     ip: req.ip,
   });
 
+  // Prepare user response (without password)
+  const userResponse = {
+    _id: existingUser._id,
+    firstName: existingUser.firstName,
+    lastName: existingUser.lastName,
+    email: existingUser.email,
+    phone: existingUser.phone,
+    role: existingUser.role,
+    status: existingUser.status,
+  };
+
   res.status(200).json({
     success: true,
     message: "Logged in successfully",
     accessToken,
     refreshToken,
+    user: userResponse,
   });
 });
 

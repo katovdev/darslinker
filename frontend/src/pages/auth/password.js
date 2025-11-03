@@ -496,14 +496,28 @@ function initPasswordPageFunctionality(userIdentifier) {
     // Authenticate using real API
     apiService.login(userIdentifier, passwordValue)
       .then(response => {
+        console.log('Login response:', response);
+
         if (response.success) {
           // Show success toast
           showSuccessToast('Kirish muvaffaqiyatli!');
 
+          console.log('User data from response:', response.user);
+
           // Store tokens and user data
           localStorage.setItem('accessToken', response.accessToken);
-          localStorage.setItem('refreshToken', response.refreshToken);
-          sessionStorage.setItem('currentUser', JSON.stringify(response.user));
+          if (response.refreshToken) {
+            localStorage.setItem('refreshToken', response.refreshToken);
+          }
+
+          // Make sure user data exists before storing
+          if (response.user) {
+            sessionStorage.setItem('currentUser', JSON.stringify(response.user));
+            console.log('User data stored in sessionStorage');
+          } else {
+            console.error('No user data in response!');
+          }
+
           sessionStorage.removeItem('tempUserData');
           sessionStorage.removeItem('userIdentifier');
 
@@ -517,6 +531,11 @@ function initPasswordPageFunctionality(userIdentifier) {
             // Restore body scroll before navigation
             document.body.style.overflow = '';
             document.body.style.height = '';
+            document.body.style.paddingTop = '';
+
+            // Clear the app content before navigation
+            document.querySelector('#app').innerHTML = '';
+
             router.navigate('/dashboard');
           }, 1500);
         }
