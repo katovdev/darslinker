@@ -18,14 +18,26 @@ export function updateSEO(seoData) {
     tags = []
   } = seoData;
 
+  // Console logging for SEO application
+  console.log('🔧 Applying SEO to page meta tags:');
+  console.log('   📄 Title:', title);
+  console.log('   📝 Description:', description);
+  console.log('   🔍 Keywords:', keywords);
+  console.log('   🔗 URL:', url);
+  console.log('   🏷️ Tags:', tags);
+  console.log('   📸 Image:', image);
+
   // Update page title
   document.title = title;
+  console.log('   ✅ Page title updated');
 
   // Update or create meta tags
   updateMetaTag('name', 'description', description);
   updateMetaTag('name', 'keywords', keywords);
   updateMetaTag('name', 'author', author);
   updateMetaTag('name', 'robots', 'index, follow');
+
+  console.log('   ✅ Meta tags updated (description, keywords, author, robots)');
 
   // Update canonical URL
   updateLinkTag('canonical', url);
@@ -93,18 +105,36 @@ export function updateSEO(seoData) {
  * Update or create a meta tag
  */
 function updateMetaTag(attribute, name, content, allowMultiple = false) {
-  if (!content) return;
+  if (!content) {
+    console.log(`   ⚠️ Skipping empty meta tag: ${name}`);
+    return;
+  }
 
   const selector = `meta[${attribute}="${name}"]`;
   let existingTag = document.querySelector(selector);
 
   if (existingTag && !allowMultiple) {
     existingTag.setAttribute('content', content);
+    console.log(`   ✅ Updated existing meta tag: ${name} = "${content.substring(0, 50)}..."`);
   } else {
     const metaTag = document.createElement('meta');
     metaTag.setAttribute(attribute, name);
     metaTag.setAttribute('content', content);
     document.head.appendChild(metaTag);
+    console.log(`   ✅ Created new meta tag: ${name} = "${content.substring(0, 50)}..."`);
+  }
+
+  // Special handling for keywords - verify they're applied
+  if (name === 'keywords') {
+    setTimeout(() => {
+      const verifyTag = document.querySelector(selector);
+      if (verifyTag && verifyTag.getAttribute('content') === content) {
+        console.log(`   🔍 VERIFIED: Keywords applied successfully`);
+        console.log(`   🔍 Current keywords in DOM:`, verifyTag.getAttribute('content'));
+      } else {
+        console.error(`   ❌ ERROR: Keywords not applied correctly!`);
+      }
+    }, 100);
   }
 }
 
@@ -216,6 +246,52 @@ export function resetToDefaultSEO() {
 }
 
 /**
+ * Debug function to check current SEO keywords on page
+ * Call this in console: window.checkCurrentSEO()
+ */
+export function checkCurrentSEO() {
+  console.log('🔍 Current SEO Analysis:');
+
+  // Check page title
+  console.log('📄 Page Title:', document.title);
+
+  // Check meta description
+  const metaDesc = document.querySelector('meta[name="description"]');
+  console.log('📝 Meta Description:', metaDesc ? metaDesc.getAttribute('content') : 'NOT FOUND');
+
+  // Check meta keywords
+  const metaKeywords = document.querySelector('meta[name="keywords"]');
+  console.log('🔍 Meta Keywords:', metaKeywords ? metaKeywords.getAttribute('content') : 'NOT FOUND');
+
+  // Check canonical URL
+  const canonical = document.querySelector('link[rel="canonical"]');
+  console.log('🔗 Canonical URL:', canonical ? canonical.getAttribute('href') : 'NOT FOUND');
+
+  // Check Open Graph tags
+  const ogTitle = document.querySelector('meta[property="og:title"]');
+  const ogDesc = document.querySelector('meta[property="og:description"]');
+  console.log('📱 OG Title:', ogTitle ? ogTitle.getAttribute('content') : 'NOT FOUND');
+  console.log('📱 OG Description:', ogDesc ? ogDesc.getAttribute('content') : 'NOT FOUND');
+
+  // Check structured data
+  const structuredData = document.querySelector('script[type="application/ld+json"]');
+  console.log('📊 Structured Data:', structuredData ? 'FOUND' : 'NOT FOUND');
+
+  return {
+    title: document.title,
+    description: metaDesc ? metaDesc.getAttribute('content') : null,
+    keywords: metaKeywords ? metaKeywords.getAttribute('content') : null,
+    canonical: canonical ? canonical.getAttribute('href') : null,
+    hasStructuredData: !!structuredData
+  };
+}
+
+// Make function available globally for console debugging
+if (typeof window !== 'undefined') {
+  window.checkCurrentSEO = checkCurrentSEO;
+}
+
+/**
  * Generate SEO data for article (Hybrid: Manual first, Auto fallback)
  */
 export function generateArticleSEO(article) {
@@ -227,18 +303,60 @@ export function generateArticleSEO(article) {
   // HYBRID SEO LOGIC
   let title, description, keywords;
 
-  // 1. Check for MANUAL SEO fields first
-  if (article.seo && article.seo.metaTitle && article.seo.metaDescription) {
+  // Debug: Show article SEO structure
+  console.log('📋 Article SEO Debug for:', article.title);
+  console.log('  - Article ID:', article.id);
+  console.log('  - Has article.seo object:', !!article.seo);
+  console.log('  - Full article object:', article);
+  if (article.seo) {
+    console.log('  - SEO keywords:', article.seo.keywords || 'NOT SET');
+    console.log('  - SEO keywords type:', typeof article.seo.keywords);
+    console.log('  - SEO keywords length:', article.seo.keywords ? article.seo.keywords.length : 'No keywords');
+    console.log('  - Full SEO object:', article.seo);
+    console.log('  - SEO canonicalUrl:', article.seo.canonicalUrl || 'NOT SET');
+  } else {
+    console.log('  - NO SEO OBJECT FOUND!');
+  }
+  console.log('  - Article tags:', tags);
+
+  // 1. Check for MANUAL SEO fields first - now only requires keywords
+  if (article.seo && article.seo.keywords && article.seo.keywords.length > 0) {
     // ✅ USE MANUAL SEO (Admin tomonidan kiritilgan)
     console.log('🎯 Using MANUAL SEO for:', article.title);
-    title = article.seo.metaTitle;
-    description = article.seo.metaDescription;
-    keywords = article.seo.keywords && article.seo.keywords.length > 0
-      ? article.seo.keywords.join(', ')
-      : `${article.title}, ${tags.join(', ')}, ta'lim, o'qituvchi, dars, Darslinker`;
+    title = `${article.title} - Darslinker Blog`;
+    description = article.subtitle ||
+      (article.sections && article.sections[0] && article.sections[0].content
+        ? article.sections[0].content.substring(0, 155) + '...'
+        : 'Darslinker blogida o\'qituvchilar uchun foydali maqola'
+      );
+
+    // Handle keywords - could be array, string, or undefined
+    if (article.seo.keywords) {
+      if (Array.isArray(article.seo.keywords)) {
+        keywords = article.seo.keywords.length > 0
+          ? article.seo.keywords.join(', ')
+          : `${article.title}, ${tags.join(', ')}, ta'lim, o'qituvchi, dars, Darslinker`;
+      } else if (typeof article.seo.keywords === 'string') {
+        keywords = article.seo.keywords.trim() !== ''
+          ? article.seo.keywords
+          : `${article.title}, ${tags.join(', ')}, ta'lim, o'qituvchi, dars, Darslinker`;
+      } else {
+        keywords = `${article.title}, ${tags.join(', ')}, ta'lim, o'qituvchi, dars, Darslinker`;
+      }
+    } else {
+      keywords = `${article.title}, ${tags.join(', ')}, ta'lim, o'qituvchi, dars, Darslinker`;
+    }
+
+    console.log('  ✅ MANUAL SEO Applied:');
+    console.log('     - Title:', title);
+    console.log('     - Description:', description);
+    console.log('     - Keywords:', keywords);
+    console.log('     - Keywords Type:', typeof article.seo.keywords);
+    console.log('     - Keywords Raw:', article.seo.keywords);
   } else {
     // ⚡ USE AUTOMATIC SEO (fallback)
     console.log('⚡ Using AUTOMATIC SEO for:', article.title);
+    console.log('   Reason: No SEO keywords found or empty');
     title = `${article.title} - Darslinker Blog`;
     description = article.subtitle ||
       (article.sections && article.sections[0] && article.sections[0].content
@@ -246,6 +364,11 @@ export function generateArticleSEO(article) {
         : 'Darslinker blogida o\'qituvchilar uchun foydali maqola'
       );
     keywords = `${article.title}, ${tags.join(', ')}, ta'lim, o'qituvchi, dars, Darslinker`;
+
+    console.log('  ⚡ AUTOMATIC SEO Applied:');
+    console.log('     - Title:', title);
+    console.log('     - Description:', description);
+    console.log('     - Keywords:', keywords);
   }
 
   return {

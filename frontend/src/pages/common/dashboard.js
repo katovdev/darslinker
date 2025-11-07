@@ -126,10 +126,10 @@ function renderTeacherDashboard(user) {
             </div>
             <div class="figma-menu-children hidden" id="content-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this)">My Courses</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this)">Drafts</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this)">Archived</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this)">Finance</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this)">Assignments</a>
             </div>
           </div>
@@ -1369,6 +1369,374 @@ window.toggleLessonDropdown = function(button) {
     }, 0);
   }
 };
+
+// Open My Courses Page
+window.openMyCourses = function() {
+  const userData = store.getState().user;
+
+  // Preserve sidebar menu state
+  const generalChildren = document.getElementById('general-children');
+  const isGeneralExpanded = generalChildren && !generalChildren.classList.contains('hidden');
+  const contentChildren = document.getElementById('content-children');
+  const isContentExpanded = contentChildren && !contentChildren.classList.contains('hidden');
+
+  document.querySelector('#app').innerHTML = `
+    <div class="figma-dashboard">
+      <!-- Top Header -->
+      <div class="figma-header">
+        <div class="figma-logo">
+          <h1>dars<span>linker</span></h1>
+        </div>
+        <div class="figma-title">
+          <h2>My Courses</h2>
+        </div>
+        <div class="figma-header-buttons">
+           <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">New Course</button>
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="figma-main-layout">
+        <!-- Left Sidebar Menu -->
+        <div class="figma-sidebar">
+          <!-- General Menu -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isGeneralExpanded ? 'expanded' : ''}" onclick="toggleMenu('general')">
+              <span class="figma-menu-title">General</span>
+              <span class="figma-menu-arrow" id="general-arrow">${isGeneralExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isGeneralExpanded ? '' : 'hidden'}" id="general-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">Profile</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">Messages</a>
+            </div>
+          </div>
+
+          <!-- Content Management -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isContentExpanded ? 'expanded' : ''}" onclick="toggleMenu('content')">
+              <span class="figma-menu-title">Content Management</span>
+              <span class="figma-menu-arrow" id="content-arrow">${isContentExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
+              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">My Courses</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Drafts</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Archived</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Finance</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Assignments</a>
+            </div>
+          </div>
+          
+          <!-- Other menus omitted for brevity but should be here in a real app -->
+        </div>
+
+        <!-- My Courses Content -->
+        <div class="figma-content-area my-courses-page">
+          <div class="my-courses-header">
+            <div class="search-bar">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+              <input type="text" placeholder="Search for a course..." onkeyup="filterCourses(event)">
+            </div>
+            <div class="filters">
+              <select class="filter-select" onchange="filterCourses()">
+                <option value="">All Categories</option>
+                <option value="Web Development">Web Development</option>
+                <option value="UI/UX Design">UI/UX Design</option>
+                <option value="Machine Learning">Machine Learning</option>
+              </select>
+              <select class="filter-select" onchange="filterCourses()">
+                <option value="">All Statuses</option>
+                <option value="Published">Published</option>
+                <option value="Draft">Draft</option>
+              </select>
+              <select class="filter-select" onchange="sortCourses(event)">
+                <option value="newest">Sort by: Newest</option>
+                <option value="oldest">Sort by: Oldest</option>
+                <option value="title">Sort by: Title</option>
+              </select>
+            </div>
+          </div>
+          <div class="courses-grid" id="coursesGrid">
+            <!-- Course cards will be injected here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Load mock data into the grid
+  renderCourseCards();
+};
+
+// Mock data for courses
+const mockCourses = [
+  { id: 1, title: 'Complete React Developer Course 2025', category: 'Web Development', lessons: 84, hours: 12.5, students: 1234, price: 49.99, status: 'Published', image: 'https://via.placeholder.com/300x170?text=React' },
+  { id: 2, title: 'Advanced UI/UX Design Principles', category: 'UI/UX Design', lessons: 45, hours: 8.0, students: 567, price: 79.99, status: 'Published', image: 'https://via.placeholder.com/300x170?text=UI/UX' },
+  { id: 3, title: 'Introduction to Machine Learning', category: 'Machine Learning', lessons: 120, hours: 25.0, students: 890, price: 99.99, status: 'Draft', image: 'https://via.placeholder.com/300x170?text=ML' },
+  { id: 4, title: 'Node.js for Beginners', category: 'Web Development', lessons: 60, hours: 9.5, students: 234, price: 29.99, status: 'Published', image: 'https://via.placeholder.com/300x170?text=Node.js' },
+];
+
+// Render course cards into the grid
+function renderCourseCards(courses = mockCourses) {
+  const grid = document.getElementById('coursesGrid');
+  if (!grid) return;
+  
+  if (courses.length === 0) {
+    grid.innerHTML = '<p class="no-results">No courses found.</p>';
+    return;
+  }
+
+  grid.innerHTML = courses.map(course => `
+    <div class="course-card-figma">
+      <div class="course-card-thumbnail">
+        <img src="${course.image}" alt="${course.title}">
+        <span class="course-card-status ${course.status.toLowerCase()}">${course.status}</span>
+      </div>
+      <div class="course-card-content">
+        <span class="course-card-category">${course.category}</span>
+        <h4 class="course-card-title">${course.title}</h4>
+        <div class="course-card-meta">
+          <span>${course.lessons} lessons</span>
+          <span>${course.hours} hours</span>
+          <span>${course.students} students</span>
+        </div>
+        <div class="course-card-footer">
+          <span class="course-card-price">${course.price}</span>
+          <div class="course-card-actions">
+            <button class="action-btn-icon" onclick="viewCourse(${course.id})">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </button>
+            <button class="action-btn-icon" onclick="editCourse(${course.id})">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button class="action-btn-icon delete" onclick="deleteCourse(${course.id})">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Placeholder functions for course actions
+window.viewCourse = (id) => alert(`Viewing course ${id}`);
+window.editCourse = (id) => alert(`Editing course ${id}`);
+window.deleteCourse = (id) => confirm(`Are you sure you want to delete course ${id}?`);
+
+// Filtering and Sorting Logic
+window.filterCourses = () => {
+  const searchInput = document.querySelector('.search-bar input').value.toLowerCase();
+  const categoryFilter = document.querySelectorAll('.filter-select')[0].value;
+  const statusFilter = document.querySelectorAll('.filter-select')[1].value;
+
+  let filtered = mockCourses.filter(course => {
+    const matchesSearch = course.title.toLowerCase().includes(searchInput);
+    const matchesCategory = !categoryFilter || course.category === categoryFilter;
+    const matchesStatus = !statusFilter || course.status === statusFilter;
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+  
+  renderCourseCards(filtered);
+};
+
+window.sortCourses = (event) => {
+  const sortBy = event.target.value;
+  let sorted = [...mockCourses]; // Use a copy
+  
+  switch(sortBy) {
+    case 'oldest':
+      sorted.sort((a, b) => a.id - b.id);
+      break;
+    case 'title':
+      sorted.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+    case 'newest':
+    default:
+       sorted.sort((a, b) => b.id - a.id);
+      break;
+  }
+  
+  // Re-apply filters after sorting
+  const searchInput = document.querySelector('.search-bar input').value.toLowerCase();
+  const categoryFilter = document.querySelectorAll('.filter-select')[0].value;
+  const statusFilter = document.querySelectorAll('.filter-select')[1].value;
+
+  let filteredAndSorted = sorted.filter(course => {
+    const matchesSearch = course.title.toLowerCase().includes(searchInput);
+    const matchesCategory = !categoryFilter || course.category === categoryFilter;
+    const matchesStatus = !statusFilter || course.status === statusFilter;
+    return matchesSearch && matchesCategory && matchesStatus;
+  });
+
+  renderCourseCards(filteredAndSorted);
+};
+
+
+// Open Finance Page
+window.openFinancePage = function() {
+  const userData = store.getState().user;
+
+  // Preserve sidebar menu state
+  const generalChildren = document.getElementById('general-children');
+  const isGeneralExpanded = generalChildren && !generalChildren.classList.contains('hidden');
+  const contentChildren = document.getElementById('content-children');
+  const isContentExpanded = contentChildren && !contentChildren.classList.contains('hidden');
+
+  document.querySelector('#app').innerHTML = `
+    <div class="figma-dashboard">
+      <!-- Top Header -->
+      <div class="figma-header">
+        <div class="figma-logo">
+          <h1>dars<span>linker</span></h1>
+        </div>
+        <div class="figma-title">
+          <h2>Finance</h2>
+        </div>
+        <div class="figma-header-buttons">
+          <button class="figma-btn" onclick="downloadReport('pdf')">Download PDF</button>
+          <button class="figma-btn figma-btn-primary" onclick="requestPayout()">Request Payout</button>
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="figma-main-layout">
+        <!-- Left Sidebar Menu -->
+        <div class="figma-sidebar">
+          <!-- General Menu -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isGeneralExpanded ? 'expanded' : ''}" onclick="toggleMenu('general')">
+              <span class="figma-menu-title">General</span>
+              <span class="figma-menu-arrow" id="general-arrow">${isGeneralExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isGeneralExpanded ? '' : 'hidden'}" id="general-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">Profile</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">Messages</a>
+            </div>
+          </div>
+
+          <!-- Content Management -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isContentExpanded ? 'expanded' : ''}" onclick="toggleMenu('content')">
+              <span class="figma-menu-title">Content Management</span>
+              <span class="figma-menu-arrow" id="content-arrow">${isContentExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Drafts</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Archived</a>
+              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Finance</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Assignments</a>
+            </div>
+          </div>
+          <!-- Other menus would go here -->
+        </div>
+
+        <!-- Finance Content -->
+        <div class="figma-content-area finance-page">
+          <!-- Finance Stats Cards -->
+          <div class="finance-stats-grid">
+            <div class="finance-card">
+              <h3 class="finance-card-title">Available for Payout</h3>
+              <p class="finance-card-amount">$8,250.00</p>
+              <p class="finance-card-note">Next payout on Nov 15, 2025</p>
+            </div>
+            <div class="finance-card">
+              <h3 class="finance-card-title">Total Revenue</h3>
+              <p class="finance-card-amount">$12,460.00</p>
+              <p class="finance-card-note">All time earnings</p>
+            </div>
+            <div class="finance-card">
+              <h3 class="finance-card-title">Pending</h3>
+              <p class="finance-card-amount">$1,230.50</p>
+              <p class="finance-card-note">Waiting for clearance</p>
+            </div>
+          </div>
+
+          <!-- Transactions History -->
+          <div class="transactions-section">
+            <div class="transactions-header">
+              <h3 class="transactions-title">Transactions History</h3>
+              <div class="transactions-filters">
+                <input type="text" class="transaction-search" placeholder="Search transactions..." onkeyup="filterTransactions(event)">
+                <input type="date" class="transaction-date-filter" onchange="filterTransactions()">
+                <button class="figma-btn" onclick="downloadReport('csv')">Export CSV</button>
+              </div>
+            </div>
+            <div class="transactions-table-container">
+              <table class="transactions-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Course</th>
+                    <th>Student</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="transactionsBody">
+                  <!-- Transaction rows will be injected here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  renderTransactions();
+};
+
+const mockTransactions = [
+  { date: '2025-11-02', type: 'Sale', course: 'Complete React Developer Course 2025', student: 'Ali Valiyev', amount: 49.99, status: 'Cleared' },
+  { date: '2025-11-01', type: 'Sale', course: 'Advanced UI/UX Design Principles', student: 'Zarina Karimova', amount: 79.99, status: 'Cleared' },
+  { date: '2025-10-30', type: 'Payout', course: '-', student: '-', amount: -2500.00, status: 'Paid' },
+  { date: '2025-10-28', type: 'Sale', course: 'Node.js for Beginners', student: 'John Doe', amount: 29.99, status: 'Pending' },
+  { date: '2025-10-25', type: 'Refund', course: 'Complete React Developer Course 2025', student: 'Jane Smith', amount: -49.99, status: 'Refunded' },
+  { date: '2025-10-22', type: 'Sale', course: 'Introduction to Machine Learning', student: 'Peter Jones', amount: 99.99, status: 'Cleared' },
+];
+
+function renderTransactions(transactions = mockTransactions) {
+  const tbody = document.getElementById('transactionsBody');
+  if (!tbody) return;
+
+  if (transactions.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="no-results">No transactions found.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = transactions.map(t => `
+    <tr>
+      <td>${t.date}</td>
+      <td>${t.type}</td>
+      <td>${t.course}</td>
+      <td>${t.student}</td>
+      <td class="amount ${t.amount > 0 ? 'positive' : 'negative'}">${t.amount.toFixed(2)}</td>
+      <td><span class="status-badge ${t.status.toLowerCase()}">${t.status}</span></td>
+    </tr>
+  `).join('');
+}
+
+window.filterTransactions = () => {
+  const searchInput = document.querySelector('.transaction-search').value.toLowerCase();
+  const dateInput = document.querySelector('.transaction-date-filter').value;
+
+  let filtered = mockTransactions.filter(t => {
+    const matchesSearch = t.course.toLowerCase().includes(searchInput) || t.student.toLowerCase().includes(searchInput);
+    const matchesDate = !dateInput || t.date === dateInput;
+    return matchesSearch && matchesDate;
+  });
+
+  renderTransactions(filtered);
+};
+
+window.downloadReport = (format) => alert(`Downloading ${format.toUpperCase()} report...`);
+window.requestPayout = () => alert('Payout request functionality coming soon...');
 
 // Open Create Course Page
 window.openCreateCourse = function() {

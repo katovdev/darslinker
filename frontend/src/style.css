@@ -1998,6 +1998,354 @@ body {
   .theme-icon {
     width: 16px;
     height: 16px;
+}
+
+/* Finance Page Styles */
+.finance-page {
+  padding: 20px;
+}
+
+.finance-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-bottom: 30px;
+}
+
+.finance-card {
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 12px;
+  padding: 25px;
+}
+
+.finance-card-title {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 10px;
+}
+
+.finance-card-amount {
+  font-size: 28px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.finance-card-note {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.transactions-section {
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 12px;
+  padding: 25px;
+}
+
+.transactions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.transactions-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.transactions-filters {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.transaction-search,
+.transaction-date-filter {
+  background: rgba(10, 10, 10, 0.7);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+
+.transaction-date-filter {
+  color-scheme: dark;
+}
+
+.transactions-table-container {
+  overflow-x: auto;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.transactions-table th,
+.transactions-table td {
+  padding: 15px;
+  text-align: left;
+  border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.transactions-table th {
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+}
+
+.transactions-table td {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.transactions-table tbody tr:hover {
+  background: rgba(126, 162, 212, 0.05);
+}
+
+.amount.positive {
+  color: #22c55e; /* Green */
+}
+
+.amount.negative {
+  color: #ef4444; /* Red */
+}
+
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.status-badge.cleared {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.status-badge.paid {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.status-badge.pending {
+  background-color: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+}
+
+.status-badge.refunded {
+  background-color: rgba(139, 92, 246, 0.15);
+  color: #8b5cf6;
+}
+/* My Courses Page Styles */
+.my-courses-page {
+  padding: 20px;
+}
+
+.my-courses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 8px;
+  padding: 0 12px;
+  flex-grow: 1;
+  max-width: 400px;
+}
+
+.search-bar svg {
+  color: rgba(255, 255, 255, 0.5);
+  margin-right: 8px;
+}
+
+.search-bar input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  padding: 12px 0;
+  font-size: 14px;
+  width: 100%;
+}
+
+.search-bar input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.filters {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.filter-select {
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  color: #ffffff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-select:hover {
+  border-color: rgba(126, 162, 212, 0.4);
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 25px;
+}
+
+.course-card-figma {
+  background: rgba(20, 20, 20, 0.8);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-card-figma:hover {
+  transform: translateY(-5px);
+  border-color: rgba(126, 162, 212, 0.4);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.course-card-thumbnail {
+  position: relative;
+}
+
+.course-card-thumbnail img {
+  width: 100%;
+  height: 170px;
+  object-fit: cover;
+  display: block;
+}
+
+.course-card-status {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.course-card-status.published {
+  background: rgba(34, 197, 94, 0.8); /* Green */
+}
+
+.course-card-status.draft {
+  background: rgba(249, 115, 22, 0.8); /* Orange */
+}
+
+.course-card-content {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.course-card-category {
+  font-size: 12px;
+  color: #7ea2d4;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.course-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  flex-grow: 1;
+}
+
+.course-card-meta {
+  display: flex;
+  gap: 15px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 18px;
+}
+
+.course-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(126, 162, 212, 0.1);
+  padding-top: 15px;
+}
+
+.course-card-price {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.course-card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn-icon {
+  background: rgba(126, 162, 212, 0.1);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  color: rgba(255, 255, 255, 0.7);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn-icon:hover {
+  background: rgba(126, 162, 212, 0.2);
+  border-color: rgba(126, 162, 212, 0.4);
+  color: #ffffff;
+}
+
+.action-btn-icon.delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
+}
+
+.no-results {
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  grid-column: 1 / -1;
+  padding: 40px;
+}
   }
 
   .sms-contact {
