@@ -127,10 +127,10 @@ function renderTeacherDashboard(user) {
             <div class="figma-menu-children hidden" id="content-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this)">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this)">Archived</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('draft')">Drafts</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('archived')">Archived</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this)">Assignments</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
             </div>
           </div>
 
@@ -141,7 +141,7 @@ function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="ai-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="ai-children">
-              <a href="#" class="figma-menu-child">AI Assistant</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAIAssistantPage()">AI Assistant</a>
             </div>
           </div>
 
@@ -152,7 +152,7 @@ function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="analytics-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="analytics-children">
-              <a href="#" class="figma-menu-child">Quiz Analytics</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">Quiz Analytics</a>
               <a href="#" class="figma-menu-child">Rating Comments</a>
               <a href="#" class="figma-menu-child">Students Analytics</a>
               <a href="#" class="figma-menu-child">Engagement</a>
@@ -386,10 +386,16 @@ async function loadTeacherDashboardData() {
     // This would call your API endpoints
 
     // For now, let's add some sample data
-    document.getElementById('courses-count').textContent = '5';
-    document.getElementById('students-count').textContent = '24';
-    document.getElementById('assignments-count').textContent = '12';
-    document.getElementById('completed-lessons').textContent = '18';
+    // Add null checks to prevent errors
+    const coursesCount = document.getElementById('courses-count');
+    const studentsCount = document.getElementById('students-count');
+    const assignmentsCount = document.getElementById('assignments-count');
+    const completedLessons = document.getElementById('completed-lessons');
+
+    if (coursesCount) coursesCount.textContent = '5';
+    if (studentsCount) studentsCount.textContent = '24';
+    if (assignmentsCount) assignmentsCount.textContent = '12';
+    if (completedLessons) completedLessons.textContent = '18';
 
     // Load recent courses
     loadRecentCourses();
@@ -403,10 +409,16 @@ async function loadTeacherDashboardData() {
 async function loadStudentDashboardData() {
   try {
     // Load student-specific data
-    document.getElementById('enrolled-courses').textContent = '3';
-    document.getElementById('completed-courses').textContent = '1';
-    document.getElementById('pending-assignments').textContent = '4';
-    document.getElementById('achievements').textContent = '2';
+    // Add null checks to prevent errors
+    const enrolledCourses = document.getElementById('enrolled-courses');
+    const completedCourses = document.getElementById('completed-courses');
+    const pendingAssignments = document.getElementById('pending-assignments');
+    const achievements = document.getElementById('achievements');
+
+    if (enrolledCourses) enrolledCourses.textContent = '3';
+    if (completedCourses) completedCourses.textContent = '1';
+    if (pendingAssignments) pendingAssignments.textContent = '4';
+    if (achievements) achievements.textContent = '2';
 
   } catch (error) {
     console.error('Error loading student dashboard data:', error);
@@ -415,6 +427,12 @@ async function loadStudentDashboardData() {
 
 function loadRecentCourses() {
   const coursesContainer = document.getElementById('recent-courses');
+
+  // Check if container exists before trying to modify it
+  if (!coursesContainer) {
+    console.log('Recent courses container not found, skipping...');
+    return;
+  }
 
   // Sample courses data
   const courses = [
@@ -454,6 +472,12 @@ function loadRecentCourses() {
 
 function loadRecentActivity() {
   const activityContainer = document.getElementById('recent-activity');
+
+  // Check if container exists before trying to modify it
+  if (!activityContainer) {
+    console.log('Recent activity container not found, skipping...');
+    return;
+  }
 
   const activities = [
     'Yangi o\'quvchi "JavaScript asoslari" kursiga yozildi',
@@ -878,7 +902,7 @@ window.openMessagesPage = function() {
 
           <!-- AI Assistant (Expandable) -->
           <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('ai')">
+            <div class="figma-menu-parent" onclick="openAIAssistantPage(); return false;">
               <span class="figma-menu-title">AI Assistant</span>
               <span class="figma-menu-arrow" id="ai-arrow">▶</span>
             </div>
@@ -1379,6 +1403,14 @@ window.openMyCourses = function() {
   const isGeneralExpanded = generalChildren && !generalChildren.classList.contains('hidden');
   const contentChildren = document.getElementById('content-children');
   const isContentExpanded = contentChildren && !contentChildren.classList.contains('hidden');
+  const aiChildren = document.getElementById('ai-children');
+  const isAiExpanded = aiChildren && !aiChildren.classList.contains('hidden');
+  const analyticsChildren = document.getElementById('analytics-children');
+  const isAnalyticsExpanded = analyticsChildren && !analyticsChildren.classList.contains('hidden');
+  const rollsChildren = document.getElementById('rolls-children');
+  const isRollsExpanded = rollsChildren && !rollsChildren.classList.contains('hidden');
+  const settingsChildren = document.getElementById('settings-children');
+  const isSettingsExpanded = settingsChildren && !settingsChildren.classList.contains('hidden');
 
   document.querySelector('#app').innerHTML = `
     <div class="figma-dashboard">
@@ -1388,10 +1420,11 @@ window.openMyCourses = function() {
           <h1>dars<span>linker</span></h1>
         </div>
         <div class="figma-title">
-          <h2>My Courses</h2>
+          <h2>My courses</h2>
         </div>
         <div class="figma-header-buttons">
-           <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">New Course</button>
+          <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">+ New Course</button>
+          <button class="figma-btn" onclick="backToDashboard()">← Back</button>
         </div>
       </div>
 
@@ -1420,61 +1453,335 @@ window.openMyCourses = function() {
             </div>
             <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Archived</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Assignments</a>
+              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)" id="my-courses-menu">My Courses</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
             </div>
           </div>
-          
-          <!-- Other menus omitted for brevity but should be here in a real app -->
+
+          <!-- AI Assistant -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isAiExpanded ? 'expanded' : ''}" onclick="toggleMenu('ai')">
+              <span class="figma-menu-title">AI Assistant</span>
+              <span class="figma-menu-arrow" id="ai-arrow">${isAiExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isAiExpanded ? '' : 'hidden'}" id="ai-children">
+              <a href="#" class="figma-menu-child">AI Assistant</a>
+            </div>
+          </div>
+
+          <!-- Analytics -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isAnalyticsExpanded ? 'expanded' : ''}" onclick="toggleMenu('analytics')">
+              <span class="figma-menu-title">Analytics</span>
+              <span class="figma-menu-arrow" id="analytics-arrow">${isAnalyticsExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isAnalyticsExpanded ? '' : 'hidden'}" id="analytics-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">Quiz Analytics</a>
+              <a href="#" class="figma-menu-child">Rating Comments</a>
+              <a href="#" class="figma-menu-child">Students Analytics</a>
+              <a href="#" class="figma-menu-child">Engagement</a>
+              <a href="#" class="figma-menu-child">Progress</a>
+            </div>
+          </div>
+
+          <!-- Rolls -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isRollsExpanded ? 'expanded' : ''}" onclick="toggleMenu('rolls')">
+              <span class="figma-menu-title">Rolls</span>
+              <span class="figma-menu-arrow" id="rolls-arrow">${isRollsExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isRollsExpanded ? '' : 'hidden'}" id="rolls-children">
+              <a href="#" class="figma-menu-child">Sub Admin</a>
+            </div>
+          </div>
+
+          <!-- Settings -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isSettingsExpanded ? 'expanded' : ''}" onclick="toggleMenu('settings')">
+              <span class="figma-menu-title">Settings</span>
+              <span class="figma-menu-arrow" id="settings-arrow">${isSettingsExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isSettingsExpanded ? '' : 'hidden'}" id="settings-children">
+              <a href="#" class="figma-menu-child">Language</a>
+              <a href="#" class="figma-menu-child">Customize UI</a>
+            </div>
+          </div>
+
+          <!-- Subscription at bottom -->
+          <div class="figma-subscription">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">My Subscription</a>
+            </div>
+          </div>
         </div>
 
         <!-- My Courses Content -->
-        <div class="figma-content-area my-courses-page">
-          <div class="my-courses-header">
-            <div class="search-bar">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-              <input type="text" placeholder="Search for a course..." onkeyup="filterCourses(event)">
+        <div class="figma-content-area">
+          <!-- Statistics Cards -->
+          <div class="my-courses-stats" id="coursesStats">
+            <!-- Statistics will be rendered dynamically -->
+          </div>
+
+          <!-- Search and Sort Section -->
+          <div class="courses-controls">
+            <div class="search-section">
+              <div class="search-input-wrapper">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" id="courseSearchInput" placeholder="Search courses..." oninput="searchCourses()">
+              </div>
             </div>
-            <div class="filters">
-              <select class="filter-select" onchange="filterCourses()">
-                <option value="">All Categories</option>
-                <option value="Web Development">Web Development</option>
-                <option value="UI/UX Design">UI/UX Design</option>
-                <option value="Machine Learning">Machine Learning</option>
-              </select>
-              <select class="filter-select" onchange="filterCourses()">
-                <option value="">All Statuses</option>
-                <option value="Published">Published</option>
-                <option value="Draft">Draft</option>
-              </select>
-              <select class="filter-select" onchange="sortCourses(event)">
-                <option value="newest">Sort by: Newest</option>
-                <option value="oldest">Sort by: Oldest</option>
-                <option value="title">Sort by: Title</option>
+            <div class="sort-section">
+              <select id="courseSortSelect" onchange="sortCourses()">
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="name-asc">Name A-Z</option>
+                <option value="name-desc">Name Z-A</option>
+                <option value="students-desc">Most students</option>
+                <option value="revenue-desc">Highest revenue</option>
+                <option value="rating-desc">Best rating</option>
               </select>
             </div>
           </div>
-          <div class="courses-grid" id="coursesGrid">
+
+          <!-- Course Filter Tabs -->
+          <div class="course-filter-tabs" id="courseFilterTabs">
+            <!-- Filter tabs will be rendered dynamically -->
+          </div>
+
+          <!-- Course Cards Grid -->
+          <div class="my-courses-grid" id="myCoursesGrid">
             <!-- Course cards will be injected here -->
+          </div>
+
+          <!-- Add Course Section -->
+          <div class="add-course-section">
+            <div class="add-course-card" onclick="openCreateCourse()">
+              <div class="add-course-content">
+                <div class="add-course-text">ADD COURSE</div>
+                <div class="add-course-icon">+</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   `;
-  
-  // Load mock data into the grid
-  renderCourseCards();
+
+  // Load course data and initialize page
+  updateCoursesStatistics();
+  updateFilterTabs();
+  renderMyCoursesCards();
+
+  // Check if there's a pending filter from sidebar navigation
+  const pendingFilter = sessionStorage.getItem('pendingFilter');
+  if (pendingFilter) {
+    sessionStorage.removeItem('pendingFilter');
+    // Apply the pending filter after a short delay to ensure page is fully loaded
+    setTimeout(() => {
+      applyFilterFromSidebar(pendingFilter);
+    }, 100);
+  }
 };
 
-// Mock data for courses
-const mockCourses = [
-  { id: 1, title: 'Complete React Developer Course 2025', category: 'Web Development', lessons: 84, hours: 12.5, students: 1234, price: 49.99, status: 'Published', image: 'https://via.placeholder.com/300x170?text=React' },
-  { id: 2, title: 'Advanced UI/UX Design Principles', category: 'UI/UX Design', lessons: 45, hours: 8.0, students: 567, price: 79.99, status: 'Published', image: 'https://via.placeholder.com/300x170?text=UI/UX' },
-  { id: 3, title: 'Introduction to Machine Learning', category: 'Machine Learning', lessons: 120, hours: 25.0, students: 890, price: 99.99, status: 'Draft', image: 'https://via.placeholder.com/300x170?text=ML' },
-  { id: 4, title: 'Node.js for Beginners', category: 'Web Development', lessons: 60, hours: 9.5, students: 234, price: 29.99, status: 'Published', image: 'https://via.placeholder.com/300x170?text=Node.js' },
+// Enhanced interactive course data
+let myCoursesData = [
+  {
+    id: 1,
+    title: 'Complete Web Development Bootcamp',
+    description: 'Master HTML, CSS, JavaScript, React and Node.js from scratch',
+    students: 324,
+    lessons: 42,
+    price: 199,
+    revenue: 6450,
+    rating: 4.9,
+    status: 'Active',
+    type: 'Paid',
+    category: 'Web Development',
+    color: '#4A90E2',
+    createdAt: '2024-01-15',
+    updatedAt: '2024-11-10'
+  },
+  {
+    id: 2,
+    title: 'UI/UX Design Masterclass',
+    description: 'Learn modern UI/UX design principles, Figma, prototyping and user research',
+    students: 187,
+    lessons: 28,
+    price: 149,
+    revenue: 2798,
+    rating: 4.7,
+    status: 'Active',
+    type: 'Paid',
+    category: 'Design',
+    color: '#8B5CF6',
+    createdAt: '2024-02-20',
+    updatedAt: '2024-11-08'
+  },
+  {
+    id: 3,
+    title: 'Python for Beginners',
+    description: 'Start your programming journey with Python basics and data structures',
+    students: 445,
+    lessons: 35,
+    price: 99,
+    revenue: 4405,
+    rating: 4.8,
+    status: 'Active',
+    type: 'Paid',
+    category: 'Programming',
+    color: '#10B981',
+    createdAt: '2024-01-10',
+    updatedAt: '2024-11-05'
+  },
+  {
+    id: 4,
+    title: 'React Native Mobile Apps',
+    description: 'Build cross-platform mobile applications with React Native',
+    students: 89,
+    lessons: 52,
+    price: 249,
+    revenue: 2216,
+    rating: 4.6,
+    status: 'Draft',
+    type: 'Paid',
+    category: 'Mobile Development',
+    color: '#F59E0B',
+    createdAt: '2024-10-15',
+    updatedAt: '2024-11-11'
+  },
+  {
+    id: 5,
+    title: 'Digital Marketing Strategy',
+    description: 'Complete guide to digital marketing, SEO, and social media marketing',
+    students: 156,
+    lessons: 24,
+    price: 79,
+    revenue: 1232,
+    rating: 4.5,
+    status: 'Active',
+    type: 'Paid',
+    category: 'Marketing',
+    color: '#EF4444',
+    createdAt: '2024-03-05',
+    updatedAt: '2024-10-30'
+  },
+  {
+    id: 6,
+    title: 'Introduction to Programming',
+    description: 'Free course covering basic programming concepts and logic',
+    students: 892,
+    lessons: 18,
+    price: 0,
+    revenue: 0,
+    rating: 4.3,
+    status: 'Active',
+    type: 'Free',
+    category: 'Programming',
+    color: '#6366F1',
+    createdAt: '2024-01-01',
+    updatedAt: '2024-10-25'
+  },
+  {
+    id: 7,
+    title: 'Advanced JavaScript Concepts',
+    description: 'Deep dive into closures, async/await, and modern JS features',
+    students: 67,
+    lessons: 31,
+    price: 179,
+    revenue: 1201,
+    rating: 4.9,
+    status: 'Draft',
+    type: 'Paid',
+    category: 'Programming',
+    color: '#F97316',
+    createdAt: '2024-09-20',
+    updatedAt: '2024-11-09'
+  },
+  {
+    id: 8,
+    title: 'Cybersecurity Fundamentals',
+    description: 'Learn ethical hacking, network security and cybersecurity basics',
+    students: 234,
+    lessons: 40,
+    price: 199,
+    revenue: 4658,
+    rating: 4.7,
+    status: 'Archived',
+    type: 'Paid',
+    category: 'Security',
+    color: '#DC2626',
+    createdAt: '2023-11-15',
+    updatedAt: '2024-05-20'
+  },
+  {
+    id: 9,
+    title: 'Data Science with Python',
+    description: 'Learn pandas, numpy, matplotlib and machine learning basics',
+    students: 178,
+    lessons: 48,
+    price: 229,
+    revenue: 4074,
+    rating: 4.8,
+    status: 'Active',
+    type: 'Paid',
+    category: 'Data Science',
+    color: '#059669',
+    createdAt: '2024-04-10',
+    updatedAt: '2024-11-01'
+  },
+  {
+    id: 10,
+    title: 'Blockchain Development',
+    description: 'Build smart contracts and decentralized applications with Solidity',
+    students: 23,
+    lessons: 35,
+    price: 299,
+    revenue: 688,
+    rating: 4.4,
+    status: 'Draft',
+    type: 'Paid',
+    category: 'Blockchain',
+    color: '#7C2D12',
+    createdAt: '2024-08-15',
+    updatedAt: '2024-11-11'
+  },
+  {
+    id: 11,
+    title: 'HTML & CSS Basics',
+    description: 'Free introduction to web development with HTML and CSS',
+    students: 567,
+    lessons: 15,
+    price: 0,
+    revenue: 0,
+    rating: 4.2,
+    status: 'Active',
+    type: 'Free',
+    category: 'Web Development',
+    color: '#2563EB',
+    createdAt: '2023-12-01',
+    updatedAt: '2024-09-15'
+  },
+  {
+    id: 12,
+    title: 'Machine Learning A-Z',
+    description: 'Complete machine learning course with Python and real projects',
+    students: 145,
+    lessons: 65,
+    price: 349,
+    revenue: 5060,
+    rating: 4.9,
+    status: 'Archived',
+    type: 'Paid',
+    category: 'Machine Learning',
+    color: '#7C3AED',
+    createdAt: '2023-06-10',
+    updatedAt: '2024-03-15'
+  }
 ];
 
 // Render course cards into the grid
@@ -1595,8 +1902,7 @@ window.openFinancePage = function() {
           <h2>Finance</h2>
         </div>
         <div class="figma-header-buttons">
-          <button class="figma-btn" onclick="downloadReport('pdf')">Download PDF</button>
-          <button class="figma-btn figma-btn-primary" onclick="requestPayout()">Request Payout</button>
+          <button class="figma-btn">💡 Back</button>
         </div>
       </div>
 
@@ -1612,8 +1918,6 @@ window.openFinancePage = function() {
             </div>
             <div class="figma-menu-children ${isGeneralExpanded ? '' : 'hidden'}" id="general-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">Profile</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">Messages</a>
             </div>
           </div>
 
@@ -1626,70 +1930,1528 @@ window.openFinancePage = function() {
             <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Archived</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
               <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Assignments</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
             </div>
           </div>
-          <!-- Other menus would go here -->
+
+          <!-- AI Assistant -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link" onclick="openAIAssistantPage(); return false;">AI Assistant</a>
+            </div>
+          </div>
+
+          <!-- Analytics -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">Analytics</a>
+            </div>
+          </div>
+
+          <!-- Rolls -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">Rolls</a>
+            </div>
+          </div>
+
+          <!-- Settings -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">Settings</a>
+            </div>
+          </div>
+
+          <!-- My Subscription -->
+          <div class="figma-subscription">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">My Subscription</a>
+            </div>
+          </div>
         </div>
 
         <!-- Finance Content -->
         <div class="figma-content-area finance-page">
+          <style>
+            .figma-content-area.finance-page {
+              padding: 24px !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 20px !important;
+            }
+            .figma-content-area.finance-page .finance-stats-grid {
+              display: grid !important;
+              grid-template-columns: repeat(4, 1fr) !important;
+              gap: 16px !important;
+              margin-bottom: 0 !important;
+            }
+            .figma-content-area.finance-page .finance-card {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 20px !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 8px !important;
+              transition: all 0.3s ease !important;
+              cursor: pointer !important;
+            }
+            .figma-content-area.finance-page .finance-card:hover {
+              transform: translateY(-5px) !important;
+              border-color: rgba(126, 162, 212, 0.4) !important;
+              background: rgba(58, 56, 56, 0.5) !important;
+              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+            }
+            .figma-content-area.finance-page .finance-card-title {
+              color: rgba(126, 162, 212, 1) !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+              margin: 0 !important;
+            }
+            .figma-content-area.finance-page .finance-card-amount {
+              color: #ffffff !important;
+              font-size: 32px !important;
+              font-weight: 700 !important;
+              margin: 6px 0 !important;
+              line-height: 1.1 !important;
+            }
+            .figma-content-area.finance-page .finance-card-subtitle {
+              color: #10b981 !important;
+              font-size: 12px !important;
+              font-weight: 400 !important;
+              margin: 0 !important;
+            }
+            .figma-content-area.finance-page .finance-section {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 24px !important;
+              transition: all 0.3s ease !important;
+            }
+            .figma-content-area.finance-page .section-title {
+              color: rgba(126, 162, 212, 1) !important;
+              font-size: 18px !important;
+              font-weight: 600 !important;
+              margin: 0 0 20px 0 !important;
+            }
+            .figma-content-area.finance-page .payment-method-card {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 8px !important;
+              padding: 16px !important;
+              margin-bottom: 16px !important;
+              transition: all 0.3s ease !important;
+              position: relative !important;
+              cursor: pointer !important;
+              overflow: hidden !important;
+            }
+            .figma-content-area.finance-page .payment-method-card:hover {
+              border-color: rgba(126, 162, 212, 0.4) !important;
+              background: rgba(58, 56, 56, 0.5) !important;
+              transform: translateY(-3px) !important;
+              box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
+            }
+            .figma-content-area.finance-page .payment-method-card:hover .card-actions-overlay {
+              opacity: 1 !important;
+              transform: translateY(0) !important;
+            }
+            .figma-content-area.finance-page .card-actions-overlay {
+              position: absolute !important;
+              top: 0 !important;
+              left: 0 !important;
+              right: 0 !important;
+              bottom: 0 !important;
+              background: rgba(0, 0, 0, 0.8) !important;
+              display: flex !important;
+              justify-content: center !important;
+              align-items: center !important;
+              gap: 12px !important;
+              opacity: 0 !important;
+              transform: translateY(10px) !important;
+              transition: all 0.3s ease !important;
+            }
+            .figma-content-area.finance-page .card-action-btn {
+              background: rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid rgba(126, 162, 212, 0.4) !important;
+              color: rgba(126, 162, 212, 1) !important;
+              padding: 8px 16px !important;
+              border-radius: 8px !important;
+              cursor: pointer !important;
+              font-size: 12px !important;
+              font-weight: 600 !important;
+              transition: all 0.3s ease !important;
+            }
+            .figma-content-area.finance-page .card-action-btn.edit-btn:hover {
+              background: rgba(126, 162, 212, 0.3) !important;
+            }
+            .figma-content-area.finance-page .card-action-btn.delete-btn {
+              background: rgba(239, 68, 68, 0.2) !important;
+              border-color: rgba(239, 68, 68, 0.4) !important;
+              color: #ef4444 !important;
+            }
+            .figma-content-area.finance-page .card-action-btn.delete-btn:hover {
+              background: rgba(239, 68, 68, 0.3) !important;
+            }
+            .figma-content-area.finance-page .section-header {
+              display: flex !important;
+              justify-content: space-between !important;
+              align-items: flex-start !important;
+              margin-bottom: 20px !important;
+              flex-wrap: wrap !important;
+              gap: 16px !important;
+            }
+            .figma-content-area.finance-page .transaction-controls {
+              display: flex !important;
+              gap: 12px !important;
+              flex-wrap: wrap !important;
+              align-items: center !important;
+            }
+            .figma-content-area.finance-page .transaction-search,
+            .figma-content-area.finance-page .transaction-date-filter,
+            .figma-content-area.finance-page .transaction-type-filter {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 8px !important;
+              padding: 8px 12px !important;
+              color: #ffffff !important;
+              font-size: 14px !important;
+              transition: all 0.3s ease !important;
+            }
+            .figma-content-area.finance-page .transaction-search {
+              min-width: 200px !important;
+            }
+            .figma-content-area.finance-page .transaction-search:focus,
+            .figma-content-area.finance-page .transaction-date-filter:focus,
+            .figma-content-area.finance-page .transaction-type-filter:focus {
+              border-color: rgba(126, 162, 212, 0.4) !important;
+              outline: none !important;
+              background: rgba(58, 56, 56, 0.5) !important;
+            }
+            .figma-content-area.finance-page .payment-card-content {
+              display: flex !important;
+              justify-content: space-between !important;
+              align-items: center !important;
+            }
+            .figma-content-area.finance-page .payment-card-name {
+              color: #ffffff !important;
+              font-size: 16px !important;
+              font-weight: 600 !important;
+              margin-bottom: 4px !important;
+            }
+            .figma-content-area.finance-page .payment-card-number {
+              color: rgba(156, 163, 175, 1) !important;
+              font-size: 14px !important;
+            }
+            .figma-content-area.finance-page .payment-card-badge {
+              background: #10b981 !important;
+              color: #ffffff !important;
+              padding: 6px 12px !important;
+              border-radius: 16px !important;
+              font-size: 12px !important;
+              font-weight: 600 !important;
+            }
+            .figma-content-area.finance-page .add-payment-btn {
+              background: transparent !important;
+              border: 1px solid rgba(126, 162, 212, 0.5) !important;
+              color: rgba(126, 162, 212, 1) !important;
+              padding: 12px 16px !important;
+              border-radius: 8px !important;
+              font-size: 14px !important;
+              cursor: pointer !important;
+              transition: all 0.2s !important;
+            }
+            .figma-content-area.finance-page .finance-transactions-table {
+              width: 100% !important;
+              border-collapse: collapse !important;
+            }
+            .figma-content-area.finance-page .finance-transactions-table th {
+              color: rgba(156, 163, 175, 1) !important;
+              font-size: 14px !important;
+              font-weight: 600 !important;
+              text-align: left !important;
+              padding: 12px !important;
+              border-bottom: 1px solid rgba(126, 162, 212, 0.2) !important;
+            }
+            .figma-content-area.finance-page .finance-transactions-table td {
+              color: #ffffff !important;
+              font-size: 14px !important;
+              padding: 12px !important;
+              border-bottom: 1px solid rgba(126, 162, 212, 0.1) !important;
+            }
+            .figma-content-area.finance-page .status-completed {
+              background: rgba(16, 185, 129, 0.2) !important;
+              color: #10b981 !important;
+              padding: 4px 10px !important;
+              border-radius: 12px !important;
+              font-size: 12px !important;
+              font-weight: 500 !important;
+            }
+            .figma-content-area.finance-page .promo-code-card {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 8px !important;
+              padding: 16px !important;
+              margin-bottom: 16px !important;
+              transition: all 0.3s ease !important;
+            }
+            .figma-content-area.finance-page .promo-code-content {
+              display: flex !important;
+              justify-content: space-between !important;
+              align-items: flex-start !important;
+            }
+            .figma-content-area.finance-page .promo-code-name {
+              color: #ffffff !important;
+              font-size: 16px !important;
+              font-weight: 700 !important;
+              margin-bottom: 4px !important;
+            }
+            .figma-content-area.finance-page .promo-code-description {
+              color: rgba(156, 163, 175, 1) !important;
+              font-size: 12px !important;
+              margin-bottom: 2px !important;
+            }
+            .figma-content-area.finance-page .promo-code-usage {
+              color: rgba(107, 114, 128, 1) !important;
+              font-size: 11px !important;
+            }
+            .figma-content-area.finance-page .promo-edit-btn {
+              background: rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid rgba(126, 162, 212, 0.4) !important;
+              color: rgba(126, 162, 212, 1) !important;
+              padding: 8px 16px !important;
+              border-radius: 8px !important;
+              font-size: 12px !important;
+              font-weight: 600 !important;
+              cursor: pointer !important;
+            }
+            .figma-content-area.finance-page .add-promo-btn {
+              background: transparent !important;
+              border: 1px solid rgba(126, 162, 212, 0.5) !important;
+              color: rgba(126, 162, 212, 1) !important;
+              padding: 12px 16px !important;
+              border-radius: 8px !important;
+              font-size: 14px !important;
+              cursor: pointer !important;
+            }
+            @media (max-width: 1200px) {
+              .figma-content-area.finance-page .finance-stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+              }
+            }
+            @media (max-width: 768px) {
+              .figma-content-area.finance-page .finance-stats-grid {
+                grid-template-columns: 1fr !important;
+              }
+            }
+          </style>
           <!-- Finance Stats Cards -->
           <div class="finance-stats-grid">
-            <div class="finance-card">
-              <h3 class="finance-card-title">Available for Payout</h3>
-              <p class="finance-card-amount">$8,250.00</p>
-              <p class="finance-card-note">Next payout on Nov 15, 2025</p>
+            <div class="finance-card" onclick="showFinanceDetails('revenue')">
+              <div class="finance-card-header">
+                <h3 class="finance-card-title">Total revenue</h3>
+              </div>
+              <div class="finance-card-amount">$12,450</div>
+              <div class="finance-card-subtitle">+ $1,200 this month</div>
             </div>
-            <div class="finance-card">
-              <h3 class="finance-card-title">Total Revenue</h3>
-              <p class="finance-card-amount">$12,460.00</p>
-              <p class="finance-card-note">All time earnings</p>
+            <div class="finance-card" onclick="showFinanceDetails('month')">
+              <div class="finance-card-header">
+                <h3 class="finance-card-title">This month</h3>
+              </div>
+              <div class="finance-card-amount">$2,845</div>
+              <div class="finance-card-subtitle">+ $1,200 this month</div>
             </div>
-            <div class="finance-card">
-              <h3 class="finance-card-title">Pending</h3>
-              <p class="finance-card-amount">$1,230.50</p>
-              <p class="finance-card-note">Waiting for clearance</p>
+            <div class="finance-card" onclick="showFinanceDetails('balance')">
+              <div class="finance-card-header">
+                <h3 class="finance-card-title">Available balance</h3>
+              </div>
+              <div class="finance-card-amount">$1,250</div>
+              <div class="finance-card-subtitle">Ready to withdraw</div>
+            </div>
+            <div class="finance-card" onclick="showFinanceDetails('referral')">
+              <div class="finance-card-header">
+                <h3 class="finance-card-title">Referral Earnings</h3>
+              </div>
+              <div class="finance-card-amount">$485</div>
+              <div class="finance-card-subtitle">From 12 referrals</div>
             </div>
           </div>
 
-          <!-- Transactions History -->
-          <div class="transactions-section">
-            <div class="transactions-header">
-              <h3 class="transactions-title">Transactions History</h3>
-              <div class="transactions-filters">
-                <input type="text" class="transaction-search" placeholder="Search transactions..." onkeyup="filterTransactions(event)">
-                <input type="date" class="transaction-date-filter" onchange="filterTransactions()">
-                <button class="figma-btn" onclick="downloadReport('csv')">Export CSV</button>
+          <!-- Payment Methods Section -->
+          <div class="finance-section payment-methods-section">
+            <div class="section-header">
+              <h3 class="section-title">Payment methods</h3>
+            </div>
+            <div class="payment-method-card" onclick="manageCard()">
+              <div class="payment-card-content">
+                <div class="payment-card-info">
+                  <div class="payment-card-name">UzBank Card</div>
+                  <div class="payment-card-number">**** **** **** 1234</div>
+                </div>
+                <div class="payment-card-badge">Primary</div>
+              </div>
+              <div class="card-actions-overlay">
+                <button class="card-action-btn edit-btn" onclick="event.stopPropagation(); editCard()">Edit</button>
+                <button class="card-action-btn delete-btn" onclick="event.stopPropagation(); deleteCard()">Delete</button>
               </div>
             </div>
-            <div class="transactions-table-container">
-              <table class="transactions-table">
+            <button class="add-payment-btn" onclick="addPaymentMethod()">+ Add a payment method</button>
+          </div>
+
+          <!-- Recent Transactions Section -->
+          <div class="finance-section transactions-section">
+            <div class="section-header">
+              <h3 class="section-title">Recent transactions</h3>
+              <div class="transaction-controls">
+                <input type="text" placeholder="Search transactions..." class="transaction-search" oninput="filterTransactions()">
+                <input type="date" class="transaction-date-filter" onchange="filterTransactions()">
+                <select class="transaction-type-filter" onchange="filterTransactions()">
+                  <option value="">All Types</option>
+                  <option value="Sale">Sales</option>
+                  <option value="Payout">Payouts</option>
+                  <option value="Refund">Refunds</option>
+                </select>
+              </div>
+            </div>
+            <div class="transactions-table-wrapper">
+              <table class="finance-transactions-table">
                 <thead>
                   <tr>
                     <th>Date</th>
-                    <th>Type</th>
                     <th>Course</th>
                     <th>Student</th>
+                    <th>Method</th>
                     <th>Amount</th>
                     <th>Status</th>
                   </tr>
                 </thead>
-                <tbody id="transactionsBody">
-                  <!-- Transaction rows will be injected here -->
+                <tbody>
+                  <tr>
+                    <td>Oct 10, 2025</td>
+                    <td>React Masterclass</td>
+                    <td>John Smith</td>
+                    <td>Uzum</td>
+                    <td>$150</td>
+                    <td><span class="status-completed">Completed</span></td>
+                  </tr>
+                  <tr>
+                    <td>Oct 9, 2025</td>
+                    <td>UI/UX Design</td>
+                    <td>Sarah Connor</td>
+                    <td>Uzum</td>
+                    <td>$200</td>
+                    <td><span class="status-completed">Completed</span></td>
+                  </tr>
+                  <tr>
+                    <td>Oct 8, 2025</td>
+                    <td>JavaScript</td>
+                    <td>Mike Johnson</td>
+                    <td>Uzum</td>
+                    <td>$135</td>
+                    <td><span class="status-completed">Completed</span></td>
+                  </tr>
                 </tbody>
               </table>
+            </div>
+          </div>
+
+          <!-- Promo Codes Section -->
+          <div class="finance-section promo-section">
+            <div class="section-header">
+              <h3 class="section-title">Promo Codes</h3>
+            </div>
+            <div class="promo-code-card">
+              <div class="promo-code-content">
+                <div class="promo-code-info">
+                  <div class="promo-code-name">NEWSTUDENT30</div>
+                  <div class="promo-code-description">30% discount for new students</div>
+                  <div class="promo-code-usage">Used: 45 times · Expires: Dec 31, 2025</div>
+                </div>
+                <button class="promo-edit-btn">Edit</button>
+              </div>
+            </div>
+            <button class="add-promo-btn">+ Create a new Promo Code</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+// Open AI Assistant Page
+function openAIAssistantPage() {
+  console.log('Opening AI Assistant Page');
+
+  try {
+    // Update page title
+    const titleElement = document.querySelector('.figma-title h2');
+    const contentArea = document.querySelector('.figma-content-area');
+
+    if (titleElement) {
+      titleElement.textContent = 'AI Assistant';
+    }
+
+    if (contentArea) {
+      contentArea.className = 'figma-content-area ai-assistant-page';
+      contentArea.innerHTML = `
+        <div class="ai-assistant-container">
+          <style>
+            .figma-content-area.ai-assistant-page {
+              background: #1a1a1a !important;
+              padding: 24px !important;
+              overflow-y: auto !important;
+            }
+            .ai-assistant-container {
+              max-width: 900px !important;
+              margin: 0 auto !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 20px !important;
+            }
+            .ai-status-card {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 24px !important;
+              display: flex !important;
+              align-items: center !important;
+              gap: 16px !important;
+            }
+            .ai-icon {
+              width: 48px !important;
+              height: 48px !important;
+              background: rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              font-size: 24px !important;
+            }
+            .ai-status-content h3 {
+              color: #ffffff !important;
+              font-size: 24px !important;
+              font-weight: 600 !important;
+              margin: 0 0 8px 0 !important;
+            }
+            .ai-status-content p {
+              color: rgba(156, 163, 175, 1) !important;
+              margin: 0 !important;
+              font-size: 16px !important;
+            }
+            .ai-metrics {
+              display: grid !important;
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 20px !important;
+            }
+            .ai-metric-card {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 24px !important;
+              text-align: center !important;
+              cursor: pointer !important;
+              transition: all 0.3s ease !important;
+            }
+            .ai-metric-card:hover {
+              border-color: rgba(126, 162, 212, 0.4) !important;
+              background: rgba(58, 56, 56, 0.5) !important;
+              transform: translateY(-5px) !important;
+              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+            }
+            .ai-metric-card h4 {
+              color: rgba(126, 162, 212, 1) !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+              margin: 0 0 12px 0 !important;
+              text-transform: uppercase !important;
+              letter-spacing: 0.5px !important;
+            }
+            .ai-metric-value {
+              color: #ffffff !important;
+              font-size: 36px !important;
+              font-weight: 700 !important;
+              margin: 0 0 8px 0 !important;
+            }
+            .ai-metric-change {
+              color: #22c55e !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+            }
+            .ai-personality-section,
+            .ai-auto-response-section,
+            .ai-responses-section {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 20px !important;
+            }
+            .section-title {
+              color: #ffffff !important;
+              font-size: 20px !important;
+              font-weight: 600 !important;
+              margin: 0 0 16px 0 !important;
+            }
+            .form-group {
+              margin-bottom: 16px !important;
+            }
+            .form-group:last-child {
+              margin-bottom: 0 !important;
+            }
+            .form-label {
+              color: rgba(126, 162, 212, 1) !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+              margin-bottom: 8px !important;
+              display: block !important;
+            }
+            .form-input,
+            .form-textarea {
+              width: 100% !important;
+              padding: 12px !important;
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 8px !important;
+              color: #ffffff !important;
+              font-size: 14px !important;
+              transition: all 0.3s ease !important;
+            }
+            .form-textarea {
+              resize: vertical !important;
+              min-height: 100px !important;
+            }
+            .form-input:focus,
+            .form-textarea:focus {
+              outline: none !important;
+              border-color: rgba(126, 162, 212, 0.4) !important;
+              background: rgba(58, 56, 56, 0.5) !important;
+            }
+            .settings-item {
+              display: flex !important;
+              align-items: flex-start !important;
+              justify-content: space-between !important;
+              padding: 16px !important;
+              background: rgba(45, 45, 50, 0.3) !important;
+              border: 1px solid rgba(75, 85, 99, 0.2) !important;
+              border-radius: 8px !important;
+              transition: all 0.3s ease !important;
+            }
+            .settings-item:hover {
+              background: rgba(45, 45, 50, 0.5) !important;
+            }
+            .setting-left {
+              flex: 1 !important;
+              margin-right: 16px !important;
+            }
+            .setting-title {
+              color: #ffffff !important;
+              font-size: 16px !important;
+              font-weight: 600 !important;
+              margin-bottom: 4px !important;
+              line-height: 1.2 !important;
+            }
+            .setting-description {
+              color: rgba(156, 163, 175, 1) !important;
+              font-size: 14px !important;
+              line-height: 1.4 !important;
+            }
+            .setting-toggle {
+              display: flex !important;
+              align-items: flex-start !important;
+            }
+            .toggle-switch-new {
+              position: relative !important;
+              display: inline-block !important;
+              width: 44px !important;
+              height: 24px !important;
+              background-color: rgba(75, 85, 99, 0.6) !important;
+              border-radius: 12px !important;
+              cursor: pointer !important;
+              transition: background-color 0.3s ease !important;
+            }
+            .toggle-switch-new input {
+              position: absolute !important;
+              opacity: 0 !important;
+              width: 0 !important;
+              height: 0 !important;
+            }
+            .toggle-switch-new .toggle-thumb {
+              position: absolute !important;
+              top: 2px !important;
+              left: 2px !important;
+              width: 20px !important;
+              height: 20px !important;
+              background-color: white !important;
+              border-radius: 50% !important;
+              transition: transform 0.3s ease !important;
+              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+            }
+            .toggle-switch-new input:checked ~ .toggle-thumb {
+              transform: translateX(20px) !important;
+            }
+            .toggle-switch-new input:checked {
+              background-color: #3b82f6 !important;
+            }
+            .toggle-switch-new:has(input:checked) {
+              background-color: #3b82f6 !important;
+            }
+            .response-item {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 8px !important;
+              padding: 16px !important;
+              margin-bottom: 12px !important;
+              transition: all 0.3s ease !important;
+            }
+            .response-item:last-child {
+              margin-bottom: 0 !important;
+            }
+            .response-item:hover {
+              border-color: rgba(126, 162, 212, 0.4) !important;
+              background: rgba(58, 56, 56, 0.5) !important;
+            }
+            .response-header {
+              display: flex !important;
+              justify-content: space-between !important;
+              align-items: flex-start !important;
+              margin-bottom: 16px !important;
+            }
+            .response-user {
+              display: flex !important;
+              align-items: center !important;
+              gap: 8px !important;
+            }
+            .user-avatar {
+              width: 32px !important;
+              height: 32px !important;
+              background: rgba(126, 162, 212, 0.3) !important;
+              border-radius: 50% !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              font-size: 14px !important;
+              color: rgba(126, 162, 212, 1) !important;
+            }
+            .user-info h6 {
+              color: #ffffff !important;
+              font-size: 14px !important;
+              font-weight: 600 !important;
+              margin: 0 !important;
+            }
+            .user-info span {
+              color: rgba(156, 163, 175, 1) !important;
+              font-size: 12px !important;
+            }
+            .edit-btn {
+              background: rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid rgba(126, 162, 212, 0.4) !important;
+              color: rgba(126, 162, 212, 1) !important;
+              padding: 6px 12px !important;
+              border-radius: 6px !important;
+              font-size: 12px !important;
+              font-weight: 600 !important;
+              cursor: pointer !important;
+              transition: all 0.3s ease !important;
+            }
+            .edit-btn:hover {
+              background: rgba(126, 162, 212, 0.3) !important;
+            }
+            .question-text,
+            .response-text {
+              color: rgba(156, 163, 175, 1) !important;
+              font-size: 14px !important;
+              margin: 0 0 12px 0 !important;
+            }
+            .ai-response-text {
+              color: #ffffff !important;
+              font-size: 14px !important;
+              line-height: 1.6 !important;
+              margin: 0 !important;
+            }
+            @media (max-width: 768px) {
+              .ai-metrics {
+                grid-template-columns: 1fr !important;
+              }
+              .figma-content-area.ai-assistant-page {
+                padding: 16px !important;
+              }
+            }
+          </style>
+
+          <!-- AI Status Card -->
+          <div class="ai-status-card">
+            <div class="ai-icon">🤖</div>
+            <div class="ai-status-content">
+              <h3>AI Assistant Status</h3>
+              <p>• 156 questions answered today</p>
+            </div>
+          </div>
+
+          <!-- AI Metrics -->
+          <div class="ai-metrics">
+            <div class="ai-metric-card" onclick="showAIMetrics('responses')">
+              <h4>Total AI Responses</h4>
+              <div class="ai-metric-value">2,847</div>
+              <div class="ai-metric-change">↑ 23% this month</div>
+            </div>
+            <div class="ai-metric-card" onclick="showAIMetrics('time')">
+              <h4>Response Time</h4>
+              <div class="ai-metric-value">1.2s</div>
+              <div class="ai-metric-change">Lightning fast</div>
+            </div>
+          </div>
+
+          <!-- AI Personality Section -->
+          <div class="ai-personality-section">
+            <h3 class="section-title">AI Personality</h3>
+            <div class="form-group">
+              <label class="form-label">AI Name</label>
+              <input type="text" class="form-input" value="John's AI Helper" placeholder="Enter AI assistant name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">AI Instructions</label>
+              <textarea class="form-textarea" placeholder="Describe how the AI should behave...">You are a helpful teaching assistant. Always encourage students and provide clear examples.</textarea>
+            </div>
+          </div>
+
+          <!-- Auto-Response Settings -->
+          <div class="ai-auto-response-section">
+            <h3 class="section-title">AI Auto-Response Settings</h3>
+            <p style="color: rgba(156, 163, 175, 1); margin-bottom: 16px; font-size: 14px;">Control where and when AI can automatically respond to students</p>
+
+            <div class="settings-item">
+              <div class="setting-left">
+                <div class="setting-title">Answer Lesson Comments</div>
+                <div class="setting-description">AI will respond to student questions in lesson comment sections</div>
+              </div>
+              <div class="setting-toggle">
+                <label class="toggle-switch-new">
+                  <input type="checkbox" checked onchange="toggleAISetting(this)">
+                  <div class="toggle-thumb"></div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent AI Responses -->
+          <div class="ai-responses-section">
+            <h3 class="section-title">Recent AI Responses</h3>
+
+            <div class="response-item">
+              <div class="response-header">
+                <div class="response-user">
+                  <div class="user-avatar">AJ</div>
+                  <div class="user-info">
+                    <h6>Alex Johnson</h6>
+                    <span>React Hooks lesson • 2 min ago</span>
+                  </div>
+                </div>
+                <button class="edit-btn" onclick="editAIResponse(1)">Edit</button>
+              </div>
+              <div class="response-content">
+                <p class="question-text"><strong>Question:</strong><br>"What's the difference between useState and useEffect?"</p>
+                <p class="response-text"><strong>AI Response:</strong><br>useState manages component state, while useEffect handles side effects like API calls. Check Lesson 5 for examples!</p>
+              </div>
+            </div>
+
+            <div class="response-item">
+              <div class="response-header">
+                <div class="response-user">
+                  <div class="user-avatar">AJ</div>
+                  <div class="user-info">
+                    <h6>Alex Johnson</h6>
+                    <span>React Hooks lesson • 2 min ago</span>
+                  </div>
+                </div>
+                <button class="edit-btn" onclick="editAIResponse(2)">Edit</button>
+              </div>
+              <div class="response-content">
+                <p class="question-text"><strong>Question:</strong><br>"What's the difference between useState and useEffect?"</p>
+                <p class="response-text"><strong>AI Response:</strong><br>useState manages component state, while useEffect handles side effects like API calls. Check Lesson 5 for examples!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+  `;
+    } else {
+      console.error('Content area not found');
+    }
+  } catch (error) {
+    console.error('Error opening AI Assistant page:', error);
+  }
+};
+
+// Open Assignments Page
+window.openAssignmentsPage = function() {
+  const userData = store.getState().user;
+
+  // Preserve sidebar menu state
+  const generalChildren = document.getElementById('general-children');
+  const isGeneralExpanded = generalChildren && !generalChildren.classList.contains('hidden');
+  const contentChildren = document.getElementById('content-children');
+  const isContentExpanded = contentChildren && !contentChildren.classList.contains('hidden');
+
+  document.querySelector('#app').innerHTML = `
+    <div class="figma-dashboard">
+      <!-- Top Header -->
+      <div class="figma-header">
+        <div class="figma-logo">
+          <h1>dars<span>linker</span></h1>
+        </div>
+        <div class="figma-title">
+          <h2>Assignments</h2>
+        </div>
+        <div class="figma-header-buttons">
+          <button class="figma-btn" onclick="backToDashboard()">← Back</button>
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="figma-main-layout">
+        <!-- Left Sidebar Menu -->
+        <div class="figma-sidebar">
+          <!-- General Menu -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isGeneralExpanded ? 'expanded' : ''}" onclick="toggleMenu('general')">
+              <span class="figma-menu-title">General</span>
+              <span class="figma-menu-arrow" id="general-arrow">${isGeneralExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isGeneralExpanded ? '' : 'hidden'}" id="general-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
+            </div>
+          </div>
+
+          <!-- Content Management -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent ${isContentExpanded ? 'expanded' : ''}" onclick="toggleMenu('content')">
+              <span class="figma-menu-title">Content Management</span>
+              <span class="figma-menu-arrow" id="content-arrow">${isContentExpanded ? '▼' : '▶'}</span>
+            </div>
+            <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
+              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Assignments</a>
+            </div>
+          </div>
+
+          <!-- AI Assistant -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link" onclick="openAIAssistantPage(); return false;">AI Assistant</a>
+            </div>
+          </div>
+
+          <!-- Analytics -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">Analytics</a>
+            </div>
+          </div>
+
+          <!-- Rolls -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">Rolls</a>
+            </div>
+          </div>
+
+          <!-- Settings -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">Settings</a>
+            </div>
+          </div>
+
+          <!-- My Subscription -->
+          <div class="figma-subscription">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">My Subscription</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assignments Content -->
+        <div class="figma-content-area assignments-page">
+          <style>
+            .figma-content-area.assignments-page {
+              padding: 24px !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 20px !important;
+            }
+            .assignments-stats-grid {
+              display: grid !important;
+              grid-template-columns: repeat(4, 1fr) !important;
+              gap: 16px !important;
+              margin-bottom: 0 !important;
+            }
+            .assignments-card {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 20px !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 8px !important;
+              transition: all 0.3s ease !important;
+              cursor: pointer !important;
+            }
+            .assignments-card:hover {
+              transform: translateY(-5px) !important;
+              border-color: rgba(126, 162, 212, 0.4) !important;
+              background: rgba(58, 56, 56, 0.5) !important;
+              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+            }
+            .assignments-card-title {
+              color: rgba(126, 162, 212, 1) !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+              margin: 0 !important;
+            }
+            .assignments-card-amount {
+              color: #ffffff !important;
+              font-size: 32px !important;
+              font-weight: 700 !important;
+              margin: 4px 0 !important;
+            }
+            .assignment-tabs {
+              display: flex !important;
+              gap: 0 !important;
+              margin-bottom: 20px !important;
+            }
+            .assignment-tab {
+              background: rgba(58, 56, 56, 0.3) !important;
+              color: rgba(156, 163, 175, 1) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              padding: 12px 24px !important;
+              cursor: pointer !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+              transition: all 0.3s ease !important;
+            }
+            .assignment-tab:first-child {
+              border-radius: 8px 0 0 8px !important;
+            }
+            .assignment-tab:last-child {
+              border-radius: 0 8px 8px 0 !important;
+              border-left: none !important;
+            }
+            .assignment-tab.active {
+              background: rgba(126, 162, 212, 0.2) !important;
+              color: rgba(126, 162, 212, 1) !important;
+            }
+            .assignments-section {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 24px !important;
+            }
+            .assignments-section-title {
+              color: rgba(126, 162, 212, 1) !important;
+              font-size: 18px !important;
+              font-weight: 600 !important;
+              margin: 0 0 20px 0 !important;
+            }
+            .assignment-item {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 8px !important;
+              padding: 20px !important;
+              margin-bottom: 16px !important;
+              transition: all 0.3s ease !important;
+              cursor: pointer !important;
+            }
+            .assignment-item:hover {
+              border-color: rgba(126, 162, 212, 0.4) !important;
+              background: rgba(58, 56, 56, 0.4) !important;
+              transform: translateX(5px) !important;
+            }
+            .assignment-header {
+              display: flex !important;
+              justify-content: space-between !important;
+              align-items: flex-start !important;
+              margin-bottom: 12px !important;
+            }
+            .assignment-title {
+              color: #ffffff !important;
+              font-size: 16px !important;
+              font-weight: 600 !important;
+              margin: 0 0 4px 0 !important;
+            }
+            .assignment-meta {
+              font-size: 12px !important;
+              color: rgba(156, 163, 175, 1) !important;
+            }
+            .assignment-status {
+              background: rgba(249, 115, 22, 0.2) !important;
+              color: #f97316 !important;
+              padding: 4px 12px !important;
+              border-radius: 12px !important;
+              font-size: 12px !important;
+              font-weight: 500 !important;
+            }
+            .assignment-description {
+              color: rgba(255, 255, 255, 0.8) !important;
+              font-size: 14px !important;
+              margin-bottom: 16px !important;
+            }
+            .assignment-action {
+              align-self: flex-end !important;
+            }
+            .grade-btn {
+              background: rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid rgba(126, 162, 212, 0.4) !important;
+              color: rgba(126, 162, 212, 1) !important;
+              padding: 8px 16px !important;
+              border-radius: 8px !important;
+              font-size: 12px !important;
+              font-weight: 600 !important;
+              cursor: pointer !important;
+              transition: all 0.3s ease !important;
+            }
+            .grade-btn:hover {
+              background: rgba(126, 162, 212, 0.3) !important;
+            }
+            @media (max-width: 1200px) {
+              .assignments-stats-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+              }
+            }
+            @media (max-width: 768px) {
+              .assignments-stats-grid {
+                grid-template-columns: 1fr !important;
+              }
+              .figma-content-area.assignments-page {
+                padding: 16px !important;
+              }
+            }
+          </style>
+
+          <!-- Assignment Statistics Cards -->
+          <div class="assignments-stats-grid">
+            <div class="assignments-card" onclick="showAssignmentDetails('total')">
+              <h3 class="assignments-card-title">Total assignments</h3>
+              <div class="assignments-card-amount">235</div>
+            </div>
+            <div class="assignments-card" onclick="showAssignmentDetails('pending')">
+              <h3 class="assignments-card-title">Pending Review</h3>
+              <div class="assignments-card-amount">15</div>
+            </div>
+            <div class="assignments-card" onclick="showAssignmentDetails('graded')">
+              <h3 class="assignments-card-title">Graded</h3>
+              <div class="assignments-card-amount">220</div>
+            </div>
+            <div class="assignments-card" onclick="showAssignmentDetails('grade')">
+              <h3 class="assignments-card-title">Average grade</h3>
+              <div class="assignments-card-amount">80%</div>
+            </div>
+          </div>
+
+          <!-- Assignment Filter Tabs -->
+          <div class="assignment-tabs">
+            <div class="assignment-tab active" onclick="switchAssignmentTab(this, 'pending')">Pending</div>
+            <div class="assignment-tab" onclick="switchAssignmentTab(this, 'graded')">Graded</div>
+          </div>
+
+          <!-- Assignments Section -->
+          <div class="assignments-section">
+            <h3 class="assignments-section-title">Pending assignments</h3>
+
+            <!-- Assignment Items -->
+            <div class="assignment-item">
+              <div class="assignment-header">
+                <div>
+                  <h4 class="assignment-title">Build a Todo App Project</h4>
+                  <div class="assignment-meta">Submitted: Oct 10, 2025 • React Masterclass</div>
+                </div>
+                <span class="assignment-status">Pending</span>
+              </div>
+              <div class="assignment-description">
+                Submission: Complete Todo application with add, delete, and edit functionality
+              </div>
+              <div class="assignment-action">
+                <button class="grade-btn" onclick="gradeAssignment(1)">Grade now</button>
+              </div>
+            </div>
+
+            <div class="assignment-item">
+              <div class="assignment-header">
+                <div>
+                  <h4 class="assignment-title">Build a Todo App Project</h4>
+                  <div class="assignment-meta">Submitted: Oct 10, 2025 • React Masterclass</div>
+                </div>
+                <span class="assignment-status">Pending</span>
+              </div>
+              <div class="assignment-description">
+                Submission: Complete Todo application with add, delete, and edit functionality
+              </div>
+              <div class="assignment-action">
+                <button class="grade-btn" onclick="gradeAssignment(2)">Grade now</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
   `;
+};
 
-  renderTransactions();
+// Assignment Interactive Functions
+window.showAssignmentDetails = function(cardType) {
+  const details = {
+    total: {
+      title: 'Total Assignments Overview',
+      content: `
+        <div class="modal-content">
+          <h3>Assignment Statistics</h3>
+          <div class="assignment-breakdown">
+            <div class="breakdown-item">
+              <span>This Month:</span>
+              <span>45 assignments</span>
+            </div>
+            <div class="breakdown-item">
+              <span>This Week:</span>
+              <span>12 assignments</span>
+            </div>
+            <div class="breakdown-item">
+              <span>Today:</span>
+              <span>3 assignments</span>
+            </div>
+            <div class="breakdown-total">
+              <span>Total All Time:</span>
+              <span>235 assignments</span>
+            </div>
+          </div>
+        </div>
+      `
+    },
+    pending: {
+      title: 'Pending Assignments Details',
+      content: `
+        <div class="modal-content">
+          <h3>Review Queue</h3>
+          <div class="pending-stats">
+            <div class="stat-item">
+              <span>Submitted Today:</span>
+              <span>5</span>
+            </div>
+            <div class="stat-item">
+              <span>Overdue Reviews:</span>
+              <span>3</span>
+            </div>
+            <div class="stat-item">
+              <span>Average Wait Time:</span>
+              <span>2.5 days</span>
+            </div>
+          </div>
+          <button class="review-all-btn" onclick="reviewAllAssignments()">Start Review Session</button>
+        </div>
+      `
+    },
+    graded: {
+      title: 'Graded Assignments',
+      content: `
+        <div class="modal-content">
+          <h3>Grading Summary</h3>
+          <div class="graded-stats">
+            <div class="stat-item">
+              <span>A Grade (90-100%):</span>
+              <span>85 assignments</span>
+            </div>
+            <div class="stat-item">
+              <span>B Grade (80-89%):</span>
+              <span>90 assignments</span>
+            </div>
+            <div class="stat-item">
+              <span>C Grade (70-79%):</span>
+              <span>35 assignments</span>
+            </div>
+            <div class="stat-item">
+              <span>Below 70%:</span>
+              <span>10 assignments</span>
+            </div>
+          </div>
+        </div>
+      `
+    },
+    grade: {
+      title: 'Grade Analysis',
+      content: `
+        <div class="modal-content">
+          <h3>Grade Distribution</h3>
+          <div class="grade-analysis">
+            <div class="grade-bar">
+              <span>Average Grade: 80%</span>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 80%"></div>
+              </div>
+            </div>
+            <div class="grade-trends">
+              <div class="trend-item">
+                <span>Trend:</span>
+                <span style="color: #22c55e;">↗ +2.5% this month</span>
+              </div>
+              <div class="trend-item">
+                <span>Best Course:</span>
+                <span>React Masterclass (85%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    }
+  };
+
+  showModal(details[cardType].title, details[cardType].content);
+};
+
+window.reviewAllAssignments = function() {
+  showMessage('Starting review session...', 'info');
+  closeModal();
+  // Switch to pending tab and highlight first assignment
+  const pendingTab = document.querySelector('.assignment-tab');
+  switchAssignmentTab(pendingTab, 'pending');
+};
+
+// Enhanced Assignment tab switching function
+window.switchAssignmentTab = function(tabElement, tabType) {
+  // Remove active class from all tabs
+  document.querySelectorAll('.assignment-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+
+  // Add active class to clicked tab
+  tabElement.classList.add('active');
+
+  // Update section title and content
+  const sectionTitle = document.querySelector('.assignments-section-title');
+  const assignmentsSection = document.querySelector('.assignments-section');
+
+  if (tabType === 'pending') {
+    sectionTitle.textContent = 'Pending assignments';
+    updateAssignmentsList('pending');
+  } else {
+    sectionTitle.textContent = 'Graded assignments';
+    updateAssignmentsList('graded');
+  }
+};
+
+// Update assignments list based on filter
+window.updateAssignmentsList = function(filterType) {
+  const assignmentsContainer = document.querySelector('.assignments-section');
+  const existingItems = assignmentsContainer.querySelectorAll('.assignment-item');
+
+  // Remove existing items
+  existingItems.forEach(item => item.remove());
+
+  if (filterType === 'pending') {
+    // Show pending assignments
+    const pendingHTML = `
+      <div class="assignment-item">
+        <div class="assignment-header">
+          <div>
+            <h4 class="assignment-title">Build a Todo App Project</h4>
+            <div class="assignment-meta">Submitted: Oct 10, 2025 • React Masterclass</div>
+          </div>
+          <span class="assignment-status">Pending</span>
+        </div>
+        <div class="assignment-description">
+          Submission: Complete Todo application with add, delete, and edit functionality
+        </div>
+        <div class="assignment-action">
+          <button class="grade-btn" onclick="gradeAssignment(1)">Grade now</button>
+        </div>
+      </div>
+      <div class="assignment-item">
+        <div class="assignment-header">
+          <div>
+            <h4 class="assignment-title">React Router Implementation</h4>
+            <div class="assignment-meta">Submitted: Oct 9, 2025 • React Advanced</div>
+          </div>
+          <span class="assignment-status">Pending</span>
+        </div>
+        <div class="assignment-description">
+          Submission: Multi-page application with client-side routing
+        </div>
+        <div class="assignment-action">
+          <button class="grade-btn" onclick="gradeAssignment(2)">Grade now</button>
+        </div>
+      </div>
+    `;
+    assignmentsContainer.insertAdjacentHTML('beforeend', pendingHTML);
+  } else {
+    // Show graded assignments
+    const gradedHTML = `
+      <div class="assignment-item">
+        <div class="assignment-header">
+          <div>
+            <h4 class="assignment-title">JavaScript Calculator</h4>
+            <div class="assignment-meta">Submitted: Oct 5, 2025 • JavaScript Basics</div>
+          </div>
+          <span class="assignment-status graded" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">Grade: 85%</span>
+        </div>
+        <div class="assignment-description">
+          Well implemented calculator with all basic operations. Good code structure.
+        </div>
+        <div class="assignment-action">
+          <button class="grade-btn" onclick="reviewGrade(3)">Review Grade</button>
+        </div>
+      </div>
+      <div class="assignment-item">
+        <div class="assignment-header">
+          <div>
+            <h4 class="assignment-title">CSS Grid Layout</h4>
+            <div class="assignment-meta">Submitted: Oct 3, 2025 • CSS Advanced</div>
+          </div>
+          <span class="assignment-status graded" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">Grade: 92%</span>
+        </div>
+        <div class="assignment-description">
+          Excellent understanding of CSS Grid. Clean and responsive design.
+        </div>
+        <div class="assignment-action">
+          <button class="grade-btn" onclick="reviewGrade(4)">Review Grade</button>
+        </div>
+      </div>
+    `;
+    assignmentsContainer.insertAdjacentHTML('beforeend', gradedHTML);
+  }
+};
+
+// Enhanced Grade assignment function
+window.gradeAssignment = function(assignmentId) {
+  const gradingModal = `
+    <div class="modal-content">
+      <h3>Grade Assignment</h3>
+      <div class="grading-interface">
+        <div class="assignment-details">
+          <h4>Build a Todo App Project</h4>
+          <p><strong>Student:</strong> John Smith</p>
+          <p><strong>Course:</strong> React Masterclass</p>
+          <p><strong>Submitted:</strong> Oct 10, 2025</p>
+        </div>
+
+        <div class="grading-form">
+          <div class="grade-input-group">
+            <label>Grade (0-100%):</label>
+            <input type="number" min="0" max="100" value="85" class="grade-input" id="gradeValue" />
+          </div>
+
+          <div class="feedback-group">
+            <label>Feedback:</label>
+            <textarea class="feedback-textarea" placeholder="Write your feedback here..." rows="4">Good implementation of core functionality. Consider adding error handling and improving UI design.</textarea>
+          </div>
+
+          <div class="grading-actions">
+            <button class="submit-grade-btn" onclick="submitGrade(${assignmentId})">Submit Grade</button>
+            <button class="save-draft-btn" onclick="saveDraft(${assignmentId})">Save as Draft</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <style>
+      .grading-interface {
+        max-height: 500px;
+        overflow-y: auto;
+      }
+      .assignment-details {
+        background: rgba(58, 56, 56, 0.3);
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .assignment-details h4 {
+        color: rgba(126, 162, 212, 1);
+        margin: 0 0 10px 0;
+      }
+      .grading-form .grade-input-group,
+      .grading-form .feedback-group {
+        margin-bottom: 20px;
+      }
+      .grading-form label {
+        display: block;
+        margin-bottom: 8px;
+        color: rgba(126, 162, 212, 1);
+        font-weight: 500;
+      }
+      .grade-input {
+        width: 100px;
+        padding: 10px;
+        background: rgba(58, 56, 56, 0.3);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: bold;
+      }
+      .feedback-textarea {
+        width: 100%;
+        padding: 12px;
+        background: rgba(58, 56, 56, 0.3);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 14px;
+        resize: vertical;
+        min-height: 100px;
+      }
+      .grading-actions {
+        display: flex;
+        gap: 12px;
+      }
+      .submit-grade-btn {
+        background: rgba(34, 197, 94, 0.2);
+        border: 1px solid rgba(34, 197, 94, 0.4);
+        color: #22c55e;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+      }
+      .save-draft-btn {
+        background: rgba(249, 115, 22, 0.2);
+        border: 1px solid rgba(249, 115, 22, 0.4);
+        color: #f97316;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+      }
+      .submit-grade-btn:hover {
+        background: rgba(34, 197, 94, 0.3);
+      }
+      .save-draft-btn:hover {
+        background: rgba(249, 115, 22, 0.3);
+      }
+    </style>
+  `;
+
+  showModal('Grade Assignment', gradingModal);
+};
+
+window.submitGrade = function(assignmentId) {
+  const grade = document.getElementById('gradeValue').value;
+  const feedback = document.querySelector('.feedback-textarea').value;
+
+  showMessage(`Assignment graded successfully! Grade: ${grade}%`, 'success');
+  closeModal();
+
+  // Update assignment status
+  updateAssignmentsList('pending'); // Refresh the list
+};
+
+window.saveDraft = function(assignmentId) {
+  showMessage('Grade saved as draft. You can continue grading later.', 'info');
+  closeModal();
+};
+
+window.reviewGrade = function(assignmentId) {
+  showMessage('Opening grade review interface...', 'info');
 };
 
 const mockTransactions = [
@@ -1723,20 +3485,1184 @@ function renderTransactions(transactions = mockTransactions) {
 }
 
 window.filterTransactions = () => {
-  const searchInput = document.querySelector('.transaction-search').value.toLowerCase();
-  const dateInput = document.querySelector('.transaction-date-filter').value;
+  const searchInput = document.querySelector('.transaction-search')?.value.toLowerCase() || '';
+  const dateInput = document.querySelector('.transaction-date-filter')?.value || '';
+  const typeInput = document.querySelector('.transaction-type-filter')?.value || '';
 
   let filtered = mockTransactions.filter(t => {
-    const matchesSearch = t.course.toLowerCase().includes(searchInput) || t.student.toLowerCase().includes(searchInput);
-    const matchesDate = !dateInput || t.date === dateInput;
-    return matchesSearch && matchesDate;
+    const matchesSearch = searchInput === '' ||
+      t.course.toLowerCase().includes(searchInput) ||
+      t.student.toLowerCase().includes(searchInput) ||
+      t.type.toLowerCase().includes(searchInput);
+    const matchesDate = dateInput === '' || t.date === dateInput;
+    const matchesType = typeInput === '' || t.type === typeInput;
+
+    return matchesSearch && matchesDate && matchesType;
   });
 
   renderTransactions(filtered);
+
+  // Show filter results count
+  const resultsCount = filtered.length;
+  const totalCount = mockTransactions.length;
+  if (resultsCount !== totalCount) {
+    showMessage(`Showing ${resultsCount} of ${totalCount} transactions`, 'info');
+  }
 };
 
-window.downloadReport = (format) => alert(`Downloading ${format.toUpperCase()} report...`);
-window.requestPayout = () => alert('Payout request functionality coming soon...');
+// Finance Interactive Functions
+window.showFinanceDetails = function(cardType) {
+  const details = {
+    revenue: {
+      title: 'Total Revenue Details',
+      content: `
+        <div class="modal-content">
+          <h3>Revenue Breakdown</h3>
+          <div class="revenue-chart">
+            <div class="revenue-item">
+              <span>Course Sales:</span>
+              <span>$8,200</span>
+            </div>
+            <div class="revenue-item">
+              <span>Subscriptions:</span>
+              <span>$3,450</span>
+            </div>
+            <div class="revenue-item">
+              <span>Referrals:</span>
+              <span>$800</span>
+            </div>
+            <div class="revenue-total">
+              <span>Total:</span>
+              <span>$12,450</span>
+            </div>
+          </div>
+        </div>
+      `
+    },
+    month: {
+      title: 'This Month Earnings',
+      content: `
+        <div class="modal-content">
+          <h3>Monthly Performance</h3>
+          <div class="monthly-stats">
+            <div class="stat-item">
+              <span>Week 1:</span>
+              <span>$645</span>
+            </div>
+            <div class="stat-item">
+              <span>Week 2:</span>
+              <span>$780</span>
+            </div>
+            <div class="stat-item">
+              <span>Week 3:</span>
+              <span>$720</span>
+            </div>
+            <div class="stat-item">
+              <span>Week 4:</span>
+              <span>$700</span>
+            </div>
+          </div>
+        </div>
+      `
+    },
+    balance: {
+      title: 'Available Balance',
+      content: `
+        <div class="modal-content">
+          <h3>Withdrawal Information</h3>
+          <p>Available for withdrawal: <strong>$1,250</strong></p>
+          <p>Processing time: 2-3 business days</p>
+          <button class="withdraw-btn" onclick="requestWithdrawal()">Request Withdrawal</button>
+        </div>
+      `
+    },
+    referral: {
+      title: 'Referral Earnings',
+      content: `
+        <div class="modal-content">
+          <h3>Referral Program</h3>
+          <p>Total referred users: 12</p>
+          <p>Active referrals: 8</p>
+          <p>Commission rate: 10%</p>
+          <p>Total earnings: <strong>$485</strong></p>
+        </div>
+      `
+    }
+  };
+
+  showModal(details[cardType].title, details[cardType].content);
+};
+
+window.requestWithdrawal = function() {
+  showMessage('Withdrawal request submitted! You will receive confirmation via email.', 'success');
+  closeModal();
+};
+
+// Enhanced Finance Interactive Functions
+window.manageCard = function() {
+  const cardDetails = `
+    <div class="modal-content">
+      <h3>Card Details</h3>
+      <div class="card-info-detail">
+        <div class="info-row">
+          <span>Card Type:</span>
+          <span>UzBank Visa</span>
+        </div>
+        <div class="info-row">
+          <span>Card Number:</span>
+          <span>**** **** **** 1234</span>
+        </div>
+        <div class="info-row">
+          <span>Cardholder:</span>
+          <span>Umaraliyeva Zarnigor</span>
+        </div>
+        <div class="info-row">
+          <span>Status:</span>
+          <span class="status-active">Active</span>
+        </div>
+        <div class="info-row">
+          <span>Expires:</span>
+          <span>12/2028</span>
+        </div>
+      </div>
+    </div>
+    <style>
+      .card-info-detail {
+        padding: 20px 0;
+      }
+      .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+        color: #ffffff;
+      }
+      .info-row:last-child {
+        border-bottom: none;
+      }
+      .info-row span:first-child {
+        color: rgba(156, 163, 175, 1);
+        font-weight: 500;
+      }
+      .status-active {
+        color: #22c55e !important;
+        font-weight: 600;
+      }
+    </style>
+  `;
+
+  showModal('UzBank Card Details', cardDetails);
+};
+
+window.editCard = function() {
+  const editForm = `
+    <div class="modal-content">
+      <h3>Edit Payment Method</h3>
+      <div class="edit-card-form">
+        <div class="form-group">
+          <label>Card Nickname:</label>
+          <input type="text" value="UzBank Card" class="form-input" id="cardNickname">
+        </div>
+        <div class="form-group">
+          <label>Set as Primary:</label>
+          <input type="checkbox" checked id="isPrimary">
+        </div>
+        <div class="form-actions">
+          <button class="save-btn" onclick="saveCardChanges()">Save Changes</button>
+          <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <style>
+      .edit-card-form {
+        padding: 20px 0;
+      }
+      .form-group {
+        margin-bottom: 20px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: rgba(126, 162, 212, 1);
+        font-weight: 500;
+      }
+      .form-input {
+        width: 100%;
+        padding: 12px;
+        background: rgba(58, 56, 56, 0.3);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 14px;
+      }
+      .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+      }
+      .save-btn {
+        background: rgba(34, 197, 94, 0.2);
+        border: 1px solid rgba(34, 197, 94, 0.4);
+        color: #22c55e;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+      }
+      .cancel-btn {
+        background: rgba(156, 163, 175, 0.2);
+        border: 1px solid rgba(156, 163, 175, 0.4);
+        color: rgba(156, 163, 175, 1);
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+      }
+      .save-btn:hover {
+        background: rgba(34, 197, 94, 0.3);
+      }
+      .cancel-btn:hover {
+        background: rgba(156, 163, 175, 0.3);
+      }
+    </style>
+  `;
+
+  showModal('Edit Payment Method', editForm);
+};
+
+window.deleteCard = function() {
+  const confirmDialog = `
+    <div class="modal-content">
+      <h3>Delete Payment Method</h3>
+      <div class="delete-confirmation">
+        <p>Are you sure you want to delete this payment method?</p>
+        <p class="warning-text">This action cannot be undone.</p>
+        <div class="confirmation-actions">
+          <button class="delete-confirm-btn" onclick="confirmDeleteCard()">Yes, Delete</button>
+          <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <style>
+      .delete-confirmation p {
+        color: #ffffff;
+        margin-bottom: 12px;
+      }
+      .warning-text {
+        color: #ef4444 !important;
+        font-weight: 500;
+        margin-bottom: 24px !important;
+      }
+      .confirmation-actions {
+        display: flex;
+        gap: 12px;
+      }
+      .delete-confirm-btn {
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(239, 68, 68, 0.4);
+        color: #ef4444;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+      }
+      .delete-confirm-btn:hover {
+        background: rgba(239, 68, 68, 0.3);
+      }
+    </style>
+  `;
+
+  showModal('Confirm Deletion', confirmDialog);
+};
+
+window.addPaymentMethod = function() {
+  const addForm = `
+    <div class="modal-content">
+      <h3>Add Payment Method</h3>
+      <div class="add-payment-form">
+        <div class="form-group">
+          <label>Card Number:</label>
+          <input type="text" placeholder="**** **** **** ****" class="form-input" id="newCardNumber">
+        </div>
+        <div class="form-group">
+          <label>Cardholder Name:</label>
+          <input type="text" placeholder="Full name as shown on card" class="form-input" id="cardholderName">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Expiry Date:</label>
+            <input type="text" placeholder="MM/YY" class="form-input" id="expiryDate">
+          </div>
+          <div class="form-group">
+            <label>CVV:</label>
+            <input type="text" placeholder="123" class="form-input" id="cvv">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="add-card-btn" onclick="saveNewCard()">Add Card</button>
+          <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <style>
+      .add-payment-form {
+        padding: 20px 0;
+      }
+      .form-row {
+        display: flex;
+        gap: 16px;
+      }
+      .form-row .form-group {
+        flex: 1;
+      }
+      .add-card-btn {
+        background: rgba(126, 162, 212, 0.2);
+        border: 1px solid rgba(126, 162, 212, 0.4);
+        color: rgba(126, 162, 212, 1);
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        flex: 1;
+      }
+      .add-card-btn:hover {
+        background: rgba(126, 162, 212, 0.3);
+      }
+    </style>
+  `;
+
+  showModal('Add New Payment Method', addForm);
+};
+
+window.saveCardChanges = function() {
+  showMessage('Card information updated successfully!', 'success');
+  closeModal();
+};
+
+window.confirmDeleteCard = function() {
+  showMessage('Payment method deleted successfully!', 'success');
+  closeModal();
+};
+
+window.saveNewCard = function() {
+  showMessage('New payment method added successfully!', 'success');
+  closeModal();
+};
+
+// Message notification system
+window.showMessage = function(message, type = 'info') {
+  const messageEl = document.createElement('div');
+  messageEl.className = `message-notification ${type}`;
+  messageEl.textContent = message;
+
+  const styles = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    z-index: 9999;
+    transition: all 0.3s ease;
+    max-width: 400px;
+    word-wrap: break-word;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    transform: translateX(100%);
+    opacity: 0;
+  `;
+
+  const typeStyles = {
+    success: 'background: rgba(42, 250, 10, 1) !important; border-left: 4px solid #04ff25 !important;',
+    error: 'background: rgba(239, 68, 68, 0.9); border-left: 4px solid #ef4444;',
+    info: 'background: rgba(126, 162, 212, 0.9); border-left: 4px solid rgba(126, 162, 212, 1);',
+    warning: 'background: rgba(249, 115, 22, 0.9); border-left: 4px solid #f97316;'
+  };
+
+  console.log('Toast styles loaded:', typeStyles);
+
+  messageEl.style.cssText = styles + typeStyles[type];
+
+  document.body.appendChild(messageEl);
+
+  // Slide in
+  setTimeout(() => {
+    messageEl.style.transform = 'translateX(0)';
+    messageEl.style.opacity = '1';
+  }, 100);
+
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    messageEl.style.transform = 'translateX(100%)';
+    messageEl.style.opacity = '0';
+    setTimeout(() => {
+      if (messageEl.parentNode) {
+        messageEl.parentNode.removeChild(messageEl);
+      }
+    }, 300);
+  }, 3000);
+};
+
+// AI Assistant Interactive Functions
+window.showAIMetrics = function(metricType) {
+  const details = {
+    responses: {
+      title: 'AI Response Analytics',
+      content: `
+        <div class="modal-content">
+          <h3>Response Statistics</h3>
+          <div class="ai-analytics">
+            <div class="analytics-item">
+              <span>This Week:</span>
+              <span>342 responses</span>
+            </div>
+            <div class="analytics-item">
+              <span>This Month:</span>
+              <span>1,289 responses</span>
+            </div>
+            <div class="analytics-item">
+              <span>Success Rate:</span>
+              <span>94.2%</span>
+            </div>
+            <div class="analytics-item">
+              <span>Average Rating:</span>
+              <span>4.6/5.0</span>
+            </div>
+          </div>
+        </div>
+        <style>
+          .ai-analytics {
+            padding: 20px 0;
+          }
+          .analytics-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+            color: #ffffff;
+          }
+          .analytics-item:last-child {
+            border-bottom: none;
+          }
+          .analytics-item span:first-child {
+            color: rgba(156, 163, 175, 1);
+            font-weight: 500;
+          }
+          .analytics-item span:last-child {
+            font-weight: 600;
+            color: #22c55e;
+          }
+        </style>
+      `
+    },
+    time: {
+      title: 'Response Time Analytics',
+      content: `
+        <div class="modal-content">
+          <h3>Performance Metrics</h3>
+          <div class="time-analytics">
+            <div class="time-item">
+              <span>Average Response:</span>
+              <span>1.2s</span>
+            </div>
+            <div class="time-item">
+              <span>Fastest Response:</span>
+              <span>0.8s</span>
+            </div>
+            <div class="time-item">
+              <span>99th Percentile:</span>
+              <span>2.1s</span>
+            </div>
+            <div class="time-item">
+              <span>Uptime:</span>
+              <span>99.9%</span>
+            </div>
+          </div>
+        </div>
+        <style>
+          .time-analytics {
+            padding: 20px 0;
+          }
+          .time-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+            color: #ffffff;
+          }
+          .time-item:last-child {
+            border-bottom: none;
+          }
+          .time-item span:first-child {
+            color: rgba(156, 163, 175, 1);
+            font-weight: 500;
+          }
+          .time-item span:last-child {
+            font-weight: 600;
+            color: #22c55e;
+          }
+        </style>
+      `
+    }
+  };
+
+  showModal(details[metricType].title, details[metricType].content);
+};
+
+window.toggleAISetting = function(toggleElement) {
+  const isChecked = toggleElement.checked;
+
+  if (isChecked) {
+    // Create custom toast with inline styles
+    const customToast = document.createElement('div');
+    customToast.innerHTML = 'AI auto-response enabled for lesson comments';
+    customToast.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: rgba(65, 156, 98, 1) !important;
+      color: white !important;
+      padding: 14px 22px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 10000;
+      border-left: 4px solid rgb(22, 163, 74);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      min-width: 300px;
+      animation: slideIn 0.3s ease forwards;
+    `;
+
+    // Add animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    document.body.appendChild(customToast);
+
+    setTimeout(() => {
+      customToast.remove();
+      style.remove();
+    }, 3000);
+  } else {
+    showMessage('AI auto-response disabled for lesson comments', 'info');
+  }
+};
+
+window.openQuizAnalytics = function() {
+  console.log('openQuizAnalytics function called');
+  const quizAnalyticsHTML = `
+    <div class="figma-dashboard">
+      <!-- Top Header -->
+      <div class="figma-header">
+        <div class="figma-logo">
+          <h1>dars<span>linker</span></h1>
+        </div>
+        <div class="figma-title">
+          <h2>Quizzes</h2>
+        </div>
+        <div class="figma-header-buttons">
+          <button class="figma-btn" onclick="backToDashboard()">← Back</button>
+        </div>
+      </div>
+
+      <!-- Main Layout -->
+      <div class="figma-main-layout">
+        <!-- Left Sidebar Menu -->
+        <div class="figma-sidebar">
+          <!-- General Menu -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent" onclick="toggleMenu('general')">
+              <span class="figma-menu-title">General</span>
+              <span class="figma-menu-arrow" id="general-arrow">▶</span>
+            </div>
+            <div class="figma-menu-children hidden" id="general-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
+            </div>
+          </div>
+
+          <!-- Content Management -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent" onclick="toggleMenu('content')">
+              <span class="figma-menu-title">Content Management</span>
+              <span class="figma-menu-arrow" id="content-arrow">▶</span>
+            </div>
+            <div class="figma-menu-children hidden" id="content-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Assignments</a>
+            </div>
+          </div>
+
+          <!-- AI Assistant -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link" onclick="openAIAssistantPage(); return false;">AI Assistant</a>
+            </div>
+          </div>
+
+          <!-- Analytics -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent expanded" onclick="toggleMenu('analytics')">
+              <span class="figma-menu-title">Analytics</span>
+              <span class="figma-menu-arrow" id="analytics-arrow">▼</span>
+            </div>
+            <div class="figma-menu-children" id="analytics-children">
+              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event); openQuizAnalytics()">Quiz analytics</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Rating & Comments</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Students analytics</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Engagement</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Progress</a>
+            </div>
+          </div>
+
+          <!-- Rolls -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">Rolls</a>
+            </div>
+          </div>
+
+          <!-- Settings -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">Settings</a>
+            </div>
+          </div>
+
+          <!-- My Subscription -->
+          <div class="figma-subscription">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">My Subscription</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quiz Analytics Content -->
+        <div class="figma-content-area quiz-analytics-page">
+          <style>
+            .figma-content-area.quiz-analytics-page {
+              padding: 24px !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 24px !important;
+            }
+            .quiz-stats-grid {
+              display: grid !important;
+              grid-template-columns: repeat(3, 1fr) !important;
+              gap: 20px !important;
+              margin-bottom: 0 !important;
+            }
+            .quiz-stat-card {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 24px !important;
+              text-align: center !important;
+              transition: all 0.3s ease !important;
+            }
+            .quiz-stat-card:hover {
+              background: rgba(58, 56, 56, 0.4) !important;
+              border-color: rgba(126, 162, 212, 0.3) !important;
+            }
+            .quiz-stat-title {
+              color: rgba(156, 163, 175, 1) !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+              margin-bottom: 12px !important;
+              text-transform: uppercase !important;
+              letter-spacing: 0.5px !important;
+            }
+            .quiz-stat-value {
+              color: #ffffff !important;
+              font-size: 36px !important;
+              font-weight: 700 !important;
+              margin-bottom: 0 !important;
+              line-height: 1 !important;
+            }
+            .quiz-tabs {
+              display: flex !important;
+              gap: 0 !important;
+              background: rgba(20, 20, 20, 0.5) !important;
+              border-radius: 12px !important;
+              padding: 4px !important;
+              margin-bottom: 24px !important;
+            }
+            .quiz-tab {
+              flex: 1 !important;
+              padding: 12px 20px !important;
+              background: transparent !important;
+              border: none !important;
+              color: rgba(156, 163, 175, 1) !important;
+              cursor: pointer !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+              border-radius: 8px !important;
+              transition: all 0.3s ease !important;
+            }
+            .quiz-tab.active {
+              background: rgba(126, 162, 212, 0.2) !important;
+              color: rgba(126, 162, 212, 1) !important;
+            }
+            .quiz-content-section {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 0 !important;
+              overflow: hidden !important;
+            }
+            .quiz-section-header {
+              padding: 20px 24px !important;
+              border-bottom: 1px solid rgba(126, 162, 212, 0.2) !important;
+              color: #ffffff !important;
+              font-size: 18px !important;
+              font-weight: 600 !important;
+              margin: 0 !important;
+            }
+            .quiz-list {
+              padding: 16px !important;
+              display: flex !important;
+              flex-direction: column !important;
+              gap: 16px !important;
+            }
+            .quiz-item {
+              background: rgba(20, 20, 20, 0.4) !important;
+              border: 1px solid rgba(126, 162, 212, 0.15) !important;
+              border-radius: 8px !important;
+              padding: 20px !important;
+              transition: all 0.3s ease !important;
+              cursor: pointer !important;
+            }
+            .quiz-item:hover {
+              background: rgba(20, 20, 20, 0.6) !important;
+              border-color: rgba(126, 162, 212, 0.3) !important;
+            }
+            .quiz-header {
+              display: flex !important;
+              justify-content: space-between !important;
+              align-items: flex-start !important;
+              margin-bottom: 12px !important;
+            }
+            .quiz-title {
+              color: #ffffff !important;
+              font-size: 16px !important;
+              font-weight: 600 !important;
+              margin: 0 0 4px 0 !important;
+            }
+            .quiz-meta {
+              color: rgba(156, 163, 175, 1) !important;
+              font-size: 14px !important;
+              margin: 0 !important;
+            }
+            .quiz-actions {
+              display: flex !important;
+              gap: 8px !important;
+            }
+            .quiz-action-btn {
+              background: transparent !important;
+              border: 1px solid rgba(126, 162, 212, 0.4) !important;
+              color: rgba(126, 162, 212, 1) !important;
+              padding: 4px 8px !important;
+              border-radius: 4px !important;
+              font-size: 12px !important;
+              cursor: pointer !important;
+              transition: all 0.3s ease !important;
+            }
+            .quiz-action-btn:hover {
+              background: rgba(126, 162, 212, 0.1) !important;
+            }
+            .quiz-description {
+              color: rgba(156, 163, 175, 1) !important;
+              font-size: 14px !important;
+              margin: 0 !important;
+              line-height: 1.4 !important;
+            }
+          </style>
+
+          <!-- Stats Cards -->
+          <div class="quiz-stats-grid">
+            <div class="quiz-stat-card">
+              <div class="quiz-stat-title">Total quizzes</div>
+              <div class="quiz-stat-value">24</div>
+            </div>
+            <div class="quiz-stat-card">
+              <div class="quiz-stat-title">Total Attempts</div>
+              <div class="quiz-stat-value">2,845</div>
+            </div>
+            <div class="quiz-stat-card">
+              <div class="quiz-stat-title">Average Score</div>
+              <div class="quiz-stat-value">78%</div>
+            </div>
+          </div>
+
+          <!-- Tab Navigation -->
+          <div class="quiz-tabs">
+            <button class="quiz-tab active" onclick="switchQuizTab('all', this)">All quizzes</button>
+            <button class="quiz-tab" onclick="switchQuizTab('results', this)">Results & Analytics</button>
+          </div>
+
+          <!-- Quiz Content -->
+          <div class="quiz-content-section">
+            <h3 class="quiz-section-header">My quizzes</h3>
+            <div class="quiz-list" id="quizList">
+              <div class="quiz-item">
+                <div class="quiz-header">
+                  <div>
+                    <h4 class="quiz-title">React Hooks Fundamentals Quiz</h4>
+                    <p class="quiz-meta">React Masterclass • 20 questions • 30 min</p>
+                  </div>
+                  <div class="quiz-actions">
+                    <button class="quiz-action-btn">⋯</button>
+                  </div>
+                </div>
+                <p class="quiz-description">Test your knowledge on React Hooks including useState, useEffect, useContext, and custom hooks.</p>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-header">
+                  <div>
+                    <h4 class="quiz-title">Advanced CSS Grid Layout Quiz</h4>
+                    <p class="quiz-meta">UI/UX Design • 15 questions • 25 min • AI</p>
+                  </div>
+                  <div class="quiz-actions">
+                    <button class="quiz-action-btn">⋯</button>
+                  </div>
+                </div>
+                <p class="quiz-description">Master CSS Grid with advanced layout techniques and real-world use cases.</p>
+              </div>
+
+              <div class="quiz-item">
+                <div class="quiz-header">
+                  <div>
+                    <h4 class="quiz-title">React Hooks Fundamentals Quiz</h4>
+                    <p class="quiz-meta">React Masterclass • 20 questions • 30 min</p>
+                  </div>
+                  <div class="quiz-actions">
+                    <button class="quiz-action-btn">⋯</button>
+                  </div>
+                </div>
+                <p class="quiz-description">Test your knowledge on React Hooks including useState, useEffect, useContext, and custom hooks.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.querySelector('#app').innerHTML = quizAnalyticsHTML;
+  document.title = 'Quiz Analytics - darslinker';
+};
+
+window.switchQuizTab = function(tabType, tabElement) {
+  // Remove active class from all tabs
+  document.querySelectorAll('.quiz-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+
+  // Add active class to clicked tab
+  tabElement.classList.add('active');
+
+  const quizList = document.getElementById('quizList');
+
+  if (tabType === 'results') {
+    quizList.innerHTML = `
+      <div class="quiz-item">
+        <div class="quiz-header">
+          <div>
+            <h4 class="quiz-title">React Hooks Analytics</h4>
+            <p class="quiz-meta">542 attempts • 76% average score</p>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-action-btn" onclick="showQuizAnalytics('react-hooks')">View Details</button>
+          </div>
+        </div>
+        <p class="quiz-description">Most challenging questions: Custom hooks implementation, useEffect dependencies</p>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-header">
+          <div>
+            <h4 class="quiz-title">CSS Grid Analytics</h4>
+            <p class="quiz-meta">298 attempts • 81% average score</p>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-action-btn" onclick="showQuizAnalytics('css-grid')">View Details</button>
+          </div>
+        </div>
+        <p class="quiz-description">Strong performance overall. Grid template areas most confusing topic.</p>
+      </div>
+    `;
+  } else {
+    quizList.innerHTML = `
+      <div class="quiz-item">
+        <div class="quiz-header">
+          <div>
+            <h4 class="quiz-title">React Hooks Fundamentals Quiz</h4>
+            <p class="quiz-meta">React Masterclass • 20 questions • 30 min</p>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-action-btn">⋯</button>
+          </div>
+        </div>
+        <p class="quiz-description">Test your knowledge on React Hooks including useState, useEffect, useContext, and custom hooks.</p>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-header">
+          <div>
+            <h4 class="quiz-title">Advanced CSS Grid Layout Quiz</h4>
+            <p class="quiz-meta">UI/UX Design • 15 questions • 25 min • AI</p>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-action-btn">⋯</button>
+          </div>
+        </div>
+        <p class="quiz-description">Master CSS Grid with advanced layout techniques and real-world use cases.</p>
+      </div>
+
+      <div class="quiz-item">
+        <div class="quiz-header">
+          <div>
+            <h4 class="quiz-title">React Hooks Fundamentals Quiz</h4>
+            <p class="quiz-meta">React Masterclass • 20 questions • 30 min</p>
+          </div>
+          <div class="quiz-actions">
+            <button class="quiz-action-btn">⋯</button>
+          </div>
+        </div>
+        <p class="quiz-description">Test your knowledge on React Hooks including useState, useEffect, useContext, and custom hooks.</p>
+      </div>
+    `;
+  }
+};
+
+window.showQuizAnalytics = function(quizId) {
+  // This would show detailed analytics for a specific quiz
+  alert('Quiz analytics details for: ' + quizId);
+};
+
+window.editAIResponse = function(responseId) {
+  const editForm = `
+    <div class="modal-content" style="background: rgba(32, 32, 32, 0.95) !important; border: 1px solid rgba(126, 162, 212, 0.2) !important; border-radius: 12px !important; padding: 0 !important;">
+      <div class="response-edit-form">
+        <div class="form-group" style="margin-bottom: 20px;">
+          <label class="form-label" style="color: rgba(156, 163, 175, 1) !important; font-size: 14px !important; font-weight: 600 !important; margin-bottom: 8px !important; display: block !important;">Student Question:</label>
+          <textarea class="form-textarea" readonly style="width: 100% !important; background: rgba(20, 20, 20, 0.8) !important; border: 1px solid rgba(126, 162, 212, 0.2) !important; border-radius: 8px !important; padding: 12px !important; color: rgba(156, 163, 175, 0.8) !important; font-family: inherit !important; font-size: 14px !important; line-height: 1.5 !important; resize: vertical !important; min-height: 80px !important;">What's the difference between useState and useEffect?</textarea>
+        </div>
+        <div class="form-group" style="margin-bottom: 24px;">
+          <label class="form-label" style="color: rgba(156, 163, 175, 1) !important; font-size: 14px !important; font-weight: 600 !important; margin-bottom: 8px !important; display: block !important;">AI Response:</label>
+          <textarea class="form-textarea" rows="4" id="aiResponseEdit" style="width: 100% !important; background: rgba(20, 20, 20, 0.8) !important; border: 1px solid rgba(126, 162, 212, 0.2) !important; border-radius: 8px !important; padding: 12px !important; color: #ffffff !important; font-family: inherit !important; font-size: 14px !important; line-height: 1.5 !important; resize: vertical !important; min-height: 120px !important;">useState manages component state, while useEffect handles side effects like API calls. Check Lesson 5 for examples!</textarea>
+        </div>
+        <div class="response-actions" style="display: flex !important; gap: 12px !important; flex-wrap: wrap !important;">
+          <button class="save-response-btn" onclick="saveAIResponse(${responseId})" style="background: rgba(34, 197, 94, 0.2) !important; border: 1px solid rgba(34, 197, 94, 0.4) !important; color: #22c55e !important; padding: 12px 20px !important; border-radius: 8px !important; cursor: pointer !important; font-weight: 600 !important; flex: 1 !important; min-width: 120px !important; transition: all 0.3s ease !important;" onmouseover="this.style.background='rgba(34, 197, 94, 0.3)'" onmouseout="this.style.background='rgba(34, 197, 94, 0.2)'">Save Changes</button>
+          <button class="regenerate-btn" onclick="regenerateAIResponse(${responseId})" style="background: rgba(126, 162, 212, 0.2) !important; border: 1px solid rgba(126, 162, 212, 0.4) !important; color: rgba(126, 162, 212, 1) !important; padding: 12px 20px !important; border-radius: 8px !important; cursor: pointer !important; font-weight: 600 !important; flex: 1 !important; min-width: 120px !important; transition: all 0.3s ease !important;" onmouseover="this.style.background='rgba(126, 162, 212, 0.3)'" onmouseout="this.style.background='rgba(126, 162, 212, 0.2)'">Regenerate</button>
+          <button class="cancel-btn" onclick="closeModal()" style="background: rgba(75, 85, 99, 0.2) !important; border: 1px solid rgba(75, 85, 99, 0.4) !important; color: rgba(156, 163, 175, 1) !important; padding: 12px 20px !important; border-radius: 8px !important; cursor: pointer !important; font-weight: 600 !important; flex: 1 !important; min-width: 120px !important; transition: all 0.3s ease !important;" onmouseover="this.style.background='rgba(75, 85, 99, 0.3)'" onmouseout="this.style.background='rgba(75, 85, 99, 0.2)'">Cancel</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  showModal('Edit AI Response', editForm);
+};
+
+window.saveAIResponse = function(responseId) {
+  showMessage('AI response updated successfully!', 'success');
+  closeModal();
+};
+
+window.regenerateAIResponse = function(responseId) {
+  showMessage('Regenerating AI response...', 'info');
+
+  // Simulate AI regeneration delay
+  setTimeout(() => {
+    document.getElementById('aiResponseEdit').value = 'useState is a React Hook for managing local component state, while useEffect is used for side effects like API calls, subscriptions, and DOM manipulation. For more examples, see Lesson 5 and the official React documentation.';
+    showMessage('AI response regenerated successfully!', 'success');
+  }, 2000);
+};
+
+window.showModal = function(title, content) {
+  const modal = `
+    <div class="finance-modal" onclick="closeModal()">
+      <div class="finance-modal-content" onclick="event.stopPropagation()">
+        <div class="finance-modal-header">
+          <h3>${title}</h3>
+          <button class="close-btn" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="finance-modal-body">
+          ${content}
+        </div>
+      </div>
+    </div>
+    <style>
+      .finance-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .finance-modal-content {
+        background: rgba(20, 20, 20, 0.95);
+        border: 1px solid rgba(126, 162, 212, 0.3);
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 80%;
+        overflow-y: auto;
+      }
+      .finance-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+      }
+      .finance-modal-header h3 {
+        color: rgba(126, 162, 212, 1);
+        margin: 0;
+      }
+      .close-btn {
+        background: none;
+        border: none;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 24px;
+        cursor: pointer;
+        padding: 0;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .finance-modal-body {
+        padding: 20px;
+        color: #ffffff;
+      }
+      .revenue-item, .stat-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+      }
+      .revenue-total {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        font-weight: bold;
+        font-size: 16px;
+        border-top: 2px solid rgba(126, 162, 212, 0.3);
+        margin-top: 10px;
+      }
+      .withdraw-btn {
+        background: rgba(126, 162, 212, 0.2);
+        border: 1px solid rgba(126, 162, 212, 0.4);
+        color: rgba(126, 162, 212, 1);
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-weight: 600;
+      }
+      .withdraw-btn:hover {
+        background: rgba(126, 162, 212, 0.3);
+      }
+    </style>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', modal);
+};
+
+window.closeModal = function() {
+  const modal = document.querySelector('.finance-modal');
+  if (modal) {
+    modal.remove();
+  }
+};
+
+window.downloadReport = (format) => {
+  showMessage(`Downloading ${format.toUpperCase()} report...`, 'info');
+  // Simulate download
+  setTimeout(() => {
+    showMessage(`${format.toUpperCase()} report downloaded successfully!`, 'success');
+  }, 2000);
+};
+
+window.requestPayout = () => {
+  showModal('Request Payout', `
+    <div class="modal-content">
+      <h3>Payout Request</h3>
+      <div class="payout-form">
+        <div class="form-group">
+          <label>Amount:</label>
+          <input type="number" value="1250" max="1250" class="payout-input" />
+        </div>
+        <div class="form-group">
+          <label>Payment Method:</label>
+          <select class="payout-select">
+            <option>UzBank Card ****1234</option>
+            <option>Bank Transfer</option>
+          </select>
+        </div>
+        <button class="payout-submit-btn" onclick="submitPayout()">Submit Request</button>
+      </div>
+    </div>
+    <style>
+      .payout-form .form-group {
+        margin-bottom: 15px;
+      }
+      .payout-form label {
+        display: block;
+        margin-bottom: 5px;
+        color: rgba(126, 162, 212, 1);
+        font-weight: 500;
+      }
+      .payout-input, .payout-select {
+        width: 100%;
+        padding: 10px;
+        background: rgba(58, 56, 56, 0.3);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 8px;
+        color: #ffffff;
+        font-size: 14px;
+      }
+      .payout-submit-btn {
+        background: rgba(34, 197, 94, 0.2);
+        border: 1px solid rgba(34, 197, 94, 0.4);
+        color: #22c55e;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        width: 100%;
+      }
+      .payout-submit-btn:hover {
+        background: rgba(34, 197, 94, 0.3);
+      }
+    </style>
+  `);
+};
+
+window.submitPayout = function() {
+  showMessage('Payout request submitted successfully! Processing will take 2-3 business days.', 'success');
+  closeModal();
+};
 
 // Open Create Course Page
 window.openCreateCourse = function() {
@@ -1791,16 +4717,16 @@ window.openCreateCourse = function() {
             <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
               <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Create Course</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Archived</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Assignments</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
             </div>
           </div>
 
           <!-- AI Assistant -->
           <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('ai')">
+            <div class="figma-menu-parent" onclick="openAIAssistantPage(); return false;">
               <span class="figma-menu-title">AI Assistant</span>
               <span class="figma-menu-arrow" id="ai-arrow">▶</span>
             </div>
@@ -2162,3 +5088,474 @@ window.openCreateCourse = function() {
     </div>
   `;
 };
+
+// ===== MY COURSES FUNCTIONALITY =====
+
+// Global variables for filtering and sorting
+let currentFilter = 'all';
+let currentSort = 'newest';
+let currentSearch = '';
+
+// Update courses statistics dynamically
+function updateCoursesStatistics() {
+  const stats = calculateCoursesStatistics();
+  const statsContainer = document.getElementById('coursesStats');
+
+  if (!statsContainer) return;
+
+  statsContainer.innerHTML = `
+    <div class="stat-card-my-courses">
+      <h3>Total courses</h3>
+      <div class="stat-number">${stats.totalCourses}</div>
+      <div class="stat-change positive">+${stats.newThisMonth} new this month</div>
+    </div>
+    <div class="stat-card-my-courses">
+      <h3>Total enrolled</h3>
+      <div class="stat-number">${stats.totalStudents.toLocaleString()}</div>
+      <div class="stat-change positive">+${stats.newStudents} new students</div>
+    </div>
+    <div class="stat-card-my-courses">
+      <h3>Total revenue</h3>
+      <div class="stat-number">$${stats.totalRevenue.toLocaleString()}</div>
+      <div class="stat-change positive">+$${stats.monthlyRevenue.toLocaleString()} this month</div>
+    </div>
+    <div class="stat-card-my-courses">
+      <h3>Live now</h3>
+      <div class="stat-number">${stats.activeStudents}</div>
+      <div class="stat-change">Students online</div>
+    </div>
+  `;
+}
+
+// Calculate real statistics from courses data
+function calculateCoursesStatistics() {
+  const totalCourses = myCoursesData.length;
+  const totalStudents = myCoursesData.reduce((sum, course) => sum + course.students, 0);
+  const totalRevenue = myCoursesData.reduce((sum, course) => sum + course.revenue, 0);
+
+  // Calculate new courses this month (November 2024)
+  const thisMonth = new Date().toISOString().slice(0, 7); // "2024-11"
+  const newThisMonth = myCoursesData.filter(course =>
+    course.createdAt.startsWith(thisMonth)
+  ).length;
+
+  // Simulate some dynamic values
+  const newStudents = Math.floor(totalStudents * 0.05); // 5% of total as new
+  const monthlyRevenue = Math.floor(totalRevenue * 0.1); // 10% of total as monthly
+  const activeStudents = Math.floor(totalStudents * 0.08); // 8% online now
+
+  return {
+    totalCourses,
+    totalStudents,
+    totalRevenue,
+    newThisMonth,
+    newStudents,
+    monthlyRevenue,
+    activeStudents
+  };
+}
+
+// Update filter tabs with real counts
+function updateFilterTabs() {
+  const counts = {
+    all: myCoursesData.length,
+    active: myCoursesData.filter(course => course.status === 'Active').length,
+    draft: myCoursesData.filter(course => course.status === 'Draft').length,
+    archived: myCoursesData.filter(course => course.status === 'Archived').length,
+    free: myCoursesData.filter(course => course.type === 'Free').length,
+    paid: myCoursesData.filter(course => course.type === 'Paid').length
+  };
+
+  const tabsContainer = document.getElementById('courseFilterTabs');
+  if (!tabsContainer) return;
+
+  tabsContainer.innerHTML = `
+    <button class="filter-tab active" data-filter="all" onclick="filterCoursesByTab(this, 'all')">All courses (${counts.all})</button>
+    <button class="filter-tab" data-filter="active" onclick="filterCoursesByTab(this, 'active')">Active (${counts.active})</button>
+    <button class="filter-tab" data-filter="draft" onclick="filterCoursesByTab(this, 'draft')">Draft (${counts.draft})</button>
+    <button class="filter-tab" data-filter="archived" onclick="filterCoursesByTab(this, 'archived')">Archived (${counts.archived})</button>
+    <button class="filter-tab" data-filter="free" onclick="filterCoursesByTab(this, 'free')">Free (${counts.free})</button>
+    <button class="filter-tab" data-filter="paid" onclick="filterCoursesByTab(this, 'paid')">Paid (${counts.paid})</button>
+  `;
+}
+
+// Render my courses cards into the grid
+function renderMyCoursesCards(courses = myCoursesData) {
+  const grid = document.getElementById('myCoursesGrid');
+  if (!grid) return;
+
+  // Apply current filters and search
+  courses = applyCurrentFilters(courses);
+
+  if (courses.length === 0) {
+    grid.innerHTML = '<div class="no-courses">No courses found with current filters.</div>';
+    return;
+  }
+
+  grid.innerHTML = courses.map(course => `
+    <div class="my-course-card" data-course-id="${course.id}">
+      <div class="course-thumbnail" style="background: ${course.color}">
+        <div class="course-category-icon">
+          ${getCategoryIcon(course.category)}
+        </div>
+      </div>
+      <div class="course-status-badge status-${course.status.toLowerCase()}">${course.status}</div>
+      <div class="course-card-body">
+        <h3 class="course-card-title">${course.title}</h3>
+        <p class="course-card-description">${course.description}</p>
+        <div class="course-stats-row">
+          <div class="course-stat">
+            <div class="stat-number">${course.students.toLocaleString()}</div>
+            <div class="stat-label">Students</div>
+          </div>
+          <div class="course-stat">
+            <div class="stat-number">${course.rating}</div>
+            <div class="stat-label">Rating</div>
+          </div>
+        </div>
+        <div class="course-stats-row">
+          <div class="course-stat">
+            <div class="stat-number">${course.lessons}</div>
+            <div class="stat-label">Lessons</div>
+          </div>
+          <div class="course-stat">
+            <div class="stat-number">${course.price > 0 ? '$' + course.price : 'Free'}</div>
+            <div class="stat-label">Price</div>
+          </div>
+        </div>
+        <div class="course-revenue">
+          <span class="revenue-label">Revenue</span>
+          <span class="revenue-amount">$${course.revenue.toLocaleString()}</span>
+        </div>
+        <div class="course-actions">
+          <button class="course-btn" onclick="editCourse(${course.id})" title="Edit course">Edit</button>
+          <button class="course-btn" onclick="viewCourseStats(${course.id})" title="View statistics">Stats</button>
+          <button class="course-btn course-btn-delete" onclick="deleteCourse(${course.id})" title="Delete course">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Apply current filters, search and sort
+function applyCurrentFilters(courses) {
+  let filtered = [...courses];
+
+  // Apply status/type filter
+  if (currentFilter !== 'all') {
+    switch (currentFilter) {
+      case 'active':
+        filtered = filtered.filter(course => course.status === 'Active');
+        break;
+      case 'draft':
+        filtered = filtered.filter(course => course.status === 'Draft');
+        break;
+      case 'archived':
+        filtered = filtered.filter(course => course.status === 'Archived');
+        break;
+      case 'free':
+        filtered = filtered.filter(course => course.type === 'Free');
+        break;
+      case 'paid':
+        filtered = filtered.filter(course => course.type === 'Paid');
+        break;
+    }
+  }
+
+  // Apply search filter
+  if (currentSearch) {
+    filtered = filtered.filter(course =>
+      course.title.toLowerCase().includes(currentSearch.toLowerCase()) ||
+      course.description.toLowerCase().includes(currentSearch.toLowerCase()) ||
+      course.category.toLowerCase().includes(currentSearch.toLowerCase())
+    );
+  }
+
+  // Apply sorting
+  switch (currentSort) {
+    case 'oldest':
+      filtered.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      break;
+    case 'name-asc':
+      filtered.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+    case 'name-desc':
+      filtered.sort((a, b) => b.title.localeCompare(a.title));
+      break;
+    case 'students-desc':
+      filtered.sort((a, b) => b.students - a.students);
+      break;
+    case 'revenue-desc':
+      filtered.sort((a, b) => b.revenue - a.revenue);
+      break;
+    case 'rating-desc':
+      filtered.sort((a, b) => b.rating - a.rating);
+      break;
+    case 'newest':
+    default:
+      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      break;
+  }
+
+  return filtered;
+}
+
+// Filter courses by tab
+window.filterCoursesByTab = function(tabElement, filter) {
+  // Remove active class from all tabs
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+
+  // Add active class to clicked tab
+  tabElement.classList.add('active');
+
+  // Update current filter
+  currentFilter = filter;
+
+  // Re-render courses
+  renderMyCoursesCards();
+
+  // Update sidebar menu active state
+  document.querySelectorAll('.figma-menu-child').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  // Set "My Courses" as active when using filter tabs
+  const myCoursesMenuItem = document.getElementById('my-courses-menu');
+
+  if (filter === 'all' && myCoursesMenuItem) {
+    myCoursesMenuItem.classList.add('active');
+  }
+
+  // Update page title only if we're on My Courses page
+  const titleElement = document.querySelector('.figma-title h2');
+  if (titleElement && document.getElementById('myCoursesGrid')) {
+    const filterTitles = {
+      all: 'My courses',
+      active: 'My Courses - Active',
+      draft: 'My Courses - Drafts',
+      archived: 'My Courses - Archived',
+      free: 'My Courses - Free',
+      paid: 'My Courses - Paid'
+    };
+    titleElement.textContent = filterTitles[filter] || 'My courses';
+  }
+};
+
+// Search courses
+window.searchCourses = function() {
+  const searchInput = document.getElementById('courseSearchInput');
+  currentSearch = searchInput ? searchInput.value : '';
+  renderMyCoursesCards();
+};
+
+// Sort courses
+window.sortCourses = function() {
+  const sortSelect = document.getElementById('courseSortSelect');
+  currentSort = sortSelect ? sortSelect.value : 'newest';
+  renderMyCoursesCards();
+};
+
+// Enhanced course action functions
+window.viewCourseStats = function(id) {
+  const course = myCoursesData.find(c => c.id === id);
+  if (!course) return;
+
+  const statsModal = `
+    <div class="course-stats-modal" onclick="closeStatsModal()">
+      <div class="stats-modal-content" onclick="event.stopPropagation()">
+        <div class="stats-modal-header">
+          <h3>${course.title} - Statistics</h3>
+          <button onclick="closeStatsModal()" class="close-modal-btn">&times;</button>
+        </div>
+        <div class="stats-modal-body">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-value">${course.students.toLocaleString()}</div>
+              <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${course.lessons}</div>
+              <div class="stat-label">Lessons</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${course.rating}/5</div>
+              <div class="stat-label">Average Rating</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">$${course.revenue.toLocaleString()}</div>
+              <div class="stat-label">Total Revenue</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${course.status}</div>
+              <div class="stat-label">Status</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value">${course.type}</div>
+              <div class="stat-label">Type</div>
+            </div>
+          </div>
+          <div class="stats-details">
+            <h4>Course Details</h4>
+            <p><strong>Category:</strong> ${course.category}</p>
+            <p><strong>Created:</strong> ${new Date(course.createdAt).toLocaleDateString()}</p>
+            <p><strong>Last Updated:</strong> ${new Date(course.updatedAt).toLocaleDateString()}</p>
+            <p><strong>Price:</strong> ${course.price > 0 ? '$' + course.price : 'Free'}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.insertAdjacentHTML('beforeend', statsModal);
+};
+
+window.closeStatsModal = function() {
+  const modal = document.querySelector('.course-stats-modal');
+  if (modal) modal.remove();
+};
+
+window.editCourse = function(id) {
+  const course = myCoursesData.find(c => c.id === id);
+  if (!course) return;
+
+  // Simple edit functionality - in a real app this would open an edit form
+  const newTitle = prompt('Edit course title:', course.title);
+  if (newTitle && newTitle !== course.title) {
+    course.title = newTitle;
+    course.updatedAt = new Date().toISOString().slice(0, 10);
+    renderMyCoursesCards();
+
+    // Show success message
+    showMessage('Course updated successfully!', 'success');
+  }
+};
+
+window.deleteCourse = function(id) {
+  const course = myCoursesData.find(c => c.id === id);
+  if (!course) return;
+
+  if (confirm(`Are you sure you want to delete "${course.title}"? This action cannot be undone.`)) {
+    // Remove course from array
+    const index = myCoursesData.findIndex(c => c.id === id);
+    if (index > -1) {
+      myCoursesData.splice(index, 1);
+
+      // Update statistics and tabs
+      updateCoursesStatistics();
+      updateFilterTabs();
+      renderMyCoursesCards();
+
+      showMessage('Course deleted successfully!', 'success');
+    }
+  }
+};
+
+// Filter from sidebar menu - works from any page
+window.filterFromSidebar = function(filterType) {
+  // Always store the filter to apply
+  sessionStorage.setItem('pendingFilter', filterType);
+
+  // Check if we're already on My Courses page
+  const isOnMyCoursesPage = document.getElementById('myCoursesGrid') !== null;
+
+  if (!isOnMyCoursesPage) {
+    // If not on My Courses page, navigate to it
+    openMyCourses();
+    return;
+  }
+
+  // If already on My Courses page, apply filter immediately
+  applyFilterFromSidebar(filterType);
+};
+
+// Apply filter logic (extracted for reuse)
+function applyFilterFromSidebar(filterType) {
+  // Only apply if we're on My Courses page
+  if (!document.getElementById('myCoursesGrid')) {
+    return;
+  }
+
+  // Update sidebar menu active state
+  document.querySelectorAll('.figma-menu-child').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  // Set active state for the clicked item
+  const menuItems = {
+    draft: document.querySelector('[onclick*="filterFromSidebar(\'draft\')"]'),
+    archived: document.querySelector('[onclick*="filterFromSidebar(\'archived\')"]')
+  };
+
+  if (menuItems[filterType]) {
+    menuItems[filterType].classList.add('active');
+  }
+
+  // Update the filter tabs to match sidebar selection
+  document.querySelectorAll('.filter-tab').forEach(tab => {
+    tab.classList.remove('active');
+    if (tab.getAttribute('data-filter') === filterType) {
+      tab.classList.add('active');
+    }
+  });
+
+  // Update current filter and re-render
+  currentFilter = filterType;
+  renderMyCoursesCards();
+
+  // Update page title based on filter
+  const titleElement = document.querySelector('.figma-title h2');
+  if (titleElement) {
+    const filterTitles = {
+      draft: 'My Courses - Drafts',
+      archived: 'My Courses - Archived'
+    };
+    titleElement.textContent = filterTitles[filterType] || 'My courses';
+  }
+
+  // Update header button text to match current filter
+  const backButton = document.querySelector('[onclick*="backToDashboard"]');
+  if (backButton) {
+    const newText = filterType === 'draft' ? '← Back to All Courses' :
+                    filterType === 'archived' ? '← Back to All Courses' : '← Back';
+    backButton.textContent = newText;
+  }
+}
+
+// Get category icon
+function getCategoryIcon(category) {
+  const icons = {
+    'Web Development': '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>',
+    'Design': '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>',
+    'Programming': '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M8 4l-6 8 6 8M16 4l6 8-6 8M11 2l-2 20"/></svg>',
+    'Mobile Development': '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M7 1h10a2 2 0 012 2v18a2 2 0 01-2 2H7a2 2 0 01-2-2V3a2 2 0 012-2zm0 2v18h10V3H7z"/></svg>',
+    'Marketing': '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>',
+    'Security': '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></svg>',
+    'Data Science': '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h18v2H3V3zm0 4h12v2H3V7zm0 4h18v2H3v-2zm0 4h12v2H3v-2zm0 4h18v2H3v-2z"/></svg>',
+    'Blockchain': '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+    'Machine Learning': '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>'
+  };
+
+  return icons[category] || '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+}
+
+// Helper function to show messages
+function showMessage(message, type = 'info') {
+  const messageDiv = document.createElement('div');
+  messageDiv.className = `message-toast message-${type}`;
+  messageDiv.textContent = message;
+
+  document.body.appendChild(messageDiv);
+
+  setTimeout(() => {
+    messageDiv.classList.add('show');
+  }, 100);
+
+  setTimeout(() => {
+    messageDiv.classList.remove('show');
+    setTimeout(() => messageDiv.remove(), 300);
+  }, 3000);
+}
+// Ensure AI Assistant function is globally accessible
+window.openAIAssistantPage = openAIAssistantPage;

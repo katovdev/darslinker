@@ -2001,40 +2001,261 @@ body {
 }
 
 /* Finance Page Styles */
-.finance-page {
-  padding: 20px;
+.figma-content-area.finance-page {
+  padding: 24px !important;
+  background: transparent !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 24px !important;
 }
 
-.finance-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 25px;
-  margin-bottom: 30px;
+/* Finance Statistics Grid */
+.figma-content-area.finance-page .finance-stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 0 !important;
 }
 
-.finance-card {
-  background: rgba(20, 20, 20, 0.8);
-  border: 1px solid rgba(126, 162, 212, 0.2);
-  border-radius: 12px;
-  padding: 25px;
+/* Finance Cards */
+.figma-content-area.finance-page .finance-card {
+  background: rgba(31, 41, 55, 0.8) !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
 }
 
-.finance-card-title {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
-  margin-bottom: 10px;
+.figma-content-area.finance-page .finance-card-header {
+  margin: 0 !important;
 }
 
-.finance-card-amount {
-  font-size: 28px;
-  font-weight: 600;
-  color: #ffffff;
-  margin-bottom: 8px;
+.figma-content-area.finance-page .finance-card-title {
+  color: rgba(156, 163, 175, 1) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
 }
 
-.finance-card-note {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+.figma-content-area.finance-page .finance-card-amount {
+  color: #ffffff !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  margin: 4px 0 !important;
+}
+
+.figma-content-area.finance-page .finance-card-subtitle {
+  color: #10b981 !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  margin: 0 !important;
+}
+
+/* Finance Sections */
+.figma-content-area.finance-page .finance-section {
+  background: rgba(31, 41, 55, 0.8) !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  border-radius: 12px !important;
+  padding: 24px !important;
+}
+
+.figma-content-area.finance-page .section-header {
+  margin-bottom: 20px !important;
+}
+
+.figma-content-area.finance-page .section-title {
+  color: rgba(156, 163, 175, 1) !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+/* Payment Methods Section */
+.figma-content-area.finance-page .payment-method-card {
+  background: rgba(17, 24, 39, 0.8) !important;
+  border: 1px solid rgba(75, 85, 99, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+.figma-content-area.finance-page .payment-card-content {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+.figma-content-area.finance-page .payment-card-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.figma-content-area.finance-page .payment-card-name {
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.figma-content-area.finance-page .payment-card-number {
+  color: rgba(156, 163, 175, 1) !important;
+  font-size: 12px !important;
+}
+
+.figma-content-area.finance-page .payment-card-badge {
+  background: #10b981 !important;
+  color: #ffffff !important;
+  padding: 4px 12px !important;
+  border-radius: 16px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+.figma-content-area.finance-page .add-payment-btn {
+  background: transparent !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  color: rgba(156, 163, 175, 1) !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.figma-content-area.finance-page .add-payment-btn:hover {
+  background: rgba(75, 85, 99, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* Transactions Section */
+.figma-content-area.finance-page .transactions-table-wrapper {
+  overflow-x: auto !important;
+}
+
+.figma-content-area.finance-page .finance-transactions-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+.figma-content-area.finance-page .finance-transactions-table th {
+  color: rgba(156, 163, 175, 1) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  text-align: left !important;
+  padding: 12px !important;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.3) !important;
+}
+
+.figma-content-area.finance-page .finance-transactions-table td {
+  color: #ffffff !important;
+  font-size: 14px !important;
+  padding: 12px !important;
+  border-bottom: 1px solid rgba(75, 85, 99, 0.2) !important;
+}
+
+.figma-content-area.finance-page .status-completed {
+  background: rgba(16, 185, 129, 0.2) !important;
+  color: #10b981 !important;
+  padding: 4px 8px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Promo Codes Section */
+.figma-content-area.finance-page .promo-code-card {
+  background: rgba(17, 24, 39, 0.8) !important;
+  border: 1px solid rgba(75, 85, 99, 0.3) !important;
+  border-radius: 8px !important;
+  padding: 16px !important;
+  margin-bottom: 16px !important;
+}
+
+.figma-content-area.finance-page .promo-code-content {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+}
+
+.figma-content-area.finance-page .promo-code-info {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+
+.figma-content-area.finance-page .promo-code-name {
+  color: #ffffff !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+}
+
+.figma-content-area.finance-page .promo-code-description {
+  color: rgba(156, 163, 175, 1) !important;
+  font-size: 12px !important;
+}
+
+.figma-content-area.finance-page .promo-code-usage {
+  color: rgba(107, 114, 128, 1) !important;
+  font-size: 11px !important;
+}
+
+.figma-content-area.finance-page .promo-edit-btn {
+  background: rgba(59, 130, 246, 0.2) !important;
+  border: 1px solid rgba(59, 130, 246, 0.3) !important;
+  color: #3b82f6 !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.figma-content-area.finance-page .promo-edit-btn:hover {
+  background: rgba(59, 130, 246, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.figma-content-area.finance-page .add-promo-btn {
+  background: transparent !important;
+  border: 1px solid rgba(75, 85, 99, 0.5) !important;
+  color: rgba(156, 163, 175, 1) !important;
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+}
+
+.figma-content-area.finance-page .add-promo-btn:hover {
+  background: rgba(75, 85, 99, 0.2) !important;
+  color: #ffffff !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .figma-content-area.finance-page .finance-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .figma-content-area.finance-page .finance-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .figma-content-area.finance-page {
+    padding: 16px !important;
+  }
+
+  .figma-content-area.finance-page .payment-card-content {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
 }
 
 .transactions-section {
@@ -2144,6 +2365,109 @@ body {
 .status-badge.refunded {
   background-color: rgba(139, 92, 246, 0.15);
   color: #8b5cf6;
+}
+
+.status-badge.completed {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+/* Finance Page Payment Methods */
+.finance-payment-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.payment-method {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: rgba(10, 10, 10, 0.5);
+  border: 1px solid rgba(126, 162, 212, 0.1);
+  border-radius: 8px;
+}
+
+.payment-method-icon {
+  font-size: 20px;
+}
+
+.payment-method-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.payment-method-name {
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.payment-method-number {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.payment-method-status.active {
+  background-color: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Promo Codes Section */
+.promo-codes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.promo-code {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  background: rgba(10, 10, 10, 0.5);
+  border: 1px solid rgba(126, 162, 212, 0.1);
+  border-radius: 8px;
+}
+
+.promo-code-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.promo-code-name {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.promo-code-description {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.promo-code-btn {
+  background: rgba(126, 162, 212, 0.2);
+  color: #7ea2d4;
+  border: 1px solid rgba(126, 162, 212, 0.3);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.promo-code-btn:hover {
+  background: rgba(126, 162, 212, 0.3);
+  color: #ffffff;
 }
 /* My Courses Page Styles */
 .my-courses-page {
@@ -4626,5 +4950,588 @@ input:checked + .toggle-slider:before {
     width: 80px;
     height: 80px;
     opacity: 0.5;
+  }
+}
+
+/* ===== MY COURSES PAGE STYLES ===== */
+
+/* Course Controls Section */
+.courses-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 20px;
+}
+
+.search-section {
+  flex: 1;
+  max-width: 400px;
+}
+
+.search-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#courseSearchInput {
+  width: 100%;
+  background: rgba(58, 56, 56, 0.3);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 8px;
+  padding: 12px 12px 12px 40px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+#courseSearchInput:focus {
+  outline: none;
+  border-color: rgba(126, 162, 212, 0.5);
+  background: rgba(58, 56, 56, 0.5);
+}
+
+#courseSearchInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.sort-section {
+  flex-shrink: 0;
+}
+
+#courseSortSelect {
+  background: rgba(58, 56, 56, 0.3);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  min-width: 150px;
+  cursor: pointer;
+}
+
+#courseSortSelect:focus {
+  outline: none;
+  border-color: rgba(126, 162, 212, 0.5);
+}
+
+#courseSortSelect option {
+  background: #232323;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* Status Badge Variations */
+.status-active {
+  background: #4ade80;
+  color: #000;
+}
+
+.status-draft {
+  background: #f59e0b;
+  color: #000;
+}
+
+.status-archived {
+  background: #6b7280;
+  color: #fff;
+}
+
+/* Course Stats Modal */
+.course-stats-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.stats-modal-content {
+  background: #232323;
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stats-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 25px;
+  border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+}
+
+.stats-modal-header h3 {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-size: 18px;
+}
+
+.close-modal-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.close-modal-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.stats-modal-body {
+  padding: 25px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.stat-item {
+  background: rgba(58, 56, 56, 0.3);
+  border: 1px solid rgba(126, 162, 212, 0.1);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: rgba(126, 162, 212, 1);
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.stats-details {
+  background: rgba(58, 56, 56, 0.3);
+  border: 1px solid rgba(126, 162, 212, 0.1);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.stats-details h4 {
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0 0 12px 0;
+  font-size: 16px;
+}
+
+.stats-details p {
+  color: rgba(255, 255, 255, 0.7);
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+.stats-details strong {
+  color: rgba(126, 162, 212, 0.8);
+}
+
+/* Message Toast */
+.message-toast {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(58, 56, 56, 0.95);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  z-index: 1001;
+  opacity: 0;
+  transform: translateX(100%);
+  transition: all 0.3s ease;
+}
+
+.message-toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.message-toast.message-success {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.message-toast.message-error {
+  border-color: rgba(248, 113, 113, 0.4);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+/* My Courses Statistics */
+.my-courses-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+  margin-top: -20px;
+}
+
+.stat-card-my-courses {
+  background: rgba(58, 56, 56, 0.3);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+}
+
+.stat-card-my-courses h3 {
+  color: rgba(126, 162, 212, 0.8);
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0 0 8px 0;
+  text-transform: none;
+}
+
+.stat-number {
+  color: rgba(126, 162, 212, 1);
+  font-size: 28px;
+  font-weight: 600;
+  margin: 5px 0;
+}
+
+.stat-change {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+}
+
+.stat-change.positive {
+  color: #4ade80;
+}
+
+/* Course Filter Tabs */
+.course-filter-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 30px;
+  background: rgba(58, 56, 56, 0.3);
+  border-radius: 12px;
+  padding: 4px;
+  border: 1px solid rgba(126, 162, 212, 0.2);
+}
+
+.filter-tab {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.filter-tab.active {
+  background: rgba(126, 162, 212, 0.2);
+  color: rgba(126, 162, 212, 1);
+}
+
+.filter-tab:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* My Courses Grid */
+.my-courses-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.my-course-card {
+  background: rgba(58, 56, 56, 0.3);
+  border: 1px solid rgba(126, 162, 212, 0.2);
+  border-radius: 16px;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.my-course-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(126, 162, 212, 0.4);
+}
+
+.course-thumbnail {
+  width: 100%;
+  height: 160px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.course-category-icon {
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.course-category-icon svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.course-status-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #4ade80;
+  color: #000;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.course-card-body {
+  padding: 20px;
+}
+
+.course-card-title {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  line-height: 1.3;
+}
+
+.course-card-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  margin: 0 0 16px 0;
+  line-height: 1.4;
+}
+
+.course-stats-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.course-stat {
+  text-align: center;
+  flex: 1;
+}
+
+.course-stat .stat-number {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 2px 0;
+}
+
+.course-stat .stat-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+}
+
+.course-revenue {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+  padding: 8px 0;
+  border-top: 1px solid rgba(126, 162, 212, 0.1);
+}
+
+.revenue-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+.revenue-amount {
+  color: rgba(126, 162, 212, 1);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.course-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.course-btn {
+  flex: 1;
+  background: rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(126, 162, 212, 0.3);
+  color: rgba(126, 162, 212, 1);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.course-btn:hover {
+  background: rgba(126, 162, 212, 0.3);
+  border-color: rgba(126, 162, 212, 0.5);
+}
+
+.course-btn-delete {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: rgba(239, 68, 68, 1);
+}
+
+.course-btn-delete:hover {
+  background: rgba(239, 68, 68, 0.3);
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+/* Add Course Section */
+.add-course-section {
+  margin-top: 40px;
+}
+
+.add-course-card {
+  background: rgba(58, 56, 56, 0.3);
+  border: 2px dashed rgba(126, 162, 212, 0.3);
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.add-course-card:hover {
+  border-color: rgba(126, 162, 212, 0.5);
+  background: rgba(58, 56, 56, 0.4);
+}
+
+.add-course-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.add-course-text {
+  color: rgba(126, 162, 212, 1);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.add-course-icon {
+  color: rgba(126, 162, 212, 1);
+  font-size: 24px;
+  font-weight: 300;
+}
+
+.no-courses {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 40px;
+  font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .my-courses-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .my-courses-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .my-courses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .my-courses-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .course-filter-tabs {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .filter-tab {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .courses-controls {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .search-section {
+    max-width: none;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-modal-content {
+    width: 95%;
+    margin: 10px;
+  }
+
+  .message-toast {
+    right: 10px;
+    left: 10px;
+    transform: translateY(-100%);
+  }
+
+  .message-toast.show {
+    transform: translateY(0);
   }
 }
