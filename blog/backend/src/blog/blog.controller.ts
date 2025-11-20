@@ -11,6 +11,7 @@ import {
   HttpStatus,
   Req,
   Res,
+  Headers,
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { CreateBlogDto, UpdateBlogDto } from './dtos';
@@ -34,8 +35,30 @@ export class BlogController {
 
   // Get blog by ID (public - for frontend)
   @Get(':id')
-  async getBlogById(@Param('id') id: string) {
-    return this.blogService.getById(id);
+  async getBlogById(
+    @Param('id') id: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const acceptHeader = req.get('Accept') || '';
+    const userAgent = req.get('User-Agent') || '';
+
+    // Check if request is from a browser wanting HTML
+    const isHtmlRequest = acceptHeader.includes('text/html') ||
+                         acceptHeader.includes('application/xhtml+xml');
+
+    // Get blog data
+    const blogData = await this.blogService.getById(id);
+
+    if (isHtmlRequest) {
+      // Generate and return HTML for SEO/browsers
+      const html = await this.blogService.generateBlogHTML(blogData.blog);
+      res.set('Content-Type', 'text/html');
+      return res.send(html);
+    } else {
+      // Return JSON for API calls
+      return res.json(blogData);
+    }
   }
 
   // Get related blogs by same tags (public - for frontend)
