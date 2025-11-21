@@ -42,6 +42,31 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+
+// Root endpoint
+app.get('/', (req, res) => {
+  res.json({
+    success: true,
+    message: 'Dars Linker API is running',
+    version: '1.0.0',
+    endpoints: {
+      api: '/api',
+      docs: '/api-docs',
+      health: '/health'
+    }
+  });
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    success: true,
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 app.use("/api", mainRouter);
 
 swaggerDocs(app);
