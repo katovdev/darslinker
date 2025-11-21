@@ -153,7 +153,7 @@ function renderTeacherDashboard(user) {
             </div>
             <div class="figma-menu-children hidden" id="analytics-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">Quiz Analytics</a>
-              <a href="#" class="figma-menu-child">Rating Comments</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">Rating Comments</a>
               <a href="#" class="figma-menu-child">Students Analytics</a>
               <a href="#" class="figma-menu-child">Engagement</a>
               <a href="#" class="figma-menu-child">Progress</a>
@@ -812,6 +812,465 @@ function updateActiveMenuItem(itemName) {
     }
   });
 }
+
+// Open Rating & Comments Page
+window.openRatingComments = function() {
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (contentArea) {
+    updatePageTitle('Rating & Comments');
+    contentArea.innerHTML = getRatingCommentsHTML();
+    updateActiveMenuItem('Rating Comments');
+    return;
+  }
+};
+
+// Helper function to get rating comments HTML
+function getRatingCommentsHTML() {
+  return `
+    <div class="rating-comments-page">
+      <style>
+        .rating-comments-page {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        .rating-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+          margin-bottom: 20px;
+        }
+        .rating-stat-card {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 16px;
+          padding: 24px;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+        .rating-stat-card:hover {
+          transform: translateY(-5px);
+          border-color: rgba(126, 162, 212, 0.4);
+          background: rgba(58, 56, 56, 0.5);
+        }
+        .rating-stat-title {
+          color: rgba(126, 162, 212, 1);
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 12px;
+        }
+        .rating-stat-value {
+          color: #ffffff;
+          font-size: 36px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        .rating-stars {
+          color: #fbbf24;
+          font-size: 20px;
+          margin-bottom: 8px;
+        }
+        .rating-stat-subtitle {
+          color: rgba(156, 163, 175, 1);
+          font-size: 12px;
+        }
+        .rating-stat-change {
+          color: #10b981;
+          font-size: 14px;
+          font-weight: 600;
+          margin-top: 8px;
+        }
+        .distribution-bars {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          margin-top: 12px;
+        }
+        .distribution-bar {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .distribution-label {
+          color: #fbbf24;
+          font-size: 14px;
+          min-width: 30px;
+        }
+        .distribution-progress {
+          flex: 1;
+          height: 8px;
+          background: rgba(58, 56, 56, 0.5);
+          border-radius: 4px;
+          overflow: hidden;
+        }
+        .distribution-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #fbbf24, #f59e0b);
+          border-radius: 4px;
+          transition: width 0.3s ease;
+        }
+        .distribution-percent {
+          color: rgba(156, 163, 175, 1);
+          font-size: 12px;
+          min-width: 35px;
+          text-align: right;
+        }
+        .reviews-section {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 16px;
+          padding: 24px;
+        }
+        .reviews-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24px;
+        }
+        .reviews-title {
+          color: #ffffff;
+          font-size: 20px;
+          font-weight: 600;
+        }
+        .review-card {
+          background: rgba(58, 56, 56, 0.5);
+          border: 1px solid rgba(126, 162, 212, 0.1);
+          border-radius: 12px;
+          padding: 20px;
+          margin-bottom: 16px;
+          transition: all 0.3s ease;
+        }
+        .review-card:hover {
+          border-color: rgba(126, 162, 212, 0.3);
+          background: rgba(58, 56, 56, 0.7);
+        }
+        .review-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 12px;
+        }
+        .review-user {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .review-avatar {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          background: rgba(126, 162, 212, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          font-weight: 600;
+        }
+        .review-user-info {
+          display: flex;
+          flex-direction: column;
+        }
+        .review-user-name {
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .review-course {
+          color: rgba(156, 163, 175, 1);
+          font-size: 12px;
+        }
+        .review-rating-date {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .review-rating {
+          color: #fbbf24;
+          font-size: 16px;
+          font-weight: 600;
+        }
+        .review-date {
+          color: rgba(156, 163, 175, 1);
+          font-size: 12px;
+        }
+        .review-text {
+          color: rgba(229, 231, 235, 1);
+          font-size: 14px;
+          line-height: 1.6;
+          margin-bottom: 12px;
+        }
+        .review-verified {
+          color: #10b981;
+          font-size: 12px;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .show-all-btn {
+          background: transparent;
+          border: 1px solid rgba(126, 162, 212, 0.3);
+          color: rgba(126, 162, 212, 1);
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: block;
+          margin: 24px auto 0;
+        }
+        .show-all-btn:hover {
+          background: rgba(126, 162, 212, 0.1);
+          border-color: rgba(126, 162, 212, 0.5);
+        }
+      </style>
+
+      <!-- Rating Statistics -->
+      <div class="rating-stats-grid">
+        <!-- Overall Rating -->
+        <div class="rating-stat-card">
+          <div class="rating-stat-title">Overall rating</div>
+          <div class="rating-stat-value">4.9</div>
+          <div class="rating-stars">★★★★★</div>
+          <div class="rating-stat-subtitle">324 reviews</div>
+        </div>
+
+        <!-- Distribution -->
+        <div class="rating-stat-card">
+          <div class="rating-stat-title">Distribution</div>
+          <div class="distribution-bars">
+            <div class="distribution-bar">
+              <span class="distribution-label">5★</span>
+              <div class="distribution-progress">
+                <div class="distribution-fill" style="width: 89%"></div>
+              </div>
+              <span class="distribution-percent">89%</span>
+            </div>
+            <div class="distribution-bar">
+              <span class="distribution-label">4★</span>
+              <div class="distribution-progress">
+                <div class="distribution-fill" style="width: 11%"></div>
+              </div>
+              <span class="distribution-percent">11%</span>
+            </div>
+            <div class="distribution-bar">
+              <span class="distribution-label">3★</span>
+              <div class="distribution-progress">
+                <div class="distribution-fill" style="width: 0%"></div>
+              </div>
+              <span class="distribution-percent">0%</span>
+            </div>
+            <div class="distribution-bar">
+              <span class="distribution-label">2★</span>
+              <div class="distribution-progress">
+                <div class="distribution-fill" style="width: 0%"></div>
+              </div>
+              <span class="distribution-percent">0%</span>
+            </div>
+            <div class="distribution-bar">
+              <span class="distribution-label">1★</span>
+              <div class="distribution-progress">
+                <div class="distribution-fill" style="width: 0%"></div>
+              </div>
+              <span class="distribution-percent">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- New This Week -->
+        <div class="rating-stat-card">
+          <div class="rating-stat-title">New This Week</div>
+          <div class="rating-stat-value">+0.2</div>
+          <div class="rating-stat-change">↑ This month</div>
+        </div>
+      </div>
+
+      <!-- Recent Reviews -->
+      <div class="reviews-section">
+        <div class="reviews-header">
+          <h3 class="reviews-title">Recent Reviews</h3>
+        </div>
+
+        <!-- Review Card 1 -->
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-user">
+              <div class="review-avatar">JS</div>
+              <div class="review-user-info">
+                <div class="review-user-name">John Smith</div>
+                <div class="review-course">React Masterclass • Oct 15</div>
+              </div>
+            </div>
+            <div class="review-rating-date">
+              <span class="review-rating">5.0 ★★★★★</span>
+            </div>
+          </div>
+          <p class="review-text">"Absolutely amazing course! The explanations are crystal clear. Highly recommended! 🚀"</p>
+          <div class="review-verified">✓ Verified</div>
+        </div>
+
+        <!-- Review Card 2 -->
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-user">
+              <div class="review-avatar">JS</div>
+              <div class="review-user-info">
+                <div class="review-user-name">John Smith</div>
+                <div class="review-course">React Masterclass • Oct 15</div>
+              </div>
+            </div>
+            <div class="review-rating-date">
+              <span class="review-rating">5.0 ★★★★★</span>
+            </div>
+          </div>
+          <p class="review-text">"Absolutely amazing course! The explanations are crystal clear. Highly recommended! 🚀"</p>
+          <div class="review-verified">✓ Verified</div>
+        </div>
+
+        <!-- Review Card 3 -->
+        <div class="review-card">
+          <div class="review-header">
+            <div class="review-user">
+              <div class="review-avatar">JS</div>
+              <div class="review-user-info">
+                <div class="review-user-name">John Smith</div>
+                <div class="review-course">React Masterclass • Oct 15</div>
+              </div>
+            </div>
+            <div class="review-rating-date">
+              <span class="review-rating">5.0 ★★★★★</span>
+            </div>
+          </div>
+          <p class="review-text">"Absolutely amazing course! The explanations are crystal clear. Highly recommended! 🚀"</p>
+          <div class="review-verified">✓ Verified</div>
+        </div>
+
+        <button class="show-all-btn" onclick="loadMoreReviews()">Show all</button>
+      </div>
+    </div>
+  `;
+}
+
+// Load more reviews function
+window.loadMoreReviews = function() {
+  const reviewsSection = document.querySelector('.reviews-section');
+  const showAllBtn = document.querySelector('.show-all-btn');
+  
+  if (!reviewsSection || !showAllBtn) return;
+  
+  // Check if already loaded
+  if (showAllBtn.dataset.loaded === 'true') {
+    // Hide extra reviews
+    const extraReviews = document.querySelectorAll('.review-card.extra-review');
+    extraReviews.forEach(review => {
+      review.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => review.remove(), 300);
+    });
+    
+    // Change button back
+    showAllBtn.textContent = 'Show all';
+    showAllBtn.dataset.loaded = 'false';
+    return;
+  }
+  
+  // Additional reviews data
+  const newReviews = [
+    {
+      name: 'Sarah Johnson',
+      initials: 'SJ',
+      course: 'Python Basics',
+      date: 'Oct 12',
+      rating: 5.0,
+      text: 'Great course! Very well structured and easy to follow. The instructor explains everything perfectly! 👍',
+      verified: true
+    },
+    {
+      name: 'Mike Davis',
+      initials: 'MD',
+      course: 'UI/UX Design',
+      date: 'Oct 10',
+      rating: 4.8,
+      text: 'Excellent content and practical examples. Learned a lot about design principles and best practices.',
+      verified: true
+    },
+    {
+      name: 'Emma Wilson',
+      initials: 'EW',
+      course: 'JavaScript Advanced',
+      date: 'Oct 8',
+      rating: 5.0,
+      text: 'This course exceeded my expectations! The projects are challenging and really help solidify the concepts. 💯',
+      verified: true
+    },
+    {
+      name: 'David Brown',
+      initials: 'DB',
+      course: 'React Masterclass',
+      date: 'Oct 5',
+      rating: 4.9,
+      text: 'Amazing instructor! Clear explanations and great real-world examples. Highly recommend!',
+      verified: true
+    }
+  ];
+  
+  // Create HTML for new reviews
+  const newReviewsHTML = newReviews.map(review => `
+    <div class="review-card extra-review" style="animation: slideIn 0.5s ease;">
+      <div class="review-header">
+        <div class="review-user">
+          <div class="review-avatar">${review.initials}</div>
+          <div class="review-user-info">
+            <div class="review-user-name">${review.name}</div>
+            <div class="review-course">${review.course} • ${review.date}</div>
+          </div>
+        </div>
+        <div class="review-rating-date">
+          <span class="review-rating">${review.rating} ★★★★★</span>
+        </div>
+      </div>
+      <p class="review-text">"${review.text}"</p>
+      ${review.verified ? '<div class="review-verified">✓ Verified</div>' : ''}
+    </div>
+  `).join('');
+  
+  // Insert new reviews before the button
+  showAllBtn.insertAdjacentHTML('beforebegin', newReviewsHTML);
+  
+  // Change button text
+  showAllBtn.textContent = 'Show less';
+  showAllBtn.dataset.loaded = 'true';
+  
+  // Add animations
+  if (!document.getElementById('review-animations')) {
+    const style = document.createElement('style');
+    style.id = 'review-animations';
+    style.textContent = `
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      @keyframes slideOut {
+        from {
+          opacity: 1;
+          transform: translateY(0);
+        }
+        to {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+};
 
 // Helper function to get messages HTML
 function getMessagesHTML() {
