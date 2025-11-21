@@ -566,7 +566,7 @@ body {
 
 .section-title {
   text-align: center;
-  font-size: 36px;
+  font-size: 36px !important;
   font-weight: bold;
   margin-bottom: 60px;
   color: #ffffff;
@@ -1845,7 +1845,7 @@ body {
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 600px) {
   body {
     padding-top: 70px;
   }
@@ -1905,10 +1905,6 @@ body {
 
   .platform-feature-card h4 {
     font-size: 12px;
-  }
-
-  .section-title {
-    font-size: 28px;
   }
 
   .platform-actions {
@@ -2687,11 +2683,6 @@ body {
     height: 22px;
   }
 
-  .pricing-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-
   .pricing-section {
     padding: 40px 0;
   }
@@ -2712,11 +2703,6 @@ body {
   .btn-pricing {
     padding: 15px 30px;
     font-size: 14px;
-  }
-
-  .articles-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
   }
 
   .articles-section {
@@ -2740,6 +2726,23 @@ body {
 @media (max-width: 1024px) and (min-width: 769px) {
   .articles-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Mobile only - very small screens */
+@media (max-width: 480px) {
+  .section-title {
+    font-size: 24px;
+  }
+  
+  .pricing-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .articles-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 }
 
