@@ -103,93 +103,7 @@ function renderTeacherDashboard(user) {
 
       <!-- Main Layout with Sidebar + Content -->
       <div class="figma-main-layout">
-        <!-- Left Sidebar -->
-        <div class="figma-sidebar">
-          <!-- General Menu (Expandable) -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('general')">
-              <span class="figma-menu-title">General</span>
-              <span class="figma-menu-arrow" id="general-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="general-children">
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Dashboard</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">Profile</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">Messages</a>
-            </div>
-          </div>
-
-          <!-- Content Management (Expandable) -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('content')">
-              <span class="figma-menu-title">Content Management</span>
-              <span class="figma-menu-arrow" id="content-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="content-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('draft')">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('archived')">Archived</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
-            </div>
-          </div>
-
-          <!-- AI Assistant (Expandable) -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('ai')">
-              <span class="figma-menu-title">AI Assistant</span>
-              <span class="figma-menu-arrow" id="ai-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="ai-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAIAssistantPage()">AI Assistant</a>
-            </div>
-          </div>
-
-          <!-- Analytics (Expandable) -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('analytics')">
-              <span class="figma-menu-title">Analytics</span>
-              <span class="figma-menu-arrow" id="analytics-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="analytics-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">Quiz Analytics</a>
-              <a href="#" class="figma-menu-child">Rating Comments</a>
-              <a href="#" class="figma-menu-child">Students Analytics</a>
-              <a href="#" class="figma-menu-child">Engagement</a>
-              <a href="#" class="figma-menu-child">Progress</a>
-            </div>
-          </div>
-
-          <!-- Rolls (Expandable) -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('rolls')">
-              <span class="figma-menu-title">Rolls</span>
-              <span class="figma-menu-arrow" id="rolls-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="rolls-children">
-              <a href="#" class="figma-menu-child">Sub Admin</a>
-            </div>
-          </div>
-
-          <!-- Settings (Expandable) -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('settings')">
-              <span class="figma-menu-title">Settings</span>
-              <span class="figma-menu-arrow" id="settings-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="settings-children">
-              <a href="#" class="figma-menu-child">Language</a>
-              <a href="#" class="figma-menu-child">Customize UI</a>
-            </div>
-          </div>
-
-          <!-- Subscription at bottom -->
-          <div class="figma-subscription">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">My Subscription</a>
-            </div>
-          </div>
-        </div>
+        ${getSidebarHTML()}
 
         <!-- Right Content Area -->
         <div class="figma-content-area">
@@ -584,98 +498,32 @@ window.editProfile = function() {
 window.openEditProfile = function() {
   const user = store.getState().user;
   
-  // Check if dashboard structure exists
+  // Update only the content area, keep sidebar
   const contentArea = document.querySelector('.figma-content-area');
-  
-  if (contentArea) {
-    // Just update content area, keep sidebar
-    updatePageTitle('Edit Profile');
-    contentArea.innerHTML = getEditProfileHTML(user);
-    updateActiveMenuItem('Profile');
-    
-    // Add form handler
-    const form = document.getElementById('editProfileForm');
-    if (form) {
-      form.addEventListener('submit', handleProfileSave);
-    }
+  if (!contentArea) {
+    // If no content area exists, we need to render full page
+    renderFullPageWithSidebar('Edit Profile', getEditProfileContent(user));
     return;
   }
   
-  // If no dashboard structure, render full page
-  document.querySelector('#app').innerHTML = `
-    <div class="figma-dashboard">
-      <!-- Edit Profile Header -->
-      <div class="figma-header">
-        <div class="figma-logo">
-          <h1>dars<span>linker</span></h1>
-        </div>
-        <div class="figma-title">
-          <h2>Edit Profile</h2>
-        </div>
-        <div class="figma-header-buttons">
-          <button class="figma-btn" onclick="backToDashboard()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 6px;">
-              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
-            </svg>
-            Back
-          </button>
-        </div>
-      </div>
+  // Update header title
+  document.querySelector('.figma-title h2').textContent = 'Edit Profile';
+  
+  // Update content area only
+  contentArea.innerHTML = getEditProfileContent(user);
+  
+  // Update active menu item
+  document.querySelectorAll('.figma-menu-child').forEach(child => {
+    child.classList.remove('active');
+    if (child.textContent.trim() === 'Profile') {
+      child.classList.add('active');
+    }
+  });
+};
 
-      <!-- Edit Profile Content -->
-      <div class="figma-main-layout">
-        <!-- Left Sidebar -->
-        <div class="figma-sidebar">
-          <!-- General Menu -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent expanded">
-              <span class="figma-menu-title">General</span>
-              <span class="figma-menu-arrow">▼</span>
-            </div>
-            <div class="figma-menu-children">
-              <a href="#" class="figma-menu-child" onclick="backToDashboard()">Dashboard</a>
-              <a href="#" class="figma-menu-child active">Profile</a>
-              <a href="#" class="figma-menu-child">Messages</a>
-            </div>
-          </div>
-
-          <!-- Other Menu Items -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Content Management</a>
-            </div>
-          </div>
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">AI Assistant</a>
-            </div>
-          </div>
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Analytics</a>
-            </div>
-          </div>
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Rolls</a>
-            </div>
-          </div>
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Settings</a>
-            </div>
-          </div>
-
-          <!-- Subscription -->
-          <div class="figma-subscription">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">My Subscription</a>
-            </div>
-          </div>
-        </div>
-
+function getEditProfileContent(user) {
+  return `
         <!-- Edit Profile Form -->
-        <div class="figma-content-area">
           <form class="edit-profile-form" id="editProfileForm">
 
             <!-- Personal Information Section -->
@@ -712,6 +560,192 @@ window.openEditProfile = function() {
 
               <!-- Professional Title -->
               <div class="form-field">
+                <label class="field-label">Professional Title / Specialty</label>
+                <input type="text" class="form-input" value="Web Development & UI/UX Design" />
+              </div>
+
+              <!-- Bio -->
+              <div class="form-field">
+                <label class="field-label">Bio / About Me</label>
+                <textarea class="form-textarea" rows="4">8+ years web development experience. Expert in React, UI/UX design, and teaching modern web technologies. Passionate about helping students achieve their goals!</textarea>
+              </div>
+
+              <!-- Location -->
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="field-label">City</label>
+                  <input type="text" class="form-input" value="Tashkent" />
+                </div>
+                <div class="form-field">
+                  <label class="field-label">Country</label>
+                  <input type="text" class="form-input" value="Uzbekistan" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Information Section -->
+            <div class="profile-section">
+              <h3 class="section-title">Contact information</h3>
+
+              <div class="form-field">
+                <label class="field-label">Email Address</label>
+                <input type="email" class="form-input" value="${user.email || 'john@example.com'}" />
+              </div>
+
+              <div class="form-field">
+                <label class="field-label">Phone Number</label>
+                <input type="tel" class="form-input" value="+998 99 123 45 67" />
+              </div>
+
+              <div class="form-field">
+                <label class="field-label">Telegram Username</label>
+                <input type="text" class="form-input" value="@john_teacher" />
+              </div>
+            </div>
+
+            <!-- Save Button -->
+            <div class="form-actions">
+              <button type="submit" class="btn-save-profile">Save Changes</button>
+              <button type="button" class="btn-cancel-profile" onclick="backToDashboard()">Cancel</button>
+            </div>
+          </form>
+  `;
+}
+
+function renderFullPageWithSidebar(title, content) {
+  const user = store.getState().user;
+  
+  document.querySelector('#app').innerHTML = `
+    <div class="figma-dashboard">
+      <!-- Edit Profile Header -->
+      <div class="figma-header">
+        <div class="figma-logo">
+          <h1>dars<span>linker</span></h1>
+        </div>
+        <div class="figma-title">
+          <h2>${title}</h2>
+        </div>
+        <div class="figma-header-buttons">
+          <button class="figma-btn" onclick="backToDashboard()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 6px;">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
+            </svg>
+            Back
+          </button>
+        </div>
+      </div>
+
+      <!-- Edit Profile Content -->
+      <div class="figma-main-layout">
+        ${getSidebarHTML()}
+        
+        <!-- Content Area -->
+        <div class="figma-content-area">
+          ${content}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function getSidebarHTML() {
+  return `
+        <!-- Left Sidebar -->
+        <div class="figma-sidebar">
+          <!-- General Menu (Expandable) -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent" onclick="toggleMenu('general')">
+              <span class="figma-menu-title">General</span>
+              <span class="figma-menu-arrow" id="general-arrow">▶</span>
+            </div>
+            <div class="figma-menu-children hidden" id="general-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard(); return false;">Dashboard</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile(); return false;">Profile</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage(); return false;">Messages</a>
+            </div>
+          </div>
+
+          <!-- Content Management (Expandable) -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent" onclick="toggleMenu('content')">
+              <span class="figma-menu-title">Content Management</span>
+              <span class="figma-menu-arrow" id="content-arrow">▶</span>
+            </div>
+            <div class="figma-menu-children hidden" id="content-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse(); return false;">Create Course</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses(); return false;">My Courses</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft'); return false;">Drafts</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived'); return false;">Archived</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage(); return false;">Finance</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage(); return false;">Assignments</a>
+            </div>
+          </div>
+
+          <!-- AI Assistant (Expandable) -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent" onclick="toggleMenu('ai')">
+              <span class="figma-menu-title">AI Assistant</span>
+              <span class="figma-menu-arrow" id="ai-arrow">▶</span>
+            </div>
+            <div class="figma-menu-children hidden" id="ai-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAIAssistantPage(); return false;">AI Assistant</a>
+            </div>
+          </div>
+
+          <!-- Analytics (Expandable) -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent" onclick="toggleMenu('analytics')">
+              <span class="figma-menu-title">Analytics</span>
+              <span class="figma-menu-arrow" id="analytics-arrow">▶</span>
+            </div>
+            <div class="figma-menu-children hidden" id="analytics-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics(); return false;">Quiz Analytics</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); return false;">Rating Comments</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); return false;">Students Analytics</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); return false;">Engagement</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); return false;">Progress</a>
+            </div>
+          </div>
+
+          <!-- Rolls (Expandable) -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent" onclick="toggleMenu('rolls')">
+              <span class="figma-menu-title">Rolls</span>
+              <span class="figma-menu-arrow" id="rolls-arrow">▶</span>
+            </div>
+            <div class="figma-menu-children hidden" id="rolls-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); return false;">Sub Admin</a>
+            </div>
+          </div>
+
+          <!-- Settings (Expandable) -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent" onclick="toggleMenu('settings')">
+              <span class="figma-menu-title">Settings</span>
+              <span class="figma-menu-arrow" id="settings-arrow">▶</span>
+            </div>
+            <div class="figma-menu-children hidden" id="settings-children">
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); return false;">Language</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); return false;">Customize UI</a>
+            </div>
+          </div>
+
+          <!-- Subscription at bottom -->
+          <div class="figma-subscription">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link" onclick="return false;">My Subscription</a>
+            </div>
+          </div>
+        </div>
+  `;
+}
+
+window.customizeUI = function() {
+  alert('UI customization coming soon...');
+};
+
+// Menu toggle function (accordion style - close others when opening one)
+window.toggleMenu = function(menuName) {
                 <label class="field-label">Professional Title / Specialty</label>
                 <input type="text" class="form-input" value="Web Development & UI/UX Design" />
               </div>
@@ -795,144 +829,6 @@ window.customizeUI = function() {
   alert('UI customization coming soon...');
 };
 
-// Helper function to update page title
-function updatePageTitle(title) {
-  const titleElement = document.querySelector('.figma-title h2');
-  if (titleElement) {
-    titleElement.textContent = title;
-  }
-}
-
-// Helper function to update active menu item
-function updateActiveMenuItem(itemName) {
-  document.querySelectorAll('.figma-menu-child').forEach(child => {
-    child.classList.remove('active');
-    if (child.textContent.trim() === itemName) {
-      child.classList.add('active');
-    }
-  });
-}
-
-// Helper function to get messages HTML
-function getMessagesHTML() {
-  return `
-    <div class="messages-container">
-      <!-- Simple Messages Interface -->
-      <div class="messages-welcome">
-        <div class="messages-header">
-          <h3>Messages</h3>
-          <button class="create-group-btn" onclick="createGroup()">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-            Create Group
-          </button>
-        </div>
-
-        <div class="messages-placeholder">
-          <div class="placeholder-icon">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/>
-            </svg>
-          </div>
-          <h3>Select a chat to start messaging</h3>
-          <p>Choose from your existing conversations or create a new group</p>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// Helper function to get edit profile HTML
-function getEditProfileHTML(user) {
-  return `
-    <form class="edit-profile-form" id="editProfileForm">
-      <!-- Personal Information Section -->
-      <div class="profile-section">
-        <h3 class="section-title">Personal Information</h3>
-
-        <!-- Profile Picture -->
-        <div class="profile-picture-section">
-          <label class="field-label">Profile picture</label>
-          <div class="profile-picture-upload">
-            <div class="profile-picture-preview">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
-            </div>
-            <div class="upload-instructions">
-              <p>Click to upload or drag and drop</p>
-              <small>PNG, JPG up to 5MB</small>
-            </div>
-          </div>
-        </div>
-
-        <!-- Name Fields -->
-        <div class="form-row">
-          <div class="form-field">
-            <label class="field-label">First Name</label>
-            <input type="text" class="form-input" value="${user.firstName || 'John'}" />
-          </div>
-          <div class="form-field">
-            <label class="field-label">Last Name</label>
-            <input type="text" class="form-input" value="${user.lastName || 'Smith'}" />
-          </div>
-        </div>
-
-        <!-- Professional Title -->
-        <div class="form-field">
-          <label class="field-label">Professional Title / Specialty</label>
-          <input type="text" class="form-input" value="Web Development & UI/UX Design" />
-        </div>
-
-        <!-- Bio -->
-        <div class="form-field">
-          <label class="field-label">Bio / About Me</label>
-          <textarea class="form-textarea" rows="4">8+ years web development experience. Expert in React, UI/UX design, and teaching modern web technologies.</textarea>
-        </div>
-
-        <!-- Location -->
-        <div class="form-row">
-          <div class="form-field">
-            <label class="field-label">City</label>
-            <input type="text" class="form-input" value="Tashkent" />
-          </div>
-          <div class="form-field">
-            <label class="field-label">Country</label>
-            <input type="text" class="form-input" value="Uzbekistan" />
-          </div>
-        </div>
-      </div>
-
-      <!-- Contact Information Section -->
-      <div class="profile-section">
-        <h3 class="section-title">Contact information</h3>
-
-        <div class="form-field">
-          <label class="field-label">Email Address</label>
-          <input type="email" class="form-input" value="${user.email || 'john@example.com'}" />
-        </div>
-
-        <div class="form-field">
-          <label class="field-label">Phone Number</label>
-          <input type="tel" class="form-input" value="+998 99 123 45 67" />
-        </div>
-
-        <div class="form-field">
-          <label class="field-label">Telegram Username</label>
-          <input type="text" class="form-input" value="@john_teacher" />
-        </div>
-      </div>
-
-      <!-- Save Button -->
-      <div class="form-actions">
-        <button type="submit" class="btn-save-profile">Save Changes</button>
-        <button type="button" class="btn-cancel-profile" onclick="backToDashboard()">Cancel</button>
-      </div>
-    </form>
-  `;
-}
-
 // Menu toggle function (accordion style - close others when opening one)
 window.toggleMenu = function(menuName) {
   const allMenus = ['general', 'content', 'ai', 'analytics', 'rolls', 'settings'];
@@ -970,9 +866,9 @@ window.toggleMenu = function(menuName) {
   }
 };
 
-// Set active menu child - DON'T reload page, just update active state
+// Set active menu child
 window.setActiveChild = function(element, event) {
-  // Prevent default link behavior
+  // Prevent default link behavior first
   if (event) {
     event.preventDefault();
     event.stopPropagation();
@@ -986,7 +882,7 @@ window.setActiveChild = function(element, event) {
   // Add active to clicked element
   element.classList.add('active');
 
-  // Don't navigate or reload - let the onclick handler do its job
+  // Don't close the menu or navigate away
   return false;
 };
 
@@ -1006,17 +902,6 @@ function handleProfileSave(e) {
 // Open Messages Page
 window.openMessagesPage = function() {
   const userData = store.getState().user;
-  
-  // Check if dashboard structure exists
-  const contentArea = document.querySelector('.figma-content-area');
-  
-  if (contentArea) {
-    // Just update content area, keep sidebar
-    updatePageTitle('Messages');
-    contentArea.innerHTML = getMessagesHTML();
-    updateActiveMenuItem('Messages');
-    return;
-  }
 
   // Check current general menu state before navigating
   const generalChildren = document.getElementById('general-children');
