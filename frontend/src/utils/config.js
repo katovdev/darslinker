@@ -5,7 +5,8 @@ export const config = {
     version: '1.0.0'
   },
   api: {
-    baseUrl: 'http://localhost:8001/api'
+    // Use production backend URL, fallback to localhost for development
+    baseUrl: import.meta.env.VITE_API_URL || 'https://darslinker-backend.onrender.com/api'
   },
   routes: {
     home: '/',
