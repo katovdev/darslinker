@@ -154,9 +154,9 @@ function renderTeacherDashboard(user) {
             <div class="figma-menu-children hidden" id="analytics-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">Quiz Analytics</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">Rating Comments</a>
-              <a href="#" class="figma-menu-child">Students Analytics</a>
-              <a href="#" class="figma-menu-child">Engagement</a>
-              <a href="#" class="figma-menu-child">Progress</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">Students Analytics</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEngagement(); return false;">Engagement</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openProgress(); return false;">Progress</a>
             </div>
           </div>
 
@@ -167,7 +167,7 @@ function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="rolls-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="rolls-children">
-              <a href="#" class="figma-menu-child">Sub Admin</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openSubAdmin(); return false;">Sub Admin</a>
             </div>
           </div>
 
@@ -812,6 +812,2152 @@ function updateActiveMenuItem(itemName) {
     }
   });
 }
+
+// Open Sub Admin Page
+window.openSubAdmin = function() {
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (contentArea) {
+    updatePageTitle('Sub admins(3)');
+    contentArea.innerHTML = getSubAdminHTML();
+    updateActiveMenuItem('Sub Admin');
+    return;
+  }
+};
+
+// Helper function to get sub admin HTML
+function getSubAdminHTML() {
+  return `
+    <div class="sub-admin-page">
+      <style>
+        .sub-admin-page {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        .sub-admin-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 16px;
+        }
+        .search-wrapper {
+          position: relative;
+          flex: 1;
+          max-width: 400px;
+          display: flex;
+          align-items: center;
+        }
+        .search-icon {
+          position: absolute;
+          left: 16px;
+          color: rgba(156, 163, 175, 1);
+          pointer-events: none;
+          transition: all 0.3s ease;
+        }
+        .search-admin {
+          width: 100%;
+          padding: 12px 16px 12px 44px;
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        .search-admin:focus {
+          outline: none;
+          border-color: rgba(126, 162, 212, 0.4);
+          background: rgba(58, 56, 56, 0.5);
+        }
+        .search-admin:focus + .search-icon,
+        .search-wrapper:hover .search-icon {
+          color: rgba(126, 162, 212, 1);
+        }
+        .add-admin-btn {
+          padding: 12px 24px;
+          background: rgba(126, 162, 212, 0.2);
+          border: 1px solid rgba(126, 162, 212, 0.4);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .add-admin-btn:hover {
+          background: rgba(126, 162, 212, 0.3);
+          border-color: rgba(126, 162, 212, 0.6);
+          transform: translateY(-2px);
+        }
+        .admin-card {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 12px;
+          padding: 20px;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .admin-card:hover {
+          border-color: rgba(126, 162, 212, 0.4);
+          background: rgba(58, 56, 56, 0.5);
+          transform: translateX(4px);
+        }
+        .admin-info {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          flex: 1;
+        }
+        .admin-avatar {
+          width: 56px;
+          height: 56px;
+          border-radius: 50%;
+          background: rgba(126, 162, 212, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          font-weight: 600;
+          font-size: 18px;
+        }
+        .admin-details h4 {
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+        .admin-details p {
+          color: rgba(156, 163, 175, 1);
+          font-size: 13px;
+        }
+        .admin-meta {
+          display: flex;
+          gap: 32px;
+          align-items: center;
+        }
+        .meta-item {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+        .meta-label {
+          color: rgba(156, 163, 175, 1);
+          font-size: 11px;
+        }
+        .meta-value {
+          color: #ffffff;
+          font-size: 13px;
+          font-weight: 500;
+        }
+        .delete-admin-btn {
+          width: 36px;
+          height: 36px;
+          background: rgba(239, 68, 68, 0.1);
+          border: 1px solid rgba(239, 68, 68, 0.2);
+          border-radius: 8px;
+          color: #ef4444;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-left: 24px;
+        }
+        .delete-admin-btn:hover {
+          background: rgba(239, 68, 68, 0.2);
+          border-color: rgba(239, 68, 68, 0.4);
+          transform: scale(1.1);
+        }
+        .add-admin-modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 99999;
+          animation: fadeIn 0.3s ease;
+        }
+        .add-admin-modal.hidden {
+          display: none;
+        }
+        .modal-content {
+          background: rgba(35, 35, 35, 0.95);
+          border: 1px solid rgba(126, 162, 212, 0.3);
+          border-radius: 16px;
+          padding: 32px;
+          max-width: 500px;
+          width: 90%;
+          animation: slideUp 0.3s ease;
+          position: relative;
+          z-index: 100000;
+        }
+        @keyframes slideUp {
+          from { transform: translateY(30px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 24px;
+        }
+        .modal-title {
+          color: #ffffff;
+          font-size: 20px;
+          font-weight: 600;
+        }
+        .close-modal-btn {
+          background: none;
+          border: none;
+          color: rgba(156, 163, 175, 1);
+          font-size: 24px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .close-modal-btn:hover {
+          color: #ffffff;
+          transform: rotate(90deg);
+        }
+        .form-group {
+          margin-bottom: 20px;
+        }
+        .form-label {
+          color: rgba(156, 163, 175, 1);
+          font-size: 13px;
+          margin-bottom: 8px;
+          display: block;
+        }
+        .form-input-admin {
+          width: 100%;
+          padding: 12px 16px;
+          background: rgba(58, 56, 56, 0.5);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        .form-input-admin:focus {
+          outline: none;
+          border-color: rgba(126, 162, 212, 0.5);
+          background: rgba(58, 56, 56, 0.7);
+        }
+        .modal-actions {
+          display: flex;
+          gap: 12px;
+          justify-content: flex-end;
+          margin-top: 24px;
+        }
+        .btn-cancel {
+          padding: 10px 20px;
+          background: transparent;
+          border: 1px solid rgba(126, 162, 212, 0.3);
+          border-radius: 8px;
+          color: rgba(126, 162, 212, 1);
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .btn-cancel:hover {
+          background: rgba(126, 162, 212, 0.1);
+        }
+        .btn-submit {
+          padding: 10px 20px;
+          background: rgba(126, 162, 212, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.5);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .btn-submit:hover {
+          background: rgba(126, 162, 212, 0.4);
+          transform: translateY(-2px);
+        }
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        @keyframes slideOut {
+          from {
+            opacity: 1;
+            transform: translateX(0);
+          }
+          to {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+        }
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+      </style>
+
+      <!-- Header with Search and Add Button -->
+      <div class="sub-admin-header">
+        <div class="search-wrapper">
+          <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
+            <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input type="text" class="search-admin" placeholder="Search sub admins..." oninput="searchSubAdmins(this.value)">
+        </div>
+        <button class="add-admin-btn" onclick="openAddAdminModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          Add Subadmin
+        </button>
+      </div>
+
+      <!-- Admin Cards List -->
+      <div class="admin-cards-list" id="adminCardsList">
+        <div class="admin-card">
+          <div class="admin-info">
+            <div class="admin-avatar">JD</div>
+            <div class="admin-details">
+              <h4>John Derting</h4>
+              <p>john.derting@darslinker.com</p>
+            </div>
+          </div>
+          <div class="admin-meta">
+            <div class="meta-item">
+              <span class="meta-label">Telephone</span>
+              <span class="meta-value">+1 (555) 123-4567</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Added</span>
+              <span class="meta-value">2025-01-15</span>
+            </div>
+          </div>
+          <button class="delete-admin-btn" onclick="deleteSubAdmin(this, 'John Derting')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-info">
+            <div class="admin-avatar">SK</div>
+            <div class="admin-details">
+              <h4>Sarah Kim</h4>
+              <p>sarah.kim@darslinker.com</p>
+            </div>
+          </div>
+          <div class="admin-meta">
+            <div class="meta-item">
+              <span class="meta-label">Telephone</span>
+              <span class="meta-value">+1 (555) 987-6543</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Added</span>
+              <span class="meta-value">2025-01-10</span>
+            </div>
+          </div>
+          <button class="delete-admin-btn" onclick="deleteSubAdmin(this, 'Sarah Kim')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="admin-card">
+          <div class="admin-info">
+            <div class="admin-avatar">ML</div>
+            <div class="admin-details">
+              <h4>Mike Lee</h4>
+              <p>mike.lee@darslinker.com</p>
+            </div>
+          </div>
+          <div class="admin-meta">
+            <div class="meta-item">
+              <span class="meta-label">Telephone</span>
+              <span class="meta-value">+1 (555) 456-7890</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Added</span>
+              <span class="meta-value">2025-01-05</span>
+            </div>
+          </div>
+          <button class="delete-admin-btn" onclick="deleteSubAdmin(this, 'Mike Lee')">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Add Admin Modal -->
+      <div class="add-admin-modal hidden" id="addAdminModal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 class="modal-title">Add New Sub Admin</h3>
+            <button class="close-modal-btn" onclick="closeAddAdminModal()">×</button>
+          </div>
+          
+          <form onsubmit="submitNewAdmin(event)">
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-input-admin" id="adminName" placeholder="Enter full name" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <input type="email" class="form-input-admin" id="adminEmail" placeholder="admin@darslinker.com" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">Telephone</label>
+              <input type="tel" class="form-input-admin" id="adminPhone" placeholder="+1 (555) 000-0000" required>
+            </div>
+            
+            <div class="modal-actions">
+              <button type="button" class="btn-cancel" onclick="closeAddAdminModal()">Cancel</button>
+              <button type="submit" class="btn-submit">Add Admin</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Open add admin modal
+window.openAddAdminModal = function() {
+  const modal = document.getElementById('addAdminModal');
+  if (modal) {
+    modal.classList.remove('hidden');
+  }
+};
+
+// Close add admin modal
+window.closeAddAdminModal = function() {
+  const modal = document.getElementById('addAdminModal');
+  if (modal) {
+    modal.classList.add('hidden');
+    // Reset form
+    document.getElementById('adminName').value = '';
+    document.getElementById('adminEmail').value = '';
+    document.getElementById('adminPhone').value = '';
+  }
+};
+
+// Submit new admin
+window.submitNewAdmin = function(event) {
+  event.preventDefault();
+  
+  const name = document.getElementById('adminName').value;
+  const email = document.getElementById('adminEmail').value;
+  const phone = document.getElementById('adminPhone').value;
+  
+  // Get initials
+  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
+  
+  // Get today's date
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Create new admin card
+  const newAdminHTML = `
+    <div class="admin-card" style="animation: slideIn 0.5s ease;">
+      <div class="admin-info">
+        <div class="admin-avatar">${initials}</div>
+        <div class="admin-details">
+          <h4>${name}</h4>
+          <p>${email}</p>
+        </div>
+      </div>
+      <div class="admin-meta">
+        <div class="meta-item">
+          <span class="meta-label">Telephone</span>
+          <span class="meta-value">${phone}</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Added</span>
+          <span class="meta-value">${today}</span>
+        </div>
+      </div>
+      <button class="delete-admin-btn" onclick="deleteSubAdmin(this, '${name}')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        </svg>
+      </button>
+    </div>
+  `;
+  
+  // Add to list
+  const list = document.getElementById('adminCardsList');
+  list.insertAdjacentHTML('beforeend', newAdminHTML);
+  
+  // Update count in title
+  const count = list.querySelectorAll('.admin-card').length;
+  updatePageTitle(`Sub admins(${count})`);
+  
+  // Close modal
+  closeAddAdminModal();
+};
+
+// Delete sub admin
+window.deleteSubAdmin = function(button, name) {
+  // Create custom confirmation modal
+  const modal = document.createElement('div');
+  modal.className = 'delete-confirm-modal';
+  modal.innerHTML = `
+    <div class="delete-confirm-overlay"></div>
+    <div class="delete-confirm-content">
+      <div class="delete-confirm-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/>
+          <path d="M12 8v4M12 16h.01" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3 class="delete-confirm-title">Remove Sub Admin?</h3>
+      <p class="delete-confirm-message">Are you sure you want to remove <strong>${name}</strong> as sub admin? This action cannot be undone.</p>
+      <div class="delete-confirm-actions">
+        <button class="delete-confirm-cancel" onclick="closeDeleteConfirm()">Cancel</button>
+        <button class="delete-confirm-delete" onclick="confirmDeleteSubAdmin(this)">Remove</button>
+      </div>
+    </div>
+    <style>
+      .delete-confirm-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease;
+      }
+      .delete-confirm-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+      }
+      .delete-confirm-content {
+        position: relative;
+        background: rgba(30, 30, 30, 0.98);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        border-radius: 16px;
+        padding: 32px;
+        max-width: 420px;
+        width: 90%;
+        text-align: center;
+        animation: slideUp 0.3s ease;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+      .delete-confirm-icon {
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: center;
+      }
+      .delete-confirm-icon svg {
+        animation: scaleIn 0.4s ease;
+      }
+      .delete-confirm-title {
+        color: #ffffff;
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .delete-confirm-message {
+        color: rgba(156, 163, 175, 1);
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 28px;
+      }
+      .delete-confirm-message strong {
+        color: #ffffff;
+        font-weight: 600;
+      }
+      .delete-confirm-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      .delete-confirm-cancel,
+      .delete-confirm-delete {
+        padding: 12px 28px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: none;
+      }
+      .delete-confirm-cancel {
+        background: rgba(58, 56, 56, 0.5);
+        border: 1px solid rgba(126, 162, 212, 0.3);
+        color: rgba(126, 162, 212, 1);
+      }
+      .delete-confirm-cancel:hover {
+        background: rgba(126, 162, 212, 0.1);
+        border-color: rgba(126, 162, 212, 0.5);
+        transform: translateY(-2px);
+      }
+      .delete-confirm-delete {
+        background: rgba(239, 68, 68, 0.2);
+        border: 1px solid rgba(239, 68, 68, 0.5);
+        color: #ef4444;
+      }
+      .delete-confirm-delete:hover {
+        background: rgba(239, 68, 68, 0.3);
+        border-color: rgba(239, 68, 68, 0.7);
+        transform: translateY(-2px);
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slideUp {
+        from { 
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        to { 
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      @keyframes scaleIn {
+        from { 
+          transform: scale(0.5);
+          opacity: 0;
+        }
+        to { 
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+    </style>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Store button reference for later use
+  modal.dataset.buttonRef = button.closest('.admin-card').outerHTML;
+  modal.dataset.cardElement = Array.from(document.querySelectorAll('.admin-card')).indexOf(button.closest('.admin-card'));
+};
+
+// Close delete confirmation modal
+window.closeDeleteConfirm = function() {
+  const modal = document.querySelector('.delete-confirm-modal');
+  if (modal) {
+    modal.style.animation = 'fadeOut 0.2s ease';
+    setTimeout(() => modal.remove(), 200);
+  }
+};
+
+// Confirm delete sub admin
+window.confirmDeleteSubAdmin = function(confirmButton) {
+  const modal = confirmButton.closest('.delete-confirm-modal');
+  const cardIndex = parseInt(modal.dataset.cardElement);
+  const cards = document.querySelectorAll('.admin-card');
+  const card = cards[cardIndex];
+  
+  if (card) {
+    card.style.animation = 'slideOut 0.3s ease';
+    setTimeout(() => {
+      card.remove();
+      
+      // Update count
+      const list = document.getElementById('adminCardsList');
+      const count = list.querySelectorAll('.admin-card').length;
+      updatePageTitle(`Sub admins(${count})`);
+      
+      // Close modal
+      closeDeleteConfirm();
+    }, 300);
+  } else {
+    closeDeleteConfirm();
+  }
+};
+
+// Search sub admins
+window.searchSubAdmins = function(query) {
+  const cards = document.querySelectorAll('.admin-card');
+  const searchLower = query.toLowerCase();
+  
+  cards.forEach(card => {
+    const name = card.querySelector('.admin-details h4').textContent.toLowerCase();
+    const email = card.querySelector('.admin-details p').textContent.toLowerCase();
+    
+    if (name.includes(searchLower) || email.includes(searchLower)) {
+      card.style.display = 'flex';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+};
+
+// Open Progress Page
+window.openProgress = function() {
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (contentArea) {
+    updatePageTitle('Progress');
+    contentArea.innerHTML = getProgressHTML();
+    updateActiveMenuItem('Progress');
+    return;
+  }
+};
+
+// Helper function to get progress HTML
+function getProgressHTML() {
+  return `
+    <div class="progress-page">
+      <style>
+        .progress-page {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        .progress-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+        .progress-stat-card {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 16px;
+          padding: 24px;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+        .progress-stat-card:hover {
+          transform: translateY(-5px);
+          border-color: rgba(126, 162, 212, 0.4);
+          background: rgba(58, 56, 56, 0.5);
+        }
+        .progress-stat-title {
+          color: rgba(126, 162, 212, 1);
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 12px;
+        }
+        .progress-stat-value {
+          color: #ffffff;
+          font-size: 36px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        .progress-stat-subtitle {
+          color: #10b981;
+          font-size: 12px;
+        }
+        .course-filters {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .filter-btn {
+          padding: 10px 20px;
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 8px;
+          color: rgba(156, 163, 175, 1);
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .filter-btn.active {
+          background: rgba(126, 162, 212, 0.2);
+          border-color: rgba(126, 162, 212, 1);
+          color: #ffffff;
+        }
+        .filter-btn:hover {
+          border-color: rgba(126, 162, 212, 0.4);
+          color: #ffffff;
+        }
+        .students-progress-section {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 16px;
+          padding: 24px;
+        }
+        .section-header {
+          color: #ffffff;
+          font-size: 20px;
+          font-weight: 600;
+          margin-bottom: 24px;
+        }
+        .student-progress-card {
+          background: rgba(58, 56, 56, 0.5);
+          border: 1px solid rgba(126, 162, 212, 0.1);
+          border-radius: 12px;
+          padding: 20px;
+          margin-bottom: 16px;
+          transition: all 0.3s ease;
+        }
+        .student-progress-card:hover {
+          border-color: rgba(126, 162, 212, 0.3);
+          background: rgba(58, 56, 56, 0.7);
+        }
+        .student-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+        .student-info-header {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .student-avatar-progress {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: rgba(126, 162, 212, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          font-weight: 600;
+          font-size: 16px;
+        }
+        .student-name-email h4 {
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+        .student-name-email p {
+          color: rgba(156, 163, 175, 1);
+          font-size: 12px;
+        }
+        .student-actions {
+          display: flex;
+          gap: 8px;
+        }
+        .action-btn {
+          padding: 8px 16px;
+          background: transparent;
+          border: 1px solid rgba(126, 162, 212, 0.3);
+          border-radius: 8px;
+          color: rgba(126, 162, 212, 1);
+          font-size: 12px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .action-btn:hover {
+          background: rgba(126, 162, 212, 0.1);
+          border-color: rgba(126, 162, 212, 0.5);
+        }
+        .status-badge {
+          padding: 4px 12px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 600;
+        }
+        .status-badge.needs-help {
+          background: rgba(239, 68, 68, 0.2);
+          color: #ef4444;
+        }
+        .status-badge.live {
+          background: rgba(16, 185, 129, 0.2);
+          color: #10b981;
+        }
+        .current-lesson {
+          background: rgba(58, 56, 56, 0.7);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 8px;
+          padding: 12px;
+          margin-bottom: 12px;
+        }
+        .lesson-title {
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+        .lesson-subtitle {
+          color: rgba(156, 163, 175, 1);
+          font-size: 11px;
+          margin-bottom: 8px;
+        }
+        .lesson-progress-bar {
+          width: 100%;
+          height: 6px;
+          background: rgba(58, 56, 56, 0.5);
+          border-radius: 3px;
+          overflow: hidden;
+          margin-bottom: 4px;
+        }
+        .lesson-progress-fill {
+          height: 100%;
+          border-radius: 3px;
+          transition: width 0.5s ease;
+        }
+        .lesson-progress-fill.green {
+          background: linear-gradient(90deg, #10b981, #059669);
+        }
+        .lesson-progress-fill.yellow {
+          background: linear-gradient(90deg, #f59e0b, #d97706);
+        }
+        .progress-text {
+          color: rgba(156, 163, 175, 1);
+          font-size: 11px;
+          text-align: right;
+        }
+        .progress-stats-row {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 16px;
+          margin-top: 12px;
+        }
+        .stat-item {
+          text-align: center;
+        }
+        .stat-label {
+          color: rgba(156, 163, 175, 1);
+          font-size: 11px;
+          margin-bottom: 4px;
+        }
+        .stat-value {
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .show-more-progress-btn {
+          background: transparent;
+          border: 1px solid rgba(126, 162, 212, 0.3);
+          color: rgba(126, 162, 212, 1);
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: block;
+          margin: 24px auto 0;
+        }
+        .show-more-progress-btn:hover {
+          background: rgba(126, 162, 212, 0.1);
+          border-color: rgba(126, 162, 212, 0.5);
+        }
+      </style>
+
+      <div class="progress-stats-grid">
+        <div class="progress-stat-card">
+          <div class="progress-stat-title">Avg Completion</div>
+          <div class="progress-stat-value">68%</div>
+        </div>
+        <div class="progress-stat-card">
+          <div class="progress-stat-title">Currently Learning</div>
+          <div class="progress-stat-value">23</div>
+          <div class="progress-stat-subtitle">● Live now</div>
+        </div>
+        <div class="progress-stat-card">
+          <div class="progress-stat-title">Completed</div>
+          <div class="progress-stat-value">156</div>
+          <div class="progress-stat-subtitle">Finished all modules</div>
+        </div>
+      </div>
+
+      <div class="course-filters">
+        <button class="filter-btn active" onclick="filterProgressCourse(this, 'all')">All courses (4)</button>
+        <button class="filter-btn" onclick="filterProgressCourse(this, 'javascript')">JavaScript</button>
+        <button class="filter-btn" onclick="filterProgressCourse(this, 'react')">React</button>
+        <button class="filter-btn" onclick="filterProgressCourse(this, 'ui')">UI/UX</button>
+        <button class="filter-btn" onclick="filterProgressCourse(this, 'db')">Databases</button>
+      </div>
+
+      <!-- Student Progress Overview -->
+      <div class="students-progress-section">
+        <h3 class="section-header">Student Progress Overview</h3>
+        
+        <!-- Student 1 -->
+        <div class="student-progress-card">
+          <div class="student-header">
+            <div class="student-info-header">
+              <div class="student-avatar-progress">SM</div>
+              <div class="student-name-email">
+                <h4>Sarah Martinez</h4>
+                <p>sarah.martinez@email.com</p>
+              </div>
+            </div>
+            <div class="student-actions">
+              <button class="action-btn">View details</button>
+            </div>
+          </div>
+          
+          <div class="current-lesson">
+            <div class="lesson-title">Last Watched</div>
+            <div class="lesson-subtitle">CSS Grid Layout Advanced Techniques</div>
+            <div class="lesson-progress-bar">
+              <div class="lesson-progress-fill green" style="width: 100%"></div>
+            </div>
+            <div class="progress-text">100% completed</div>
+          </div>
+          
+          <div class="progress-stats-row">
+            <div class="stat-item">
+              <div class="stat-label">Overall Progress</div>
+              <div class="stat-value">78%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Completed Lessons</div>
+              <div class="stat-value">37/47</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Quiz Average</div>
+              <div class="stat-value">92%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Last Active</div>
+              <div class="stat-value">30 ago</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student 2 -->
+        <div class="student-progress-card">
+          <div class="student-header">
+            <div class="student-info-header">
+              <div class="student-avatar-progress">MJ</div>
+              <div class="student-name-email">
+                <h4>Mike Johnson</h4>
+                <p>mike.johnson@email.com</p>
+              </div>
+              <span class="status-badge needs-help">Needs help</span>
+            </div>
+            <div class="student-actions">
+              <button class="action-btn">Send message</button>
+            </div>
+          </div>
+          
+          <div class="current-lesson">
+            <div class="lesson-title">Stuck on</div>
+            <div class="lesson-subtitle">JavaScript Async/Await Basics</div>
+            <div class="lesson-progress-bar">
+              <div class="lesson-progress-fill yellow" style="width: 18%"></div>
+            </div>
+            <div class="progress-text">18% • Watched 3 times</div>
+          </div>
+          
+          <div class="progress-stats-row">
+            <div class="stat-item">
+              <div class="stat-label">Overall Progress</div>
+              <div class="stat-value">28%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Completed Lessons</div>
+              <div class="stat-value">13/47</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Quiz Average</div>
+              <div class="stat-value">58%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Last Active</div>
+              <div class="stat-value">1 day ago</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Student 3 -->
+        <div class="student-progress-card">
+          <div class="student-header">
+            <div class="student-info-header">
+              <div class="student-avatar-progress">AJ</div>
+              <div class="student-name-email">
+                <h4>Alex Johnson</h4>
+                <p>alex.johnson@email.com</p>
+              </div>
+              <span class="status-badge live">● Live</span>
+            </div>
+            <div class="student-actions">
+              <button class="action-btn">View details</button>
+            </div>
+          </div>
+          
+          <div class="current-lesson">
+            <div class="lesson-title">Currently Watching</div>
+            <div class="lesson-subtitle">React Hooks - Introduction to useState</div>
+            <div class="lesson-progress-bar">
+              <div class="lesson-progress-fill green" style="width: 45%"></div>
+            </div>
+            <div class="progress-text">Module 2 • Lesson 5 • 10:32 / 23:08</div>
+          </div>
+          
+          <div class="progress-stats-row">
+            <div class="stat-item">
+              <div class="stat-label">Overall Progress</div>
+              <div class="stat-value">45%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Completed Lessons</div>
+              <div class="stat-value">21/47</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Quiz Average</div>
+              <div class="stat-value">87%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Last Active</div>
+              <div class="stat-value">Now</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="show-more-progress-btn" onclick="loadMoreProgress()">Show more</button>
+      </div>
+    </div>
+  `;
+}
+
+// Filter progress by course
+window.filterProgressCourse = function(button, course) {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  button.classList.add('active');
+  
+  const section = document.querySelector('.students-progress-section');
+  if (!section) return;
+  
+  // Remove extra students
+  document.querySelectorAll('.student-progress-card.extra').forEach(card => card.remove());
+  
+  // Reset show more button
+  const btn = document.querySelector('.show-more-progress-btn');
+  if (btn) {
+    btn.textContent = 'Show more';
+    btn.dataset.loaded = 'false';
+  }
+  
+  let studentsHTML = '';
+  
+  if (course === 'all') {
+    studentsHTML = `
+      <div class="student-progress-card">
+        <div class="student-header">
+          <div class="student-info-header">
+            <div class="student-avatar-progress">SM</div>
+            <div class="student-name-email">
+              <h4>Sarah Martinez</h4>
+              <p>sarah.martinez@email.com</p>
+            </div>
+          </div>
+          <div class="student-actions">
+            <button class="action-btn">View details</button>
+          </div>
+        </div>
+        <div class="current-lesson">
+          <div class="lesson-title">Last Watched</div>
+          <div class="lesson-subtitle">CSS Grid Layout Advanced Techniques</div>
+          <div class="lesson-progress-bar">
+            <div class="lesson-progress-fill green" style="width: 100%"></div>
+          </div>
+          <div class="progress-text">100% completed</div>
+        </div>
+        <div class="progress-stats-row">
+          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">78%</div></div>
+          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">37/47</div></div>
+          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">92%</div></div>
+          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">30 ago</div></div>
+        </div>
+      </div>
+
+      <div class="student-progress-card">
+        <div class="student-header">
+          <div class="student-info-header">
+            <div class="student-avatar-progress">MJ</div>
+            <div class="student-name-email">
+              <h4>Mike Johnson</h4>
+              <p>mike.johnson@email.com</p>
+            </div>
+            <span class="status-badge needs-help">Needs help</span>
+          </div>
+          <div class="student-actions">
+            <button class="action-btn">Send message</button>
+          </div>
+        </div>
+        <div class="current-lesson">
+          <div class="lesson-title">Stuck on</div>
+          <div class="lesson-subtitle">JavaScript Async/Await Basics</div>
+          <div class="lesson-progress-bar">
+            <div class="lesson-progress-fill yellow" style="width: 18%"></div>
+          </div>
+          <div class="progress-text">18% • Watched 3 times</div>
+        </div>
+        <div class="progress-stats-row">
+          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">28%</div></div>
+          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">13/47</div></div>
+          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">58%</div></div>
+          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">1 day ago</div></div>
+        </div>
+      </div>
+
+      <div class="student-progress-card">
+        <div class="student-header">
+          <div class="student-info-header">
+            <div class="student-avatar-progress">AJ</div>
+            <div class="student-name-email">
+              <h4>Alex Johnson</h4>
+              <p>alex.johnson@email.com</p>
+            </div>
+            <span class="status-badge live">● Live</span>
+          </div>
+          <div class="student-actions">
+            <button class="action-btn">View details</button>
+          </div>
+        </div>
+        <div class="current-lesson">
+          <div class="lesson-title">Currently Watching</div>
+          <div class="lesson-subtitle">React Hooks - Introduction to useState</div>
+          <div class="lesson-progress-bar">
+            <div class="lesson-progress-fill green" style="width: 45%"></div>
+          </div>
+          <div class="progress-text">Module 2 • Lesson 5 • 10:32 / 23:08</div>
+        </div>
+        <div class="progress-stats-row">
+          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">45%</div></div>
+          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">21/47</div></div>
+          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">87%</div></div>
+          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">Now</div></div>
+        </div>
+      </div>
+    `;
+  } else if (course === 'javascript') {
+    studentsHTML = `
+      <div class="student-progress-card">
+        <div class="student-header">
+          <div class="student-info-header">
+            <div class="student-avatar-progress">MJ</div>
+            <div class="student-name-email">
+              <h4>Mike Johnson</h4>
+              <p>mike.johnson@email.com</p>
+            </div>
+            <span class="status-badge needs-help">Needs help</span>
+          </div>
+          <div class="student-actions">
+            <button class="action-btn">Send message</button>
+          </div>
+        </div>
+        <div class="current-lesson">
+          <div class="lesson-title">Stuck on</div>
+          <div class="lesson-subtitle">JavaScript Async/Await Basics</div>
+          <div class="lesson-progress-bar">
+            <div class="lesson-progress-fill yellow" style="width: 18%"></div>
+          </div>
+          <div class="progress-text">18% • Watched 3 times</div>
+        </div>
+        <div class="progress-stats-row">
+          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">28%</div></div>
+          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">13/47</div></div>
+          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">58%</div></div>
+          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">1 day ago</div></div>
+        </div>
+      </div>
+    `;
+  } else if (course === 'react') {
+    studentsHTML = `
+      <div class="student-progress-card">
+        <div class="student-header">
+          <div class="student-info-header">
+            <div class="student-avatar-progress">AJ</div>
+            <div class="student-name-email">
+              <h4>Alex Johnson</h4>
+              <p>alex.johnson@email.com</p>
+            </div>
+            <span class="status-badge live">● Live</span>
+          </div>
+          <div class="student-actions">
+            <button class="action-btn">View details</button>
+          </div>
+        </div>
+        <div class="current-lesson">
+          <div class="lesson-title">Currently Watching</div>
+          <div class="lesson-subtitle">React Hooks - Introduction to useState</div>
+          <div class="lesson-progress-bar">
+            <div class="lesson-progress-fill green" style="width: 45%"></div>
+          </div>
+          <div class="progress-text">Module 2 • Lesson 5 • 10:32 / 23:08</div>
+        </div>
+        <div class="progress-stats-row">
+          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">45%</div></div>
+          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">21/47</div></div>
+          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">87%</div></div>
+          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">Now</div></div>
+        </div>
+      </div>
+    `;
+  } else if (course === 'ui') {
+    studentsHTML = `
+      <div class="student-progress-card">
+        <div class="student-header">
+          <div class="student-info-header">
+            <div class="student-avatar-progress">SM</div>
+            <div class="student-name-email">
+              <h4>Sarah Martinez</h4>
+              <p>sarah.martinez@email.com</p>
+            </div>
+          </div>
+          <div class="student-actions">
+            <button class="action-btn">View details</button>
+          </div>
+        </div>
+        <div class="current-lesson">
+          <div class="lesson-title">Last Watched</div>
+          <div class="lesson-subtitle">CSS Grid Layout Advanced Techniques</div>
+          <div class="lesson-progress-bar">
+            <div class="lesson-progress-fill green" style="width: 100%"></div>
+          </div>
+          <div class="progress-text">100% completed</div>
+        </div>
+        <div class="progress-stats-row">
+          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">78%</div></div>
+          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">37/47</div></div>
+          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">92%</div></div>
+          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">30 ago</div></div>
+        </div>
+      </div>
+    `;
+  } else if (course === 'db') {
+    studentsHTML = `
+      <div class="student-progress-card">
+        <div class="student-header">
+          <div class="student-info-header">
+            <div class="student-avatar-progress">TM</div>
+            <div class="student-name-email">
+              <h4>Tom Martinez</h4>
+              <p>tom.martinez@email.com</p>
+            </div>
+          </div>
+          <div class="student-actions">
+            <button class="action-btn">View details</button>
+          </div>
+        </div>
+        <div class="current-lesson">
+          <div class="lesson-title">Last Watched</div>
+          <div class="lesson-subtitle">SQL Joins and Relationships</div>
+          <div class="lesson-progress-bar">
+            <div class="lesson-progress-fill green" style="width: 82%"></div>
+          </div>
+          <div class="progress-text">82% completed</div>
+        </div>
+        <div class="progress-stats-row">
+          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">82%</div></div>
+          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">28/34</div></div>
+          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">88%</div></div>
+          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">5h ago</div></div>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Remove existing students
+  section.querySelectorAll('.student-progress-card').forEach(card => card.remove());
+  
+  // Insert new students before the button
+  if (btn) {
+    btn.insertAdjacentHTML('beforebegin', studentsHTML);
+  }
+};
+
+// Load more progress
+window.loadMoreProgress = function() {
+  const btn = document.querySelector('.show-more-progress-btn');
+  const section = document.querySelector('.students-progress-section');
+  
+  if (!btn || !section) return;
+  
+  if (btn.dataset.loaded === 'true') {
+    // Hide extra students
+    document.querySelectorAll('.student-progress-card.extra').forEach(card => {
+      card.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => card.remove(), 300);
+    });
+    btn.textContent = 'Show more';
+    btn.dataset.loaded = 'false';
+    return;
+  }
+  
+  const newStudentsHTML = `
+    <div class="student-progress-card extra" style="animation: slideIn 0.5s ease;">
+      <div class="student-header">
+        <div class="student-info-header">
+          <div class="student-avatar-progress">TM</div>
+          <div class="student-name-email">
+            <h4>Tom Martinez</h4>
+            <p>tom.martinez@email.com</p>
+          </div>
+        </div>
+        <div class="student-actions">
+          <button class="action-btn">View details</button>
+        </div>
+      </div>
+      
+      <div class="current-lesson">
+        <div class="lesson-title">Last Watched</div>
+        <div class="lesson-subtitle">Python Data Structures</div>
+        <div class="lesson-progress-bar">
+          <div class="lesson-progress-fill green" style="width: 94%"></div>
+        </div>
+        <div class="progress-text">94% completed</div>
+      </div>
+      
+      <div class="progress-stats-row">
+        <div class="stat-item">
+          <div class="stat-label">Overall Progress</div>
+          <div class="stat-value">94%</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Completed Lessons</div>
+          <div class="stat-value">44/47</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Quiz Average</div>
+          <div class="stat-value">96%</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Last Active</div>
+          <div class="stat-value">2h ago</div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  btn.insertAdjacentHTML('beforebegin', newStudentsHTML);
+  btn.textContent = 'Show less';
+  btn.dataset.loaded = 'true';
+};
+
+// Open Engagement Page
+window.openEngagement = function() {
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (contentArea) {
+    updatePageTitle('Engagement');
+    contentArea.innerHTML = getEngagementHTML();
+    updateActiveMenuItem('Engagement');
+    return;
+  }
+};
+
+// Helper function to get engagement HTML
+function getEngagementHTML() {
+  return `
+    <div class="engagement-page">
+      <style>
+        .engagement-page {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        .engagement-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+        .engagement-stat-card {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 16px;
+          padding: 24px;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+        .engagement-stat-card:hover {
+          transform: translateY(-5px);
+          border-color: rgba(126, 162, 212, 0.4);
+          background: rgba(58, 56, 56, 0.5);
+        }
+        .engagement-stat-title {
+          color: rgba(126, 162, 212, 1);
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 12px;
+        }
+        .engagement-stat-value {
+          color: #ffffff;
+          font-size: 36px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        .lessons-section {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 16px;
+          padding: 24px;
+        }
+        .lessons-title {
+          color: #ffffff;
+          font-size: 20px;
+          font-weight: 600;
+          margin-bottom: 24px;
+        }
+        .lesson-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px;
+          background: rgba(58, 56, 56, 0.5);
+          border: 1px solid rgba(126, 162, 212, 0.1);
+          border-radius: 12px;
+          margin-bottom: 12px;
+          transition: all 0.3s ease;
+        }
+        .lesson-item:hover {
+          border-color: rgba(126, 162, 212, 0.3);
+          background: rgba(58, 56, 56, 0.7);
+          transform: translateX(4px);
+        }
+        .lesson-info h4 {
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+        .lesson-info p {
+          color: rgba(156, 163, 175, 1);
+          font-size: 12px;
+        }
+        .lesson-completion {
+          color: #10b981;
+          font-size: 14px;
+          font-weight: 600;
+        }
+      </style>
+
+      <!-- Statistics Cards -->
+      <div class="engagement-stats-grid">
+        <div class="engagement-stat-card">
+          <div class="engagement-stat-title">Engagement Rate</div>
+          <div class="engagement-stat-value">71.5%</div>
+        </div>
+        <div class="engagement-stat-card">
+          <div class="engagement-stat-title">Avg. Watch Time</div>
+          <div class="engagement-stat-value">45 min</div>
+        </div>
+        <div class="engagement-stat-card">
+          <div class="engagement-stat-title">Drop-off Rate</div>
+          <div class="engagement-stat-value">15%</div>
+        </div>
+      </div>
+
+      <!-- Most Watched Lessons -->
+      <div class="lessons-section">
+        <h3 class="lessons-title">Most watched lessons</h3>
+        
+        <div class="lesson-item">
+          <div class="lesson-info">
+            <h4>Introduction to Marketing</h4>
+            <p>892 views • 95% avg watch</p>
+          </div>
+          <span class="lesson-completion">88% completion</span>
+        </div>
+
+        <div class="lesson-item">
+          <div class="lesson-info">
+            <h4>React Hooks Deep Dive</h4>
+            <p>745 views • 88% avg watch</p>
+          </div>
+          <span class="lesson-completion">90% completion</span>
+        </div>
+
+        <div class="lesson-item">
+          <div class="lesson-info">
+            <h4>Python Data Structures</h4>
+            <p>623 views • 92% avg watch</p>
+          </div>
+          <span class="lesson-completion">85% completion</span>
+        </div>
+
+        <div class="lesson-item">
+          <div class="lesson-info">
+            <h4>UI/UX Design Principles</h4>
+            <p>581 views • 87% avg watch</p>
+          </div>
+          <span class="lesson-completion">88% completion</span>
+        </div>
+
+        <div class="lesson-item">
+          <div class="lesson-info">
+            <h4>JavaScript ES6 Features</h4>
+            <p>512 views • 91% avg watch</p>
+          </div>
+          <span class="lesson-completion">92% completion</span>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Open Students Analytics Page
+window.openStudentsAnalytics = function() {
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (contentArea) {
+    updatePageTitle('Student analytics');
+    contentArea.innerHTML = getStudentsAnalyticsHTML();
+    updateActiveMenuItem('Students Analytics');
+    return;
+  }
+};
+
+// Helper function to get students analytics HTML
+function getStudentsAnalyticsHTML() {
+  return `
+    <div class="students-analytics-page">
+      <style>
+        .students-analytics-page {
+          padding: 24px;
+          display: flex;
+          flex-direction: column;
+          gap: 24px;
+        }
+        .analytics-stats-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 20px;
+        }
+        .analytics-stat-card {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 16px;
+          padding: 24px;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+        .analytics-stat-card:hover {
+          transform: translateY(-5px);
+          border-color: rgba(126, 162, 212, 0.4);
+          background: rgba(58, 56, 56, 0.5);
+        }
+        .analytics-stat-title {
+          color: rgba(126, 162, 212, 1);
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 12px;
+        }
+        .analytics-stat-value {
+          color: #ffffff;
+          font-size: 36px;
+          font-weight: 700;
+          margin-bottom: 8px;
+        }
+        .students-tabs {
+          display: flex;
+          gap: 12px;
+          margin-bottom: 20px;
+          border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+        }
+        .student-tab {
+          padding: 12px 24px;
+          background: transparent;
+          border: none;
+          color: rgba(156, 163, 175, 1);
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+          border-bottom: 2px solid transparent;
+          transition: all 0.3s ease;
+        }
+        .student-tab.active {
+          color: rgba(126, 162, 212, 1);
+          border-bottom-color: rgba(126, 162, 212, 1);
+        }
+        .student-tab:hover {
+          color: #ffffff;
+        }
+        .students-list {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 16px;
+          padding: 24px;
+        }
+        .student-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px;
+          background: rgba(58, 56, 56, 0.5);
+          border: 1px solid rgba(126, 162, 212, 0.1);
+          border-radius: 12px;
+          margin-bottom: 12px;
+          transition: all 0.3s ease;
+        }
+        .student-item:hover {
+          border-color: rgba(126, 162, 212, 0.3);
+          background: rgba(58, 56, 56, 0.7);
+          transform: translateX(4px);
+        }
+        .student-info {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .student-avatar {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: rgba(126, 162, 212, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          font-weight: 600;
+          font-size: 16px;
+        }
+        .student-details h4 {
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+        .student-details p {
+          color: rgba(156, 163, 175, 1);
+          font-size: 12px;
+        }
+        .student-progress {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+        .progress-bar-container {
+          width: 200px;
+        }
+        .progress-label {
+          color: rgba(156, 163, 175, 1);
+          font-size: 12px;
+          margin-bottom: 4px;
+        }
+        .progress-bar {
+          width: 100%;
+          height: 8px;
+          background: rgba(58, 56, 56, 0.5);
+          border-radius: 4px;
+          overflow: hidden;
+        }
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #10b981, #059669);
+          border-radius: 4px;
+          transition: width 0.5s ease;
+        }
+        .progress-percent {
+          color: #10b981;
+          font-size: 14px;
+          font-weight: 600;
+          min-width: 60px;
+          text-align: right;
+        }
+        .show-all-students-btn {
+          background: transparent;
+          border: 1px solid rgba(126, 162, 212, 0.3);
+          color: rgba(126, 162, 212, 1);
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: block;
+          margin: 24px auto 0;
+        }
+        .show-all-students-btn:hover {
+          background: rgba(126, 162, 212, 0.1);
+          border-color: rgba(126, 162, 212, 0.5);
+        }
+      </style>
+
+      <!-- Statistics Cards -->
+      <div class="analytics-stats-grid">
+        <div class="analytics-stat-card">
+          <div class="analytics-stat-title">Total Students</div>
+          <div class="analytics-stat-value">9</div>
+        </div>
+        <div class="analytics-stat-card">
+          <div class="analytics-stat-title">Active Students</div>
+          <div class="analytics-stat-value">4</div>
+        </div>
+        <div class="analytics-stat-card">
+          <div class="analytics-stat-title">New This Week</div>
+          <div class="analytics-stat-value">5</div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="students-tabs">
+        <button class="student-tab active" onclick="switchStudentTab(this, 'all')">All students</button>
+        <button class="student-tab" onclick="switchStudentTab(this, 'active')">Most active students</button>
+      </div>
+
+      <!-- Students List -->
+      <div class="students-list">
+        <div class="student-item">
+          <div class="student-info">
+            <div class="student-avatar">JS</div>
+            <div class="student-details">
+              <h4>John Smith</h4>
+              <p>5 courses • 45 hours</p>
+            </div>
+          </div>
+          <div class="student-progress">
+            <div class="progress-bar-container">
+              <div class="progress-label">Progress</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 85%"></div>
+              </div>
+            </div>
+            <span class="progress-percent">85% Progress</span>
+          </div>
+        </div>
+
+        <div class="student-item">
+          <div class="student-info">
+            <div class="student-avatar">AK</div>
+            <div class="student-details">
+              <h4>Alice Kim</h4>
+              <p>3 courses • 32 hours</p>
+            </div>
+          </div>
+          <div class="student-progress">
+            <div class="progress-bar-container">
+              <div class="progress-label">Progress</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 62%"></div>
+              </div>
+            </div>
+            <span class="progress-percent">62% Progress</span>
+          </div>
+        </div>
+
+        <div class="student-item">
+          <div class="student-info">
+            <div class="student-avatar">TM</div>
+            <div class="student-details">
+              <h4>Tom Martinez</h4>
+              <p>7 courses • 58 hours</p>
+            </div>
+          </div>
+          <div class="student-progress">
+            <div class="progress-bar-container">
+              <div class="progress-label">Progress</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 94%"></div>
+              </div>
+            </div>
+            <span class="progress-percent">94% Progress</span>
+          </div>
+        </div>
+
+        <div class="student-item">
+          <div class="student-info">
+            <div class="student-avatar">RL</div>
+            <div class="student-details">
+              <h4>Rachel Lee</h4>
+              <p>4 courses • 38 hours</p>
+            </div>
+          </div>
+          <div class="student-progress">
+            <div class="progress-bar-container">
+              <div class="progress-label">Progress</div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 47%"></div>
+              </div>
+            </div>
+            <span class="progress-percent">47% Progress</span>
+          </div>
+        </div>
+
+        <button class="show-all-students-btn" onclick="loadMoreStudents()">Show more</button>
+      </div>
+    </div>
+  `;
+}
+
+// Switch student tab
+window.switchStudentTab = function(button, type) {
+  // Remove active from all tabs
+  document.querySelectorAll('.student-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  
+  // Add active to clicked tab
+  button.classList.add('active');
+  
+  const studentsList = document.querySelector('.students-list');
+  if (!studentsList) return;
+  
+  // Remove extra students if any
+  document.querySelectorAll('.student-item.extra-student').forEach(s => s.remove());
+  
+  // Reset show more button
+  const btn = document.querySelector('.show-all-students-btn');
+  if (btn) {
+    btn.textContent = 'Show more';
+    btn.dataset.loaded = 'false';
+  }
+  
+  let studentsHTML = '';
+  
+  if (type === 'all') {
+    // All students
+    studentsHTML = `
+      <div class="student-item">
+        <div class="student-info">
+          <div class="student-avatar">JS</div>
+          <div class="student-details">
+            <h4>John Smith</h4>
+            <p>5 courses • 45 hours</p>
+          </div>
+        </div>
+        <div class="student-progress">
+          <div class="progress-bar-container">
+            <div class="progress-label">Progress</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 85%"></div>
+            </div>
+          </div>
+          <span class="progress-percent">85% Progress</span>
+        </div>
+      </div>
+
+      <div class="student-item">
+        <div class="student-info">
+          <div class="student-avatar">AK</div>
+          <div class="student-details">
+            <h4>Alice Kim</h4>
+            <p>3 courses • 32 hours</p>
+          </div>
+        </div>
+        <div class="student-progress">
+          <div class="progress-bar-container">
+            <div class="progress-label">Progress</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 62%"></div>
+            </div>
+          </div>
+          <span class="progress-percent">62% Progress</span>
+        </div>
+      </div>
+
+      <div class="student-item">
+        <div class="student-info">
+          <div class="student-avatar">TM</div>
+          <div class="student-details">
+            <h4>Tom Martinez</h4>
+            <p>7 courses • 58 hours</p>
+          </div>
+        </div>
+        <div class="student-progress">
+          <div class="progress-bar-container">
+            <div class="progress-label">Progress</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 94%"></div>
+            </div>
+          </div>
+          <span class="progress-percent">94% Progress</span>
+        </div>
+      </div>
+
+      <div class="student-item">
+        <div class="student-info">
+          <div class="student-avatar">RL</div>
+          <div class="student-details">
+            <h4>Rachel Lee</h4>
+            <p>4 courses • 38 hours</p>
+          </div>
+        </div>
+        <div class="student-progress">
+          <div class="progress-bar-container">
+            <div class="progress-label">Progress</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 47%"></div>
+            </div>
+          </div>
+          <span class="progress-percent">47% Progress</span>
+        </div>
+      </div>
+    `;
+  } else if (type === 'active') {
+    // Most active students - sorted by hours
+    studentsHTML = `
+      <div class="student-item">
+        <div class="student-info">
+          <div class="student-avatar">TM</div>
+          <div class="student-details">
+            <h4>Tom Martinez</h4>
+            <p>7 courses • 58 hours</p>
+          </div>
+        </div>
+        <div class="student-progress">
+          <div class="progress-bar-container">
+            <div class="progress-label">Progress</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 94%"></div>
+            </div>
+          </div>
+          <span class="progress-percent">94% Progress</span>
+        </div>
+      </div>
+
+      <div class="student-item">
+        <div class="student-info">
+          <div class="student-avatar">EW</div>
+          <div class="student-details">
+            <h4>Emma Wilson</h4>
+            <p>6 courses • 52 hours</p>
+          </div>
+        </div>
+        <div class="student-progress">
+          <div class="progress-bar-container">
+            <div class="progress-label">Progress</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 91%"></div>
+            </div>
+          </div>
+          <span class="progress-percent">91% Progress</span>
+        </div>
+      </div>
+
+      <div class="student-item">
+        <div class="student-info">
+          <div class="student-avatar">JS</div>
+          <div class="student-details">
+            <h4>John Smith</h4>
+            <p>5 courses • 45 hours</p>
+          </div>
+        </div>
+        <div class="student-progress">
+          <div class="progress-bar-container">
+            <div class="progress-label">Progress</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 85%"></div>
+            </div>
+          </div>
+          <span class="progress-percent">85% Progress</span>
+        </div>
+      </div>
+
+      <div class="student-item">
+        <div class="student-info">
+          <div class="student-avatar">LA</div>
+          <div class="student-details">
+            <h4>Lisa Anderson</h4>
+            <p>5 courses • 42 hours</p>
+          </div>
+        </div>
+        <div class="student-progress">
+          <div class="progress-bar-container">
+            <div class="progress-label">Progress</div>
+            <div class="progress-bar">
+              <div class="progress-fill" style="width: 78%"></div>
+            </div>
+          </div>
+          <span class="progress-percent">78% Progress</span>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Find the button and insert students before it
+  const showMoreBtn = studentsList.querySelector('.show-all-students-btn');
+  if (showMoreBtn) {
+    // Remove all existing student items
+    studentsList.querySelectorAll('.student-item').forEach(item => item.remove());
+    // Insert new students
+    showMoreBtn.insertAdjacentHTML('beforebegin', studentsHTML);
+  }
+};
+
+// Load more students
+window.loadMoreStudents = function() {
+  const btn = document.querySelector('.show-all-students-btn');
+  const studentsList = document.querySelector('.students-list');
+  
+  if (!btn || !studentsList) return;
+  
+  // Check if already loaded
+  if (btn.dataset.loaded === 'true') {
+    // Hide extra students
+    const extraStudents = document.querySelectorAll('.student-item.extra-student');
+    extraStudents.forEach(student => {
+      student.style.animation = 'slideOut 0.3s ease';
+      setTimeout(() => student.remove(), 300);
+    });
+    
+    // Change button back
+    btn.textContent = 'Show more';
+    btn.dataset.loaded = 'false';
+    return;
+  }
+  
+  // New students data
+  const newStudents = [
+    { name: 'Sarah Johnson', initials: 'SJ', courses: 3, hours: 28, progress: 72 },
+    { name: 'Mike Davis', initials: 'MD', courses: 4, hours: 35, progress: 68 },
+    { name: 'Emma Wilson', initials: 'EW', courses: 6, hours: 52, progress: 91 },
+    { name: 'David Brown', initials: 'DB', courses: 2, hours: 18, progress: 55 },
+    { name: 'Lisa Anderson', initials: 'LA', courses: 5, hours: 42, progress: 78 }
+  ];
+  
+  // Create HTML for new students
+  const newStudentsHTML = newStudents.map(student => `
+    <div class="student-item extra-student" style="animation: slideIn 0.5s ease;">
+      <div class="student-info">
+        <div class="student-avatar">${student.initials}</div>
+        <div class="student-details">
+          <h4>${student.name}</h4>
+          <p>${student.courses} courses • ${student.hours} hours</p>
+        </div>
+      </div>
+      <div class="student-progress">
+        <div class="progress-bar-container">
+          <div class="progress-label">Progress</div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: ${student.progress}%"></div>
+          </div>
+        </div>
+        <span class="progress-percent">${student.progress}% Progress</span>
+      </div>
+    </div>
+  `).join('');
+  
+  // Insert new students before the button
+  btn.insertAdjacentHTML('beforebegin', newStudentsHTML);
+  
+  // Change button text
+  btn.textContent = 'Show less';
+  btn.dataset.loaded = 'true';
+};
 
 // Open Rating & Comments Page
 window.openRatingComments = function() {

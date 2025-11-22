@@ -5538,3 +5538,73 @@ input:checked + .toggle-slider:before {
     transform: translateY(0);
   }
 }
+
+/* Sidebar Menu Animations */
+.figma-menu-children {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), 
+              opacity 0.5s ease,
+              margin 0.5s ease;
+  opacity: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.figma-menu-children.hidden {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.figma-menu-children:not(.hidden) {
+  max-height: 600px;
+  opacity: 1;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.figma-menu-arrow {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+}
+
+.figma-menu-parent.expanded .figma-menu-arrow {
+  transform: rotate(90deg);
+}
+
+.figma-menu-child {
+  transition: all 0.2s ease;
+  transform: translateX(0);
+}
+
+.figma-menu-child:hover {
+  transform: translateX(4px);
+  background: rgba(126, 162, 212, 0.1);
+}
+
+/* Smooth content area transitions */
+.figma-content-area {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Menu parent hover effect */
+.figma-menu-parent {
+  transition: all 0.2s ease;
+}
+
+.figma-menu-parent:hover {
+  background: rgba(126, 162, 212, 0.05);
+}
