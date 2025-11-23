@@ -1,9 +1,15 @@
 import { store } from '../../utils/store.js';
 import { apiService } from '../../utils/api.js';
 import { router } from '../../utils/router.js';
+import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
+import { getTheme, saveTheme, initTheme, presetColors } from '../../utils/theme.js';
 
 export function initDashboard() {
   console.log('=== Dashboard initializing ===');
+
+  // Initialize i18n and theme
+  initI18n();
+  initTheme();
 
   // Clean up any existing page-specific styles and reset body styles
   cleanupPageStyles();
@@ -92,12 +98,12 @@ function renderTeacherDashboard(user) {
           <h1>dars<span>linker</span></h1>
         </div>
         <div class="figma-title">
-          <h2>Teacher dashboard</h2>
+          <h2>${t('dashboard.title')}</h2>
         </div>
         <div class="figma-header-buttons">
-          <button class="figma-btn" onclick="startNewMeeting()">New meeting</button>
-          <button class="figma-btn" onclick="openTelegramBot()">Telegram Bot</button>
-          <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">New Course</button>
+          <button class="figma-btn" onclick="startNewMeeting()">${t('header.newMeeting')}</button>
+          <button class="figma-btn" onclick="openTelegramBot()">${t('header.telegramBot')}</button>
+          <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">${t('header.newCourse')}</button>
         </div>
       </div>
 
@@ -108,85 +114,85 @@ function renderTeacherDashboard(user) {
           <!-- General Menu (Expandable) -->
           <div class="figma-menu-section">
             <div class="figma-menu-parent" onclick="toggleMenu('general')">
-              <span class="figma-menu-title">General</span>
+              <span class="figma-menu-title">${t('sidebar.general')}</span>
               <span class="figma-menu-arrow" id="general-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="general-children">
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Dashboard</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">Profile</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">Messages</a>
+              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">${t('sidebar.dashboard')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">${t('sidebar.profile')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">${t('sidebar.messages')}</a>
             </div>
           </div>
 
           <!-- Content Management (Expandable) -->
           <div class="figma-menu-section">
             <div class="figma-menu-parent" onclick="toggleMenu('content')">
-              <span class="figma-menu-title">Content Management</span>
+              <span class="figma-menu-title">${t('sidebar.contentManagement')}</span>
               <span class="figma-menu-arrow" id="content-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="content-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('draft')">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('archived')">Archived</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">${t('sidebar.createCourse')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">${t('sidebar.myCourses')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('draft')">${t('sidebar.drafts')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('archived')">${t('sidebar.archived')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">${t('sidebar.finance')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">${t('sidebar.assignments')}</a>
             </div>
           </div>
 
           <!-- AI Assistant (Expandable) -->
           <div class="figma-menu-section">
             <div class="figma-menu-parent" onclick="toggleMenu('ai')">
-              <span class="figma-menu-title">AI Assistant</span>
+              <span class="figma-menu-title">${t('sidebar.aiAssistant')}</span>
               <span class="figma-menu-arrow" id="ai-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="ai-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAIAssistantPage()">AI Assistant</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAIAssistantPage()">${t('sidebar.aiAssistant')}</a>
             </div>
           </div>
 
           <!-- Analytics (Expandable) -->
           <div class="figma-menu-section">
             <div class="figma-menu-parent" onclick="toggleMenu('analytics')">
-              <span class="figma-menu-title">Analytics</span>
+              <span class="figma-menu-title">${t('sidebar.analytics')}</span>
               <span class="figma-menu-arrow" id="analytics-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="analytics-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">Quiz Analytics</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">Rating Comments</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">Students Analytics</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEngagement(); return false;">Engagement</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openProgress(); return false;">Progress</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.studentsAnalytics')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEngagement(); return false;">${t('sidebar.engagement')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
             </div>
           </div>
 
           <!-- Rolls (Expandable) -->
           <div class="figma-menu-section">
             <div class="figma-menu-parent" onclick="toggleMenu('rolls')">
-              <span class="figma-menu-title">Rolls</span>
+              <span class="figma-menu-title">${t('sidebar.rolls')}</span>
               <span class="figma-menu-arrow" id="rolls-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="rolls-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openSubAdmin(); return false;">Sub Admin</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openSubAdmin(); return false;">${t('sidebar.subAdmin')}</a>
             </div>
           </div>
 
           <!-- Settings (Expandable) -->
           <div class="figma-menu-section">
             <div class="figma-menu-parent" onclick="toggleMenu('settings')">
-              <span class="figma-menu-title">Settings</span>
+              <span class="figma-menu-title">${t('sidebar.settings')}</span>
               <span class="figma-menu-arrow" id="settings-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="settings-children">
-              <a href="#" class="figma-menu-child">Language</a>
-              <a href="#" class="figma-menu-child">Customize UI</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openLanguagePage(); return false;">${t('sidebar.language')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCustomizeUI(); return false;">${t('sidebar.customizeUI')}</a>
             </div>
           </div>
 
           <!-- Subscription at bottom -->
           <div class="figma-subscription">
             <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">My Subscription</a>
+              <a href="#" class="figma-single-link">${t('sidebar.mySubscription')}</a>
             </div>
           </div>
         </div>
@@ -792,7 +798,7 @@ window.openEditProfile = function() {
 };
 
 window.customizeUI = function() {
-  alert('UI customization coming soon...');
+  openCustomizeUI();
 };
 
 // Helper function to update page title
@@ -1517,6 +1523,674 @@ window.searchSubAdmins = function(query) {
     }
   });
 };
+
+// Open Language Page
+window.openLanguagePage = function() {
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (contentArea) {
+    updatePageTitle(t('language.title'));
+    contentArea.innerHTML = getLanguagePageHTML();
+    updateActiveMenuItem('Language');
+    
+    // Set current language as selected
+    const currentLang = getCurrentLanguage();
+    document.querySelectorAll('.language-option').forEach(option => {
+      if (option.dataset.lang === currentLang) {
+        option.classList.add('selected');
+      }
+    });
+    return;
+  }
+};
+
+// Helper function to get language page HTML
+function getLanguagePageHTML() {
+  const currentLang = getCurrentLanguage();
+  
+  return `
+    <div class="language-page">
+      <style>
+        .language-page {
+          padding: 24px;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .language-header {
+          margin-bottom: 32px;
+        }
+        .language-subtitle {
+          color: rgba(156, 163, 175, 1);
+          font-size: 16px;
+          margin-bottom: 32px;
+        }
+        .language-options {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+          margin-bottom: 32px;
+        }
+        .language-option {
+          background: rgba(58, 56, 56, 0.3);
+          border: 2px solid rgba(126, 162, 212, 0.2);
+          border-radius: 12px;
+          padding: 20px 24px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .language-option:hover {
+          background: rgba(58, 56, 56, 0.5);
+          border-color: rgba(126, 162, 212, 0.4);
+          transform: translateX(4px);
+        }
+        .language-option.selected {
+          background: rgba(126, 162, 212, 0.2);
+          border-color: rgba(126, 162, 212, 1);
+        }
+        .language-icon {
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background: rgba(126, 162, 212, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #ffffff;
+          font-weight: 700;
+          font-size: 20px;
+        }
+        .language-option.selected .language-icon {
+          background: rgba(126, 162, 212, 0.5);
+        }
+        .language-name {
+          flex: 1;
+          color: #ffffff;
+          font-size: 18px;
+          font-weight: 600;
+        }
+        .language-check {
+          width: 24px;
+          height: 24px;
+          border-radius: 50%;
+          border: 2px solid rgba(126, 162, 212, 0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+        .language-option.selected .language-check {
+          background: rgba(126, 162, 212, 1);
+          border-color: rgba(126, 162, 212, 1);
+        }
+        .language-check svg {
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+        .language-option.selected .language-check svg {
+          opacity: 1;
+        }
+        .language-actions {
+          display: flex;
+          justify-content: center;
+          gap: 16px;
+        }
+        .btn-apply {
+          padding: 14px 32px;
+          background: rgba(126, 162, 212, 0.3);
+          border: 1px solid rgba(126, 162, 212, 0.5);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .btn-apply:hover {
+          background: rgba(126, 162, 212, 0.4);
+          transform: translateY(-2px);
+        }
+        .btn-apply:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+      </style>
+
+      <div class="language-header">
+        <h2 class="language-subtitle">${t('language.choosePreferred')}</h2>
+      </div>
+
+      <div class="language-options">
+        <div class="language-option ${currentLang === 'en' ? 'selected' : ''}" data-lang="en" onclick="selectLanguage('en')">
+          <div class="language-icon">E</div>
+          <div class="language-name">${t('language.english')}</div>
+          <div class="language-check">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="language-option ${currentLang === 'uz' ? 'selected' : ''}" data-lang="uz" onclick="selectLanguage('uz')">
+          <div class="language-icon">U</div>
+          <div class="language-name">${t('language.uzbek')}</div>
+          <div class="language-check">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="language-option ${currentLang === 'ru' ? 'selected' : ''}" data-lang="ru" onclick="selectLanguage('ru')">
+          <div class="language-icon">R</div>
+          <div class="language-name">${t('language.russian')}</div>
+          <div class="language-check">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="language-actions">
+        <button class="btn-apply" onclick="applyLanguageChanges()">${t('language.applyChanges')}</button>
+      </div>
+    </div>
+  `;
+}
+
+// Select language
+window.selectLanguage = function(lang) {
+  document.querySelectorAll('.language-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+  document.querySelector(`[data-lang="${lang}"]`).classList.add('selected');
+  
+  // Store selected language temporarily
+  window.selectedLanguage = lang;
+};
+
+// Apply language changes
+window.applyLanguageChanges = function() {
+  const selectedLang = window.selectedLanguage || getCurrentLanguage();
+  setLanguage(selectedLang);
+  
+  // Reload dashboard with new language
+  initDashboard();
+};
+
+// Open Customize UI Page
+window.openCustomizeUI = function() {
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (contentArea) {
+    updatePageTitle('Customize UI');
+    contentArea.innerHTML = getCustomizeUIHTML();
+    updateActiveMenuItem('Customize UI');
+    
+    // Initialize color picker and theme settings
+    initializeCustomizeUI();
+    return;
+  }
+};
+
+// Helper function to get Customize UI HTML
+function getCustomizeUIHTML() {
+  const theme = getTheme();
+  
+  return `
+    <div class="customize-ui-page">
+      <style>
+        .customize-ui-page {
+          padding: 24px;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .customize-subtitle {
+          color: var(--text-secondary);
+          font-size: 16px;
+          margin-bottom: 32px;
+        }
+        .customize-section {
+          background: var(--card-bg);
+          border: 1px solid var(--border-color);
+          border-radius: 16px;
+          padding: 24px;
+          margin-bottom: 24px;
+        }
+        .section-title {
+          color: var(--text-primary);
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 8px;
+        }
+        .section-subtitle {
+          color: var(--text-secondary);
+          font-size: 14px;
+          margin-bottom: 20px;
+        }
+        .color-picker-wrapper {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+        .color-preview {
+          width: 60px;
+          height: 60px;
+          border-radius: 12px;
+          border: 2px solid var(--border-color);
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .color-preview:hover {
+          transform: scale(1.05);
+          border-color: var(--primary-color);
+        }
+        .color-input-wrapper {
+          flex: 1;
+        }
+        .color-input {
+          width: 100%;
+          padding: 12px 16px;
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          color: var(--text-primary);
+          font-size: 14px;
+          font-family: monospace;
+        }
+        .preset-colors-label {
+          color: var(--text-secondary);
+          font-size: 14px;
+          margin-bottom: 12px;
+        }
+        .preset-colors {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .preset-color {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          cursor: pointer;
+          border: 2px solid transparent;
+          transition: all 0.3s ease;
+        }
+        .preset-color:hover {
+          transform: scale(1.1);
+          border-color: var(--text-primary);
+        }
+        .preset-color.active {
+          border-color: var(--text-primary);
+          box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3);
+        }
+        .theme-toggle-wrapper {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 0;
+        }
+        .theme-toggle-label {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          color: var(--text-primary);
+          font-size: 16px;
+          font-weight: 500;
+        }
+        .theme-toggle-label svg {
+          color: var(--primary-color);
+        }
+        .toggle-switch {
+          position: relative;
+          width: 56px;
+          height: 28px;
+          background: rgba(var(--primary-color-rgb), 0.2);
+          border-radius: 14px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .toggle-switch.active {
+          background: var(--primary-color);
+        }
+        .toggle-slider {
+          position: absolute;
+          top: 2px;
+          left: 2px;
+          width: 24px;
+          height: 24px;
+          background: white;
+          border-radius: 50%;
+          transition: all 0.3s ease;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .toggle-switch.active .toggle-slider {
+          transform: translateX(28px);
+        }
+        .font-options {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+        .font-option {
+          padding: 16px;
+          background: var(--bg-secondary);
+          border: 2px solid var(--border-color);
+          border-radius: 12px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          text-align: center;
+        }
+        .font-option:hover {
+          border-color: var(--primary-color);
+          background: var(--card-hover);
+        }
+        .font-option.active {
+          border-color: var(--primary-color);
+          background: rgba(var(--primary-color-rgb), 0.1);
+        }
+        .font-name {
+          color: var(--text-primary);
+          font-size: 16px;
+          font-weight: 600;
+          margin-bottom: 4px;
+        }
+        .font-preview {
+          color: var(--text-secondary);
+          font-size: 12px;
+        }
+        .save-btn {
+          width: 100%;
+          padding: 14px 32px;
+          background: var(--primary-color);
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .save-btn:hover {
+          opacity: 0.9;
+          transform: translateY(-2px);
+        }
+      </style>
+
+      <div class="customize-subtitle">Make the app truly yours with personalized colors and settings</div>
+
+      <!-- Theme Color Section -->
+      <div class="customize-section">
+        <h3 class="section-title">Theme Color</h3>
+        <p class="section-subtitle">Custom Color (RGB)</p>
+        
+        <div class="color-picker-wrapper">
+          <div class="color-preview" id="colorPreview" style="background-color: ${theme.primaryColor};" onclick="document.getElementById('colorPicker').click()"></div>
+          <div class="color-input-wrapper">
+            <input type="text" class="color-input" id="colorInput" value="${theme.primaryColor}" placeholder="#7ea2d4" oninput="updateColorPreview(this.value)">
+            <input type="color" id="colorPicker" value="${theme.primaryColor}" style="display: none;" onchange="updateColorFromPicker(this.value)">
+          </div>
+        </div>
+        
+        <div class="preset-colors-label">Quick presets</div>
+        <div class="preset-colors" id="presetColors">
+          ${presetColors.map(color => `
+            <div class="preset-color ${theme.primaryColor === color.value ? 'active' : ''}" 
+                 style="background-color: ${color.value};" 
+                 onclick="selectPresetColor('${color.value}')"
+                 title="${color.name}">
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <!-- Light Mode Section -->
+      <div class="customize-section">
+        <div class="theme-toggle-wrapper">
+          <div class="theme-toggle-label">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
+              <path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Light Mode
+          </div>
+          <div class="toggle-switch ${theme.mode === 'light' ? 'active' : ''}" id="lightModeToggle" onclick="toggleLightMode()">
+            <div class="toggle-slider"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Font Family Section -->
+      <div class="customize-section">
+        <h3 class="section-title">Shrift (Font Family)</h3>
+        <p class="section-subtitle">Choose your preferred font</p>
+        
+        <div class="font-options">
+          <div class="font-option ${theme.fontFamily === 'system' ? 'active' : ''}" onclick="selectFont('system')">
+            <div class="font-name" style="font-family: -apple-system, BlinkMacSystemFont, sans-serif;">System</div>
+            <div class="font-preview">Default system font</div>
+          </div>
+          <div class="font-option ${theme.fontFamily === 'inter' ? 'active' : ''}" onclick="selectFont('inter')">
+            <div class="font-name" style="font-family: 'Inter', sans-serif;">Inter</div>
+            <div class="font-preview">Modern & clean</div>
+          </div>
+          <div class="font-option ${theme.fontFamily === 'roboto' ? 'active' : ''}" onclick="selectFont('roboto')">
+            <div class="font-name" style="font-family: 'Roboto', sans-serif;">Roboto</div>
+            <div class="font-preview">Google's font</div>
+          </div>
+          <div class="font-option ${theme.fontFamily === 'poppins' ? 'active' : ''}" onclick="selectFont('poppins')">
+            <div class="font-name" style="font-family: 'Poppins', sans-serif;">Poppins</div>
+            <div class="font-preview">Geometric & friendly</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Save Button -->
+      <button class="save-btn" onclick="saveCustomization()">Save customization</button>
+    </div>
+  `;
+}
+
+// Initialize Customize UI
+function initializeCustomizeUI() {
+  const theme = getTheme();
+  window.currentTheme = { ...theme };
+}
+
+// Update color preview
+window.updateColorPreview = function(color) {
+  if (/^#[0-9A-F]{6}$/i.test(color)) {
+    document.getElementById('colorPreview').style.backgroundColor = color;
+    document.getElementById('colorPicker').value = color;
+    window.currentTheme.primaryColor = color;
+    
+    // Update active preset
+    document.querySelectorAll('.preset-color').forEach(preset => {
+      preset.classList.remove('active');
+    });
+  }
+};
+
+// Update color from picker
+window.updateColorFromPicker = function(color) {
+  document.getElementById('colorInput').value = color;
+  updateColorPreview(color);
+};
+
+// Select preset color
+window.selectPresetColor = function(color) {
+  document.getElementById('colorInput').value = color;
+  updateColorPreview(color);
+  
+  // Update active state
+  document.querySelectorAll('.preset-color').forEach(preset => {
+    preset.classList.remove('active');
+  });
+  event.target.classList.add('active');
+};
+
+// Toggle light mode
+window.toggleLightMode = function() {
+  const toggle = document.getElementById('lightModeToggle');
+  const isActive = toggle.classList.contains('active');
+  
+  if (isActive) {
+    toggle.classList.remove('active');
+    window.currentTheme.mode = 'dark';
+  } else {
+    toggle.classList.add('active');
+    window.currentTheme.mode = 'light';
+  }
+};
+
+// Select font
+window.selectFont = function(font) {
+  window.currentTheme.fontFamily = font;
+  
+  // Update active state
+  document.querySelectorAll('.font-option').forEach(option => {
+    option.classList.remove('active');
+  });
+  event.target.closest('.font-option').classList.add('active');
+};
+
+// Save customization
+window.saveCustomization = function() {
+  saveTheme(window.currentTheme);
+  
+  // Show success toast
+  showSuccessToast('Customization saved successfully!');
+  
+  // Reload dashboard to apply changes after a short delay
+  setTimeout(() => {
+    initDashboard();
+  }, 800);
+};
+
+// Show success toast notification
+function showSuccessToast(message) {
+  // Remove existing toast if any
+  const existingToast = document.querySelector('.success-toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+  
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = 'success-toast';
+  toast.innerHTML = `
+    <style>
+      .success-toast {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
+        color: white;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+        z-index: 999999;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      
+      @keyframes slideInRight {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      
+      @keyframes slideOutRight {
+        from {
+          transform: translateX(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+      }
+      
+      .success-toast.hiding {
+        animation: slideOutRight 0.3s ease forwards;
+      }
+      
+      .toast-icon {
+        width: 24px;
+        height: 24px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      
+      .toast-message {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+      }
+      
+      .toast-close {
+        width: 20px;
+        height: 20px;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        line-height: 1;
+        transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+      
+      .toast-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+    </style>
+    
+    <div class="toast-icon">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+        <path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    
+    <div class="toast-message">${message}</div>
+    
+    <button class="toast-close" onclick="this.closest('.success-toast').remove()">×</button>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    toast.classList.add('hiding');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.remove();
+      }
+    }, 300);
+  }, 3000);
+}
 
 // Open Progress Page
 window.openProgress = function() {
