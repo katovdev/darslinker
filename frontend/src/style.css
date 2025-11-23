@@ -3248,6 +3248,8 @@ body:has(.figma-dashboard) {
   z-index: 500;
   background: #232323;
   transform: translateZ(0);
+  display: flex;
+  flex-direction: column;
   will-change: auto;
 }
 
@@ -3359,9 +3361,27 @@ body:has(.figma-dashboard) {
   border-color: #7ea2d4;
 }
 
+/* Subscription specific styling */
+.figma-subscription .figma-single-link {
+  background: linear-gradient(135deg, rgba(126, 162, 212, 0.15), rgba(126, 162, 212, 0.05));
+  border: 1px solid rgba(126, 162, 212, 0.3);
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.1);
+}
+
+.figma-subscription .figma-single-link:hover {
+  background: linear-gradient(135deg, rgba(126, 162, 212, 0.25), rgba(126, 162, 212, 0.15));
+  border-color: #7ea2d4;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.2);
+}
+
 .figma-subscription {
-  margin-top: 20px;
+  margin-top: auto;
   width: 220px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(126, 162, 212, 0.2);
 }
 
 /* Content Area */

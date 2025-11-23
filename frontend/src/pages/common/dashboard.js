@@ -192,7 +192,7 @@ function renderTeacherDashboard(user) {
           <!-- Subscription at bottom -->
           <div class="figma-subscription">
             <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">${t('sidebar.mySubscription')}</a>
+              <a href="#" class="figma-single-link" onclick="openMySubscription(); return false;">${t('sidebar.mySubscription')}</a>
             </div>
           </div>
         </div>
@@ -2191,6 +2191,314 @@ function showSuccessToast(message) {
     }, 300);
   }, 3000);
 }
+
+// Open My Subscription Page
+window.openMySubscription = function() {
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (contentArea) {
+    updatePageTitle('My subscription');
+    contentArea.innerHTML = getMySubscriptionHTML();
+    updateActiveMenuItem('My Subscription');
+    return;
+  }
+};
+
+// Helper function to get My Subscription HTML
+function getMySubscriptionHTML() {
+  return `
+    <div class="subscription-page">
+      <style>
+        .subscription-page {
+          padding: 24px;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+        .subscription-subtitle {
+          color: var(--text-secondary);
+          font-size: 16px;
+          margin-bottom: 32px;
+        }
+        .subscription-card {
+          background: var(--card-bg);
+          border: 1px solid var(--border-color);
+          border-radius: 16px;
+          padding: 32px;
+          margin-bottom: 24px;
+        }
+        .plan-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          margin-bottom: 24px;
+        }
+        .plan-info {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        .plan-badges {
+          display: flex;
+          gap: 8px;
+          margin-bottom: 8px;
+        }
+        .badge {
+          padding: 4px 12px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 600;
+          text-transform: uppercase;
+        }
+        .badge-active {
+          background: rgba(16, 185, 129, 0.2);
+          color: #10b981;
+        }
+        .badge-pro {
+          background: var(--primary-light);
+          color: var(--primary-color);
+        }
+        .plan-name {
+          color: var(--text-primary);
+          font-size: 24px;
+          font-weight: 700;
+          margin-bottom: 4px;
+        }
+        .plan-description {
+          color: var(--text-secondary);
+          font-size: 14px;
+        }
+        .plan-price {
+          text-align: right;
+        }
+        .price-amount {
+          color: var(--text-primary);
+          font-size: 32px;
+          font-weight: 700;
+        }
+        .price-period {
+          color: var(--text-secondary);
+          font-size: 14px;
+        }
+        .subscription-period {
+          background: var(--bg-secondary);
+          border: 1px solid var(--border-color);
+          border-radius: 12px;
+          padding: 20px;
+          margin-bottom: 20px;
+        }
+        .period-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 12px;
+        }
+        .period-title {
+          color: var(--text-primary);
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .period-dates {
+          display: flex;
+          justify-content: space-between;
+          font-size: 13px;
+          margin-bottom: 12px;
+        }
+        .period-date {
+          color: var(--text-secondary);
+        }
+        .days-left {
+          color: #f59e0b;
+          font-size: 12px;
+        }
+        .progress-bar {
+          width: 100%;
+          height: 8px;
+          background: var(--bg-tertiary);
+          border-radius: 4px;
+          overflow: hidden;
+        }
+        .progress-fill {
+          height: 100%;
+          background: linear-gradient(90deg, #f59e0b, #d97706);
+          border-radius: 4px;
+          transition: width 0.3s ease;
+        }
+        .payment-info {
+          display: flex;
+          justify-content: space-between;
+          padding: 16px 0;
+          border-top: 1px solid var(--border-color);
+        }
+        .payment-label {
+          color: var(--text-secondary);
+          font-size: 14px;
+        }
+        .payment-value {
+          color: var(--text-primary);
+          font-size: 14px;
+          font-weight: 500;
+        }
+        .action-buttons {
+          display: flex;
+          gap: 12px;
+          margin-top: 24px;
+        }
+        .btn-upgrade {
+          flex: 1;
+          padding: 14px 24px;
+          background: var(--primary-color);
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .btn-upgrade:hover {
+          background: var(--primary-hover);
+          transform: translateY(-2px);
+        }
+        .btn-change-payment {
+          flex: 1;
+          padding: 14px 24px;
+          background: transparent;
+          border: 1px solid var(--border-color);
+          border-radius: 8px;
+          color: var(--text-primary);
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .btn-change-payment:hover {
+          background: var(--card-hover);
+          border-color: var(--primary-color);
+        }
+        .warning-box {
+          background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(217, 119, 6, 0.05));
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          border-radius: 12px;
+          padding: 20px;
+          display: flex;
+          gap: 16px;
+          align-items: flex-start;
+        }
+        .warning-icon {
+          width: 40px;
+          height: 40px;
+          background: rgba(245, 158, 11, 0.2);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .warning-content {
+          flex: 1;
+        }
+        .warning-text {
+          color: var(--text-primary);
+          font-size: 14px;
+          line-height: 1.6;
+          margin-bottom: 12px;
+        }
+        .btn-pay-now {
+          padding: 10px 20px;
+          background: #f59e0b;
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .btn-pay-now:hover {
+          background: #d97706;
+          transform: translateY(-2px);
+        }
+      </style>
+
+      <div class="subscription-subtitle">Your Pro plan and all premium features</div>
+
+      <!-- Subscription Card -->
+      <div class="subscription-card">
+        <div class="plan-header">
+          <div class="plan-info">
+            <div class="plan-badges">
+              <span class="badge badge-active">Active</span>
+              <span class="badge badge-pro">Pro Plan</span>
+            </div>
+            <h2 class="plan-name">Pro Plan</h2>
+            <p class="plan-description">All pro features included</p>
+          </div>
+          <div class="plan-price">
+            <div class="price-amount">1 290 000 UZS</div>
+            <div class="price-period">per month</div>
+          </div>
+        </div>
+
+        <!-- Subscription Period -->
+        <div class="subscription-period">
+          <div class="period-header">
+            <span class="period-title">Subscription Period</span>
+            <span class="days-left">28 days left</span>
+          </div>
+          <div class="period-dates">
+            <span class="period-date">Started: Oct 13, 2025</span>
+            <span class="period-date">Ends: Nov 13, 2025</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: 50%;"></div>
+          </div>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="payment-info">
+          <span class="payment-label">Payment Method</span>
+          <span class="payment-value">•••• •••• •••• 4242</span>
+        </div>
+        <div class="payment-info" style="border-top: none;">
+          <span class="payment-label">Next Payment</span>
+          <span class="payment-value">Nov 13</span>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn-upgrade" onclick="upgradePlan()">Upgrade plan</button>
+          <button class="btn-change-payment" onclick="changePaymentMethod()">Change payment method</button>
+        </div>
+      </div>
+
+      <!-- Warning Box -->
+      <div class="warning-box">
+        <div class="warning-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 9v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="warning-content">
+          <p class="warning-text">Your subscription will expire on November 13, 2025. After this date, your account will be automatically blocked and you will lose access to all Pro features. To continue using the platform, please make a payment before the expiration date.</p>
+          <button class="btn-pay-now" onclick="payNow()">Pay now</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Subscription page functions
+window.upgradePlan = function() {
+  showSuccessToast('Upgrade plan feature coming soon!');
+};
+
+window.changePaymentMethod = function() {
+  showSuccessToast('Change payment method feature coming soon!');
+};
+
+window.payNow = function() {
+  showSuccessToast('Payment processing feature coming soon!');
+};
 
 // Open Progress Page
 window.openProgress = function() {
