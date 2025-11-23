@@ -19,14 +19,96 @@
 
 /* Light Theme Override */
 body.light-mode {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f3f4f6;
-  --bg-tertiary: #e5e7eb;
-  --text-primary: #111827;
-  --text-secondary: #6b7280;
-  --border-color: rgba(0, 0, 0, 0.1);
-  --card-bg: rgba(255, 255, 255, 0.8);
-  --card-hover: rgba(243, 244, 246, 0.9);
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e9ecef;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6c757d;
+  --text-tertiary: #868e96;
+  --border-color: rgba(0, 0, 0, 0.12);
+  --card-bg: #ffffff;
+  --card-hover: #f8f9fa;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.12);
+  --input-bg: #ffffff;
+  --input-border: #dee2e6;
+  --sidebar-bg: #ffffff;
+  --header-bg: #ffffff;
+}
+
+/* Light mode specific overrides for components */
+body.light-mode .figma-header {
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+body.light-mode .figma-sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+}
+
+body.light-mode .figma-menu-parent {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+body.light-mode .figma-menu-parent:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+body.light-mode .figma-menu-parent.expanded {
+  background: var(--bg-tertiary);
+}
+
+body.light-mode .figma-menu-children {
+  background: var(--bg-secondary);
+}
+
+body.light-mode .figma-menu-child,
+body.light-mode .figma-single-link {
+  color: var(--text-primary);
+  background: transparent;
+}
+
+body.light-mode .figma-menu-child:hover,
+body.light-mode .figma-single-link:hover {
+  background: var(--bg-tertiary);
+}
+
+body.light-mode .figma-menu-child.active {
+  background: var(--primary-light);
+  color: var(--primary-color);
+}
+
+body.light-mode .figma-stats-card,
+body.light-mode .figma-profile-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+body.light-mode .form-input,
+body.light-mode .form-textarea {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+}
+
+body.light-mode .form-input:focus,
+body.light-mode .form-textarea:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+body.light-mode .profile-section,
+body.light-mode .course-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Reset and Base Styles */
@@ -4368,38 +4450,75 @@ input:checked + .toggle-slider:before {
   gap: 15px;
   justify-content: flex-end;
   padding: 20px 0;
+  margin-top: 10px;
 }
 
-.btn-cancel {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-  padding: 12px 24px;
-  border-radius: 8px;
+.btn-cancel,
+.btn-cancel-profile {
+  background: rgba(58, 56, 56, 0.5);
+  border: 1px solid rgba(126, 162, 212, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 12px 32px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-.btn-cancel:hover {
-  border-color: #7ea2d4;
-  background: rgba(126, 162, 212, 0.1);
+.btn-cancel:hover,
+.btn-cancel-profile:hover {
+  border-color: rgba(126, 162, 212, 0.6);
+  background: rgba(126, 162, 212, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.btn-save {
-  background: #28a745;
-  border: 1px solid #28a745;
+.btn-save,
+.btn-save-profile {
+  background: linear-gradient(135deg, #7ea2d4 0%, #5a8bc4 100%);
+  border: 1px solid rgba(126, 162, 212, 0.5);
   color: #ffffff;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 12px 32px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
+  position: relative;
+  overflow: hidden;
 }
 
-.btn-save:hover {
-  background: #218838;
-  border-color: #218838;
+.btn-save::before,
+.btn-save-profile::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-save:hover::before,
+.btn-save-profile:hover::before {
+  left: 100%;
+}
+
+.btn-save:hover,
+.btn-save-profile:hover {
+  background: linear-gradient(135deg, #6a92c4 0%, #4a7bb4 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(126, 162, 212, 0.4);
+}
+
+.btn-save:active,
+.btn-save-profile:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.3);
 }
 
 /* Responsive for edit profile */
@@ -4418,6 +4537,15 @@ input:checked + .toggle-slider:before {
 
   .form-actions {
     flex-direction: column-reverse;
+    gap: 12px;
+  }
+  
+  .btn-cancel,
+  .btn-cancel-profile,
+  .btn-save,
+  .btn-save-profile {
+    width: 100%;
+    padding: 14px 24px;
   }
 
   .btn-cancel,
@@ -6013,4 +6141,1926 @@ input:checked + .toggle-slider:before {
 
 .save-btn:hover {
   background: var(--primary-hover);
+}
+
+/* Additional Light Mode Overrides */
+body.light-mode .btn-save,
+body.light-mode .btn-save-profile {
+  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.25);
+}
+
+body.light-mode .btn-cancel,
+body.light-mode .btn-cancel-profile {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+body.light-mode .btn-cancel:hover,
+body.light-mode .btn-cancel-profile:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+body.light-mode .figma-profile-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-profile-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+body.light-mode .figma-stat-label,
+body.light-mode .field-label,
+body.light-mode .section-title {
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-stat-value {
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-bio-text,
+body.light-mode .upload-instructions p {
+  color: var(--text-primary);
+}
+
+body.light-mode .upload-instructions small,
+body.light-mode .field-note {
+  color: var(--text-secondary);
+}
+
+body.light-mode .figma-achievement-text {
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-achievement-check {
+  color: var(--primary-color);
+}
+
+body.light-mode .profile-picture-upload {
+  border: 2px dashed var(--border-color);
+  background: var(--bg-secondary);
+}
+
+body.light-mode .profile-picture-upload:hover {
+  border-color: var(--primary-color);
+  background: var(--bg-tertiary);
+}
+
+body.light-mode .profile-picture-preview {
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+}
+
+body.light-mode .customize-section {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+body.light-mode .color-input {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+}
+
+body.light-mode .font-option {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+}
+
+body.light-mode .font-option:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+body.light-mode .font-option.active {
+  border-color: var(--primary-color);
+  background: var(--primary-light);
+}
+
+body.light-mode .toggle-switch {
+  background: var(--bg-tertiary);
+}
+
+body.light-mode .toggle-switch.active {
+  background: var(--primary-color);
+}
+
+body.light-mode .messages-placeholder h3,
+body.light-mode .messages-placeholder p {
+  color: var(--text-primary);
+}
+
+body.light-mode .admin-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+body.light-mode .admin-card:hover {
+  background: var(--card-hover);
+  border-color: var(--primary-color);
+  box-shadow: var(--shadow-md);
+}
+
+body.light-mode .search-admin {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+}
+
+body.light-mode .search-admin:focus {
+  border-color: var(--primary-color);
+  background: var(--bg-secondary);
+}
+
+body.light-mode .add-admin-btn {
+  background: var(--primary-light);
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+body.light-mode .add-admin-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+body.light-mode .modal-content {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+body.light-mode .modal-input {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+}
+
+body.light-mode .modal-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+body.light-mode .course-section-title {
+  color: var(--primary-color);
+}
+
+body.light-mode .course-section label,
+body.light-mode .course-section .field-label,
+body.light-mode .course-section .form-label,
+body.light-mode .course-section p,
+body.light-mode .course-section span {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .course-section .field-note,
+body.light-mode .course-section small {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .upload-area {
+  border: 2px dashed var(--border-color);
+  background: var(--bg-secondary);
+}
+
+body.light-mode .upload-area:hover {
+  border-color: var(--primary-color);
+  background: var(--bg-tertiary);
+}
+
+body.light-mode .radio-option {
+  color: var(--text-primary);
+}
+
+body.light-mode .info-tip {
+  background: var(--primary-light);
+  border-left: 3px solid var(--primary-color);
+  color: var(--text-primary);
+}
+
+body.light-mode .module-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+}
+
+body.light-mode .module-header {
+  background: var(--bg-secondary);
+}
+
+body.light-mode .module-header:hover {
+  background: var(--bg-tertiary);
+}
+
+body.light-mode .action-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+body.light-mode .action-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+body.light-mode .action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+/* Light mode button overrides */
+body.light-mode .figma-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--primary-color);
+}
+
+body.light-mode .figma-btn-primary {
+  background: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  color: white;
+}
+
+body.light-mode .figma-btn-primary:hover {
+  background: var(--primary-hover);
+  border-color: var(--primary-hover);
+}
+
+body.light-mode .figma-logo h1 {
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-logo span {
+  color: var(--primary-color);
+}
+
+body.light-mode .figma-title h2 {
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-profile-name {
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-profile-title,
+body.light-mode .figma-profile-location {
+  color: var(--text-secondary);
+}
+
+body.light-mode .figma-rating-text,
+body.light-mode .figma-joined {
+  color: var(--text-secondary);
+}
+
+body.light-mode .figma-stats-title {
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-menu-title {
+  color: var(--text-primary);
+}
+
+body.light-mode .figma-menu-arrow {
+  color: var(--text-secondary);
+}
+
+body.light-mode .figma-subscription {
+  background: var(--primary-light);
+  border-top: 1px solid var(--border-color);
+}
+
+body.light-mode .edit-bio-btn {
+  background: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+body.light-mode .edit-bio-btn:hover {
+  background: var(--primary-light);
+}
+
+body.light-mode #bioTextarea {
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--text-primary);
+}
+
+/* Light mode form elements */
+body.light-mode .checkbox-label,
+body.light-mode .radio-label {
+  color: var(--text-primary);
+}
+
+body.light-mode .toggle-label {
+  color: var(--text-primary);
+}
+
+body.light-mode .switch-label {
+  color: var(--text-primary);
+}
+
+body.light-mode .info-text,
+body.light-mode .help-text {
+  color: var(--text-secondary);
+}
+
+body.light-mode .module-info h4 {
+  color: var(--text-primary);
+}
+
+body.light-mode .module-info p {
+  color: var(--text-secondary);
+}
+
+body.light-mode .lesson-item {
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+}
+
+body.light-mode .lesson-item:hover {
+  background: var(--bg-tertiary);
+}
+
+body.light-mode .add-btn {
+  background: var(--primary-light);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+}
+
+body.light-mode .add-btn:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+body.light-mode .dropdown-menu {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+body.light-mode .dropdown-menu a {
+  color: var(--text-primary);
+}
+
+body.light-mode .dropdown-menu a:hover {
+  background: var(--bg-tertiary);
+  color: var(--primary-color);
+}
+
+body.light-mode .upload-icon {
+  color: var(--text-secondary);
+}
+
+body.light-mode .upload-text p {
+  color: var(--text-primary);
+}
+
+body.light-mode .upload-text small {
+  color: var(--text-secondary);
+}
+
+body.light-mode .image-action-btn {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+body.light-mode .image-action-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+body.light-mode .image-action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+body.light-mode .radio-custom {
+  border: 2px solid var(--border-color);
+  background: var(--bg-secondary);
+}
+
+body.light-mode input[type="radio"]:checked + .radio-custom {
+  border-color: var(--primary-color);
+  background: var(--primary-color);
+}
+
+body.light-mode .preset-color {
+  border: 2px solid var(--border-color);
+}
+
+body.light-mode .preset-color:hover {
+  border-color: var(--primary-color);
+}
+
+body.light-mode .preset-color.active {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+/* Light mode Additional Settings fix */
+body.light-mode .setting-item {
+  background: transparent;
+}
+
+body.light-mode .setting-info h4 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .setting-info p {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .settings-list {
+  color: var(--text-primary);
+}
+
+/* Light mode sidebar menu child fix */
+body.light-mode .figma-menu-child {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .figma-menu-child.active {
+  color: var(--primary-color) !important;
+  background: var(--primary-light);
+}
+
+/* Light mode lesson items */
+body.light-mode .lesson-item span {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .module-info h4 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .module-info p {
+  color: var(--text-secondary) !important;
+}
+
+/* Light mode course cards */
+body.light-mode .course-card-title {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .course-card-meta {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .course-card-stats {
+  color: var(--text-secondary) !important;
+}
+
+/* Light mode AI Assistant page overrides */
+body.light-mode .figma-content-area.ai-assistant-page {
+  background: var(--bg-primary) !important;
+}
+
+body.light-mode .ai-status-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .ai-icon {
+  background: var(--primary-light) !important;
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .ai-status-content h3 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .ai-status-content p {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .ai-metric-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .ai-metric-card:hover {
+  border-color: var(--primary-color) !important;
+  background: var(--card-hover) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+body.light-mode .ai-metric-card h4 {
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .ai-metric-value {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .ai-personality-section,
+body.light-mode .ai-auto-response-section,
+body.light-mode .ai-responses-section {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .section-title {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .section-subtitle {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .personality-option {
+  background: var(--bg-secondary) !important;
+  border: 2px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .personality-option:hover {
+  border-color: var(--primary-color) !important;
+  background: var(--bg-tertiary) !important;
+}
+
+body.light-mode .personality-option.active {
+  border-color: var(--primary-color) !important;
+  background: var(--primary-light) !important;
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .personality-name {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .personality-desc {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .response-item {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .response-item:hover {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--primary-color) !important;
+}
+
+body.light-mode .response-question {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .response-answer {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .response-stats {
+  color: var(--text-tertiary) !important;
+}
+
+body.light-mode .edit-response-btn,
+body.light-mode .delete-response-btn {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .edit-response-btn:hover {
+  background: var(--primary-light) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .delete-response-btn:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+}
+
+body.light-mode .add-response-btn {
+  background: var(--primary-light) !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .add-response-btn:hover {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+
+body.light-mode .save-ai-btn {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+
+body.light-mode .save-ai-btn:hover {
+  background: var(--primary-hover) !important;
+}
+
+/* Light mode Engagement page - Most watched lessons fix */
+body.light-mode .lessons-section {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .lessons-title {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .lesson-info h4 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .lesson-info p {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .lesson-completion {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .lesson-item {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .lesson-item:hover {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--primary-color) !important;
+}
+
+/* Light mode My Subscription - remove border */
+body.light-mode .figma-subscription {
+  background: transparent !important;
+  border: none !important;
+  border-top: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .figma-subscription .figma-single-link {
+  background: var(--primary-light) !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+}
+
+body.light-mode .figma-subscription .figma-single-link:hover {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Light mode Engagement page - additional fixes */
+body.light-mode .engagement-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .engagement-card h3 {
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .engagement-value {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .engagement-label {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .stat-card-engagement {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .stat-card-engagement h3 {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .stat-card-engagement .stat-number {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .chart-container {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .chart-title {
+  color: var(--text-primary) !important;
+}
+
+/* Light mode Sub Admin page - admin names fix */
+body.light-mode .admin-details h4 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .admin-details p {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .admin-info {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .admin-avatar {
+  background: var(--primary-light) !important;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
+}
+
+body.light-mode .admin-meta {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .meta-label {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .meta-value {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .delete-admin-btn {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border: 1px solid rgba(239, 68, 68, 0.3) !important;
+  color: #ef4444 !important;
+}
+
+body.light-mode .delete-admin-btn:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: #ef4444 !important;
+}
+
+/* Light mode Student Analytics page - comprehensive fix */
+body.light-mode .analytics-stats-grid {
+  gap: 20px;
+}
+
+body.light-mode .analytics-stat-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .analytics-stat-title {
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .analytics-stat-value {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .students-tabs {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .student-tab {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border-bottom: 2px solid transparent !important;
+}
+
+body.light-mode .student-tab:hover {
+  color: var(--primary-color) !important;
+  background: var(--bg-tertiary) !important;
+}
+
+body.light-mode .student-tab.active {
+  color: var(--primary-color) !important;
+  border-bottom-color: var(--primary-color) !important;
+  background: transparent !important;
+}
+
+body.light-mode .students-list {
+  background: var(--bg-primary) !important;
+}
+
+body.light-mode .student-item {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .student-item:hover {
+  background: var(--card-hover) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-2px);
+}
+
+body.light-mode .student-avatar {
+  background: var(--primary-light) !important;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
+}
+
+body.light-mode .student-info h4 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .student-info p {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .student-progress {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .progress-bar {
+  background: var(--bg-tertiary) !important;
+}
+
+body.light-mode .progress-fill {
+  background: linear-gradient(90deg, var(--primary-color), var(--primary-hover)) !important;
+}
+
+body.light-mode .student-stats {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .stat-label {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .stat-value {
+  color: var(--text-primary) !important;
+}
+
+/* Light mode Rating & Comments page - make cards lighter */
+body.light-mode .rating-stats-grid {
+  gap: 20px;
+}
+
+body.light-mode .rating-stat-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .rating-stat-title {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .rating-stat-value {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .rating-stat-subtitle {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .rating-stars {
+  color: #fbbf24 !important;
+}
+
+body.light-mode .reviews-section {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .reviews-header {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .reviews-title {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .review-card {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .review-card:hover {
+  background: var(--card-hover) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-2px);
+}
+
+body.light-mode .review-user-avatar {
+  background: var(--primary-light) !important;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
+}
+
+body.light-mode .review-user-name {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .review-date {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .review-rating {
+  color: #fbbf24 !important;
+}
+
+body.light-mode .review-text {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .review-course {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .show-all-btn {
+  background: var(--primary-light) !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .show-all-btn:hover {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+
+body.light-mode .rating-breakdown {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .rating-row {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .rating-bar {
+  background: var(--bg-tertiary) !important;
+}
+
+body.light-mode .rating-bar-fill {
+  background: linear-gradient(90deg, #fbbf24, #f59e0b) !important;
+}
+
+body.light-mode .rating-count {
+  color: var(--text-secondary) !important;
+}
+
+/* Light mode Messages page - make it lighter and prettier */
+body.light-mode .messages-container {
+  background: var(--bg-primary) !important;
+}
+
+body.light-mode .messages-welcome {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .messages-header {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .messages-header h3 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .create-group-btn {
+  background: var(--primary-light) !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .create-group-btn:hover {
+  background: var(--primary-color) !important;
+  color: white !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md) !important;
+}
+
+body.light-mode .messages-placeholder {
+  background: var(--bg-secondary) !important;
+}
+
+body.light-mode .placeholder-icon {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .messages-placeholder h3 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .messages-placeholder p {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .chat-list {
+  background: var(--bg-secondary) !important;
+  border-right: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .chat-item {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .chat-item:hover {
+  background: var(--bg-tertiary) !important;
+}
+
+body.light-mode .chat-item.active {
+  background: var(--primary-light) !important;
+  border-left: 3px solid var(--primary-color) !important;
+}
+
+body.light-mode .chat-avatar {
+  background: var(--primary-light) !important;
+  color: var(--primary-color) !important;
+  border: 2px solid var(--primary-color) !important;
+}
+
+body.light-mode .chat-name {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .chat-preview {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .chat-time {
+  color: var(--text-tertiary) !important;
+}
+
+body.light-mode .chat-area {
+  background: var(--bg-primary) !important;
+}
+
+body.light-mode .chat-header {
+  background: var(--card-bg) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .chat-messages {
+  background: var(--bg-secondary) !important;
+}
+
+body.light-mode .message-bubble {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .message-bubble.sent {
+  background: var(--primary-light) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .message-time {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .chat-input-area {
+  background: var(--card-bg) !important;
+  border-top: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .chat-input {
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .chat-input:focus {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px var(--primary-light) !important;
+}
+
+body.light-mode .send-btn {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+
+body.light-mode .send-btn:hover {
+  background: var(--primary-hover) !important;
+  transform: scale(1.05);
+}
+
+body.light-mode .attach-btn {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .attach-btn:hover {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+/* Light mode My Courses page - make it lighter and prettier */
+body.light-mode .my-courses-stats {
+  gap: 20px;
+}
+
+body.light-mode .stat-card-my-courses {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .stat-card-my-courses:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--primary-color) !important;
+}
+
+body.light-mode .stat-card-my-courses h3 {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .stat-number {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .stat-change {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .stat-change.positive {
+  color: #22c55e !important;
+}
+
+body.light-mode .stat-change.negative {
+  color: #ef4444 !important;
+}
+
+body.light-mode .course-filter-tabs {
+  background: var(--bg-secondary) !important;
+  border-bottom: 1px solid var(--border-color) !important;
+  padding: 16px 24px;
+}
+
+body.light-mode .filter-tab {
+  background: transparent !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-secondary) !important;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+body.light-mode .filter-tab:hover {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  transform: translateY(-2px);
+}
+
+body.light-mode .filter-tab.active {
+  background: var(--primary-light) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  font-weight: 600;
+}
+
+body.light-mode .my-courses-grid {
+  background: var(--bg-primary) !important;
+  padding: 24px;
+}
+
+body.light-mode .course-card-my-courses {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+body.light-mode .course-card-my-courses:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg) !important;
+  border-color: var(--primary-color) !important;
+}
+
+body.light-mode .course-thumbnail {
+  background: var(--bg-tertiary) !important;
+}
+
+body.light-mode .course-status-badge {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  backdrop-filter: blur(8px);
+}
+
+body.light-mode .course-status-badge.active {
+  background: rgba(34, 197, 94, 0.1) !important;
+  border-color: #22c55e !important;
+  color: #22c55e !important;
+}
+
+body.light-mode .course-status-badge.draft {
+  background: rgba(249, 115, 22, 0.1) !important;
+  border-color: #f97316 !important;
+  color: #f97316 !important;
+}
+
+body.light-mode .course-status-badge.archived {
+  background: rgba(107, 114, 128, 0.1) !important;
+  border-color: #6b7280 !important;
+  color: #6b7280 !important;
+}
+
+body.light-mode .course-info {
+  background: var(--card-bg) !important;
+  padding: 16px;
+}
+
+body.light-mode .course-title {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .course-category {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .course-stats {
+  color: var(--text-secondary) !important;
+  border-top: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .course-stat-item {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .course-stat-label {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .course-actions {
+  background: transparent !important;
+  border-top: none !important;
+  padding: 12px 16px;
+}
+
+body.light-mode .course-action-btn,
+body.light-mode .course-btn {
+  background: transparent !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+body.light-mode .course-action-btn:hover,
+body.light-mode .course-btn:hover {
+  background: var(--primary-light) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  transform: translateY(-1px);
+}
+
+body.light-mode .course-action-btn.primary {
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+  color: white !important;
+}
+
+body.light-mode .course-action-btn.primary:hover {
+  background: var(--primary-hover) !important;
+  transform: scale(1.05);
+}
+
+body.light-mode .course-action-btn.danger:hover,
+body.light-mode .course-btn-delete:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+}
+
+/* Light mode Finance page - make it lighter and prettier */
+body.light-mode .figma-content-area.finance-page {
+  background: var(--bg-primary) !important;
+}
+
+body.light-mode .finance-stats-grid {
+  gap: 20px;
+}
+
+body.light-mode .finance-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+body.light-mode .finance-card:hover {
+  transform: translateY(-6px) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+body.light-mode .finance-card-header {
+  margin-bottom: 12px;
+}
+
+body.light-mode .finance-card-title {
+  color: var(--primary-color) !important;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+body.light-mode .finance-card-amount {
+  color: var(--text-primary) !important;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 8px 0;
+}
+
+body.light-mode .finance-card-subtitle {
+  color: #22c55e !important;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+body.light-mode .finance-card-subtitle.negative {
+  color: #ef4444 !important;
+}
+
+body.light-mode .transactions-section {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+body.light-mode .transactions-header {
+  border-bottom: 1px solid var(--border-color) !important;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+body.light-mode .transactions-title {
+  color: var(--text-primary) !important;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+body.light-mode .transaction-item {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  transition: all 0.2s ease;
+}
+
+body.light-mode .transaction-item:hover {
+  background: var(--bg-tertiary) !important;
+  border-color: var(--primary-color) !important;
+  transform: translateX(4px);
+}
+
+body.light-mode .transaction-info h4 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .transaction-info p {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .transaction-amount {
+  color: var(--text-primary) !important;
+  font-weight: 600;
+}
+
+body.light-mode .transaction-amount.positive {
+  color: #22c55e !important;
+}
+
+body.light-mode .transaction-amount.negative {
+  color: #ef4444 !important;
+}
+
+body.light-mode .transaction-status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+body.light-mode .transaction-status.completed {
+  background: rgba(34, 197, 94, 0.1) !important;
+  color: #22c55e !important;
+}
+
+body.light-mode .transaction-status.pending {
+  background: rgba(249, 115, 22, 0.1) !important;
+  color: #f97316 !important;
+}
+
+body.light-mode .transaction-status.failed {
+  background: rgba(239, 68, 68, 0.1) !important;
+  color: #ef4444 !important;
+}
+
+body.light-mode .payout-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+body.light-mode .payout-card:hover {
+  border-color: var(--primary-color) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+body.light-mode .payout-info h4 {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .payout-info p {
+  color: var(--text-secondary) !important;
+}
+
+body.light-mode .payout-amount {
+  color: var(--text-primary) !important;
+}
+
+body.light-mode .withdraw-btn {
+  background: var(--primary-color) !important;
+  color: white !important;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+body.light-mode .withdraw-btn:hover {
+  background: var(--primary-hover) !important;
+  transform: scale(1.05);
+}
+
+body.light-mode .withdraw-btn:disabled {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-secondary) !important;
+  cursor: not-allowed;
+}
+
+body.light-mode .payment-method-card {
+  background: var(--card-bg) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+body.light-mode .payment-method-card:hover {
+  border-color: var(--primary-color) !important;
+  background: var(--card-hover) !important;
+}
+
+body.light-mode .payment-method-card.active {
+  border-color: var(--primary-color) !important;
+  background: var(--primary-light) !important;
+}
+
+/* Light mode Finance page - Edit and Delete buttons fix */
+body.light-mode .payment-method-actions {
+  display: flex;
+  gap: 8px;
+}
+
+body.light-mode .edit-payment-btn,
+body.light-mode .delete-payment-btn {
+  background: transparent !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-primary) !important;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+body.light-mode .edit-payment-btn:hover {
+  background: var(--primary-light) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
+  transform: translateY(-1px);
+}
+
+body.light-mode .delete-payment-btn:hover {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+  transform: translateY(-1px);
+}
+
+/* Light mode Modal - Minimalist and Clean Design */
+body.light-mode .modal-overlay {
+  background: rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(8px);
+}
+
+body.light-mode .modal-container,
+body.light-mode .modal-content {
+  background: #ffffff !important;
+  border: none !important;
+  border-radius: 20px !important;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15) !important;
+  padding: 32px !important;
+  max-width: 480px;
+  margin: auto;
+}
+
+body.light-mode .modal-content h3 {
+  color: #1a1a1a !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  margin: 0 0 24px 0 !important;
+  text-align: left;
+}
+
+body.light-mode .modal-header {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin-bottom: 24px;
+}
+
+body.light-mode .modal-title {
+  color: #1a1a1a !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  margin: 0 !important;
+}
+
+body.light-mode .modal-close {
+  background: transparent !important;
+  border: none;
+  color: #6b7280 !important;
+  font-size: 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.light-mode .modal-close:hover {
+  color: #1a1a1a !important;
+  transform: rotate(90deg);
+  background: #f3f4f6 !important;
+  border-radius: 50%;
+}
+
+body.light-mode .modal-body {
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+body.light-mode .modal-text {
+  color: #4b5563 !important;
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+body.light-mode .modal-warning {
+  color: #ef4444 !important;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  padding: 12px 16px;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 8px;
+  border-left: 3px solid #ef4444;
+}
+
+body.light-mode .form-group label,
+body.light-mode .modal-label {
+  color: #374151 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+body.light-mode .form-group input,
+body.light-mode .modal-input {
+  width: 100% !important;
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 10px !important;
+  padding: 12px 16px !important;
+  color: #1a1a1a !important;
+  font-size: 15px !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+body.light-mode .form-group input:focus,
+body.light-mode .modal-input:focus {
+  outline: none !important;
+  border-color: #7ea2d4 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+}
+
+body.light-mode .checkbox-wrapper,
+body.light-mode .modal-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+body.light-mode input[type="checkbox"],
+body.light-mode .modal-checkbox {
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+body.light-mode input[type="checkbox"]:checked,
+body.light-mode .modal-checkbox:checked {
+  background: #7ea2d4 !important;
+  border-color: #7ea2d4 !important;
+}
+
+body.light-mode .checkbox-wrapper label,
+body.light-mode .modal-checkbox-label {
+  color: #374151 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+}
+
+body.light-mode .modal-actions,
+body.light-mode .modal-footer {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin-top: 28px !important;
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: flex-end !important;
+}
+
+body.light-mode .modal-actions button,
+body.light-mode .modal-btn {
+  padding: 12px 28px !important;
+  border-radius: 10px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+}
+
+body.light-mode .cancel-btn,
+body.light-mode .modal-btn-cancel {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+}
+
+body.light-mode .cancel-btn:hover,
+body.light-mode .modal-btn-cancel:hover {
+  background: #e5e7eb !important;
+  color: #374151 !important;
+}
+
+body.light-mode .save-btn,
+body.light-mode .modal-btn-primary {
+  background: #7ea2d4 !important;
+  color: white !important;
+}
+
+body.light-mode .save-btn:hover,
+body.light-mode .modal-btn-primary:hover {
+  background: #6a92c4 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3) !important;
+}
+
+body.light-mode .delete-btn,
+body.light-mode .modal-btn-danger {
+  background: #ef4444 !important;
+  color: white !important;
+}
+
+body.light-mode .delete-btn:hover,
+body.light-mode .modal-btn-danger:hover {
+  background: #dc2626 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+}
+
+body.light-mode .modal-btn-success {
+  background: #22c55e !important;
+  color: white !important;
+}
+
+body.light-mode .modal-btn-success:hover {
+  background: #16a34a !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3) !important;
+}
+
+/* Light mode Finance page - Payment card overlay fix */
+body.light-mode .figma-content-area.finance-page .card-actions-overlay {
+  background: rgba(255, 255, 255, 0.98) !important;
+  backdrop-filter: blur(12px) !important;
+  border-radius: 12px;
+}
+
+body.light-mode .figma-content-area.finance-page .card-action-btn {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #1a1a1a !important;
+  padding: 10px 20px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .card-action-btn.edit-btn:hover {
+  background: rgba(126, 162, 212, 0.15) !important;
+  border-color: #7ea2d4 !important;
+  color: #7ea2d4 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .card-action-btn.delete-btn {
+  background: #ffffff !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #ef4444 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .card-action-btn.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.15) !important;
+  border-color: #ef4444 !important;
+  color: #dc2626 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+}
+
+/* Finance Page - Simple Clean Modal */
+body.light-mode .figma-content-area.finance-page .modal-overlay {
+  background: rgba(0, 0, 0, 0.5) !important;
+  backdrop-filter: blur(8px) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .modal-content {
+  background: #ffffff !important;
+  border: none !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+  padding: 32px !important;
+  max-width: 480px !important;
+}
+
+body.light-mode .figma-content-area.finance-page .modal-content h3 {
+  display: none !important;
+}
+
+body.light-mode .figma-content-area.finance-page .edit-card-form,
+body.light-mode .figma-content-area.finance-page .add-card-form {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+body.light-mode .figma-content-area.finance-page .form-group {
+  margin-bottom: 20px !important;
+}
+
+body.light-mode .figma-content-area.finance-page .form-group label {
+  color: #374151 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+}
+
+body.light-mode .figma-content-area.finance-page .form-group input {
+  width: 100% !important;
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  padding: 12px 14px !important;
+  color: #111827 !important;
+  font-size: 15px !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+}
+
+body.light-mode .figma-content-area.finance-page .form-group input:focus {
+  outline: none !important;
+  border-color: #7ea2d4 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .checkbox-wrapper {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 20px 0 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .checkbox-wrapper input[type="checkbox"] {
+  width: 20px !important;
+  height: 20px !important;
+  border: 2px solid #d1d5db !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .checkbox-wrapper input[type="checkbox"]:checked {
+  background: #7ea2d4 !important;
+  border-color: #7ea2d4 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .checkbox-wrapper label {
+  color: #374151 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  margin: 0 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .modal-actions {
+  display: flex !important;
+  gap: 12px !important;
+  justify-content: flex-end !important;
+  padding: 0 !important;
+  margin-top: 24px !important;
+}
+
+body.light-mode .figma-content-area.finance-page .modal-actions button {
+  padding: 12px 24px !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  border: none !important;
+}
+
+body.light-mode .figma-content-area.finance-page .cancel-btn {
+  background: #f3f4f6 !important;
+  color: #6b7280 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .cancel-btn:hover {
+  background: #e5e7eb !important;
+  color: #374151 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .save-btn {
+  background: #7ea2d4 !important;
+  color: #ffffff !important;
+}
+
+body.light-mode .figma-content-area.finance-page .save-btn:hover {
+  background: #6a92c4 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .delete-confirm-btn {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
+  background: #dc2626 !important;
 }

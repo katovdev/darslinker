@@ -10,6 +10,10 @@ export function initDashboard() {
   // Initialize i18n and theme
   initI18n();
   initTheme();
+  
+  // Add language change listener to reload dashboard when language changes
+  window.removeEventListener('languageChanged', handleLanguageChange);
+  window.addEventListener('languageChanged', handleLanguageChange);
 
   // Clean up any existing page-specific styles and reset body styles
   cleanupPageStyles();
@@ -210,8 +214,8 @@ function renderTeacherDashboard(user) {
             </div>
             <div class="figma-profile-info">
               <h2 class="figma-profile-name">${user.firstName} ${user.lastName}</h2>
-              <p class="figma-profile-title">Web Development & UI/UX Design</p>
-              <p class="figma-profile-location">Tashkent, Uzbekistan</p>
+              <p class="figma-profile-title">${t('profile.title')}</p>
+              <p class="figma-profile-location">${t('profile.location')}</p>
               <div class="figma-profile-rating">
                 <div class="figma-stars">
                   <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
@@ -230,13 +234,13 @@ function renderTeacherDashboard(user) {
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                   </svg>
                 </div>
-                <span class="figma-rating-text">4.9 (324 reviews)</span>
-                <span class="figma-joined">• Joined 2025</span>
+                <span class="figma-rating-text">${t('profile.rating')}</span>
+                <span class="figma-joined">${t('profile.joined')}</span>
               </div>
             </div>
             <div class="figma-profile-buttons">
-              <button class="figma-profile-btn" onclick="openEditProfile()">Edit profile</button>
-              <button class="figma-profile-btn" onclick="customizeUI()">Customize UI</button>
+              <button class="figma-profile-btn" onclick="openEditProfile()">${t('dashboard.profile.editProfile')}</button>
+              <button class="figma-profile-btn" onclick="customizeUI()">${t('dashboard.profile.customizeUI')}</button>
             </div>
           </div>
 
@@ -244,22 +248,22 @@ function renderTeacherDashboard(user) {
           <div class="figma-stats-grid">
             <!-- My Statistics Card -->
             <div class="figma-stats-card">
-              <h3 class="figma-stats-title">My Statistics</h3>
+              <h3 class="figma-stats-title">${t('stats.myStatistics')}</h3>
               <div class="figma-stats-list">
                 <div class="figma-stat-row">
-                  <span class="figma-stat-label">Active Courses</span>
+                  <span class="figma-stat-label">${t('stats.activeCourses')}</span>
                   <span class="figma-stat-value">8</span>
                 </div>
                 <div class="figma-stat-row">
-                  <span class="figma-stat-label">Total Students</span>
+                  <span class="figma-stat-label">${t('stats.totalStudents')}</span>
                   <span class="figma-stat-value">1111</span>
                 </div>
                 <div class="figma-stat-row">
-                  <span class="figma-stat-label">Total Revenue</span>
+                  <span class="figma-stat-label">${t('stats.totalRevenue')}</span>
                   <span class="figma-stat-value">$12,460</span>
                 </div>
                 <div class="figma-stat-row">
-                  <span class="figma-stat-label">Avg. Rating</span>
+                  <span class="figma-stat-label">${t('stats.avgRating')}</span>
                   <span class="figma-stat-value">4.9/5</span>
                 </div>
               </div>
@@ -267,23 +271,23 @@ function renderTeacherDashboard(user) {
 
             <!-- Achievements Card -->
             <div class="figma-stats-card">
-              <h3 class="figma-stats-title">Achievements</h3>
+              <h3 class="figma-stats-title">${t('stats.achievements')}</h3>
               <div class="figma-achievements-list">
                 <div class="figma-achievement-item">
                   <span class="figma-achievement-check">✓</span>
-                  <span class="figma-achievement-text">Top Instructor</span>
+                  <span class="figma-achievement-text">${t('stats.topInstructor')}</span>
                 </div>
                 <div class="figma-achievement-item">
                   <span class="figma-achievement-check">✓</span>
-                  <span class="figma-achievement-text">1000+ Students</span>
+                  <span class="figma-achievement-text">${t('stats.students1000')}</span>
                 </div>
                 <div class="figma-achievement-item">
                   <span class="figma-achievement-check">✓</span>
-                  <span class="figma-achievement-text">$10K+ Revenue</span>
+                  <span class="figma-achievement-text">${t('stats.revenue10k')}</span>
                 </div>
                 <div class="figma-achievement-item">
                   <span class="figma-achievement-check">✓</span>
-                  <span class="figma-achievement-text">High Rating</span>
+                  <span class="figma-achievement-text">${t('stats.highRating')}</span>
                 </div>
               </div>
             </div>
@@ -291,15 +295,15 @@ function renderTeacherDashboard(user) {
             <!-- Bio & Specialties Card -->
             <div class="figma-stats-card">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 class="figma-stats-title">Bio & Specialties</h3>
-                <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">Edit</button>
+                <h3 class="figma-stats-title">${t('stats.bioSpecialties')}</h3>
+                <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
               </div>
-              <p class="figma-bio-text" id="bioText">8+ years web development experience. Expert in React, UI/UX design, and teaching modern web technologies.</p>
+              <p class="figma-bio-text" id="bioText">${t('profile.bioDefault')}</p>
               <div id="bioEditor" style="display: none;">
                 <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
                 <div style="margin-top: 10px; display: flex; gap: 8px;">
-                  <button onclick="saveBio()" style="background: #7ea2d4; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">Save</button>
-                  <button onclick="cancelBioEdit()" style="background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">Cancel</button>
+                  <button onclick="saveBio()" style="background: #7ea2d4; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.save')}</button>
+                  <button onclick="cancelBioEdit()" style="background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.cancel')}</button>
                 </div>
               </div>
             </div>
@@ -595,7 +599,7 @@ window.openEditProfile = function() {
   
   if (contentArea) {
     // Just update content area, keep sidebar
-    updatePageTitle('Edit Profile');
+    updatePageTitle(t('editProfile.title'));
     contentArea.innerHTML = getEditProfileHTML(user);
     updateActiveMenuItem('Profile');
     
@@ -616,14 +620,14 @@ window.openEditProfile = function() {
           <h1>dars<span>linker</span></h1>
         </div>
         <div class="figma-title">
-          <h2>Edit Profile</h2>
+          <h2>${t('editProfile.title')}</h2>
         </div>
         <div class="figma-header-buttons">
           <button class="figma-btn" onclick="backToDashboard()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 6px;">
               <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
             </svg>
-            Back
+            ${t('editProfile.back')}
           </button>
         </div>
       </div>
@@ -686,11 +690,11 @@ window.openEditProfile = function() {
 
             <!-- Personal Information Section -->
             <div class="profile-section">
-              <h3 class="section-title">Personal Information</h3>
+              <h3 class="section-title">${t('editProfile.personalInfo')}</h3>
 
               <!-- Profile Picture -->
               <div class="profile-picture-section">
-                <label class="field-label">Profile picture</label>
+                <label class="field-label">${t('editProfile.profilePicture')}</label>
                 <div class="profile-picture-upload">
                   <div class="profile-picture-preview">
                     <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
@@ -698,8 +702,8 @@ window.openEditProfile = function() {
                     </svg>
                   </div>
                   <div class="upload-instructions">
-                    <p>Click to upload or drag and drop</p>
-                    <small>PNG, JPG up to 5MB</small>
+                    <p>${t('editProfile.uploadText')}</p>
+                    <small>${t('editProfile.uploadHint')}</small>
                   </div>
                 </div>
               </div>
@@ -707,35 +711,35 @@ window.openEditProfile = function() {
               <!-- Name Fields -->
               <div class="form-row">
                 <div class="form-field">
-                  <label class="field-label">First Name</label>
+                  <label class="field-label">${t('editProfile.firstName')}</label>
                   <input type="text" class="form-input" value="${user.firstName || 'John'}" />
                 </div>
                 <div class="form-field">
-                  <label class="field-label">Last Name</label>
+                  <label class="field-label">${t('editProfile.lastName')}</label>
                   <input type="text" class="form-input" value="${user.lastName || 'Smith'}" />
                 </div>
               </div>
 
               <!-- Professional Title -->
               <div class="form-field">
-                <label class="field-label">Professional Title / Specialty</label>
-                <input type="text" class="form-input" value="Web Development & UI/UX Design" />
+                <label class="field-label">${t('editProfile.professionalTitle')}</label>
+                <input type="text" class="form-input" value="${t('profile.title')}" />
               </div>
 
               <!-- Bio -->
               <div class="form-field">
-                <label class="field-label">Bio / About Me</label>
-                <textarea class="form-textarea" rows="4">8+ years web development experience. Expert in React, UI/UX design, and teaching modern web technologies. Passionate about helping students achieve their goals!</textarea>
+                <label class="field-label">${t('editProfile.bio')}</label>
+                <textarea class="form-textarea" rows="4">${t('profile.bioDefault')}</textarea>
               </div>
 
               <!-- Location -->
               <div class="form-row">
                 <div class="form-field">
-                  <label class="field-label">City</label>
+                  <label class="field-label">${t('editProfile.city')}</label>
                   <input type="text" class="form-input" value="Tashkent" />
                 </div>
                 <div class="form-field">
-                  <label class="field-label">Country</label>
+                  <label class="field-label">${t('editProfile.country')}</label>
                   <input type="text" class="form-input" value="Uzbekistan" />
                 </div>
               </div>
@@ -743,40 +747,40 @@ window.openEditProfile = function() {
 
             <!-- Contact Information Section -->
             <div class="profile-section">
-              <h3 class="section-title">Contact information</h3>
+              <h3 class="section-title">${t('editProfile.contactInfo')}</h3>
 
               <div class="form-field">
-                <label class="field-label">Email Address</label>
+                <label class="field-label">${t('editProfile.emailAddress')}</label>
                 <input type="email" class="form-input" value="${user.email || 'john@example.com'}" />
               </div>
 
               <div class="form-field">
-                <label class="field-label">Phone Number</label>
+                <label class="field-label">${t('editProfile.phoneNumber')}</label>
                 <input type="tel" class="form-input" value="+998 99 123 45 67" />
               </div>
 
               <div class="form-field">
-                <label class="field-label">Telegram Username</label>
+                <label class="field-label">${t('editProfile.telegramUsername')}</label>
                 <input type="text" class="form-input" value="@john_teacher" />
               </div>
             </div>
 
             <!-- Payment Information Section -->
             <div class="profile-section">
-              <h3 class="section-title">Payment Information</h3>
+              <h3 class="section-title">${t('editProfile.paymentInfo')}</h3>
 
               <div class="form-field">
-                <label class="field-label">Account Holder Name</label>
+                <label class="field-label">${t('editProfile.accountHolder')}</label>
                 <input type="text" class="form-input" value="John Smith" />
               </div>
 
               <div class="form-row">
                 <div class="form-field">
-                  <label class="field-label">Bank name</label>
+                  <label class="field-label">${t('editProfile.bankName')}</label>
                   <input type="text" class="form-input" value="" />
                 </div>
                 <div class="form-field">
-                  <label class="field-label">Card Number</label>
+                  <label class="field-label">${t('editProfile.cardNumber')}</label>
                   <input type="text" class="form-input" value="" />
                 </div>
               </div>
@@ -784,8 +788,8 @@ window.openEditProfile = function() {
 
             <!-- Form Actions -->
             <div class="form-actions">
-              <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
-              <button type="submit" class="btn-save">Save changes</button>
+              <button type="button" class="btn-cancel" onclick="backToDashboard()">${t('editProfile.cancel')}</button>
+              <button type="submit" class="btn-save">${t('editProfile.saveChanges')}</button>
             </div>
           </form>
         </div>
@@ -824,7 +828,7 @@ window.openSubAdmin = function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
-    updatePageTitle('Sub admins(3)');
+    updatePageTitle(t('subAdmin.title'));
     contentArea.innerHTML = getSubAdminHTML();
     updateActiveMenuItem('Sub Admin');
     return;
@@ -1319,7 +1323,7 @@ window.submitNewAdmin = function(event) {
   
   // Update count in title
   const count = list.querySelectorAll('.admin-card').length;
-  updatePageTitle(`Sub admins(${count})`);
+  updatePageTitle(t('subAdmin.titleWithCount').replace('{count}', count));
   
   // Close modal
   closeAddAdminModal();
@@ -1497,7 +1501,7 @@ window.confirmDeleteSubAdmin = function(confirmButton) {
       // Update count
       const list = document.getElementById('adminCardsList');
       const count = list.querySelectorAll('.admin-card').length;
-      updatePageTitle(`Sub admins(${count})`);
+      updatePageTitle(t('subAdmin.titleWithCount').replace('{count}', count));
       
       // Close modal
       closeDeleteConfirm();
@@ -1726,7 +1730,7 @@ window.openCustomizeUI = function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
-    updatePageTitle('Customize UI');
+    updatePageTitle(t('pages.customizeUI'));
     contentArea.innerHTML = getCustomizeUIHTML();
     updateActiveMenuItem('Customize UI');
     
@@ -1921,12 +1925,12 @@ function getCustomizeUIHTML() {
         }
       </style>
 
-      <div class="customize-subtitle">Make the app truly yours with personalized colors and settings</div>
+      <div class="customize-subtitle">${t('customizeUI.subtitle')}</div>
 
       <!-- Theme Color Section -->
       <div class="customize-section">
-        <h3 class="section-title">Theme Color</h3>
-        <p class="section-subtitle">Custom Color (RGB)</p>
+        <h3 class="section-title">${t('customizeUI.themeColor')}</h3>
+        <p class="section-subtitle">${t('customizeUI.customColor')}</p>
         
         <div class="color-picker-wrapper">
           <div class="color-preview" id="colorPreview" style="background-color: ${theme.primaryColor};" onclick="document.getElementById('colorPicker').click()"></div>
@@ -1936,7 +1940,7 @@ function getCustomizeUIHTML() {
           </div>
         </div>
         
-        <div class="preset-colors-label">Quick presets</div>
+        <div class="preset-colors-label">${t('customizeUI.quickPresets')}</div>
         <div class="preset-colors" id="presetColors">
           ${presetColors.map(color => `
             <div class="preset-color ${theme.primaryColor === color.value ? 'active' : ''}" 
@@ -1956,7 +1960,7 @@ function getCustomizeUIHTML() {
               <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
               <path d="M12 1v3M12 20v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M1 12h3M20 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            Light Mode
+            ${t('customizeUI.lightMode')}
           </div>
           <div class="toggle-switch ${theme.mode === 'light' ? 'active' : ''}" id="lightModeToggle" onclick="toggleLightMode()">
             <div class="toggle-slider"></div>
@@ -1966,31 +1970,31 @@ function getCustomizeUIHTML() {
 
       <!-- Font Family Section -->
       <div class="customize-section">
-        <h3 class="section-title">Shrift (Font Family)</h3>
-        <p class="section-subtitle">Choose your preferred font</p>
+        <h3 class="section-title">${t('customizeUI.fontFamily')}</h3>
+        <p class="section-subtitle">${t('customizeUI.chooseFont')}</p>
         
         <div class="font-options">
           <div class="font-option ${theme.fontFamily === 'system' ? 'active' : ''}" onclick="selectFont('system')">
-            <div class="font-name" style="font-family: -apple-system, BlinkMacSystemFont, sans-serif;">System</div>
-            <div class="font-preview">Default system font</div>
+            <div class="font-name" style="font-family: -apple-system, BlinkMacSystemFont, sans-serif;">${t('customizeUI.systemFont')}</div>
+            <div class="font-preview">${t('customizeUI.systemFontDesc')}</div>
           </div>
           <div class="font-option ${theme.fontFamily === 'inter' ? 'active' : ''}" onclick="selectFont('inter')">
             <div class="font-name" style="font-family: 'Inter', sans-serif;">Inter</div>
-            <div class="font-preview">Modern & clean</div>
+            <div class="font-preview">${t('customizeUI.modernClean')}</div>
           </div>
           <div class="font-option ${theme.fontFamily === 'roboto' ? 'active' : ''}" onclick="selectFont('roboto')">
             <div class="font-name" style="font-family: 'Roboto', sans-serif;">Roboto</div>
-            <div class="font-preview">Google's font</div>
+            <div class="font-preview">${t('customizeUI.googleFont')}</div>
           </div>
           <div class="font-option ${theme.fontFamily === 'poppins' ? 'active' : ''}" onclick="selectFont('poppins')">
             <div class="font-name" style="font-family: 'Poppins', sans-serif;">Poppins</div>
-            <div class="font-preview">Geometric & friendly</div>
+            <div class="font-preview">${t('customizeUI.geometricFriendly')}</div>
           </div>
         </div>
       </div>
 
       <!-- Save Button -->
-      <button class="save-btn" onclick="saveCustomization()">Save customization</button>
+      <button class="save-btn" onclick="saveCustomization()">${t('customizeUI.saveCustomization')}</button>
     </div>
   `;
 }
@@ -2063,7 +2067,7 @@ window.saveCustomization = function() {
   saveTheme(window.currentTheme);
   
   // Show success toast
-  showSuccessToast('Customization saved successfully!');
+  showSuccessToast(t('notifications.customizationSaved'));
   
   // Reload dashboard to apply changes after a short delay
   setTimeout(() => {
@@ -2197,7 +2201,7 @@ window.openMySubscription = function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
-    updatePageTitle('My subscription');
+    updatePageTitle(t('pages.mySubscription'));
     contentArea.innerHTML = getMySubscriptionHTML();
     updateActiveMenuItem('My Subscription');
     return;
@@ -2505,7 +2509,7 @@ window.openProgress = function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
-    updatePageTitle('Progress');
+    updatePageTitle(t('pages.progress'));
     contentArea.innerHTML = getProgressHTML();
     updateActiveMenuItem('Progress');
     return;
@@ -3244,7 +3248,7 @@ window.openEngagement = function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
-    updatePageTitle('Engagement');
+    updatePageTitle(t('pages.engagement'));
     contentArea.innerHTML = getEngagementHTML();
     updateActiveMenuItem('Engagement');
     return;
@@ -3406,7 +3410,7 @@ window.openStudentsAnalytics = function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
-    updatePageTitle('Student analytics');
+    updatePageTitle(t('pages.studentsAnalytics'));
     contentArea.innerHTML = getStudentsAnalyticsHTML();
     updateActiveMenuItem('Students Analytics');
     return;
@@ -3946,7 +3950,7 @@ window.openRatingComments = function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
-    updatePageTitle('Rating & Comments');
+    updatePageTitle(t('pages.ratingComments'));
     contentArea.innerHTML = getRatingCommentsHTML();
     updateActiveMenuItem('Rating Comments');
     return;
@@ -4407,12 +4411,12 @@ function getMessagesHTML() {
       <!-- Simple Messages Interface -->
       <div class="messages-welcome">
         <div class="messages-header">
-          <h3>Messages</h3>
+          <h3>${t('messages.title')}</h3>
           <button class="create-group-btn" onclick="createGroup()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             </svg>
-            Create Group
+            ${t('messages.createGroup')}
           </button>
         </div>
 
@@ -4422,8 +4426,8 @@ function getMessagesHTML() {
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="2"/>
             </svg>
           </div>
-          <h3>Select a chat to start messaging</h3>
-          <p>Choose from your existing conversations or create a new group</p>
+          <h3>${t('messages.selectChat')}</h3>
+          <p>${t('messages.chooseConversation')}</p>
         </div>
       </div>
     </div>
@@ -4436,11 +4440,11 @@ function getEditProfileHTML(user) {
     <form class="edit-profile-form" id="editProfileForm">
       <!-- Personal Information Section -->
       <div class="profile-section">
-        <h3 class="section-title">Personal Information</h3>
+        <h3 class="section-title">${t('editProfile.personalInfo')}</h3>
 
         <!-- Profile Picture -->
         <div class="profile-picture-section">
-          <label class="field-label">Profile picture</label>
+          <label class="field-label">${t('editProfile.profilePicture')}</label>
           <div class="profile-picture-upload">
             <div class="profile-picture-preview">
               <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
@@ -4448,8 +4452,8 @@ function getEditProfileHTML(user) {
               </svg>
             </div>
             <div class="upload-instructions">
-              <p>Click to upload or drag and drop</p>
-              <small>PNG, JPG up to 5MB</small>
+              <p>${t('editProfile.uploadText')}</p>
+              <small>${t('editProfile.uploadHint')}</small>
             </div>
           </div>
         </div>
@@ -4457,35 +4461,35 @@ function getEditProfileHTML(user) {
         <!-- Name Fields -->
         <div class="form-row">
           <div class="form-field">
-            <label class="field-label">First Name</label>
+            <label class="field-label">${t('editProfile.firstName')}</label>
             <input type="text" class="form-input" value="${user.firstName || 'John'}" />
           </div>
           <div class="form-field">
-            <label class="field-label">Last Name</label>
+            <label class="field-label">${t('editProfile.lastName')}</label>
             <input type="text" class="form-input" value="${user.lastName || 'Smith'}" />
           </div>
         </div>
 
         <!-- Professional Title -->
         <div class="form-field">
-          <label class="field-label">Professional Title / Specialty</label>
-          <input type="text" class="form-input" value="Web Development & UI/UX Design" />
+          <label class="field-label">${t('editProfile.professionalTitle')}</label>
+          <input type="text" class="form-input" value="${t('profile.title')}" />
         </div>
 
         <!-- Bio -->
         <div class="form-field">
-          <label class="field-label">Bio / About Me</label>
-          <textarea class="form-textarea" rows="4">8+ years web development experience. Expert in React, UI/UX design, and teaching modern web technologies.</textarea>
+          <label class="field-label">${t('editProfile.bio')}</label>
+          <textarea class="form-textarea" rows="4">${t('profile.bioDefault')}</textarea>
         </div>
 
         <!-- Location -->
         <div class="form-row">
           <div class="form-field">
-            <label class="field-label">City</label>
+            <label class="field-label">${t('editProfile.city')}</label>
             <input type="text" class="form-input" value="Tashkent" />
           </div>
           <div class="form-field">
-            <label class="field-label">Country</label>
+            <label class="field-label">${t('editProfile.country')}</label>
             <input type="text" class="form-input" value="Uzbekistan" />
           </div>
         </div>
@@ -4493,28 +4497,28 @@ function getEditProfileHTML(user) {
 
       <!-- Contact Information Section -->
       <div class="profile-section">
-        <h3 class="section-title">Contact information</h3>
+        <h3 class="section-title">${t('editProfile.contactInfo')}</h3>
 
         <div class="form-field">
-          <label class="field-label">Email Address</label>
+          <label class="field-label">${t('editProfile.emailAddress')}</label>
           <input type="email" class="form-input" value="${user.email || 'john@example.com'}" />
         </div>
 
         <div class="form-field">
-          <label class="field-label">Phone Number</label>
+          <label class="field-label">${t('editProfile.phoneNumber')}</label>
           <input type="tel" class="form-input" value="+998 99 123 45 67" />
         </div>
 
         <div class="form-field">
-          <label class="field-label">Telegram Username</label>
+          <label class="field-label">${t('editProfile.telegramUsername')}</label>
           <input type="text" class="form-input" value="@john_teacher" />
         </div>
       </div>
 
       <!-- Save Button -->
       <div class="form-actions">
-        <button type="submit" class="btn-save-profile">Save Changes</button>
-        <button type="button" class="btn-cancel-profile" onclick="backToDashboard()">Cancel</button>
+        <button type="submit" class="btn-save-profile">${t('editProfile.saveChanges')}</button>
+        <button type="button" class="btn-cancel-profile" onclick="backToDashboard()">${t('editProfile.cancel')}</button>
       </div>
     </form>
   `;
@@ -4585,9 +4589,9 @@ window.backToDashboard = function() {
 // Handle profile save
 function handleProfileSave(e) {
   e.preventDefault();
-  alert('Profile saved successfully!');
+  showSuccessToast(t('notifications.profileSaved'));
   // Here you would normally save the form data to the backend
-  backToDashboard();
+  setTimeout(() => backToDashboard(), 1000);
 }
 
 // Open Messages Page
@@ -4599,7 +4603,7 @@ window.openMessagesPage = function() {
   
   if (contentArea) {
     // Just update content area, keep sidebar
-    updatePageTitle('Messages');
+    updatePageTitle(t('pages.messages'));
     contentArea.innerHTML = getMessagesHTML();
     updateActiveMenuItem('Messages');
     return;
@@ -5657,7 +5661,7 @@ window.openFinancePage = function() {
           <h2>Finance</h2>
         </div>
         <div class="figma-header-buttons">
-          <button class="figma-btn">💡 Back</button>
+          <button class="figma-btn" onclick="backToDashboard()">← Back</button>
         </div>
       </div>
 
@@ -8541,52 +8545,52 @@ window.openCreateCourse = function() {
 
             <!-- Basic Information Section -->
             <div class="course-section">
-              <h3 class="course-section-title">Basic information</h3>
+              <h3 class="course-section-title">${t('createCourse.basicInfo')}</h3>
 
               <div class="form-field">
-                <label class="field-label">Course Title *</label>
-                <input type="text" class="form-input" placeholder="e.g. Complete React developer course 2025" required />
+                <label class="field-label">${t('createCourse.courseTitle')}</label>
+                <input type="text" class="form-input" placeholder="${t('createCourse.courseTitlePlaceholder')}" required />
               </div>
 
               <div class="form-field">
-                <label class="field-label">Short description *</label>
-                <textarea class="form-textarea" rows="2" placeholder="Write a brief description of your course(2-3 sentences)" required></textarea>
+                <label class="field-label">${t('createCourse.shortDescription')}</label>
+                <textarea class="form-textarea" rows="2" placeholder="${t('createCourse.shortDescPlaceholder')}" required></textarea>
               </div>
 
               <div class="form-field">
-                <label class="field-label">Full description *</label>
-                <textarea class="form-textarea" rows="4" placeholder="Detailed course description, what students will learn, prerequisites, etc" required></textarea>
+                <label class="field-label">${t('createCourse.fullDescription')}</label>
+                <textarea class="form-textarea" rows="4" placeholder="${t('createCourse.fullDescPlaceholder')}" required></textarea>
               </div>
 
               <div class="form-row">
                 <div class="form-field">
-                  <label class="field-label">Category *</label>
-                  <input type="text" class="form-input" placeholder="Machine learning" required />
+                  <label class="field-label">${t('createCourse.category')}</label>
+                  <input type="text" class="form-input" placeholder="${t('createCourse.categoryPlaceholder')}" required />
                 </div>
                 <div class="form-field">
-                  <label class="field-label">Level *</label>
-                  <input type="text" class="form-input" placeholder="e.g. Intermediate" required />
+                  <label class="field-label">${t('createCourse.level')}</label>
+                  <input type="text" class="form-input" placeholder="${t('createCourse.levelPlaceholder')}" required />
                 </div>
               </div>
 
               <div class="form-row">
                 <div class="form-field">
-                  <label class="field-label">Language *</label>
-                  <input type="text" class="form-input" placeholder="e.g. English" required />
+                  <label class="field-label">${t('createCourse.language')}</label>
+                  <input type="text" class="form-input" placeholder="${t('createCourse.languagePlaceholder')}" required />
                 </div>
                 <div class="form-field">
-                  <label class="field-label">Duration (hours) *</label>
-                  <input type="text" class="form-input" placeholder="e.g. 15 hours" required />
+                  <label class="field-label">${t('createCourse.duration')}</label>
+                  <input type="text" class="form-input" placeholder="${t('createCourse.durationPlaceholder')}" required />
                 </div>
               </div>
             </div>
 
             <!-- Course Image Section -->
             <div class="course-section">
-              <h3 class="course-section-title">Course Image</h3>
+              <h3 class="course-section-title">${t('createCourse.courseImage')}</h3>
 
               <div class="form-field">
-                <label class="field-label">Course Thumbnail *</label>
+                <label class="field-label">${t('createCourse.courseThumbnail')}</label>
                 <div class="upload-area" id="uploadArea" onclick="triggerFileUpload()">
                   <input type="file" id="thumbnailInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)" />
                   <div class="upload-content" id="uploadContent">
@@ -8596,8 +8600,8 @@ window.openCreateCourse = function() {
                       </svg>
                     </div>
                     <div class="upload-text">
-                      <p>Click to upload course thumbnail</p>
-                      <small>Recommended: 1280x720px, PNG or JPG, max 5MB</small>
+                      <p>${t('createCourse.uploadThumbnail')}</p>
+                      <small>${t('createCourse.thumbnailHint')}</small>
                     </div>
                   </div>
                   <div class="image-preview hidden" id="imagePreview">
@@ -8607,13 +8611,13 @@ window.openCreateCourse = function() {
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        Change
+                        ${t('createCourse.change')}
                       </button>
                       <button type="button" class="image-action-btn delete" onclick="deleteImage(event)">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                           <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        Delete
+                        ${t('createCourse.delete')}
                       </button>
                     </div>
                   </div>
@@ -8621,55 +8625,55 @@ window.openCreateCourse = function() {
               </div>
 
               <div class="form-field">
-                <label class="field-label">Preview Video URL (optional)</label>
-                <input type="url" class="form-input" placeholder="https://youtube.com/watch?=..." />
-                <small class="field-note">Add a preview video to attract more students</small>
+                <label class="field-label">${t('createCourse.previewVideo')}</label>
+                <input type="url" class="form-input" placeholder="${t('createCourse.previewVideoPlaceholder')}" />
+                <small class="field-note">${t('createCourse.previewVideoNote')}</small>
               </div>
             </div>
 
             <!-- Pricing & Access Section -->
             <div class="course-section">
-              <h3 class="course-section-title">Pricing & Access</h3>
+              <h3 class="course-section-title">${t('createCourse.pricingAccess')}</h3>
 
               <div class="form-field">
-                <label class="field-label">Course type *</label>
+                <label class="field-label">${t('createCourse.courseType')}</label>
                 <div class="radio-group">
                   <label class="radio-option">
                     <input type="radio" name="courseType" value="paid" checked />
                     <span class="radio-custom"></span>
-                    <span>Paid</span>
+                    <span>${t('createCourse.paid')}</span>
                   </label>
                   <label class="radio-option">
                     <input type="radio" name="courseType" value="free" />
                     <span class="radio-custom"></span>
-                    <span>Free</span>
+                    <span>${t('createCourse.free')}</span>
                   </label>
                 </div>
               </div>
 
               <div class="form-row">
                 <div class="form-field">
-                  <label class="field-label">Course Price (USD) *</label>
-                  <input type="number" class="form-input" placeholder="49.99" step="0.01" />
+                  <label class="field-label">${t('createCourse.coursePrice')}</label>
+                  <input type="number" class="form-input" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
                 </div>
                 <div class="form-field">
-                  <label class="field-label">Discount Price (optional)</label>
-                  <input type="number" class="form-input" placeholder="29.99" step="0.01" />
-                  <small class="field-note">Leave empty if no discount</small>
+                  <label class="field-label">${t('createCourse.discountPrice')}</label>
+                  <input type="number" class="form-input" placeholder="${t('createCourse.discountPricePlaceholder')}" step="0.01" />
+                  <small class="field-note">${t('createCourse.discountNote')}</small>
                 </div>
               </div>
             </div>
 
             <!-- Course Structure Section -->
             <div class="course-section">
-              <h3 class="course-section-title">Course Structure (Modules & Lessons)</h3>
+              <h3 class="course-section-title">${t('createCourse.courseStructure')}</h3>
 
               <div class="info-tip">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                   <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-                <span>Tip: Organize your course into modules (sections) and lessons. You can add videos, files, and quizzes later.</span>
+                <span>${t('createCourse.structureTip')}</span>
               </div>
 
               <div class="modules-container" id="modulesContainer">
@@ -8681,8 +8685,8 @@ window.openCreateCourse = function() {
                       <p>5 lessons • 2 hours</p>
                     </div>
                     <div class="module-actions" onclick="event.stopPropagation()">
-                      <button type="button" class="action-btn" onclick="editModule(this)">Edit</button>
-                      <button type="button" class="action-btn delete" onclick="deleteModule(this)">Delete</button>
+                      <button type="button" class="action-btn" onclick="editModule(this)">${t('createCourse.edit')}</button>
+                      <button type="button" class="action-btn delete" onclick="deleteModule(this)">${t('createCourse.delete')}</button>
                     </div>
                   </div>
                   <div class="lessons-list" style="display: none;">
@@ -8833,8 +8837,8 @@ window.openCreateCourse = function() {
 
             <!-- Form Actions -->
             <div class="form-actions course-actions">
-              <button type="button" class="btn-cancel" onclick="backToDashboard()">Save as draft</button>
-              <button type="submit" class="btn-save">Publish course</button>
+              <button type="button" class="btn-cancel" onclick="backToDashboard()">${t('createCourse.saveAsDraft')}</button>
+              <button type="submit" class="btn-save">${t('createCourse.publishCourse')}</button>
             </div>
 
           </form>
@@ -9314,3 +9318,51 @@ function showMessage(message, type = 'info') {
 }
 // Ensure AI Assistant function is globally accessible
 window.openAIAssistantPage = openAIAssistantPage;
+
+// Handle language change event - reload current page with new translations
+function handleLanguageChange() {
+  console.log('Language changed, reloading dashboard...');
+  
+  // Get current page from active menu item
+  const activeMenuItem = document.querySelector('.figma-menu-child.active');
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (!contentArea) {
+    // If no content area, just reload the whole dashboard
+    initDashboard();
+    return;
+  }
+  
+  // Determine which page is currently active and reload it
+  if (activeMenuItem) {
+    const menuText = activeMenuItem.textContent.trim();
+    
+    // Map menu text to page reload functions
+    const pageReloadMap = {
+      'Dashboard': () => initDashboard(),
+      'Profile': () => openEditProfile(),
+      'Messages': () => openMessagesPage(),
+      'Sub Admin': () => openSubAdmin(),
+      'Language': () => openLanguagePage(),
+      'Customize UI': () => openCustomizeUI(),
+      'My Subscription': () => openMySubscription(),
+      'Quiz Analytics': () => openQuizAnalytics(),
+      'Rating Comments': () => openRatingComments(),
+      'Students Analytics': () => openStudentsAnalytics(),
+      'Engagement': () => openEngagement(),
+      'Progress': () => openProgress(),
+    };
+    
+    // Try to find and execute the reload function
+    const reloadFn = pageReloadMap[menuText];
+    if (reloadFn) {
+      reloadFn();
+    } else {
+      // If no specific reload function, just reload dashboard
+      initDashboard();
+    }
+  } else {
+    // No active menu item, reload dashboard
+    initDashboard();
+  }
+}
