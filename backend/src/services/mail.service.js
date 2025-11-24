@@ -27,11 +27,17 @@ export async function sendEmail(to, subject, text) {
         user: NODEMAILER_USER_EMAIL,
         pass: NODEMAILER_USER_PASSWORD,
       },
+      // Add timeout for faster response
+      connectionTimeout: 10000, // 10 seconds
+      greetingTimeout: 10000,   // 10 seconds
+      socketTimeout: 10000,     // 10 seconds
     });
 
-    // Verify transporter configuration
-    await transporter.verify();
-    logger.info("Email transporter verified successfully");
+    // Skip verification in production for faster performance
+    if (process.env.NODE_ENV !== "production") {
+      await transporter.verify();
+      logger.info("Email transporter verified successfully");
+    }
 
     const result = await transporter.sendMail({
       from: `"DarsLinker" <${NODEMAILER_USER_EMAIL}>`,
