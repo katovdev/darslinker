@@ -6,6 +6,39 @@ import {
   NODEMAILER_USER_PASSWORD,
 } from "../../config/env.js";
 
+// Create reusable transporter with connection pooling
+let transporter = null;
+
+function getTransporter() {
+  if (!transporter) {
+    transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: NODEMAILER_USER_EMAIL,
+        pass: NODEMAILER_USER_PASSWORD,
+      },
+      // Optimize for speed
+      pool: true,                    // Use connection pooling
+      maxConnections: 3,             // Limit concurrent connections
+      maxMessages: 100,              // Messages per connection
+      connectionTimeout: 5000,       // 5 seconds (reduced from 10)
+      greetingTimeout: 5000,         // 5 seconds
+      socketTimeout: 5000,           // 5 seconds
+      // Keep connections alive
+      keepAlive: true,
+      keepAliveInitialDelay: 300000  // 5 minutes
+    });
+
+    // Skip verification in production for faster performance
+    if (process.env.NODE_ENV !== "production") {
+      transporter.verify().catch(err => {
+        logger.warn("Email transporter verification failed", { error: err.message });
+      });
+    }
+  }
+  return transporter;
+}
+
 export async function sendEmail(to, subject, text) {
   try {
     logger.info("Attempting to send email", {
@@ -21,23 +54,8 @@ export async function sendEmail(to, subject, text) {
       throw new Error("Email configuration is missing. Please check NODEMAILER_USER_EMAIL and NODEMAILER_USER_PASSWORD in .env file");
     }
 
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: NODEMAILER_USER_EMAIL,
-        pass: NODEMAILER_USER_PASSWORD,
-      },
-      // Add timeout for faster response
-      connectionTimeout: 10000, // 10 seconds
-      greetingTimeout: 10000,   // 10 seconds
-      socketTimeout: 10000,     // 10 seconds
-    });
-
-    // Skip verification in production for faster performance
-    if (process.env.NODE_ENV !== "production") {
-      await transporter.verify();
-      logger.info("Email transporter verified successfully");
-    }
+    // Use the pooled transporter
+    const transporter = getTransporter();
 
     const result = await transporter.sendMail({
       from: `"DarsLinker" <${NODEMAILER_USER_EMAIL}>`,

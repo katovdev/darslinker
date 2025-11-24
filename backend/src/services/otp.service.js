@@ -68,9 +68,8 @@ export async function createAndSendOtp({
       expiresAt: doc.expiresAt,
     });
 
-    const message = `Your verification code is <b>${otp}</b>. It will expire in <b>${Math.floor(
-      expiresInSeconds / 60
-    )}</b> minutes`;
+    // Shorter message for faster sending
+    const message = `Code: <b>${otp}</b> (${Math.floor(expiresInSeconds / 60)}min)`;
 
     try {
       if (channel === "email") {
