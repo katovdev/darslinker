@@ -5794,9 +5794,7 @@ window.openFinancePage = function() {
               padding: 16px !important;
               margin-bottom: 16px !important;
               transition: all 0.3s ease !important;
-              position: relative !important;
               cursor: pointer !important;
-              overflow: hidden !important;
             }
             .figma-content-area.finance-page .payment-method-card:hover {
               border-color: rgba(126, 162, 212, 0.4) !important;
@@ -5804,46 +5802,100 @@ window.openFinancePage = function() {
               transform: translateY(-3px) !important;
               box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
             }
-            .figma-content-area.finance-page .payment-method-card:hover .card-actions-overlay {
-              opacity: 1 !important;
-              transform: translateY(0) !important;
-            }
-            .figma-content-area.finance-page .card-actions-overlay {
-              position: absolute !important;
-              top: 0 !important;
-              left: 0 !important;
-              right: 0 !important;
-              bottom: 0 !important;
-              background: rgba(0, 0, 0, 0.8) !important;
-              display: flex !important;
-              justify-content: center !important;
-              align-items: center !important;
-              gap: 12px !important;
-              opacity: 0 !important;
-              transform: translateY(10px) !important;
-              transition: all 0.3s ease !important;
-            }
-            .figma-content-area.finance-page .card-action-btn {
-              background: rgba(126, 162, 212, 0.2) !important;
+            .figma-content-area.finance-page .payment-method-options-btn {
+              position: relative !important;
+              background: rgba(32, 32, 32, 0.95) !important;
               border: 1px solid rgba(126, 162, 212, 0.4) !important;
-              color: rgba(126, 162, 212, 1) !important;
-              padding: 8px 16px !important;
-              border-radius: 8px !important;
+              border-radius: 6px !important;
+              padding: 6px 8px !important;
               cursor: pointer !important;
-              font-size: 12px !important;
-              font-weight: 600 !important;
               transition: all 0.3s ease !important;
+              z-index: 20 !important;
+              box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
             }
-            .figma-content-area.finance-page .card-action-btn.edit-btn:hover {
-              background: rgba(126, 162, 212, 0.3) !important;
+            .figma-content-area.finance-page .payment-method-options-btn:hover {
+              background: rgba(126, 162, 212, 0.15) !important;
+              border-color: rgba(126, 162, 212, 0.6) !important;
+              transform: translateY(-1px) !important;
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
             }
-            .figma-content-area.finance-page .card-action-btn.delete-btn {
-              background: rgba(239, 68, 68, 0.2) !important;
-              border-color: rgba(239, 68, 68, 0.4) !important;
+            .figma-content-area.finance-page .three-dots {
+              width: 18px !important;
+              height: 18px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              color: #7ea2d4 !important;
+              font-size: 16px !important;
+              font-weight: bold !important;
+              line-height: 1 !important;
+            }
+            .figma-content-area.finance-page .payment-dropdown-menu {
+              position: absolute !important;
+              top: 100% !important;
+              right: 0 !important;
+              margin-top: 8px !important;
+              background: rgba(32, 32, 32, 0.95) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 12px 0 !important;
+              min-width: 140px !important;
+              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(126, 162, 212, 0.1) !important;
+              z-index: 1000 !important;
+              display: none !important;
+              overflow: hidden !important;
+              backdrop-filter: blur(10px) !important;
+            }
+            .figma-content-area.finance-page .payment-dropdown-menu.show {
+              display: block !important;
+              animation: dropdownFadeIn 0.2s ease !important;
+            }
+            .figma-content-area.finance-page .dropdown-item {
+              padding: 12px 20px !important;
+              color: #ffffff !important;
+              cursor: pointer !important;
+              transition: all 0.2s ease !important;
+              font-size: 14px !important;
+              font-weight: 500 !important;
+              display: flex !important;
+              align-items: center !important;
+              gap: 8px !important;
+            }
+            .figma-content-area.finance-page .dropdown-item:hover {
+              background: rgba(126, 162, 212, 0.1) !important;
+              transform: translateX(2px) !important;
+            }
+            .figma-content-area.finance-page .dropdown-item.edit {
+              color: #7ea2d4 !important;
+            }
+            .figma-content-area.finance-page .dropdown-item.edit:hover {
+              background: rgba(126, 162, 212, 0.15) !important;
+              color: #a3c4f3 !important;
+            }
+            .figma-content-area.finance-page .dropdown-item.delete {
               color: #ef4444 !important;
             }
-            .figma-content-area.finance-page .card-action-btn.delete-btn:hover {
-              background: rgba(239, 68, 68, 0.3) !important;
+            .figma-content-area.finance-page .dropdown-item.delete:hover {
+              background: rgba(239, 68, 68, 0.15) !important;
+              color: #f87171 !important;
+            }
+            .figma-content-area.finance-page .dropdown-item:before {
+              content: '' !important;
+              width: 6px !important;
+              height: 6px !important;
+              border-radius: 50% !important;
+              background: currentColor !important;
+              opacity: 0.6 !important;
+            }
+            @keyframes dropdownFadeIn {
+              from {
+                opacity: 0 !important;
+                transform: translateY(-8px) scale(0.95) !important;
+              }
+              to {
+                opacity: 1 !important;
+                transform: translateY(0) scale(1) !important;
+              }
             }
             .figma-content-area.finance-page .section-header {
               display: flex !important;
@@ -6033,18 +6085,21 @@ window.openFinancePage = function() {
           <div class="finance-section payment-methods-section">
             <div class="section-header">
               <h3 class="section-title">Payment methods</h3>
+              <div class="payment-method-options-btn" onclick="togglePaymentMenu(this)">
+                <div class="three-dots">⋯</div>
+                <div class="payment-dropdown-menu">
+                  <div class="dropdown-item edit" onclick="editCard()">Edit</div>
+                  <div class="dropdown-item delete" onclick="deleteCard()">Delete</div>
+                </div>
+              </div>
             </div>
-            <div class="payment-method-card" onclick="manageCard()">
+            <div class="payment-method-card" onclick="showPaymentDetails()">
               <div class="payment-card-content">
                 <div class="payment-card-info">
                   <div class="payment-card-name">UzBank Card</div>
                   <div class="payment-card-number">**** **** **** 1234</div>
                 </div>
                 <div class="payment-card-badge">Primary</div>
-              </div>
-              <div class="card-actions-overlay">
-                <button class="card-action-btn edit-btn" onclick="event.stopPropagation(); editCard()">Edit</button>
-                <button class="card-action-btn delete-btn" onclick="event.stopPropagation(); deleteCard()">Delete</button>
               </div>
             </div>
             <button class="add-payment-btn" onclick="addPaymentMethod()">+ Add a payment method</button>
@@ -6627,6 +6682,89 @@ window.openAssignmentsPage = function() {
         <!-- Assignments Content -->
         <div class="figma-content-area assignments-page">
           <style>
+            .course-assignment-banner {
+              background: rgba(32, 32, 32, 0.4) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 10px !important;
+              padding: 16px 20px !important;
+              margin-bottom: 20px !important;
+              display: flex !important;
+              align-items: center !important;
+              gap: 12px !important;
+            }
+            .course-assignment-icon {
+              display: flex !important;
+              align-items: center !important;
+              justify-content: center !important;
+              flex-shrink: 0 !important;
+            }
+            .course-assignment-info {
+              flex: 1 !important;
+            }
+            .course-assignment-title {
+              color: #ffffff !important;
+              font-size: 18px !important;
+              font-weight: 600 !important;
+              margin: 0 0 4px 0 !important;
+            }
+            .course-assignment-subtitle {
+              color: rgba(126, 162, 212, 1) !important;
+              font-size: 14px !important;
+              margin: 0 !important;
+            }
+            .course-filter-section {
+              background: rgba(32, 32, 32, 0.4) !important;
+              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-radius: 12px !important;
+              padding: 20px 24px !important;
+              margin-bottom: 24px !important;
+              display: flex !important;
+              align-items: center !important;
+              justify-content: space-between !important;
+              gap: 20px !important;
+            }
+            .course-filter-left {
+              display: flex !important;
+              align-items: center !important;
+              gap: 16px !important;
+            }
+            .course-filter-label {
+              color: rgba(126, 162, 212, 1) !important;
+              font-size: 16px !important;
+              font-weight: 600 !important;
+              white-space: nowrap !important;
+            }
+            .course-select {
+              background: rgba(32, 32, 32, 0.8) !important;
+              border: 1px solid rgba(126, 162, 212, 0.3) !important;
+              border-radius: 10px !important;
+              padding: 12px 16px !important;
+              color: #ffffff !important;
+              font-size: 14px !important;
+              min-width: 250px !important;
+              cursor: pointer !important;
+              transition: all 0.2s ease !important;
+            }
+            .course-select:hover, .course-select:focus {
+              border-color: rgba(126, 162, 212, 0.5) !important;
+              outline: none !important;
+              box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+            }
+            .course-select option {
+              background: rgba(32, 32, 32, 1) !important;
+              color: #ffffff !important;
+              padding: 10px !important;
+            }
+            .assignment-counter {
+              background: rgba(126, 162, 212, 0.1) !important;
+              border: 1px solid rgba(126, 162, 212, 0.3) !important;
+              border-radius: 8px !important;
+              padding: 8px 16px !important;
+              color: rgba(126, 162, 212, 1) !important;
+              font-size: 14px !important;
+              font-weight: 600 !important;
+              white-space: nowrap !important;
+            }
             .figma-content-area.assignments-page {
               padding: 24px !important;
               display: flex !important;
@@ -6781,6 +6919,38 @@ window.openAssignmentsPage = function() {
             }
           </style>
 
+          <!-- Course Assignment Notification Banner -->
+          <div class="course-assignment-banner">
+            <div class="course-assignment-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M9 12l2 2 4-4" stroke="#7ea2d4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#7ea2d4" stroke-width="2" fill="none"/>
+              </svg>
+            </div>
+            <div class="course-assignment-info">
+              <h3 class="course-assignment-title" id="assignment-banner-title">New assignments received today</h3>
+              <p class="course-assignment-subtitle" id="assignment-banner-subtitle">React Masterclass: 3 new • JavaScript Basics: 2 new • Vue.js Advanced: 1 new</p>
+            </div>
+          </div>
+
+          <!-- Course Filter Section -->
+          <div class="course-filter-section">
+            <div class="course-filter-left">
+              <span class="course-filter-label">Filter by Course:</span>
+              <select class="course-select" id="courseFilterSelect" onchange="filterAssignmentsByCourse(this.value)">
+                <option value="all">All Courses</option>
+                <option value="react-masterclass">React Masterclass</option>
+                <option value="javascript-basics">JavaScript Basics</option>
+                <option value="vue-advanced">Vue.js Advanced</option>
+                <option value="node-backend">Node.js Backend Development</option>
+                <option value="python-django">Python & Django</option>
+              </select>
+            </div>
+            <div class="assignment-counter" id="assignment-counter">
+              Showing 15 assignments from all courses
+            </div>
+          </div>
+
           <!-- Assignment Statistics Cards -->
           <div class="assignments-stats-grid">
             <div class="assignments-card" onclick="showAssignmentDetails('total')">
@@ -6812,7 +6982,7 @@ window.openAssignmentsPage = function() {
             <h3 class="assignments-section-title">Pending assignments</h3>
 
             <!-- Assignment Items -->
-            <div class="assignment-item">
+            <div class="assignment-item" data-course="react-masterclass">
               <div class="assignment-header">
                 <div>
                   <h4 class="assignment-title">Build a Todo App Project</h4>
@@ -6828,19 +6998,67 @@ window.openAssignmentsPage = function() {
               </div>
             </div>
 
-            <div class="assignment-item">
+            <div class="assignment-item" data-course="javascript-basics">
               <div class="assignment-header">
                 <div>
-                  <h4 class="assignment-title">Build a Todo App Project</h4>
-                  <div class="assignment-meta">Submitted: Oct 10, 2025 • React Masterclass</div>
+                  <h4 class="assignment-title">JavaScript Calculator Project</h4>
+                  <div class="assignment-meta">Submitted: Oct 11, 2025 • JavaScript Basics</div>
                 </div>
                 <span class="assignment-status">Pending</span>
               </div>
               <div class="assignment-description">
-                Submission: Complete Todo application with add, delete, and edit functionality
+                Submission: Basic calculator with arithmetic operations and modern UI
               </div>
               <div class="assignment-action">
                 <button class="grade-btn" onclick="gradeAssignment(2)">Grade now</button>
+              </div>
+            </div>
+
+            <div class="assignment-item" data-course="vue-advanced">
+              <div class="assignment-header">
+                <div>
+                  <h4 class="assignment-title">Vue.js Component Library</h4>
+                  <div class="assignment-meta">Submitted: Oct 12, 2025 • Vue.js Advanced</div>
+                </div>
+                <span class="assignment-status">Pending</span>
+              </div>
+              <div class="assignment-description">
+                Submission: Reusable component library with documentation
+              </div>
+              <div class="assignment-action">
+                <button class="grade-btn" onclick="gradeAssignment(3)">Grade now</button>
+              </div>
+            </div>
+
+            <div class="assignment-item" data-course="react-masterclass">
+              <div class="assignment-header">
+                <div>
+                  <h4 class="assignment-title">React Router Implementation</h4>
+                  <div class="assignment-meta">Submitted: Oct 9, 2025 • React Masterclass</div>
+                </div>
+                <span class="assignment-status">Pending</span>
+              </div>
+              <div class="assignment-description">
+                Submission: Multi-page application with client-side routing
+              </div>
+              <div class="assignment-action">
+                <button class="grade-btn" onclick="gradeAssignment(4)">Grade now</button>
+              </div>
+            </div>
+
+            <div class="assignment-item" data-course="node-backend">
+              <div class="assignment-header">
+                <div>
+                  <h4 class="assignment-title">REST API Development</h4>
+                  <div class="assignment-meta">Submitted: Oct 8, 2025 • Node.js Backend Development</div>
+                </div>
+                <span class="assignment-status">Pending</span>
+              </div>
+              <div class="assignment-description">
+                Submission: Complete REST API with authentication and database
+              </div>
+              <div class="assignment-action">
+                <button class="grade-btn" onclick="gradeAssignment(5)">Grade now</button>
               </div>
             </div>
           </div>
@@ -7036,7 +7254,7 @@ window.updateAssignmentsList = function(filterType) {
   } else {
     // Show graded assignments
     const gradedHTML = `
-      <div class="assignment-item">
+      <div class="assignment-item" data-course="javascript-basics">
         <div class="assignment-header">
           <div>
             <h4 class="assignment-title">JavaScript Calculator</h4>
@@ -7068,6 +7286,90 @@ window.updateAssignmentsList = function(filterType) {
       </div>
     `;
     assignmentsContainer.insertAdjacentHTML('beforeend', gradedHTML);
+  }
+};
+
+// Course Filter Function
+window.filterAssignmentsByCourse = function(courseValue) {
+  const assignmentItems = document.querySelectorAll('.assignment-item');
+  const counter = document.getElementById('assignment-counter');
+  const statsCards = document.querySelectorAll('.assignments-card-amount');
+
+  let visibleCount = 0;
+  const courseNames = {
+    'all': 'all courses',
+    'react-masterclass': 'React Masterclass',
+    'javascript-basics': 'JavaScript Basics',
+    'vue-advanced': 'Vue.js Advanced',
+    'node-backend': 'Node.js Backend Development',
+    'python-django': 'Python & Django'
+  };
+
+  // Course-specific statistics
+  const courseStats = {
+    'all': { total: 235, pending: 15, graded: 220, average: 80 },
+    'react-masterclass': { total: 89, pending: 6, graded: 83, average: 85 },
+    'javascript-basics': { total: 67, pending: 4, graded: 63, average: 78 },
+    'vue-advanced': { total: 45, pending: 2, graded: 43, average: 82 },
+    'node-backend': { total: 23, pending: 2, graded: 21, average: 79 },
+    'python-django': { total: 11, pending: 1, graded: 10, average: 75 }
+  };
+
+  // Filter assignment items
+  assignmentItems.forEach(item => {
+    const itemCourse = item.getAttribute('data-course');
+    if (courseValue === 'all' || itemCourse === courseValue) {
+      item.style.display = 'block';
+      item.style.animation = 'slideInRight 0.3s ease';
+      visibleCount++;
+    } else {
+      item.style.display = 'none';
+    }
+  });
+
+  // Update counter
+  const courseName = courseNames[courseValue] || courseValue;
+  counter.textContent = `Showing ${visibleCount} assignments from ${courseName}`;
+
+  // Update statistics cards
+  const stats = courseStats[courseValue] || courseStats['all'];
+  if (statsCards[0]) statsCards[0].textContent = stats.total;
+  if (statsCards[1]) statsCards[1].textContent = stats.pending;
+  if (statsCards[2]) statsCards[2].textContent = stats.graded;
+  if (statsCards[3]) statsCards[3].textContent = stats.average + '%';
+
+  // Update banner for specific course
+  const banner = document.querySelector('.course-assignment-banner');
+  const bannerTitle = document.getElementById('assignment-banner-title');
+  const bannerSubtitle = document.getElementById('assignment-banner-subtitle');
+
+  if (courseValue !== 'all') {
+    bannerTitle.textContent = `Assignments for ${courseNames[courseValue]}`;
+    bannerSubtitle.textContent = `${stats.pending} pending • ${stats.graded} graded • ${stats.average}% average grade`;
+    banner.style.background = 'linear-gradient(135deg, rgba(126, 162, 212, 0.15) 0%, rgba(126, 162, 212, 0.08) 100%)';
+  } else {
+    bannerTitle.textContent = 'New assignments received today';
+    bannerSubtitle.textContent = 'React Masterclass: 3 new • JavaScript Basics: 2 new • Vue.js Advanced: 1 new';
+    banner.style.background = 'linear-gradient(135deg, rgba(126, 162, 212, 0.1) 0%, rgba(126, 162, 212, 0.05) 100%)';
+  }
+
+  // Add slide-in animation CSS if not exists
+  if (!document.getElementById('slideAnimation')) {
+    const style = document.createElement('style');
+    style.id = 'slideAnimation';
+    style.textContent = `
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
   }
 };
 
@@ -7348,6 +7650,67 @@ window.requestWithdrawal = function() {
   closeModal();
 };
 
+// Payment Method Dropdown Functions
+window.togglePaymentMenu = function(button) {
+  const dropdown = button.querySelector('.payment-dropdown-menu');
+  const isOpen = dropdown.classList.contains('show');
+
+  // Close all other dropdowns
+  document.querySelectorAll('.payment-dropdown-menu.show').forEach(menu => {
+    menu.classList.remove('show');
+  });
+
+  // Toggle current dropdown
+  if (!isOpen) {
+    dropdown.classList.add('show');
+
+    // Close dropdown when clicking outside
+    setTimeout(() => {
+      document.addEventListener('click', function closeDropdown(e) {
+        if (!button.contains(e.target)) {
+          dropdown.classList.remove('show');
+          document.removeEventListener('click', closeDropdown);
+        }
+      });
+    }, 0);
+  }
+};
+
+window.showPaymentDetails = function() {
+  const cardDetails = `
+    <div class="modal-content">
+      <h3>Payment Method Details</h3>
+      <div class="card-info-detail" style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="info-row" style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(126, 162, 212, 0.2);">
+          <span style="color: rgba(156, 163, 175, 1); font-weight: 600;">Card Type:</span>
+          <span style="color: #ffffff;">UzBank Visa</span>
+        </div>
+        <div class="info-row" style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(126, 162, 212, 0.2);">
+          <span style="color: rgba(156, 163, 175, 1); font-weight: 600;">Card Number:</span>
+          <span style="color: #ffffff;">**** **** **** 1234</span>
+        </div>
+        <div class="info-row" style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(126, 162, 212, 0.2);">
+          <span style="color: rgba(156, 163, 175, 1); font-weight: 600;">Cardholder:</span>
+          <span style="color: #ffffff;">Umaraliyeva Zarnigor</span>
+        </div>
+        <div class="info-row" style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(126, 162, 212, 0.2);">
+          <span style="color: rgba(156, 163, 175, 1); font-weight: 600;">Expiry Date:</span>
+          <span style="color: #ffffff;">12/28</span>
+        </div>
+        <div class="info-row" style="display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(126, 162, 212, 0.2);">
+          <span style="color: rgba(156, 163, 175, 1); font-weight: 600;">Status:</span>
+          <span style="color: #10b981; background: rgba(16, 185, 129, 0.2); padding: 4px 8px; border-radius: 6px; font-size: 12px; font-weight: 600;">Primary</span>
+        </div>
+        <div class="info-row" style="display: flex; justify-content: space-between; padding: 12px 0;">
+          <span style="color: rgba(156, 163, 175, 1); font-weight: 600;">Added:</span>
+          <span style="color: #ffffff;">Nov 15, 2024</span>
+        </div>
+      </div>
+    </div>
+  `;
+  showModal('UzBank Card Details', cardDetails);
+};
+
 // Enhanced Finance Interactive Functions
 window.manageCard = function() {
   const cardDetails = `
@@ -7405,127 +7768,782 @@ window.manageCard = function() {
 };
 
 window.editCard = function() {
-  const editForm = `
-    <div class="modal-content">
-      <h3>Edit Payment Method</h3>
-      <div class="edit-card-form">
-        <div class="form-group">
-          <label>Card Nickname:</label>
-          <input type="text" value="UzBank Card" class="form-input" id="cardNickname">
+  const editModal = `
+    <div class="modern-modal-overlay" onclick="closeEditModal()">
+      <div class="modern-modal-container" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C17.523 2 22 6.477 22 12s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zm-1 13h2l.15-.007a1 1 0 0 0 .85-.993l-.001-2h2l.15-.007A1 1 0 0 0 15 11l-.001-2h-2l-.15-.007A1 1 0 0 0 12 9l-.001 2h-2l-.15-.007A1 1 0 0 0 9 11l.001 2h2l.15.007A1 1 0 0 0 11 15z" fill="#7ea2d4"/>
+            </svg>
+          </div>
+          <div class="modal-title-section">
+            <h3 class="modal-title">Edit Payment Method</h3>
+            <p class="modal-subtitle">Update your card information and preferences</p>
+          </div>
+          <button class="modal-close-btn" onclick="closeEditModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
         </div>
-        <div class="form-group">
-          <label>Set as Primary:</label>
-          <input type="checkbox" checked id="isPrimary">
+
+        <div class="modal-body">
+          <div class="card-preview">
+            <div class="card-mini">
+              <div class="card-mini-content">
+                <div class="card-mini-name">UzBank Card</div>
+                <div class="card-mini-number">8600 1234 5678 1234</div>
+              </div>
+              <div class="card-mini-badge">Primary</div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="input-group">
+              <label class="input-label">Card Nickname</label>
+              <input type="text" value="UzBank Card" class="modern-input" id="editCardNickname" placeholder="Enter a nickname for this card">
+              <span class="input-helper">Give your card a memorable name</span>
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Card Type</label>
+              <div class="card-type-display">
+                <div class="card-type-icon">
+                  <svg width="32" height="20" viewBox="0 0 32 20" fill="none">
+                    <rect width="32" height="20" rx="4" fill="#1f2937"/>
+                    <text x="16" y="12" text-anchor="middle" fill="#7ea2d4" font-size="8" font-family="monospace">VISA</text>
+                  </svg>
+                </div>
+                <div class="card-type-info">
+                  <div class="card-type-name">Visa Debit Card</div>
+                  <div class="card-type-ending">8600 1234 5678 1234</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="checkbox-group">
+              <label class="checkbox-container">
+                <input type="checkbox" checked id="editIsPrimary" class="modern-checkbox">
+                <span class="checkmark"></span>
+                <div class="checkbox-content">
+                  <div class="checkbox-title">Set as Primary Payment Method</div>
+                  <div class="checkbox-description">This will be used as your default payment option</div>
+                </div>
+              </label>
+            </div>
+          </div>
         </div>
-        <div class="form-actions">
-          <button class="save-btn" onclick="saveCardChanges()">Save Changes</button>
-          <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveCardChanges()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-right: 8px;">
+              <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Save Changes
+          </button>
         </div>
       </div>
     </div>
+
     <style>
-      .edit-card-form {
-        padding: 20px 0;
-      }
-      .form-group {
-        margin-bottom: 20px;
-      }
-      .form-group label {
-        display: block;
-        margin-bottom: 8px;
-        color: rgba(126, 162, 212, 1);
-        font-weight: 500;
-      }
-      .form-input {
+      .modern-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        padding: 12px;
-        background: rgba(58, 56, 56, 0.3);
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(8px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: modalFadeIn 0.3s ease;
+      }
+
+      .modern-modal-container {
+        background: rgba(24, 24, 24, 0.95);
         border: 1px solid rgba(126, 162, 212, 0.2);
-        border-radius: 8px;
+        border-radius: 16px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow: hidden;
+        animation: modalSlideUp 0.3s ease;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(126, 162, 212, 0.1);
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: flex-start;
+        padding: 24px 24px 20px;
+        border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+        gap: 16px;
+      }
+
+      .modal-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(126, 162, 212, 0.1);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .modal-title-section {
+        flex: 1;
+      }
+
+      .modal-title {
         color: #ffffff;
+        font-size: 20px;
+        font-weight: 600;
+        margin: 0 0 4px;
+      }
+
+      .modal-subtitle {
+        color: rgba(156, 163, 175, 1);
+        font-size: 14px;
+        margin: 0;
+      }
+
+      .modal-close-btn {
+        background: rgba(156, 163, 175, 0.1);
+        border: 1px solid rgba(156, 163, 175, 0.2);
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .modal-close-btn:hover {
+        background: rgba(156, 163, 175, 0.2);
+        border-color: rgba(156, 163, 175, 0.3);
+      }
+
+      .modal-body {
+        padding: 24px;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+
+      .card-preview {
+        margin-bottom: 24px;
+      }
+
+      .card-mini {
+        background: rgba(58, 56, 56, 0.4);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 12px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .card-mini-name {
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 4px;
+      }
+
+      .card-mini-number {
+        color: rgba(156, 163, 175, 1);
         font-size: 14px;
       }
-      .form-actions {
+
+      .card-mini-badge {
+        background: #10b981;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .form-section {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .input-label {
+        color: rgba(126, 162, 212, 1);
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      .modern-input {
+        background: rgba(32, 32, 32, 0.8);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 10px;
+        padding: 14px 16px;
+        color: #ffffff;
+        font-size: 16px;
+        transition: all 0.2s ease;
+      }
+
+      .modern-input:focus {
+        outline: none;
+        border-color: rgba(126, 162, 212, 0.5);
+        box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+      }
+
+      .input-helper {
+        color: rgba(156, 163, 175, 1);
+        font-size: 12px;
+      }
+
+      .card-type-display {
+        background: rgba(32, 32, 32, 0.6);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 10px;
+        padding: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .card-type-info {
+        flex: 1;
+      }
+
+      .card-type-name {
+        color: #ffffff;
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+
+      .card-type-ending {
+        color: rgba(156, 163, 175, 1);
+        font-size: 14px;
+      }
+
+      .checkbox-group {
+        margin-top: 8px;
+      }
+
+      .checkbox-container {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        cursor: pointer;
+        padding: 16px;
+        background: rgba(32, 32, 32, 0.4);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 10px;
+        transition: all 0.2s ease;
+        position: relative;
+      }
+
+      .checkbox-container:hover {
+        background: rgba(32, 32, 32, 0.6);
+        border-color: rgba(126, 162, 212, 0.3);
+      }
+
+      .modern-checkbox {
+        width: 20px;
+        height: 20px;
+        margin: 0;
+        opacity: 0;
+        position: absolute;
+      }
+
+      .checkmark {
+        position: relative;
+        display: block;
+        height: 20px;
+        width: 20px;
+        background: rgba(126, 162, 212, 0.1);
+        border: 2px solid rgba(126, 162, 212, 0.4);
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+
+      .modern-checkbox:checked + .checkmark {
+        background: #7ea2d4;
+        border-color: #7ea2d4;
+      }
+
+      .checkmark:after {
+        content: "";
+        position: absolute;
+        display: none;
+        left: 5px;
+        top: 2px;
+        width: 6px;
+        height: 10px;
+        border: solid white;
+        border-width: 0 2px 2px 0;
+        transform: rotate(45deg);
+      }
+
+      .modern-checkbox:checked + .checkmark:after {
+        display: block;
+      }
+
+      .checkbox-content {
+        flex: 1;
+      }
+
+      .checkbox-title {
+        color: #ffffff;
+        font-weight: 500;
+        margin-bottom: 2px;
+      }
+
+      .checkbox-description {
+        color: rgba(156, 163, 175, 1);
+        font-size: 14px;
+      }
+
+      .modal-footer {
+        padding: 20px 24px 24px;
+        border-top: 1px solid rgba(126, 162, 212, 0.1);
         display: flex;
         gap: 12px;
-        margin-top: 24px;
+        justify-content: flex-end;
       }
-      .save-btn {
-        background: rgba(34, 197, 94, 0.2);
-        border: 1px solid rgba(34, 197, 94, 0.4);
-        color: #22c55e;
+
+      .btn {
         padding: 12px 24px;
-        border-radius: 8px;
-        cursor: pointer;
+        border-radius: 10px;
         font-weight: 600;
-        flex: 1;
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 120px;
       }
-      .cancel-btn {
-        background: rgba(156, 163, 175, 0.2);
-        border: 1px solid rgba(156, 163, 175, 0.4);
+
+      .btn-secondary {
+        background: rgba(75, 85, 99, 0.3);
+        border: 1px solid rgba(75, 85, 99, 0.5);
         color: rgba(156, 163, 175, 1);
-        padding: 12px 24px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        flex: 1;
       }
-      .save-btn:hover {
-        background: rgba(34, 197, 94, 0.3);
+
+      .btn-secondary:hover {
+        background: rgba(75, 85, 99, 0.4);
+        border-color: rgba(75, 85, 99, 0.6);
       }
-      .cancel-btn:hover {
-        background: rgba(156, 163, 175, 0.3);
+
+      .btn-primary {
+        background: linear-gradient(135deg, #7ea2d4 0%, #9bb5e0 100%);
+        border: 1px solid rgba(126, 162, 212, 0.5);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: linear-gradient(135deg, #6b91c7 0%, #8ba7d8 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
+      }
+
+      @keyframes modalFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes modalSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
       }
     </style>
   `;
 
-  showModal('Edit Payment Method', editForm);
+  document.body.insertAdjacentHTML('beforeend', editModal);
+};
+
+window.closeEditModal = function() {
+  const modal = document.querySelector('.modern-modal-overlay');
+  if (modal) {
+    modal.style.animation = 'modalFadeOut 0.2s ease';
+    setTimeout(() => modal.remove(), 200);
+  }
 };
 
 window.deleteCard = function() {
-  const confirmDialog = `
-    <div class="modal-content">
-      <h3>Delete Payment Method</h3>
-      <div class="delete-confirmation">
-        <p>Are you sure you want to delete this payment method?</p>
-        <p class="warning-text">This action cannot be undone.</p>
-        <div class="confirmation-actions">
-          <button class="delete-confirm-btn" onclick="confirmDeleteCard()">Yes, Delete</button>
-          <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+  const deleteModal = `
+    <div class="delete-modal-overlay" onclick="closeDeleteModal()">
+      <div class="delete-modal-container" onclick="event.stopPropagation()">
+        <div class="delete-modal-header">
+          <div class="delete-modal-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2C17.523 2 22 6.477 22 12s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z" fill="#ef4444" fill-opacity="0.1"/>
+              <path d="M12 2C17.523 2 22 6.477 22 12s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z" stroke="#ef4444" stroke-width="1.5"/>
+              <path d="M15 9l-6 6m0-6l6 6" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <button class="delete-modal-close-btn" onclick="closeDeleteModal()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6l12 12" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="delete-modal-body">
+          <div class="delete-title">
+            <h3>Delete Payment Method</h3>
+            <p class="delete-subtitle">This action cannot be undone</p>
+          </div>
+
+          <div class="delete-content">
+            <div class="card-to-delete">
+              <div class="card-delete-preview">
+                <div class="card-delete-icon">
+                  <svg width="20" height="16" viewBox="0 0 24 20" fill="none">
+                    <rect x="2" y="4" width="20" height="12" rx="3" stroke="#ef4444" stroke-width="1.5" fill="none"/>
+                    <path d="M6 8h4m-4 3h6" stroke="#ef4444" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <div class="card-delete-info">
+                  <div class="card-delete-name">UzBank Card</div>
+                  <div class="card-delete-number">**** **** **** 1234</div>
+                </div>
+                <div class="card-delete-badge">Primary</div>
+              </div>
+            </div>
+
+            <div class="delete-warning">
+              <div class="warning-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                  <path d="M12 9v4m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="warning-content">
+                <div class="warning-title">Warning</div>
+                <div class="warning-description">
+                  Deleting this payment method will remove it permanently from your account.
+                  Any pending transactions will be canceled.
+                </div>
+              </div>
+            </div>
+
+            <div class="delete-consequences">
+              <div class="consequence-item">
+                <div class="consequence-icon">●</div>
+                <div class="consequence-text">Card will be removed from all subscriptions</div>
+              </div>
+              <div class="consequence-item">
+                <div class="consequence-icon">●</div>
+                <div class="consequence-text">Transaction history will remain visible</div>
+              </div>
+              <div class="consequence-item">
+                <div class="consequence-icon">●</div>
+                <div class="consequence-text">You'll need to add a new primary method if this is primary</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="delete-modal-footer">
+          <button class="btn btn-cancel" onclick="closeDeleteModal()">Keep Card</button>
+          <button class="btn btn-danger" onclick="confirmDeleteCard()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="margin-right: 8px;">
+              <path d="M3 6h18m-2 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Delete Permanently
+          </button>
         </div>
       </div>
     </div>
+
     <style>
-      .delete-confirmation p {
-        color: #ffffff;
-        margin-bottom: 12px;
-      }
-      .warning-text {
-        color: #ef4444 !important;
-        font-weight: 500;
-        margin-bottom: 24px !important;
-      }
-      .confirmation-actions {
+      .delete-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
         display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: deleteFadeIn 0.3s ease;
+      }
+
+      .delete-modal-container {
+        background: rgba(20, 20, 20, 0.98);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 20px;
+        width: 90%;
+        max-width: 500px;
+        max-height: 90vh;
+        overflow: hidden;
+        animation: deleteSlideUp 0.3s ease;
+        box-shadow: 0 25px 80px rgba(239, 68, 68, 0.3), 0 0 0 1px rgba(239, 68, 68, 0.1);
+      }
+
+      .delete-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 24px 20px;
+        border-bottom: 1px solid rgba(239, 68, 68, 0.1);
+      }
+
+      .delete-modal-icon {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(239, 68, 68, 0.1);
+        border-radius: 16px;
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
+
+      .delete-modal-close-btn {
+        background: rgba(75, 85, 99, 0.2);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        border-radius: 8px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .delete-modal-close-btn:hover {
+        background: rgba(75, 85, 99, 0.3);
+      }
+
+      .delete-modal-body {
+        padding: 24px;
+      }
+
+      .delete-title {
+        text-align: center;
+        margin-bottom: 24px;
+      }
+
+      .delete-title h3 {
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 8px;
+      }
+
+      .delete-subtitle {
+        color: #ef4444;
+        font-size: 14px;
+        font-weight: 500;
+        margin: 0;
+      }
+
+      .delete-content {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .card-to-delete {
+        background: rgba(32, 32, 32, 0.5);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 12px;
+        padding: 16px;
+      }
+
+      .card-delete-preview {
+        display: flex;
+        align-items: center;
         gap: 12px;
       }
-      .delete-confirm-btn {
-        background: rgba(239, 68, 68, 0.2);
-        border: 1px solid rgba(239, 68, 68, 0.4);
-        color: #ef4444;
-        padding: 12px 24px;
+
+      .card-delete-icon {
+        background: rgba(239, 68, 68, 0.1);
         border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
+        padding: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .card-delete-info {
         flex: 1;
       }
-      .delete-confirm-btn:hover {
-        background: rgba(239, 68, 68, 0.3);
+
+      .card-delete-name {
+        color: #ffffff;
+        font-weight: 600;
+        margin-bottom: 2px;
+      }
+
+      .card-delete-number {
+        color: rgba(156, 163, 175, 1);
+        font-size: 14px;
+      }
+
+      .card-delete-badge {
+        background: rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        border: 1px solid rgba(239, 68, 68, 0.3);
+      }
+
+      .delete-warning {
+        display: flex;
+        gap: 12px;
+        background: rgba(245, 158, 11, 0.1);
+        border: 1px solid rgba(245, 158, 11, 0.2);
+        border-radius: 12px;
+        padding: 16px;
+      }
+
+      .warning-icon {
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+
+      .warning-title {
+        color: #f59e0b;
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .warning-description {
+        color: rgba(245, 158, 11, 0.9);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .delete-consequences {
+        background: rgba(32, 32, 32, 0.4);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+        border-radius: 12px;
+        padding: 16px;
+      }
+
+      .consequence-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 8px;
+      }
+
+      .consequence-item:last-child {
+        margin-bottom: 0;
+      }
+
+      .consequence-icon {
+        color: rgba(239, 68, 68, 0.8);
+        margin-top: 2px;
+        font-size: 12px;
+      }
+
+      .consequence-text {
+        color: rgba(156, 163, 175, 1);
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .delete-modal-footer {
+        padding: 20px 24px 24px;
+        border-top: 1px solid rgba(239, 68, 68, 0.1);
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+      }
+
+      .btn-cancel {
+        background: rgba(75, 85, 99, 0.3);
+        border: 1px solid rgba(75, 85, 99, 0.5);
+        color: rgba(156, 163, 175, 1);
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .btn-cancel:hover {
+        background: rgba(75, 85, 99, 0.4);
+        border-color: rgba(75, 85, 99, 0.6);
+      }
+
+      .btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        border: 1px solid rgba(239, 68, 68, 0.5);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 160px;
+      }
+
+      .btn-danger:hover {
+        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+      }
+
+      @keyframes deleteFadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes deleteSlideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px) scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      @keyframes deleteFadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
       }
     </style>
   `;
 
-  showModal('Confirm Deletion', confirmDialog);
+  document.body.insertAdjacentHTML('beforeend', deleteModal);
+};
+
+window.closeDeleteModal = function() {
+  const modal = document.querySelector('.delete-modal-overlay');
+  if (modal) {
+    modal.style.animation = 'deleteFadeOut 0.2s ease';
+    setTimeout(() => modal.remove(), 200);
+  }
 };
 
 window.addPaymentMethod = function() {
