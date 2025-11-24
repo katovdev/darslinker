@@ -120,7 +120,7 @@ export function initRegisterPage() {
                 <input
                   type="password"
                   class="form-input password-input-field"
-                  placeholder="Kamida 8 ta belgi, katta-kichik harf, raqam va @$!%*?&"
+                  placeholder="Kamida 6 ta belgi"
                   id="passwordInput"
                   required
                 />
@@ -901,14 +901,8 @@ function initRegisterPageFunctionality() {
     if (!value) {
       showError(passwordError, 'Parol kiritilishi shart');
       return false;
-    } else if (value.length < 8) {
-      showError(passwordError, 'Parol kamida 8 ta belgidan iborat bo\'lishi kerak!');
-      return false;
-    } else if (value.length > 128) {
-      showError(passwordError, 'Parol 128 ta belgidan ko\'p bo\'lmasligi kerak!');
-      return false;
-    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(value)) {
-      showError(passwordError, 'Parol katta harf, kichik harf, raqam va maxsus belgi (@$!%*?&) o\'z ichiga olishi kerak!');
+    } else if (value.length < 6) {
+      showError(passwordError, 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak!');
       return false;
     } else {
       hideError(passwordError);
@@ -996,8 +990,16 @@ function initRegisterPageFunctionality() {
       // First check if user already exists
       const checkResult = await apiService.checkUser(userIdentifier);
 
-      if (checkResult.exists) {
-        showErrorToast('Bu telefon raqam yoki email allaqachon ro\'yxatdan o\'tgan!');
+      if (checkResult.exists && checkResult.next === 'login') {
+        showErrorToast('Bu telefon raqam yoki email allaqachon ro\'yxatdan o\'tgan va tasdiqlangan!');
+        registerSubmit.textContent = 'Ro\'yxatdan o\'tish';
+        registerSubmit.disabled = false;
+        return;
+      }
+
+      if (!checkResult.exists && checkResult.next === 'verify') {
+        // User exists but not verified, show OTP modal directly
+        showOtpVerificationModal(userIdentifier);
         registerSubmit.textContent = 'Ro\'yxatdan o\'tish';
         registerSubmit.disabled = false;
         return;

@@ -666,8 +666,8 @@ function initLoginPageFunctionality() {
     // Check if user exists using real API
     apiService.checkUser(userIdentifier)
       .then(response => {
-        if (response.exists) {
-          // User exists, store temp data and go to password page
+        if (response.exists && response.next === 'login') {
+          // User exists and verified, store temp data and go to password page
           sessionStorage.setItem('tempUserData', JSON.stringify(response.user));
           sessionStorage.setItem('userIdentifier', userIdentifier);
 
@@ -676,6 +676,9 @@ function initLoginPageFunctionality() {
           document.body.style.height = '';
 
           router.navigate('/password');
+        } else if (!response.exists && response.next === 'verify') {
+          // User exists but not verified, show OTP verification modal
+          showOtpVerificationModal(userIdentifier, response.user);
         } else {
           // User doesn't exist, go to register page
           sessionStorage.setItem('registerIdentifier', userIdentifier);
@@ -748,6 +751,332 @@ function initLoginPageFunctionality() {
 function isValidEmail(email) {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
+}
+
+function showOtpVerificationModal(identifier, user) {
+  // Create OTP verification modal
+  const otpModal = document.createElement('div');
+  otpModal.className = 'otp-modal-overlay';
+  otpModal.innerHTML = `
+    <div class="otp-modal">
+      <div class="otp-header">
+        <h3>Tasdiqlash kodi</h3>
+        <p>Siz ro'yxatdan o'tgansiz, lekin hisobingiz tasdiqlanmagan. Tasdiqlash kodi ${identifier.includes('@') ? 'emailingizga' : 'telefon raqamingizga'} yuborildi.</p>
+      </div>
+      <div class="otp-input-container">
+        <input type="text" class="otp-input" maxlength="6" placeholder="000000" id="otpCodeInput">
+      </div>
+      <div class="otp-actions">
+        <button class="otp-verify-btn" id="verifyOtpBtn">Tasdiqlash</button>
+        <button class="otp-resend-btn" id="resendOtpBtn">Qayta yuborish</button>
+      </div>
+      <button class="otp-close-btn" id="closeOtpModal">&times;</button>
+    </div>
+  `;
+
+  // Add OTP modal styles
+  const otpStyles = document.createElement('style');
+  otpStyles.id = 'otp-modal-styles';
+  otpStyles.textContent = `
+    .otp-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .otp-modal {
+      background: rgba(90, 90, 90, 0.1);
+      backdrop-filter: blur(50px);
+      border-radius: 24px;
+      padding: 32px;
+      width: 400px;
+      max-width: 90vw;
+      border: 1px solid #7EA2D4;
+      position: relative;
+    }
+
+    .otp-header h3 {
+      color: #ffffff;
+      font-size: 1.4rem;
+      margin: 0 0 8px 0;
+      text-align: center;
+    }
+
+    .otp-header p {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      margin: 0 0 24px 0;
+      text-align: center;
+    }
+
+    .otp-input-container {
+      margin-bottom: 24px;
+    }
+
+    .otp-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(60, 60, 80, 0.5);
+      border: 1px solid #7EA2D4;
+      border-radius: 25px;
+      color: #ffffff;
+      font-size: 1.2rem;
+      text-align: center;
+      letter-spacing: 4px;
+      outline: none;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .otp-input:focus {
+      border-color: #7EA2D4;
+      box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+    }
+
+    .otp-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .otp-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .otp-verify-btn, .otp-resend-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .otp-verify-btn {
+      background: linear-gradient(135deg, #7EA2D4 0%, #5A85C7 100%);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
+    }
+
+    .otp-verify-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(126, 162, 212, 0.4);
+    }
+
+    .otp-verify-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .otp-resend-btn {
+      background: rgba(60, 60, 80, 0.5);
+      color: #ffffff;
+      border: 1px solid #7EA2D4;
+    }
+
+    .otp-resend-btn:hover {
+      background: rgba(70, 70, 90, 0.7);
+    }
+
+    .otp-close-btn {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.3s ease;
+    }
+
+    .otp-close-btn:hover {
+      color: rgba(255, 255, 255, 0.9);
+    }
+  `;
+
+  document.head.appendChild(otpStyles);
+  document.body.appendChild(otpModal);
+
+  // Get OTP modal elements
+  const otpInput = document.getElementById('otpCodeInput');
+  const verifyBtn = document.getElementById('verifyOtpBtn');
+  const resendBtn = document.getElementById('resendOtpBtn');
+  const closeBtn = document.getElementById('closeOtpModal');
+
+  // Focus on input
+  setTimeout(() => otpInput.focus(), 100);
+
+  // Auto-format OTP input (only numbers)
+  otpInput.addEventListener('input', (e) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+  });
+
+  // Verify OTP
+  verifyBtn.addEventListener('click', async () => {
+    const otpCode = otpInput.value.trim();
+    if (otpCode.length !== 6) {
+      showToastMessage('Iltimos, 6 raqamli OTP kodni kiriting', 'error');
+      return;
+    }
+
+    verifyBtn.textContent = 'Tekshirilmoqda...';
+    verifyBtn.disabled = true;
+
+    try {
+      const result = await apiService.verifyRegistrationOtp(identifier, otpCode);
+      if (result.success) {
+        showToastMessage('Hisob tasdiqlandi! Endi parol kiriting.', 'success');
+
+        // Close modal
+        document.body.removeChild(otpModal);
+        const existingStyles = document.getElementById('otp-modal-styles');
+        if (existingStyles) {
+          document.head.removeChild(existingStyles);
+        }
+
+        // Store user data and navigate to password page
+        sessionStorage.setItem('tempUserData', JSON.stringify(user));
+        sessionStorage.setItem('userIdentifier', identifier);
+
+        // Restore body scroll before navigation
+        document.body.style.overflow = '';
+        document.body.style.height = '';
+
+        setTimeout(() => {
+          router.navigate('/password');
+        }, 1500);
+      }
+    } catch (error) {
+      console.error('OTP verification error:', error);
+      showToastMessage(error.message || 'OTP tasdiqlashda xatolik yuz berdi', 'error');
+    } finally {
+      verifyBtn.textContent = 'Tasdiqlash';
+      verifyBtn.disabled = false;
+    }
+  });
+
+  // Resend OTP
+  resendBtn.addEventListener('click', async () => {
+    resendBtn.textContent = 'Yuborilmoqda...';
+    resendBtn.disabled = true;
+
+    try {
+      const result = await apiService.resendRegistrationOtp(identifier);
+      if (result.success) {
+        showToastMessage('OTP kod qayta yuborildi', 'success');
+        otpInput.value = '';
+        otpInput.focus();
+      }
+    } catch (error) {
+      console.error('Resend OTP error:', error);
+      showToastMessage(error.message || 'OTP qayta yuborishda xatolik yuz berdi', 'error');
+    } finally {
+      resendBtn.textContent = 'Qayta yuborish';
+      resendBtn.disabled = false;
+    }
+  });
+
+  // Close modal
+  closeBtn.addEventListener('click', () => {
+    document.body.removeChild(otpModal);
+    const existingStyles = document.getElementById('otp-modal-styles');
+    if (existingStyles) {
+      document.head.removeChild(existingStyles);
+    }
+  });
+
+  // Close on overlay click
+  otpModal.addEventListener('click', (e) => {
+    if (e.target === otpModal) {
+      document.body.removeChild(otpModal);
+      const existingStyles = document.getElementById('otp-modal-styles');
+      if (existingStyles) {
+        document.head.removeChild(existingStyles);
+      }
+    }
+  });
+
+  // Enter key to verify
+  otpInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && otpInput.value.length === 6) {
+      verifyBtn.click();
+    }
+  });
+}
+
+function showToastMessage(message, type = 'success') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  
+  // Add toast styles if not already present
+  if (!document.querySelector('#toast-styles')) {
+    const toastStyles = document.createElement('style');
+    toastStyles.id = 'toast-styles';
+    toastStyles.textContent = `
+      .toast {
+        position: fixed;
+        top: 30px;
+        right: 30px;
+        padding: 16px 24px;
+        border-radius: 12px;
+        color: #ffffff;
+        font-weight: 500;
+        z-index: 1001;
+        transform: translateX(400px);
+        transition: transform 0.3s ease;
+      }
+
+      .toast.success {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      }
+
+      .toast.error {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+      }
+
+      .toast.show {
+        transform: translateX(0);
+      }
+    `;
+    document.head.appendChild(toastStyles);
+  }
+  
+  document.body.appendChild(toast);
+
+  // Show toast
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+
+  // Hide and remove toast
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
 }
 
 function initNeonDots() {

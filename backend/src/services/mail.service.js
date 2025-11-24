@@ -12,7 +12,14 @@ export async function sendEmail(to, subject, text) {
       to,
       subject,
       from: NODEMAILER_USER_EMAIL,
+      hasPassword: !!NODEMAILER_USER_PASSWORD,
+      passwordLength: NODEMAILER_USER_PASSWORD?.length || 0,
     });
+
+    // Validate email configuration
+    if (!NODEMAILER_USER_EMAIL || !NODEMAILER_USER_PASSWORD) {
+      throw new Error("Email configuration is missing. Please check NODEMAILER_USER_EMAIL and NODEMAILER_USER_PASSWORD in .env file");
+    }
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -22,8 +29,12 @@ export async function sendEmail(to, subject, text) {
       },
     });
 
+    // Verify transporter configuration
+    await transporter.verify();
+    logger.info("Email transporter verified successfully");
+
     const result = await transporter.sendMail({
-      from: NODEMAILER_USER_EMAIL,
+      from: `"DarsLinker" <${NODEMAILER_USER_EMAIL}>`,
       to,
       subject,
       html: text,
@@ -34,6 +45,8 @@ export async function sendEmail(to, subject, text) {
       subject,
       messageId: result.messageId,
       response: result.response,
+      accepted: result.accepted,
+      rejected: result.rejected,
     });
   } catch (error) {
     logger.error("Failed to send email", {
@@ -42,6 +55,7 @@ export async function sendEmail(to, subject, text) {
       error: error.message,
       stack: error.stack,
       code: error.code,
+      command: error.command,
     });
 
     throw new Error(`Failed to send email: ${error.message}`);

@@ -66,6 +66,29 @@ const checkUser = catchAsync(async (req, res) => {
   });
 
   if (existingUser) {
+    // Check if user is verified
+    if (existingUser.status === "pending") {
+      logger.info("User found but not verified - needs verification", {
+        userId: existingUser._id,
+        identifier: normalizedIdentifier,
+        status: existingUser.status,
+      });
+
+      res.status(200).json({
+        success: true,
+        exists: false,
+        next: "verify",
+        message: "User exists but not verified. Please complete verification",
+        user: {
+          firstName: existingUser.firstName,
+          lastName: existingUser.lastName,
+          email: existingUser.email,
+          phone: existingUser.phone
+        }
+      });
+      return;
+    }
+
     logger.info("User found", {
       userId: existingUser._id,
       identifier: normalizedIdentifier,
@@ -122,9 +145,41 @@ const register = catchAsync(async (req, res) => {
   });
 
   if (existingUser) {
+    // If user exists but not verified, resend OTP
+    if (existingUser.status === "pending") {
+      logger.info("User exists but not verified - resending OTP", {
+        userId: existingUser._id,
+        email: normalizedEmail,
+        phone: normalizedPhone,
+      });
+
+      const identifier = normalizedEmail || normalizedPhone;
+      const channel = normalizedEmail ? "email" : "sms";
+
+      await createAndSendOtp({
+        identifier,
+        purpose: "register",
+        channel,
+        meta: {
+          ip: req.ip,
+          userAgent: req.headers["user-agent"],
+        },
+      });
+
+      const userResponse = existingUser.toObject();
+      delete userResponse.password;
+
+      return res.status(200).json({
+        success: true,
+        message: "User already registered but not verified. New OTP has been sent",
+        user: userResponse,
+      });
+    }
+
+    // If user is verified, throw error
     const duplicateField =
       existingUser.email === normalizedEmail ? "email address" : "phone number";
-    throw new ConflictError(`User with this ${duplicateField} already exists`);
+    throw new ConflictError(`User with this ${duplicateField} already exists and is verified`);
   }
 
   const hashedPassword = await bcrypt.hash(

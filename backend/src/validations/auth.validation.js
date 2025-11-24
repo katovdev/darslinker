@@ -80,16 +80,11 @@ const registerSchema = Joi.object({
     }),
 
   password: Joi.string()
-    .min(8)
-    .max(128)
+    .min(6)
     .required()
-    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
     .messages({
       "string.empty": "Password is required",
-      "string.min": "Password must be at least 8 characters long",
-      "string.max": "Password cannot exceed 128 characters",
-      "string.pattern.base":
-        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
+      "string.min": "Password must be at least 6 characters long",
       "any.required": "Password is required",
     }),
 
@@ -145,17 +140,12 @@ const changePasswordSchema = Joi.object({
   }),
 
   newPassword: Joi.string()
-    .min(8)
-    .max(128)
+    .min(6)
     .required()
-    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/)
     .invalid(Joi.ref("currentPassword"))
     .messages({
       "string.empty": "New password is required",
-      "string.min": "New password must be at least 8 characters long",
-      "string.max": "New password cannot exceed 128 characters",
-      "string.pattern.base":
-        "New password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (@$!%*?&)",
+      "string.min": "New password must be at least 6 characters long",
       "any.invalid": "New password must be different from current password",
       "any.required": "New password is required",
     }),
