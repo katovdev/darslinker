@@ -5428,7 +5428,7 @@ input:checked + .toggle-slider:before {
 /* Course Filter Tabs */
 .course-filter-tabs {
   display: flex;
-  gap: 0;
+  gap: 8px;
   margin-bottom: 30px;
   background: rgba(58, 56, 56, 0.3);
   border-radius: 12px;
@@ -5682,7 +5682,7 @@ input:checked + .toggle-slider:before {
 
   .course-filter-tabs {
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 6px;
   }
 
   .filter-tab {

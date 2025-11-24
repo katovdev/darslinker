@@ -5304,6 +5304,7 @@ window.openMyCourses = function() {
                 <option value="revenue-desc">Highest revenue</option>
                 <option value="rating-desc">Best rating</option>
               </select>
+              <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()" style="margin-left: 15px;">+ Add Course</button>
             </div>
           </div>
 
@@ -5315,16 +5316,6 @@ window.openMyCourses = function() {
           <!-- Course Cards Grid -->
           <div class="my-courses-grid" id="myCoursesGrid">
             <!-- Course cards will be injected here -->
-          </div>
-
-          <!-- Add Course Section -->
-          <div class="add-course-section">
-            <div class="add-course-card" onclick="openCreateCourse()">
-              <div class="add-course-content">
-                <div class="add-course-text">ADD COURSE</div>
-                <div class="add-course-icon">+</div>
-              </div>
-            </div>
           </div>
         </div>
       </div>
@@ -8565,7 +8556,18 @@ window.openCreateCourse = function() {
               <div class="form-row">
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.category')}</label>
-                  <input type="text" class="form-input" placeholder="${t('createCourse.categoryPlaceholder')}" required />
+                  <select class="form-input" name="category" required>
+                    <option value="">Select category...</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="Mobile Development">Mobile Development</option>
+                    <option value="Programming">Programming</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="Machine Learning">Machine Learning</option>
+                    <option value="Design">Design</option>
+                    <option value="Marketing">Marketing</option>
+                    <option value="Security">Security</option>
+                    <option value="Blockchain">Blockchain</option>
+                  </select>
                 </div>
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.level')}</label>
@@ -8851,7 +8853,7 @@ window.openCreateCourse = function() {
 // ===== MY COURSES FUNCTIONALITY =====
 
 // Global variables for filtering and sorting
-let currentFilter = 'all';
+let currentFilter = 'active';
 let currentSort = 'newest';
 let currentSearch = '';
 
@@ -8929,12 +8931,12 @@ function updateFilterTabs() {
   if (!tabsContainer) return;
 
   tabsContainer.innerHTML = `
-    <button class="filter-tab active" data-filter="all" onclick="filterCoursesByTab(this, 'all')">All courses (${counts.all})</button>
-    <button class="filter-tab" data-filter="active" onclick="filterCoursesByTab(this, 'active')">Active (${counts.active})</button>
+    <button class="filter-tab active" data-filter="active" onclick="filterCoursesByTab(this, 'active')">Active (${counts.active})</button>
     <button class="filter-tab" data-filter="draft" onclick="filterCoursesByTab(this, 'draft')">Draft (${counts.draft})</button>
     <button class="filter-tab" data-filter="archived" onclick="filterCoursesByTab(this, 'archived')">Archived (${counts.archived})</button>
     <button class="filter-tab" data-filter="free" onclick="filterCoursesByTab(this, 'free')">Free (${counts.free})</button>
     <button class="filter-tab" data-filter="paid" onclick="filterCoursesByTab(this, 'paid')">Paid (${counts.paid})</button>
+    <button class="filter-tab" data-filter="all" onclick="filterCoursesByTab(this, 'all')">All courses (${counts.all})</button>
   `;
 }
 
@@ -9083,7 +9085,7 @@ window.filterCoursesByTab = function(tabElement, filter) {
   // Set "My Courses" as active when using filter tabs
   const myCoursesMenuItem = document.getElementById('my-courses-menu');
 
-  if (filter === 'all' && myCoursesMenuItem) {
+  if ((filter === 'all' || filter === 'active') && myCoursesMenuItem) {
     myCoursesMenuItem.classList.add('active');
   }
 
