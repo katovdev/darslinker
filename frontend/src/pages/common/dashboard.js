@@ -6225,14 +6225,15 @@ function openAIAssistantPage() {
               gap: 16px !important;
             }
             .ai-icon {
-              width: 48px !important;
-              height: 48px !important;
-              background: rgba(126, 162, 212, 0.2) !important;
+              width: 56px !important;
+              height: 56px !important;
+              background: rgba(126, 162, 212, 0.15) !important;
               border-radius: 12px !important;
               display: flex !important;
               align-items: center !important;
               justify-content: center !important;
-              font-size: 24px !important;
+              font-size: 32px !important;
+              flex-shrink: 0 !important;
             }
             .ai-status-content h3 {
               color: #ffffff !important;
@@ -6312,7 +6313,8 @@ function openAIAssistantPage() {
               display: block !important;
             }
             .form-input,
-            .form-textarea {
+            .form-textarea,
+            select.form-input {
               width: 100% !important;
               padding: 12px !important;
               background: rgba(58, 56, 56, 0.3) !important;
@@ -6321,6 +6323,19 @@ function openAIAssistantPage() {
               color: #ffffff !important;
               font-size: 14px !important;
               transition: all 0.3s ease !important;
+              cursor: pointer !important;
+            }
+            select.form-input {
+              appearance: none !important;
+              background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%237EA2D4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+              background-repeat: no-repeat !important;
+              background-position: right 12px center !important;
+              padding-right: 40px !important;
+            }
+            select.form-input option {
+              background: #2d2d32 !important;
+              color: #ffffff !important;
+              padding: 12px !important;
             }
             .form-textarea {
               resize: vertical !important;
@@ -6507,16 +6522,32 @@ function openAIAssistantPage() {
             </div>
           </div>
 
+          <!-- Course Selection Section -->
+          <div class="ai-personality-section">
+            <h3 class="section-title">Course Selection</h3>
+            <div class="form-group">
+              <label class="form-label">Select Course for AI Training</label>
+              <select class="form-input" id="aiCourseSelect" onchange="handleCourseSelection(this.value)">
+                <option value="">-- Kursni tanlang --</option>
+                <option value="course1">React.js - Beginner to Advanced</option>
+                <option value="course2">Node.js Backend Development</option>
+                <option value="course3">Python for Data Science</option>
+                <option value="course4">JavaScript Fundamentals</option>
+              </select>
+              <p style="color: rgba(156, 163, 175, 1); margin-top: 8px; font-size: 13px;">AI faqat tanlangan kurs bo'yicha ma'lumotlar bilan javob beradi</p>
+            </div>
+          </div>
+
           <!-- AI Personality Section -->
           <div class="ai-personality-section">
             <h3 class="section-title">AI Personality</h3>
             <div class="form-group">
               <label class="form-label">AI Name</label>
-              <input type="text" class="form-input" value="John's AI Helper" placeholder="Enter AI assistant name">
+              <input type="text" class="form-input" value="DarsLinker AI Assistant" placeholder="AI yordamchi nomini kiriting">
             </div>
             <div class="form-group">
               <label class="form-label">AI Instructions</label>
-              <textarea class="form-textarea" placeholder="Describe how the AI should behave...">You are a helpful teaching assistant. Always encourage students and provide clear examples.</textarea>
+              <textarea class="form-textarea" placeholder="AI qanday javob berishini tavsiflang...">Siz yordam beruvchi o'qituvchi yordamchisisiz. Har doim o'quvchilarni rag'batlantiring va aniq misollar keltiring. Faqat tanlangan kurs mavzulari bo'yicha javob bering.</textarea>
             </div>
           </div>
 
@@ -8778,6 +8809,50 @@ window.showAIMetrics = function(metricType) {
   };
 
   showModal(details[metricType].title, details[metricType].content);
+};
+
+// Handle Course Selection for AI
+window.handleCourseSelection = function(courseId) {
+  if (!courseId) {
+    showToast('Iltimos, kursni tanlang', 'warning');
+    return;
+  }
+
+  // Store selected course for AI training
+  localStorage.setItem('aiSelectedCourse', courseId);
+  
+  // Show success message
+  const customToast = document.createElement('div');
+  customToast.innerHTML = 'Kurs tanlandi! AI endi faqat shu kurs bo\'yicha javob beradi.';
+  customToast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(65, 156, 98, 1) !important;
+    color: white !important;
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 10000;
+    border-left: 4px solid rgb(22, 163, 74);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    min-width: 300px;
+    animation: slideIn 0.3s ease forwards;
+  `;
+
+  document.body.appendChild(customToast);
+
+  setTimeout(() => {
+    customToast.style.animation = 'slideOut 0.3s ease forwards';
+    setTimeout(() => {
+      if (customToast.parentNode) {
+        customToast.parentNode.removeChild(customToast);
+      }
+    }, 300);
+  }, 3000);
+
+  console.log('AI Course selected:', courseId);
 };
 
 window.toggleAISetting = function(toggleElement) {
