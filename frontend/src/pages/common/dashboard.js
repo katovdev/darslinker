@@ -140,8 +140,6 @@ function renderTeacherDashboard(user) {
             <div class="figma-menu-children hidden" id="content-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">${t('sidebar.createCourse')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">${t('sidebar.myCourses')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('draft')">${t('sidebar.drafts')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this); filterFromSidebar('archived')">${t('sidebar.archived')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">${t('sidebar.finance')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">${t('sidebar.assignments')}</a>
             </div>
@@ -6038,98 +6036,24 @@ window.sortCourses = (event) => {
 
 // Open Finance Page
 window.openFinancePage = function() {
-  const userData = store.getState().user;
-
-  // Preserve sidebar menu state
-  const generalChildren = document.getElementById('general-children');
-  const isGeneralExpanded = generalChildren && !generalChildren.classList.contains('hidden');
-  const contentChildren = document.getElementById('content-children');
-  const isContentExpanded = contentChildren && !contentChildren.classList.contains('hidden');
-
-  document.querySelector('#app').innerHTML = `
-    <div class="figma-dashboard">
-      <!-- Top Header -->
-      <div class="figma-header">
-        <div class="figma-logo">
-          <h1>dars<span>linker</span></h1>
-        </div>
-        <div class="figma-title">
-          <h2>Finance</h2>
-        </div>
-        <div class="figma-header-buttons">
-          <button class="figma-btn" onclick="backToDashboard()">← Back</button>
-        </div>
-      </div>
-
-      <!-- Main Layout -->
-      <div class="figma-main-layout">
-        <!-- Left Sidebar Menu -->
-        <div class="figma-sidebar">
-          <!-- General Menu -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isGeneralExpanded ? 'expanded' : ''}" onclick="toggleMenu('general')">
-              <span class="figma-menu-title">General</span>
-              <span class="figma-menu-arrow" id="general-arrow">${isGeneralExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isGeneralExpanded ? '' : 'hidden'}" id="general-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
-            </div>
-          </div>
-
-          <!-- Content Management -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isContentExpanded ? 'expanded' : ''}" onclick="toggleMenu('content')">
-              <span class="figma-menu-title">Content Management</span>
-              <span class="figma-menu-arrow" id="content-arrow">${isContentExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
-            </div>
-          </div>
-
-          <!-- AI Assistant -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link" onclick="openAIAssistantPage(); return false;">AI Assistant</a>
-            </div>
-          </div>
-
-          <!-- Analytics -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Analytics</a>
-            </div>
-          </div>
-
-          <!-- Rolls -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Rolls</a>
-            </div>
-          </div>
-
-          <!-- Settings -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Settings</a>
-            </div>
-          </div>
-
-          <!-- My Subscription -->
-          <div class="figma-subscription">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">My Subscription</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Finance Content -->
-        <div class="figma-content-area finance-page">
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (!contentArea) {
+    console.error('Content area not found');
+    return;
+  }
+  
+  // Update page title
+  const pageTitle = document.getElementById('page-title');
+  if (pageTitle) {
+    pageTitle.textContent = 'Finance';
+  }
+  
+  // Add finance-page class to content area
+  contentArea.className = 'figma-content-area finance-page';
+  
+  // Update content area only
+  contentArea.innerHTML = `
           <style>
             .figma-content-area.finance-page {
               padding: 24px !important;
@@ -6584,9 +6508,6 @@ window.openFinancePage = function() {
             </div>
             <button class="add-promo-btn">+ Create a new Promo Code</button>
           </div>
-        </div>
-      </div>
-    </div>
   `;
   
   // Apply saved primary color to Finance page
@@ -7029,98 +6950,24 @@ function openAIAssistantPage() {
 
 // Open Assignments Page
 window.openAssignmentsPage = function() {
-  const userData = store.getState().user;
-
-  // Preserve sidebar menu state
-  const generalChildren = document.getElementById('general-children');
-  const isGeneralExpanded = generalChildren && !generalChildren.classList.contains('hidden');
-  const contentChildren = document.getElementById('content-children');
-  const isContentExpanded = contentChildren && !contentChildren.classList.contains('hidden');
-
-  document.querySelector('#app').innerHTML = `
-    <div class="figma-dashboard">
-      <!-- Top Header -->
-      <div class="figma-header">
-        <div class="figma-logo">
-          <h1>dars<span>linker</span></h1>
-        </div>
-        <div class="figma-title">
-          <h2>Assignments</h2>
-        </div>
-        <div class="figma-header-buttons">
-          <button class="figma-btn" onclick="backToDashboard()">← Back</button>
-        </div>
-      </div>
-
-      <!-- Main Layout -->
-      <div class="figma-main-layout">
-        <!-- Left Sidebar Menu -->
-        <div class="figma-sidebar">
-          <!-- General Menu -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isGeneralExpanded ? 'expanded' : ''}" onclick="toggleMenu('general')">
-              <span class="figma-menu-title">General</span>
-              <span class="figma-menu-arrow" id="general-arrow">${isGeneralExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isGeneralExpanded ? '' : 'hidden'}" id="general-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
-            </div>
-          </div>
-
-          <!-- Content Management -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isContentExpanded ? 'expanded' : ''}" onclick="toggleMenu('content')">
-              <span class="figma-menu-title">Content Management</span>
-              <span class="figma-menu-arrow" id="content-arrow">${isContentExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Assignments</a>
-            </div>
-          </div>
-
-          <!-- AI Assistant -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link" onclick="openAIAssistantPage(); return false;">AI Assistant</a>
-            </div>
-          </div>
-
-          <!-- Analytics -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Analytics</a>
-            </div>
-          </div>
-
-          <!-- Rolls -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Rolls</a>
-            </div>
-          </div>
-
-          <!-- Settings -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Settings</a>
-            </div>
-          </div>
-
-          <!-- My Subscription -->
-          <div class="figma-subscription">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">My Subscription</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Assignments Content -->
-        <div class="figma-content-area assignments-page">
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (!contentArea) {
+    console.error('Content area not found');
+    return;
+  }
+  
+  // Update page title
+  const pageTitle = document.getElementById('page-title');
+  if (pageTitle) {
+    pageTitle.textContent = 'Assignments';
+  }
+  
+  // Add assignments-page class to content area
+  contentArea.className = 'figma-content-area assignments-page';
+  
+  // Update content area only
+  contentArea.innerHTML = `
           <style>
             .course-assignment-banner {
               background: rgba(32, 32, 32, 0.4) !important;
@@ -7503,9 +7350,6 @@ window.openAssignmentsPage = function() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
   `;
   
   // Apply saved primary color to Assignment page
@@ -9316,98 +9160,22 @@ window.toggleAISetting = function(toggleElement) {
 
 window.openQuizAnalytics = function() {
   console.log('openQuizAnalytics function called');
+  
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (!contentArea) {
+    console.error('Content area not found');
+    return;
+  }
+  
+  // Update page title
+  const pageTitle = document.getElementById('page-title');
+  if (pageTitle) {
+    pageTitle.textContent = 'Quiz Analytics';
+  }
+  
+  // Update content area only
   const quizAnalyticsHTML = `
-    <div class="figma-dashboard">
-      <!-- Top Header -->
-      <div class="figma-header">
-        <div class="figma-logo">
-          <h1>dars<span>linker</span></h1>
-        </div>
-        <div class="figma-title">
-          <h2>Quizzes</h2>
-        </div>
-        <div class="figma-header-buttons">
-          <button class="figma-btn" onclick="backToDashboard()">← Back</button>
-        </div>
-      </div>
-
-      <!-- Main Layout -->
-      <div class="figma-main-layout">
-        <!-- Left Sidebar Menu -->
-        <div class="figma-sidebar">
-          <!-- General Menu -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('general')">
-              <span class="figma-menu-title">General</span>
-              <span class="figma-menu-arrow" id="general-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="general-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
-            </div>
-          </div>
-
-          <!-- Content Management -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('content')">
-              <span class="figma-menu-title">Content Management</span>
-              <span class="figma-menu-arrow" id="content-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="content-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Assignments</a>
-            </div>
-          </div>
-
-          <!-- AI Assistant -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link" onclick="openAIAssistantPage(); return false;">AI Assistant</a>
-            </div>
-          </div>
-
-          <!-- Analytics -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent expanded" onclick="toggleMenu('analytics')">
-              <span class="figma-menu-title">Analytics</span>
-              <span class="figma-menu-arrow" id="analytics-arrow">▼</span>
-            </div>
-            <div class="figma-menu-children" id="analytics-children">
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event); openQuizAnalytics()">Quiz analytics</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Rating & Comments</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Students analytics</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Engagement</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Progress</a>
-            </div>
-          </div>
-
-          <!-- Rolls -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Rolls</a>
-            </div>
-          </div>
-
-          <!-- Settings -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">Settings</a>
-            </div>
-          </div>
-
-          <!-- My Subscription -->
-          <div class="figma-subscription">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">My Subscription</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quiz Analytics Content -->
-        <div class="figma-content-area quiz-analytics-page">
           <style>
             .figma-content-area.quiz-analytics-page {
               padding: 24px !important;
@@ -9612,14 +9380,9 @@ window.openQuizAnalytics = function() {
                 <p class="quiz-description">Test your knowledge on React Hooks including useState, useEffect, useContext, and custom hooks.</p>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
   `;
 
-  document.querySelector('#app').innerHTML = quizAnalyticsHTML;
-  document.title = 'Quiz Analytics - darslinker';
+  contentArea.innerHTML = quizAnalyticsHTML;
   
   // Apply saved primary color to Quiz Analytics page
   const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
@@ -9978,9 +9741,7 @@ window.openCreateCourse = function() {
             <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
               <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Create Course</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Finance</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
             </div>
           </div>

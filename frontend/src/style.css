@@ -3342,7 +3342,7 @@ body:has(.figma-dashboard) {
 .figma-main-layout {
   display: flex;
   padding: 30px 40px;
-  gap: 30px;
+  gap: 0;
   min-height: calc(100vh - 70px);
   margin-top: 70px;
   position: relative;
@@ -3501,7 +3501,7 @@ body:has(.figma-dashboard) {
 /* Content Area */
 .figma-content-area {
   flex: 1;
-  margin-left: 280px;
+  margin-left: 260px;
   padding-top: 20px;
   position: relative;
   z-index: 1;
