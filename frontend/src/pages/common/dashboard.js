@@ -7089,7 +7089,7 @@ window.openAssignmentsPage = function() {
           <style>
             .course-assignment-banner {
               background: rgba(32, 32, 32, 0.4) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 10px !important;
               padding: 16px 20px !important;
               margin-bottom: 20px !important;
@@ -7102,6 +7102,7 @@ window.openAssignmentsPage = function() {
               align-items: center !important;
               justify-content: center !important;
               flex-shrink: 0 !important;
+              color: var(--primary-color) !important;
             }
             .course-assignment-info {
               flex: 1 !important;
@@ -7113,13 +7114,13 @@ window.openAssignmentsPage = function() {
               margin: 0 0 4px 0 !important;
             }
             .course-assignment-subtitle {
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
               font-size: 14px !important;
               margin: 0 !important;
             }
             .course-filter-section {
               background: rgba(32, 32, 32, 0.4) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 20px 24px !important;
               margin-bottom: 24px !important;
@@ -7134,14 +7135,14 @@ window.openAssignmentsPage = function() {
               gap: 16px !important;
             }
             .course-filter-label {
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
               font-size: 16px !important;
               font-weight: 600 !important;
               white-space: nowrap !important;
             }
             .course-select {
               background: rgba(32, 32, 32, 0.8) !important;
-              border: 1px solid rgba(126, 162, 212, 0.3) !important;
+              border: 1px solid var(--border-color) !important;
               border-radius: 10px !important;
               padding: 12px 16px !important;
               color: #ffffff !important;
@@ -7151,9 +7152,9 @@ window.openAssignmentsPage = function() {
               transition: all 0.2s ease !important;
             }
             .course-select:hover, .course-select:focus {
-              border-color: rgba(126, 162, 212, 0.5) !important;
+              border-color: var(--primary-border-strong) !important;
               outline: none !important;
-              box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+              box-shadow: 0 0 0 3px var(--primary-light) !important;
             }
             .course-select option {
               background: rgba(32, 32, 32, 1) !important;
@@ -7161,11 +7162,11 @@ window.openAssignmentsPage = function() {
               padding: 10px !important;
             }
             .assignment-counter {
-              background: rgba(126, 162, 212, 0.1) !important;
-              border: 1px solid rgba(126, 162, 212, 0.3) !important;
+              background: var(--primary-light) !important;
+              border: 1px solid var(--border-color) !important;
               border-radius: 8px !important;
               padding: 8px 16px !important;
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
               font-size: 14px !important;
               font-weight: 600 !important;
               white-space: nowrap !important;
@@ -7184,7 +7185,7 @@ window.openAssignmentsPage = function() {
             }
             .assignments-card {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 20px !important;
               display: flex !important;
@@ -7195,12 +7196,12 @@ window.openAssignmentsPage = function() {
             }
             .assignments-card:hover {
               transform: translateY(-5px) !important;
-              border-color: rgba(126, 162, 212, 0.4) !important;
+              border-color: var(--primary-border-hover) !important;
               background: rgba(58, 56, 56, 0.5) !important;
               box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
             }
             .assignments-card-title {
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
               font-size: 14px !important;
               font-weight: 500 !important;
               margin: 0 !important;
@@ -7219,7 +7220,7 @@ window.openAssignmentsPage = function() {
             .assignment-tab {
               background: rgba(58, 56, 56, 0.3) !important;
               color: rgba(156, 163, 175, 1) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               padding: 12px 24px !important;
               cursor: pointer !important;
               font-size: 14px !important;
@@ -7234,24 +7235,24 @@ window.openAssignmentsPage = function() {
               border-left: none !important;
             }
             .assignment-tab.active {
-              background: rgba(126, 162, 212, 0.2) !important;
-              color: rgba(126, 162, 212, 1) !important;
+              background: var(--primary-light) !important;
+              color: var(--primary-color) !important;
             }
             .assignments-section {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 24px !important;
             }
             .assignments-section-title {
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
               font-size: 18px !important;
               font-weight: 600 !important;
               margin: 0 0 20px 0 !important;
             }
             .assignment-item {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 8px !important;
               padding: 20px !important;
               margin-bottom: 16px !important;
@@ -7259,7 +7260,7 @@ window.openAssignmentsPage = function() {
               cursor: pointer !important;
             }
             .assignment-item:hover {
-              border-color: rgba(126, 162, 212, 0.4) !important;
+              border-color: var(--primary-border-hover) !important;
               background: rgba(58, 56, 56, 0.4) !important;
               transform: translateX(5px) !important;
             }
@@ -7296,9 +7297,9 @@ window.openAssignmentsPage = function() {
               align-self: flex-end !important;
             }
             .grade-btn {
-              background: rgba(126, 162, 212, 0.2) !important;
-              border: 1px solid rgba(126, 162, 212, 0.4) !important;
-              color: rgba(126, 162, 212, 1) !important;
+              background: var(--primary-light) !important;
+              border: 1px solid var(--primary-border-hover) !important;
+              color: var(--primary-color) !important;
               padding: 8px 16px !important;
               border-radius: 8px !important;
               font-size: 12px !important;
@@ -7307,7 +7308,7 @@ window.openAssignmentsPage = function() {
               transition: all 0.3s ease !important;
             }
             .grade-btn:hover {
-              background: rgba(126, 162, 212, 0.3) !important;
+              background: var(--border-color) !important;
             }
             @media (max-width: 1200px) {
               .assignments-stats-grid {
@@ -7328,8 +7329,8 @@ window.openAssignmentsPage = function() {
           <div class="course-assignment-banner">
             <div class="course-assignment-icon">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M9 12l2 2 4-4" stroke="#7ea2d4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="#7ea2d4" stroke-width="2" fill="none"/>
+                <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
               </svg>
             </div>
             <div class="course-assignment-info">
@@ -7471,6 +7472,10 @@ window.openAssignmentsPage = function() {
       </div>
     </div>
   `;
+  
+  // Apply saved primary color to Assignment page
+  const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+  applyPrimaryColor(savedColor);
 };
 
 // Assignment Interactive Functions
