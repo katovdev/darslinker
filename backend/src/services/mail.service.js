@@ -17,16 +17,22 @@ function getTransporter() {
         user: NODEMAILER_USER_EMAIL,
         pass: NODEMAILER_USER_PASSWORD,
       },
-      // Optimize for speed
+      // Increase timeouts for production servers
       pool: true,                    // Use connection pooling
-      maxConnections: 3,             // Limit concurrent connections
+      maxConnections: 5,             // Increase concurrent connections
       maxMessages: 100,              // Messages per connection
-      connectionTimeout: 5000,       // 5 seconds (reduced from 10)
-      greetingTimeout: 5000,         // 5 seconds
-      socketTimeout: 5000,           // 5 seconds
+      connectionTimeout: 60000,      // 60 seconds (increased for production)
+      greetingTimeout: 30000,        // 30 seconds
+      socketTimeout: 60000,          // 60 seconds
       // Keep connections alive
       keepAlive: true,
-      keepAliveInitialDelay: 300000  // 5 minutes
+      keepAliveInitialDelay: 300000, // 5 minutes
+      // Add these for better reliability
+      secure: true,                  // Use SSL
+      requireTLS: true,              // Require TLS
+      tls: {
+        rejectUnauthorized: false    // Allow self-signed certificates
+      }
     });
 
     // Skip verification in production for faster performance
@@ -76,25 +82,56 @@ export async function sendEmail(to, subject, text) {
       }
     }
 
-    const result = await transporter.sendMail({
-      from: `"DarsLinker" <${NODEMAILER_USER_EMAIL}>`,
-      to,
-      subject,
-      html: text,
-      // Add retry options
-      priority: 'high',
-    });
+    // Retry logic for production
+    let lastError;
+    const maxRetries = 3;
+    
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        logger.info(`Email send attempt ${attempt}/${maxRetries}`, { to, subject });
+        
+        const result = await transporter.sendMail({
+          from: `"DarsLinker" <${NODEMAILER_USER_EMAIL}>`,
+          to,
+          subject,
+          html: text,
+          priority: 'high',
+        });
 
-    logger.info("Email sent successfully", {
-      to,
-      subject,
-      messageId: result.messageId,
-      response: result.response,
-      accepted: result.accepted,
-      rejected: result.rejected,
-    });
+        logger.info("Email sent successfully", {
+          to,
+          subject,
+          messageId: result.messageId,
+          response: result.response,
+          accepted: result.accepted,
+          rejected: result.rejected,
+          attempt,
+        });
 
-    return result;
+        return result;
+      } catch (error) {
+        lastError = error;
+        logger.warn(`Email send attempt ${attempt} failed`, {
+          to,
+          subject,
+          error: error.message,
+          code: error.code,
+          attempt,
+        });
+
+        // Wait before retry (exponential backoff)
+        if (attempt < maxRetries) {
+          const waitTime = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s
+          logger.info(`Waiting ${waitTime}ms before retry`, { attempt });
+          await new Promise(resolve => setTimeout(resolve, waitTime));
+        }
+      }
+    }
+
+    // All retries failed
+    throw lastError;
+
+
   } catch (error) {
     logger.error("Failed to send email", {
       to,
