@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTeacherProfile, findAll, findOne, update } from "../controllers/teacher.controller.js";
+import { createTeacherProfile, findAll, findOne, update, getDashboardStats } from "../controllers/teacher.controller.js";
 import {
   authenticate,
   isOwnerOrAdmin,
@@ -541,6 +541,148 @@ teacherRouter.patch(
   authenticate,
   isOwnerOrAdmin,
   update
+);
+
+/**
+ * @swagger
+ * /teachers/{id}/dashboard:
+ *   get:
+ *     summary: Get teacher dashboard statistics
+ *     description: Retrieve comprehensive dashboard statistics for a teacher including course metrics, earnings, and recent activity
+ *     tags: [User Management - Teachers]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Teacher ID
+ *     responses:
+ *       200:
+ *         description: Dashboard statistics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     overview:
+ *                       type: object
+ *                       properties:
+ *                         totalCourses:
+ *                           type: number
+ *                           example: 15
+ *                         totalStudents:
+ *                           type: number
+ *                           example: 342
+ *                         totalRevenue:
+ *                           type: number
+ *                           example: 25600.50
+ *                         averageRating:
+ *                           type: number
+ *                           example: 4.7
+ *                         activeCourses:
+ *                           type: number
+ *                           example: 12
+ *                         draftCourses:
+ *                           type: number
+ *                           example: 3
+ *                         currentBalance:
+ *                           type: number
+ *                           example: 3420.75
+ *                     growth:
+ *                       type: object
+ *                       properties:
+ *                         revenueGrowth:
+ *                           type: number
+ *                           example: 12.5
+ *                         enrollmentGrowth:
+ *                           type: number
+ *                           example: 8.3
+ *                         ratingTrend:
+ *                           type: number
+ *                           example: 0.2
+ *                     recentCourses:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                           title:
+ *                             type: string
+ *                           description:
+ *                             type: string
+ *                           price:
+ *                             type: number
+ *                           enrollmentCount:
+ *                             type: number
+ *                           status:
+ *                             type: string
+ *                           createdAt:
+ *                             type: string
+ *                             format: date-time
+ *                     monthlyEarnings:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           month:
+ *                             type: string
+ *                             example: "2024-11"
+ *                           earnings:
+ *                             type: number
+ *                             example: 4500.25
+ *                           enrollments:
+ *                             type: number
+ *                             example: 45
+ *                     teacher:
+ *                       type: object
+ *                       properties:
+ *                         _id:
+ *                           type: string
+ *                         firstName:
+ *                           type: string
+ *                         lastName:
+ *                           type: string
+ *                         profileImage:
+ *                           type: string
+ *                         specialization:
+ *                           type: string
+ *                         reviewsCount:
+ *                           type: number
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       403:
+ *         description: Forbidden - Cannot access other teacher's dashboard
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: Teacher not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+teacherRouter.get(
+  "/:id/dashboard",
+  validate(teacherIdSchema, "params"),
+  authenticate,
+  isOwnerOrAdmin,
+  getDashboardStats
 );
 
 export default teacherRouter;

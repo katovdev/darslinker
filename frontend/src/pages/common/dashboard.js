@@ -517,25 +517,52 @@ function setupTeacherEventListeners() {
 async function handleCreateCourse(e) {
   e.preventDefault();
 
-  const formData = new FormData(e.target);
-  const courseData = {
-    title: formData.get('title'),
-    description: formData.get('description'),
-    category: formData.get('category'),
-    price: parseInt(formData.get('price'))
-  };
+  const user = store.getState().user;
+  if (!user) {
+    showErrorToast('User not found');
+    return;
+  }
+
+  // Show loading state
+  const submitButton = e.target.querySelector('button[type="submit"]');
+  const originalText = submitButton.textContent;
+  submitButton.textContent = 'Creating...';
+  submitButton.disabled = true;
 
   try {
-    // Call API to create course
-    // const result = await apiService.createCourse(courseData);
+    const formData = new FormData(e.target);
+    const courseData = {
+      title: formData.get('title'),
+      description: formData.get('description'),
+      category: formData.get('category'),
+      price: parseInt(formData.get('price')),
+      teacherId: user._id
+    };
 
-    alert('Kurs muvaffaqiyatli yaratildi!');
-    closeModal('course-modal');
-    loadRecentCourses(); // Refresh courses
+    // Validate required fields
+    if (!courseData.title || !courseData.description || !courseData.category) {
+      throw new Error('Please fill in all required fields');
+    }
+
+    // Call API to create course
+    const result = await apiService.createCourse(courseData);
+
+    if (result.success) {
+      showSuccessToast('Course created successfully!');
+      backToDashboard();
+    } else {
+      throw new Error(result.message || 'Failed to create course');
+    }
 
   } catch (error) {
     console.error('Error creating course:', error);
-    alert('Kurs yaratishda xatolik yuz berdi');
+    showErrorToast(error.message || 'Failed to create course. Please try again.');
+  } finally {
+    // Restore button state
+    if (submitButton) {
+      submitButton.textContent = originalText;
+      submitButton.disabled = false;
+    }
   }
 }
 
@@ -4835,11 +4862,14 @@ function getEditProfileHTML(user) {
         <!-- Profile Picture -->
         <div class="profile-picture-section">
           <label class="field-label">${t('editProfile.profilePicture')}</label>
+          <input type="hidden" name="profileImage" value="${user.profileImage || ''}" />
           <div class="profile-picture-upload">
             <div class="profile-picture-preview">
-              <svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-              </svg>
+              ${user.profileImage
+                ? `<img src="${user.profileImage}" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">`
+                : `<svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                   </svg>`}
             </div>
             <div class="upload-instructions">
               <p>${t('editProfile.uploadText')}</p>
@@ -4852,35 +4882,35 @@ function getEditProfileHTML(user) {
         <div class="form-row">
           <div class="form-field">
             <label class="field-label">${t('editProfile.firstName')}</label>
-            <input type="text" class="form-input" value="${user.firstName || 'John'}" />
+            <input type="text" class="form-input" name="firstName" value="${user.firstName || ''}" required />
           </div>
           <div class="form-field">
             <label class="field-label">${t('editProfile.lastName')}</label>
-            <input type="text" class="form-input" value="${user.lastName || 'Smith'}" />
+            <input type="text" class="form-input" name="lastName" value="${user.lastName || ''}" required />
           </div>
         </div>
 
         <!-- Professional Title -->
         <div class="form-field">
           <label class="field-label">${t('editProfile.professionalTitle')}</label>
-          <input type="text" class="form-input" value="${t('profile.title')}" />
+          <input type="text" class="form-input" name="specialization" value="${user.specialization || ''}" />
         </div>
 
         <!-- Bio -->
         <div class="form-field">
           <label class="field-label">${t('editProfile.bio')}</label>
-          <textarea class="form-textarea" rows="4">${t('profile.bioDefault')}</textarea>
+          <textarea class="form-textarea" name="bio" rows="4">${user.bio || ''}</textarea>
         </div>
 
         <!-- Location -->
         <div class="form-row">
           <div class="form-field">
             <label class="field-label">${t('editProfile.city')}</label>
-            <input type="text" class="form-input" value="Tashkent" />
+            <input type="text" class="form-input" name="city" value="${user.city || ''}" />
           </div>
           <div class="form-field">
             <label class="field-label">${t('editProfile.country')}</label>
-            <input type="text" class="form-input" value="Uzbekistan" />
+            <input type="text" class="form-input" name="country" value="${user.country || ''}" />
           </div>
         </div>
       </div>
@@ -4891,12 +4921,12 @@ function getEditProfileHTML(user) {
 
         <div class="form-field">
           <label class="field-label">${t('editProfile.emailAddress')}</label>
-          <input type="email" class="form-input" value="${user.email || 'john@example.com'}" />
+          <input type="email" class="form-input" name="email" value="${user.email || ''}" required />
         </div>
 
         <div class="form-field">
           <label class="field-label">${t('editProfile.phoneNumber')}</label>
-          <input type="tel" class="form-input" value="+998 99 123 45 67" />
+          <input type="tel" class="form-input" name="phone" value="${user.phone || ''}" />
         </div>
 
         <div class="form-field">
@@ -4977,18 +5007,24 @@ window.backToDashboard = function() {
 };
 
 // Load main dashboard content (without reloading entire page)
-window.loadMainDashboard = function() {
+window.loadMainDashboard = async function() {
   const contentArea = document.querySelector('.figma-content-area');
   const user = store.getState().user;
-  
-  if (contentArea && user) {
-    // Update page title
-    const pageTitle = document.getElementById('page-title');
-    if (pageTitle) {
-      pageTitle.textContent = t('dashboard.title');
-    }
-    
-    // Load main dashboard content
+
+  if (!contentArea || !user) return;
+
+  // Update page title
+  const pageTitle = document.getElementById('page-title');
+  if (pageTitle) {
+    pageTitle.textContent = t('dashboard.title');
+  }
+
+  // For now, skip API call and show static content directly
+  // TODO: Enable API call once teacher profiles are created in backend
+  const useStaticData = true;
+
+  if (useStaticData) {
+    // Show static dashboard content directly
     contentArea.innerHTML = `
       <!-- Profile Section -->
       <div class="figma-profile-section">
@@ -5026,8 +5062,290 @@ window.loadMainDashboard = function() {
           </div>
         </div>
         <div class="figma-profile-buttons">
-          <button class="figma-profile-btn" onclick="openEditProfile()">${t('dashboard.profile.editProfile')}</button>
-          <button class="figma-profile-btn" onclick="customizeUI()">${t('dashboard.profile.customizeUI')}</button>
+          <button class="figma-profile-btn" onclick="loadProfileContent()">${t('dashboard.profile.editProfile')}</button>
+          <button class="figma-profile-btn" onclick="loadCustomizeUIContent()">${t('dashboard.profile.customizeUI')}</button>
+        </div>
+      </div>
+
+      <!-- Stats Cards Grid -->
+      <div class="figma-stats-grid">
+        <!-- My Statistics Card -->
+        <div class="figma-stats-card">
+          <h3 class="figma-stats-title">${t('stats.myStatistics')}</h3>
+          <div class="figma-stats-list">
+            <div class="figma-stat-row">
+              <span class="figma-stat-label">${t('stats.activeCourses')}</span>
+              <span class="figma-stat-value">8</span>
+            </div>
+            <div class="figma-stat-row">
+              <span class="figma-stat-label">${t('stats.totalStudents')}</span>
+              <span class="figma-stat-value">1111</span>
+            </div>
+            <div class="figma-stat-row">
+              <span class="figma-stat-label">${t('stats.totalRevenue')}</span>
+              <span class="figma-stat-value">$12,460</span>
+            </div>
+            <div class="figma-stat-row">
+              <span class="figma-stat-label">${t('stats.avgRating')}</span>
+              <span class="figma-stat-value">4.9/5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements Card -->
+        <div class="figma-stats-card">
+          <h3 class="figma-stats-title">${t('stats.achievements')}</h3>
+          <div class="figma-achievements-list">
+            <div class="figma-achievement-item">
+              <span class="figma-achievement-check">✓</span>
+              <span class="figma-achievement-text">${t('stats.topInstructor')}</span>
+            </div>
+            <div class="figma-achievement-item">
+              <span class="figma-achievement-check">✓</span>
+              <span class="figma-achievement-text">${t('stats.students1000')}</span>
+            </div>
+            <div class="figma-achievement-item">
+              <span class="figma-achievement-check">✓</span>
+              <span class="figma-achievement-text">${t('stats.revenue10k')}</span>
+            </div>
+            <div class="figma-achievement-item">
+              <span class="figma-achievement-check">✓</span>
+              <span class="figma-achievement-text">${t('stats.highRating')}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio & Specialties Card -->
+        <div class="figma-stats-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 class="figma-stats-title">${t('stats.bioSpecialties')}</h3>
+            <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
+          </div>
+          <p class="figma-bio-text" id="bioText">${t('profile.bioDefault')}</p>
+          <div id="bioEditor" style="display: none;">
+            <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
+            <div style="margin-top: 10px; display: flex; gap: 8px;">
+              <button onclick="saveBio()" style="background: #7ea2d4; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.save')}</button>
+              <button onclick="cancelBioEdit()" style="background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.cancel')}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    return; // Exit early, skip API call
+  }
+
+  // Show loading state (only if not using static data)
+  contentArea.innerHTML = `
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 400px;">
+      <div style="text-align: center; color: rgba(255,255,255,0.7);">
+        <div style="width: 40px; height: 40px; border: 3px solid rgba(126,162,212,0.3); border-top: 3px solid #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px;"></div>
+        <p>Loading dashboard...</p>
+      </div>
+    </div>
+  `;
+
+  try {
+    // Get dashboard data from API
+    const dashboardData = await apiService.getTeacherDashboard(user._id);
+
+    if (dashboardData.success) {
+      const { overview, growth, teacher } = dashboardData.data;
+
+      // Generate star rating HTML
+      const generateStars = (rating) => {
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 !== 0;
+        let starsHTML = '';
+
+        for (let i = 0; i < 5; i++) {
+          if (i < fullStars) {
+            starsHTML += `<svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>`;
+          } else if (i === fullStars && hasHalfStar) {
+            starsHTML += `<svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+              <defs>
+                <linearGradient id="half-star">
+                  <stop offset="50%" stop-color="#ffd700"/>
+                  <stop offset="50%" stop-color="transparent"/>
+                </linearGradient>
+              </defs>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="url(#half-star)"/>
+            </svg>`;
+          } else {
+            starsHTML += `<svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="rgba(255,255,255,0.3)">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>`;
+          }
+        }
+        return starsHTML;
+      };
+
+      // Format currency
+      const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD'
+        }).format(amount);
+      };
+
+      // Load main dashboard content with real data
+      contentArea.innerHTML = `
+        <!-- Profile Section -->
+        <div class="figma-profile-section">
+          <div class="figma-profile-avatar">
+            <div class="figma-avatar-circle">
+              ${teacher.profileImage
+                ? `<img src="${teacher.profileImage}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`
+                : `<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                   </svg>`
+              }
+            </div>
+          </div>
+          <div class="figma-profile-info">
+            <h2 class="figma-profile-name">${teacher.firstName} ${teacher.lastName}</h2>
+            <p class="figma-profile-title">${teacher.specialization || t('profile.title')}</p>
+            <p class="figma-profile-location">${t('profile.location')}</p>
+            <div class="figma-profile-rating">
+              <div class="figma-stars">
+                ${generateStars(overview.averageRating)}
+              </div>
+              <span class="figma-rating-text">${overview.averageRating.toFixed(1)}/5 (${teacher.reviewsCount} reviews)</span>
+              <span class="figma-joined">${t('profile.joined')}</span>
+            </div>
+          </div>
+          <div class="figma-profile-buttons">
+            <button class="figma-profile-btn" onclick="openEditProfile()">${t('dashboard.profile.editProfile')}</button>
+            <button class="figma-profile-btn" onclick="customizeUI()">${t('dashboard.profile.customizeUI')}</button>
+          </div>
+        </div>
+
+        <!-- Stats Cards Grid -->
+        <div class="figma-stats-grid">
+          <!-- My Statistics Card -->
+          <div class="figma-stats-card">
+            <h3 class="figma-stats-title">${t('stats.myStatistics')}</h3>
+            <div class="figma-stats-list">
+              <div class="figma-stat-row">
+                <span class="figma-stat-label">${t('stats.activeCourses')}</span>
+                <span class="figma-stat-value">${overview.activeCourses}</span>
+              </div>
+              <div class="figma-stat-row">
+                <span class="figma-stat-label">${t('stats.totalStudents')}</span>
+                <span class="figma-stat-value">${overview.totalStudents}</span>
+              </div>
+              <div class="figma-stat-row">
+                <span class="figma-stat-label">${t('stats.totalRevenue')}</span>
+                <span class="figma-stat-value">${formatCurrency(overview.totalRevenue)}</span>
+              </div>
+              <div class="figma-stat-row">
+                <span class="figma-stat-label">${t('stats.avgRating')}</span>
+                <span class="figma-stat-value">${overview.averageRating.toFixed(1)}/5</span>
+              </div>
+              <div class="figma-stat-row">
+                <span class="figma-stat-label">Current Balance</span>
+                <span class="figma-stat-value" style="color: #4ade80;">${formatCurrency(overview.currentBalance)}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Growth & Performance Card -->
+          <div class="figma-stats-card">
+            <h3 class="figma-stats-title">Growth & Performance</h3>
+            <div class="figma-stats-list">
+              <div class="figma-stat-row">
+                <span class="figma-stat-label">Revenue Growth</span>
+                <span class="figma-stat-value" style="color: ${growth.revenueGrowth >= 0 ? '#4ade80' : '#ef4444'};">
+                  ${growth.revenueGrowth >= 0 ? '+' : ''}${growth.revenueGrowth.toFixed(1)}%
+                </span>
+              </div>
+              <div class="figma-stat-row">
+                <span class="figma-stat-label">Student Growth</span>
+                <span class="figma-stat-value" style="color: ${growth.enrollmentGrowth >= 0 ? '#4ade80' : '#ef4444'};">
+                  ${growth.enrollmentGrowth >= 0 ? '+' : ''}${growth.enrollmentGrowth.toFixed(1)}%
+                </span>
+              </div>
+              <div class="figma-stat-row">
+                <span class="figma-stat-label">Total Courses</span>
+                <span class="figma-stat-value">${overview.totalCourses}</span>
+              </div>
+              <div class="figma-stat-row">
+                <span class="figma-stat-label">Draft Courses</span>
+                <span class="figma-stat-value" style="color: #fbbf24;">${overview.draftCourses}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bio & Specialties Card -->
+          <div class="figma-stats-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+              <h3 class="figma-stats-title">${t('stats.bioSpecialties')}</h3>
+              <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
+            </div>
+            <p class="figma-bio-text" id="bioText">${teacher.bio || t('profile.bioDefault')}</p>
+            <div id="bioEditor" style="display: none;">
+              <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
+              <div style="margin-top: 10px; display: flex; gap: 8px;">
+                <button onclick="saveBio()" style="background: #7ea2d4; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.save')}</button>
+                <button onclick="cancelBioEdit()" style="background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.cancel')}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Store dashboard data globally for other functions
+      window.currentDashboardData = dashboardData.data;
+
+    } else {
+      throw new Error(dashboardData.message || 'Failed to load dashboard data');
+    }
+
+  } catch (error) {
+    console.error('Dashboard loading error:', error);
+
+    // Show static dashboard data as fallback
+    contentArea.innerHTML = `
+      <!-- Profile Section -->
+      <div class="figma-profile-section">
+        <div class="figma-profile-avatar">
+          <div class="figma-avatar-circle">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="figma-profile-info">
+          <h2 class="figma-profile-name">${user.firstName} ${user.lastName}</h2>
+          <p class="figma-profile-title">${t('profile.title')}</p>
+          <p class="figma-profile-location">${t('profile.location')}</p>
+          <div class="figma-profile-rating">
+            <div class="figma-stars">
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <span class="figma-rating-text">${t('profile.rating')}</span>
+            <span class="figma-joined">${t('profile.joined')}</span>
+          </div>
+        </div>
+        <div class="figma-profile-buttons">
+          <button class="figma-profile-btn" onclick="loadProfileContent()">${t('dashboard.profile.editProfile')}</button>
+          <button class="figma-profile-btn" onclick="loadCustomizeUIContent()">${t('dashboard.profile.customizeUI')}</button>
         </div>
       </div>
 
@@ -5099,12 +5417,101 @@ window.loadMainDashboard = function() {
   }
 };
 
+// Bio editing functions
+window.editBio = function() {
+  const bioText = document.getElementById('bioText');
+  const bioEditor = document.getElementById('bioEditor');
+  const bioTextarea = document.getElementById('bioTextarea');
+  
+  if (bioText && bioEditor && bioTextarea) {
+    bioTextarea.value = bioText.textContent;
+    bioText.style.display = 'none';
+    bioEditor.style.display = 'block';
+  }
+};
+
+window.saveBio = function() {
+  const bioText = document.getElementById('bioText');
+  const bioEditor = document.getElementById('bioEditor');
+  const bioTextarea = document.getElementById('bioTextarea');
+  
+  if (bioText && bioEditor && bioTextarea) {
+    bioText.textContent = bioTextarea.value;
+    bioText.style.display = 'block';
+    bioEditor.style.display = 'none';
+  }
+};
+
+window.cancelBioEdit = function() {
+  const bioText = document.getElementById('bioText');
+  const bioEditor = document.getElementById('bioEditor');
+  
+  if (bioText && bioEditor) {
+    bioText.style.display = 'block';
+    bioEditor.style.display = 'none';
+  }
+};
+
 // Handle profile save
-function handleProfileSave(e) {
+async function handleProfileSave(e) {
   e.preventDefault();
-  showSuccessToast(t('notifications.profileSaved'));
-  // Here you would normally save the form data to the backend
-  setTimeout(() => backToDashboard(), 1000);
+  const user = store.getState().user;
+
+  if (!user) {
+    showErrorToast('User not found');
+    return;
+  }
+
+  // Show loading state
+  const submitButton = e.target.querySelector('button[type="submit"]');
+  const originalText = submitButton.textContent;
+  submitButton.textContent = 'Saving...';
+  submitButton.disabled = true;
+
+  try {
+    // Collect form data
+    const formData = new FormData(e.target);
+    const profileData = {
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      email: formData.get('email'),
+      phone: formData.get('phone'),
+      specialization: formData.get('specialization'),
+      bio: formData.get('bio'),
+      city: formData.get('city'),
+      country: formData.get('country'),
+      profileImage: formData.get('profileImage') || ''
+    };
+
+    // Remove empty fields
+    Object.keys(profileData).forEach(key => {
+      if (profileData[key] === null || profileData[key] === undefined || profileData[key] === '') {
+        delete profileData[key];
+      }
+    });
+
+    // Update profile via API
+    const result = await apiService.updateTeacherProfile(user._id, profileData);
+
+    if (result.success) {
+      // Update user state with new data
+      store.setState({
+        user: { ...user, ...result.teacher }
+      });
+
+      showSuccessToast(t('notifications.profileSaved'));
+      setTimeout(() => backToDashboard(), 1000);
+    } else {
+      throw new Error(result.message || 'Failed to update profile');
+    }
+  } catch (error) {
+    console.error('Profile save error:', error);
+    showErrorToast(error.message || 'Failed to save profile. Please try again.');
+  } finally {
+    // Restore button state
+    submitButton.textContent = originalText;
+    submitButton.disabled = false;
+  }
 }
 
 // Open Messages Page
@@ -9715,17 +10122,17 @@ window.openCreateCourse = function() {
 
               <div class="form-field">
                 <label class="field-label">${t('createCourse.courseTitle')}</label>
-                <input type="text" class="form-input" placeholder="${t('createCourse.courseTitlePlaceholder')}" required />
+                <input type="text" class="form-input" name="title" placeholder="${t('createCourse.courseTitlePlaceholder')}" required />
               </div>
 
               <div class="form-field">
                 <label class="field-label">${t('createCourse.shortDescription')}</label>
-                <textarea class="form-textarea" rows="2" placeholder="${t('createCourse.shortDescPlaceholder')}" required></textarea>
+                <textarea class="form-textarea" name="description" rows="2" placeholder="${t('createCourse.shortDescPlaceholder')}" required></textarea>
               </div>
 
               <div class="form-field">
                 <label class="field-label">${t('createCourse.fullDescription')}</label>
-                <textarea class="form-textarea" rows="4" placeholder="${t('createCourse.fullDescPlaceholder')}" required></textarea>
+                <textarea class="form-textarea" rows="4" placeholder="${t('createCourse.fullDescPlaceholder')}"></textarea>
               </div>
 
               <div class="form-row">
@@ -9831,7 +10238,7 @@ window.openCreateCourse = function() {
               <div class="form-row">
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.coursePrice')}</label>
-                  <input type="number" class="form-input" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
+                  <input type="number" class="form-input" name="price" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
                 </div>
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.discountPrice')}</label>
@@ -10020,6 +10427,14 @@ window.openCreateCourse = function() {
 
           </form>
   `;
+
+  // Add form submission handler
+  setTimeout(() => {
+    const form = document.getElementById('createCourseForm');
+    if (form) {
+      form.addEventListener('submit', handleCreateCourse);
+    }
+  }, 0);
 };
 
 // ===== MY COURSES FUNCTIONALITY =====

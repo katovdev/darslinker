@@ -74,11 +74,37 @@ const checkUser = catchAsync(async (req, res) => {
         status: existingUser.status,
       });
 
+      // Automatically send OTP for unverified users
+      const channel = isEmail ? "email" : "sms";
+      try {
+        await createAndSendOtp({
+          identifier: normalizedIdentifier,
+          purpose: "register",
+          channel,
+          meta: {
+            ip: req.ip,
+            userAgent: req.headers["user-agent"],
+          },
+        });
+
+        logger.info("OTP sent to unverified user", {
+          userId: existingUser._id,
+          identifier: normalizedIdentifier,
+          channel,
+        });
+      } catch (otpError) {
+        logger.error("Failed to send OTP to unverified user", {
+          userId: existingUser._id,
+          identifier: normalizedIdentifier,
+          error: otpError.message,
+        });
+      }
+
       res.status(200).json({
         success: true,
         exists: false,
         next: "verify",
-        message: "User exists but not verified. Please complete verification",
+        message: "User exists but not verified. OTP has been sent for verification",
         user: {
           firstName: existingUser.firstName,
           lastName: existingUser.lastName,

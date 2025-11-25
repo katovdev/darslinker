@@ -227,4 +227,139 @@ const update = catchAsync(async (req, res) => {
   });
 });
 
-export { createTeacherProfile, findAll, findOne, update };
+/**
+ * Get teacher dashboard statistics
+ * @route GET /teachers/:id/dashboard
+ * @access Private (Teacher only)
+ */
+const getDashboardStats = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const teacher = await validateAndFindById(Teacher, id, "Teacher");
+  const teacherData = handleValidationResult(teacher);
+
+  // Import course model for aggregation
+  const Course = (await import("../models/course.model.js")).default;
+  const Student = (await import("../models/student.model.js")).default;
+
+  // Get course statistics
+  const courseStats = await Course.aggregate([
+    { $match: { teacherId: teacher._id } },
+    {
+      $group: {
+        _id: null,
+        totalCourses: { $sum: 1 },
+        totalEnrollments: { $sum: "$enrollmentCount" },
+        totalRevenue: { $sum: "$revenue" },
+        averagePrice: { $avg: "$price" },
+        activeCourses: {
+          $sum: { $cond: [{ $eq: ["$status", "published"] }, 1, 0] }
+        },
+        draftCourses: {
+          $sum: { $cond: [{ $eq: ["$status", "draft"] }, 1, 0] }
+        }
+      }
+    }
+  ]);
+
+  // Get recent courses
+  const recentCourses = await Course.find({ teacherId: teacher._id })
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .select("title description price enrollmentCount status createdAt");
+
+  // Get monthly earnings (last 6 months)
+  const sixMonthsAgo = new Date();
+  sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+  const monthlyEarnings = await Course.aggregate([
+    {
+      $match: {
+        teacherId: teacher._id,
+        createdAt: { $gte: sixMonthsAgo }
+      }
+    },
+    {
+      $group: {
+        _id: {
+          year: { $year: "$createdAt" },
+          month: { $month: "$createdAt" }
+        },
+        earnings: { $sum: "$revenue" },
+        enrollments: { $sum: "$enrollmentCount" }
+      }
+    },
+    { $sort: { "_id.year": 1, "_id.month": 1 } }
+  ]);
+
+  // Calculate performance metrics
+  const stats = courseStats[0] || {
+    totalCourses: 0,
+    totalEnrollments: 0,
+    totalRevenue: 0,
+    averagePrice: 0,
+    activeCourses: 0,
+    draftCourses: 0
+  };
+
+  // Calculate growth rates (simplified - you might want more complex calculations)
+  const currentMonth = new Date().getMonth();
+  const lastMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+
+  const currentMonthData = monthlyEarnings.find(item =>
+    item._id.month === currentMonth + 1
+  );
+  const lastMonthData = monthlyEarnings.find(item =>
+    item._id.month === lastMonth + 1
+  );
+
+  const revenueGrowth = currentMonthData && lastMonthData
+    ? ((currentMonthData.earnings - lastMonthData.earnings) / lastMonthData.earnings) * 100
+    : 0;
+
+  const enrollmentGrowth = currentMonthData && lastMonthData
+    ? ((currentMonthData.enrollments - lastMonthData.enrollments) / lastMonthData.enrollments) * 100
+    : 0;
+
+  logger.info("Dashboard statistics retrieved", {
+    teacherId: id,
+    totalCourses: stats.totalCourses,
+    totalRevenue: stats.totalRevenue
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {
+      overview: {
+        totalCourses: stats.totalCourses,
+        totalStudents: stats.totalEnrollments,
+        totalRevenue: stats.totalRevenue,
+        averageRating: teacherData.ratingAverage || 0,
+        activeCourses: stats.activeCourses,
+        draftCourses: stats.draftCourses,
+        currentBalance: teacherData.balance || 0
+      },
+      growth: {
+        revenueGrowth: Math.round(revenueGrowth * 100) / 100,
+        enrollmentGrowth: Math.round(enrollmentGrowth * 100) / 100,
+        ratingTrend: 0 // You can implement rating trend calculation
+      },
+      recentCourses,
+      monthlyEarnings: monthlyEarnings.map(item => ({
+        month: `${item._id.year}-${String(item._id.month).padStart(2, '0')}`,
+        earnings: item.earnings,
+        enrollments: item.enrollments
+      })),
+      teacher: {
+        _id: teacherData._id,
+        firstName: teacherData.firstName,
+        lastName: teacherData.lastName,
+        profileImage: teacherData.profileImage,
+        specialization: teacherData.specialization,
+        reviewsCount: teacherData.reviewsCount || 0
+      }
+    }
+  });
+});
+
+export { createTeacherProfile, findAll, findOne, update, getDashboardStats };
