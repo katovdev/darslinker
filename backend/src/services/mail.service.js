@@ -12,35 +12,20 @@ let transporter = null;
 function getTransporter() {
   if (!transporter) {
     transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 587,
+      secure: false, // Use STARTTLS
       auth: {
         user: NODEMAILER_USER_EMAIL,
         pass: NODEMAILER_USER_PASSWORD,
       },
       // Increase timeouts for production servers
-      pool: true,                    // Use connection pooling
-      maxConnections: 5,             // Increase concurrent connections
-      maxMessages: 100,              // Messages per connection
-      connectionTimeout: 60000,      // 60 seconds (increased for production)
+      connectionTimeout: 60000,      // 60 seconds
       greetingTimeout: 30000,        // 30 seconds
       socketTimeout: 60000,          // 60 seconds
-      // Keep connections alive
-      keepAlive: true,
-      keepAliveInitialDelay: 300000, // 5 minutes
-      // Add these for better reliability
-      secure: true,                  // Use SSL
-      requireTLS: true,              // Require TLS
-      tls: {
-        rejectUnauthorized: false    // Allow self-signed certificates
-      }
+      logger: true,                  // Enable logging
+      debug: true,                   // Enable debug output
     });
-
-    // Skip verification in production for faster performance
-    if (process.env.NODE_ENV !== "production") {
-      transporter.verify().catch(err => {
-        logger.warn("Email transporter verification failed", { error: err.message });
-      });
-    }
   }
   return transporter;
 }
