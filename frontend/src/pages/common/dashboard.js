@@ -834,6 +834,10 @@ window.openSubAdmin = function() {
     updatePageTitle(t('subAdmin.title'));
     contentArea.innerHTML = getSubAdminHTML();
     updateActiveMenuItem('Sub Admin');
+    
+    // Apply saved primary color to Sub Admin page
+    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+    applyPrimaryColor(savedColor);
     return;
   }
 };
@@ -873,7 +877,7 @@ function getSubAdminHTML() {
           width: 100%;
           padding: 12px 16px 12px 44px;
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 8px;
           color: #ffffff;
           font-size: 14px;
@@ -881,17 +885,17 @@ function getSubAdminHTML() {
         }
         .search-admin:focus {
           outline: none;
-          border-color: rgba(126, 162, 212, 0.4);
+          border-color: var(--primary-border-hover);
           background: rgba(58, 56, 56, 0.5);
         }
         .search-admin:focus + .search-icon,
         .search-wrapper:hover .search-icon {
-          color: rgba(126, 162, 212, 1);
+          color: var(--primary-color);
         }
         .add-admin-btn {
           padding: 12px 24px;
-          background: rgba(126, 162, 212, 0.2);
-          border: 1px solid rgba(126, 162, 212, 0.4);
+          background: var(--primary-light);
+          border: 1px solid var(--primary-border-hover);
           border-radius: 8px;
           color: #ffffff;
           font-size: 14px;
@@ -903,13 +907,13 @@ function getSubAdminHTML() {
           gap: 8px;
         }
         .add-admin-btn:hover {
-          background: rgba(126, 162, 212, 0.3);
-          border-color: rgba(126, 162, 212, 0.6);
+          background: var(--border-color);
+          border-color: var(--primary-border-strong);
           transform: translateY(-2px);
         }
         .admin-card {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 12px;
           padding: 20px;
           transition: all 0.3s ease;
@@ -918,7 +922,7 @@ function getSubAdminHTML() {
           justify-content: space-between;
         }
         .admin-card:hover {
-          border-color: rgba(126, 162, 212, 0.4);
+          border-color: var(--primary-border-hover);
           background: rgba(58, 56, 56, 0.5);
           transform: translateX(4px);
         }
@@ -932,7 +936,7 @@ function getSubAdminHTML() {
           width: 56px;
           height: 56px;
           border-radius: 50%;
-          background: rgba(126, 162, 212, 0.3);
+          background: var(--border-color);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1547,6 +1551,10 @@ window.openLanguagePage = function() {
         option.classList.add('selected');
       }
     });
+    
+    // Apply saved primary color to Language page
+    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+    applyPrimaryColor(savedColor);
     return;
   }
 };
@@ -1579,7 +1587,7 @@ function getLanguagePageHTML() {
         }
         .language-option {
           background: rgba(58, 56, 56, 0.3);
-          border: 2px solid rgba(126, 162, 212, 0.2);
+          border: 2px solid var(--primary-border);
           border-radius: 12px;
           padding: 20px 24px;
           display: flex;
@@ -1590,18 +1598,18 @@ function getLanguagePageHTML() {
         }
         .language-option:hover {
           background: rgba(58, 56, 56, 0.5);
-          border-color: rgba(126, 162, 212, 0.4);
+          border-color: var(--primary-border-hover);
           transform: translateX(4px);
         }
         .language-option.selected {
-          background: rgba(126, 162, 212, 0.2);
-          border-color: rgba(126, 162, 212, 1);
+          background: var(--primary-light);
+          border-color: var(--primary-color);
         }
         .language-icon {
           width: 48px;
           height: 48px;
           border-radius: 50%;
-          background: rgba(126, 162, 212, 0.3);
+          background: var(--border-color);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -1610,7 +1618,7 @@ function getLanguagePageHTML() {
           font-size: 20px;
         }
         .language-option.selected .language-icon {
-          background: rgba(126, 162, 212, 0.5);
+          background: var(--primary-border-strong);
         }
         .language-name {
           flex: 1;
@@ -1622,15 +1630,15 @@ function getLanguagePageHTML() {
           width: 24px;
           height: 24px;
           border-radius: 50%;
-          border: 2px solid rgba(126, 162, 212, 0.3);
+          border: 2px solid var(--border-color);
           display: flex;
           align-items: center;
           justify-content: center;
           transition: all 0.3s ease;
         }
         .language-option.selected .language-check {
-          background: rgba(126, 162, 212, 1);
-          border-color: rgba(126, 162, 212, 1);
+          background: var(--primary-color);
+          border-color: var(--primary-color);
         }
         .language-check svg {
           opacity: 0;
@@ -1646,8 +1654,8 @@ function getLanguagePageHTML() {
         }
         .btn-apply {
           padding: 14px 32px;
-          background: rgba(126, 162, 212, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.5);
+          background: var(--border-color);
+          border: 1px solid var(--primary-border-strong);
           border-radius: 8px;
           color: #ffffff;
           font-size: 16px;
@@ -1656,7 +1664,7 @@ function getLanguagePageHTML() {
           transition: all 0.3s ease;
         }
         .btn-apply:hover {
-          background: rgba(126, 162, 212, 0.4);
+          background: var(--primary-border-hover);
           transform: translateY(-2px);
         }
         .btn-apply:disabled {
@@ -2882,6 +2890,10 @@ window.openProgress = function() {
     updatePageTitle(t('pages.progress'));
     contentArea.innerHTML = getProgressHTML();
     updateActiveMenuItem('Progress');
+    
+    // Apply saved primary color to Progress page
+    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+    applyPrimaryColor(savedColor);
     return;
   }
 };
@@ -2904,7 +2916,7 @@ function getProgressHTML() {
         }
         .progress-stat-card {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 16px;
           padding: 24px;
           text-align: center;
@@ -2912,11 +2924,11 @@ function getProgressHTML() {
         }
         .progress-stat-card:hover {
           transform: translateY(-5px);
-          border-color: rgba(126, 162, 212, 0.4);
+          border-color: var(--primary-border-hover);
           background: rgba(58, 56, 56, 0.5);
         }
         .progress-stat-title {
-          color: rgba(126, 162, 212, 1);
+          color: var(--primary-color);
           font-size: 14px;
           font-weight: 500;
           margin-bottom: 12px;
@@ -2939,7 +2951,7 @@ function getProgressHTML() {
         .filter-btn {
           padding: 10px 20px;
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 8px;
           color: rgba(156, 163, 175, 1);
           font-size: 14px;
@@ -2948,17 +2960,17 @@ function getProgressHTML() {
           transition: all 0.3s ease;
         }
         .filter-btn.active {
-          background: rgba(126, 162, 212, 0.2);
-          border-color: rgba(126, 162, 212, 1);
+          background: var(--primary-light);
+          border-color: var(--primary-color);
           color: #ffffff;
         }
         .filter-btn:hover {
-          border-color: rgba(126, 162, 212, 0.4);
+          border-color: var(--primary-border-hover);
           color: #ffffff;
         }
         .students-progress-section {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 16px;
           padding: 24px;
         }
@@ -2970,14 +2982,14 @@ function getProgressHTML() {
         }
         .student-progress-card {
           background: rgba(58, 56, 56, 0.5);
-          border: 1px solid rgba(126, 162, 212, 0.1);
+          border: 1px solid var(--primary-border-light);
           border-radius: 12px;
           padding: 20px;
           margin-bottom: 16px;
           transition: all 0.3s ease;
         }
         .student-progress-card:hover {
-          border-color: rgba(126, 162, 212, 0.3);
+          border-color: var(--border-color);
           background: rgba(58, 56, 56, 0.7);
         }
         .student-header {
@@ -2995,7 +3007,7 @@ function getProgressHTML() {
           width: 48px;
           height: 48px;
           border-radius: 50%;
-          background: rgba(126, 162, 212, 0.3);
+          background: var(--border-color);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -3109,8 +3121,8 @@ function getProgressHTML() {
         }
         .show-more-progress-btn {
           background: transparent;
-          border: 1px solid rgba(126, 162, 212, 0.3);
-          color: rgba(126, 162, 212, 1);
+          border: 1px solid var(--border-color);
+          color: var(--primary-color);
           padding: 12px 24px;
           border-radius: 8px;
           font-size: 14px;
@@ -3121,8 +3133,8 @@ function getProgressHTML() {
           margin: 24px auto 0;
         }
         .show-more-progress-btn:hover {
-          background: rgba(126, 162, 212, 0.1);
-          border-color: rgba(126, 162, 212, 0.5);
+          background: var(--primary-light);
+          border-color: var(--primary-border-strong);
         }
       </style>
 
@@ -3621,6 +3633,10 @@ window.openEngagement = function() {
     updatePageTitle(t('pages.engagement'));
     contentArea.innerHTML = getEngagementHTML();
     updateActiveMenuItem('Engagement');
+    
+    // Apply saved primary color to Engagement page
+    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+    applyPrimaryColor(savedColor);
     return;
   }
 };
@@ -3643,7 +3659,7 @@ function getEngagementHTML() {
         }
         .engagement-stat-card {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 16px;
           padding: 24px;
           text-align: center;
@@ -3651,11 +3667,11 @@ function getEngagementHTML() {
         }
         .engagement-stat-card:hover {
           transform: translateY(-5px);
-          border-color: rgba(126, 162, 212, 0.4);
+          border-color: var(--primary-border-hover);
           background: rgba(58, 56, 56, 0.5);
         }
         .engagement-stat-title {
-          color: rgba(126, 162, 212, 1);
+          color: var(--primary-color);
           font-size: 14px;
           font-weight: 500;
           margin-bottom: 12px;
@@ -3668,7 +3684,7 @@ function getEngagementHTML() {
         }
         .lessons-section {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 16px;
           padding: 24px;
         }
@@ -3684,13 +3700,13 @@ function getEngagementHTML() {
           justify-content: space-between;
           padding: 16px;
           background: rgba(58, 56, 56, 0.5);
-          border: 1px solid rgba(126, 162, 212, 0.1);
+          border: 1px solid var(--primary-border-light);
           border-radius: 12px;
           margin-bottom: 12px;
           transition: all 0.3s ease;
         }
         .lesson-item:hover {
-          border-color: rgba(126, 162, 212, 0.3);
+          border-color: var(--border-color);
           background: rgba(58, 56, 56, 0.7);
           transform: translateX(4px);
         }
@@ -3783,6 +3799,10 @@ window.openStudentsAnalytics = function() {
     updatePageTitle(t('pages.studentsAnalytics'));
     contentArea.innerHTML = getStudentsAnalyticsHTML();
     updateActiveMenuItem('Students Analytics');
+    
+    // Apply saved primary color to Students Analytics page
+    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+    applyPrimaryColor(savedColor);
     return;
   }
 };
@@ -3805,7 +3825,7 @@ function getStudentsAnalyticsHTML() {
         }
         .analytics-stat-card {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 16px;
           padding: 24px;
           text-align: center;
@@ -3813,11 +3833,11 @@ function getStudentsAnalyticsHTML() {
         }
         .analytics-stat-card:hover {
           transform: translateY(-5px);
-          border-color: rgba(126, 162, 212, 0.4);
+          border-color: var(--primary-border-hover);
           background: rgba(58, 56, 56, 0.5);
         }
         .analytics-stat-title {
-          color: rgba(126, 162, 212, 1);
+          color: var(--primary-color);
           font-size: 14px;
           font-weight: 500;
           margin-bottom: 12px;
@@ -3832,7 +3852,7 @@ function getStudentsAnalyticsHTML() {
           display: flex;
           gap: 12px;
           margin-bottom: 20px;
-          border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+          border-bottom: 1px solid var(--primary-border);
         }
         .student-tab {
           padding: 12px 24px;
@@ -3846,15 +3866,15 @@ function getStudentsAnalyticsHTML() {
           transition: all 0.3s ease;
         }
         .student-tab.active {
-          color: rgba(126, 162, 212, 1);
-          border-bottom-color: rgba(126, 162, 212, 1);
+          color: var(--primary-color);
+          border-bottom-color: var(--primary-color);
         }
         .student-tab:hover {
           color: #ffffff;
         }
         .students-list {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 16px;
           padding: 24px;
         }
@@ -3864,13 +3884,13 @@ function getStudentsAnalyticsHTML() {
           justify-content: space-between;
           padding: 16px;
           background: rgba(58, 56, 56, 0.5);
-          border: 1px solid rgba(126, 162, 212, 0.1);
+          border: 1px solid var(--primary-border-light);
           border-radius: 12px;
           margin-bottom: 12px;
           transition: all 0.3s ease;
         }
         .student-item:hover {
-          border-color: rgba(126, 162, 212, 0.3);
+          border-color: var(--border-color);
           background: rgba(58, 56, 56, 0.7);
           transform: translateX(4px);
         }
@@ -3883,7 +3903,7 @@ function getStudentsAnalyticsHTML() {
           width: 48px;
           height: 48px;
           border-radius: 50%;
-          background: rgba(126, 162, 212, 0.3);
+          background: var(--border-color);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -3936,8 +3956,8 @@ function getStudentsAnalyticsHTML() {
         }
         .show-all-students-btn {
           background: transparent;
-          border: 1px solid rgba(126, 162, 212, 0.3);
-          color: rgba(126, 162, 212, 1);
+          border: 1px solid var(--border-color);
+          color: var(--primary-color);
           padding: 12px 24px;
           border-radius: 8px;
           font-size: 14px;
@@ -3948,8 +3968,8 @@ function getStudentsAnalyticsHTML() {
           margin: 24px auto 0;
         }
         .show-all-students-btn:hover {
-          background: rgba(126, 162, 212, 0.1);
-          border-color: rgba(126, 162, 212, 0.5);
+          background: var(--primary-light);
+          border-color: var(--primary-border-strong);
         }
       </style>
 
@@ -4323,6 +4343,10 @@ window.openRatingComments = function() {
     updatePageTitle(t('pages.ratingComments'));
     contentArea.innerHTML = getRatingCommentsHTML();
     updateActiveMenuItem('Rating Comments');
+    
+    // Apply saved primary color to Rating Comments page
+    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+    applyPrimaryColor(savedColor);
     return;
   }
 };
@@ -4346,7 +4370,7 @@ function getRatingCommentsHTML() {
         }
         .rating-stat-card {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 16px;
           padding: 24px;
           text-align: center;
@@ -4354,11 +4378,11 @@ function getRatingCommentsHTML() {
         }
         .rating-stat-card:hover {
           transform: translateY(-5px);
-          border-color: rgba(126, 162, 212, 0.4);
+          border-color: var(--primary-border-hover);
           background: rgba(58, 56, 56, 0.5);
         }
         .rating-stat-title {
-          color: rgba(126, 162, 212, 1);
+          color: var(--primary-color);
           font-size: 14px;
           font-weight: 500;
           margin-bottom: 12px;
@@ -4421,7 +4445,7 @@ function getRatingCommentsHTML() {
         }
         .reviews-section {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 1px solid var(--primary-border);
           border-radius: 16px;
           padding: 24px;
         }
@@ -4438,14 +4462,14 @@ function getRatingCommentsHTML() {
         }
         .review-card {
           background: rgba(58, 56, 56, 0.5);
-          border: 1px solid rgba(126, 162, 212, 0.1);
+          border: 1px solid var(--primary-border-light);
           border-radius: 12px;
           padding: 20px;
           margin-bottom: 16px;
           transition: all 0.3s ease;
         }
         .review-card:hover {
-          border-color: rgba(126, 162, 212, 0.3);
+          border-color: var(--border-color);
           background: rgba(58, 56, 56, 0.7);
         }
         .review-header {
@@ -4512,8 +4536,8 @@ function getRatingCommentsHTML() {
         }
         .show-all-btn {
           background: transparent;
-          border: 1px solid rgba(126, 162, 212, 0.3);
-          color: rgba(126, 162, 212, 1);
+          border: 1px solid var(--border-color);
+          color: var(--primary-color);
           padding: 12px 24px;
           border-radius: 8px;
           font-size: 14px;
@@ -4524,8 +4548,8 @@ function getRatingCommentsHTML() {
           margin: 24px auto 0;
         }
         .show-all-btn:hover {
-          background: rgba(126, 162, 212, 0.1);
-          border-color: rgba(126, 162, 212, 0.5);
+          background: var(--primary-light);
+          border-color: var(--primary-border-strong);
         }
       </style>
 
@@ -6591,7 +6615,7 @@ function openAIAssistantPage() {
             }
             .ai-status-card {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 24px !important;
               display: flex !important;
@@ -6601,7 +6625,7 @@ function openAIAssistantPage() {
             .ai-icon {
               width: 56px !important;
               height: 56px !important;
-              background: rgba(126, 162, 212, 0.15) !important;
+              background: var(--primary-light-hover) !important;
               border-radius: 12px !important;
               display: flex !important;
               align-items: center !important;
@@ -6627,7 +6651,7 @@ function openAIAssistantPage() {
             }
             .ai-metric-card {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 24px !important;
               text-align: center !important;
@@ -6635,13 +6659,13 @@ function openAIAssistantPage() {
               transition: all 0.3s ease !important;
             }
             .ai-metric-card:hover {
-              border-color: rgba(126, 162, 212, 0.4) !important;
+              border-color: var(--primary-border-hover) !important;
               background: rgba(58, 56, 56, 0.5) !important;
               transform: translateY(-5px) !important;
               box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
             }
             .ai-metric-card h4 {
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
               font-size: 14px !important;
               font-weight: 500 !important;
               margin: 0 0 12px 0 !important;
@@ -6663,7 +6687,7 @@ function openAIAssistantPage() {
             .ai-auto-response-section,
             .ai-responses-section {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 20px !important;
             }
@@ -6680,7 +6704,7 @@ function openAIAssistantPage() {
               margin-bottom: 0 !important;
             }
             .form-label {
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
               font-size: 14px !important;
               font-weight: 500 !important;
               margin-bottom: 8px !important;
@@ -6692,7 +6716,7 @@ function openAIAssistantPage() {
               width: 100% !important;
               padding: 12px !important;
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 8px !important;
               color: #ffffff !important;
               font-size: 14px !important;
@@ -6718,7 +6742,7 @@ function openAIAssistantPage() {
             .form-input:focus,
             .form-textarea:focus {
               outline: none !important;
-              border-color: rgba(126, 162, 212, 0.4) !important;
+              border-color: var(--primary-border-hover) !important;
               background: rgba(58, 56, 56, 0.5) !important;
             }
             .settings-item {
@@ -6792,7 +6816,7 @@ function openAIAssistantPage() {
             }
             .response-item {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 8px !important;
               padding: 16px !important;
               margin-bottom: 12px !important;
@@ -6802,7 +6826,7 @@ function openAIAssistantPage() {
               margin-bottom: 0 !important;
             }
             .response-item:hover {
-              border-color: rgba(126, 162, 212, 0.4) !important;
+              border-color: var(--primary-border-hover) !important;
               background: rgba(58, 56, 56, 0.5) !important;
             }
             .response-header {
@@ -6819,13 +6843,13 @@ function openAIAssistantPage() {
             .user-avatar {
               width: 32px !important;
               height: 32px !important;
-              background: rgba(126, 162, 212, 0.3) !important;
+              background: var(--border-color) !important;
               border-radius: 50% !important;
               display: flex !important;
               align-items: center !important;
               justify-content: center !important;
               font-size: 14px !important;
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
             }
             .user-info h6 {
               color: #ffffff !important;
@@ -6838,9 +6862,9 @@ function openAIAssistantPage() {
               font-size: 12px !important;
             }
             .edit-btn {
-              background: rgba(126, 162, 212, 0.2) !important;
-              border: 1px solid rgba(126, 162, 212, 0.4) !important;
-              color: rgba(126, 162, 212, 1) !important;
+              background: var(--primary-light) !important;
+              border: 1px solid var(--primary-border-hover) !important;
+              color: var(--primary-color) !important;
               padding: 6px 12px !important;
               border-radius: 6px !important;
               font-size: 12px !important;
@@ -9388,7 +9412,7 @@ window.openQuizAnalytics = function() {
             }
             .quiz-stat-card {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 24px !important;
               text-align: center !important;
@@ -9396,7 +9420,7 @@ window.openQuizAnalytics = function() {
             }
             .quiz-stat-card:hover {
               background: rgba(58, 56, 56, 0.4) !important;
-              border-color: rgba(126, 162, 212, 0.3) !important;
+              border-color: var(--border-color) !important;
             }
             .quiz-stat-title {
               color: rgba(156, 163, 175, 1) !important;
@@ -9434,19 +9458,19 @@ window.openQuizAnalytics = function() {
               transition: all 0.3s ease !important;
             }
             .quiz-tab.active {
-              background: rgba(126, 162, 212, 0.2) !important;
-              color: rgba(126, 162, 212, 1) !important;
+              background: var(--primary-light) !important;
+              color: var(--primary-color) !important;
             }
             .quiz-content-section {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 0 !important;
               overflow: hidden !important;
             }
             .quiz-section-header {
               padding: 20px 24px !important;
-              border-bottom: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-bottom: 1px solid var(--primary-border) !important;
               color: #ffffff !important;
               font-size: 18px !important;
               font-weight: 600 !important;
@@ -9460,7 +9484,7 @@ window.openQuizAnalytics = function() {
             }
             .quiz-item {
               background: rgba(20, 20, 20, 0.4) !important;
-              border: 1px solid rgba(126, 162, 212, 0.15) !important;
+              border: 1px solid var(--primary-border-light) !important;
               border-radius: 8px !important;
               padding: 20px !important;
               transition: all 0.3s ease !important;
@@ -9468,7 +9492,7 @@ window.openQuizAnalytics = function() {
             }
             .quiz-item:hover {
               background: rgba(20, 20, 20, 0.6) !important;
-              border-color: rgba(126, 162, 212, 0.3) !important;
+              border-color: var(--border-color) !important;
             }
             .quiz-header {
               display: flex !important;
@@ -9493,8 +9517,8 @@ window.openQuizAnalytics = function() {
             }
             .quiz-action-btn {
               background: transparent !important;
-              border: 1px solid rgba(126, 162, 212, 0.4) !important;
-              color: rgba(126, 162, 212, 1) !important;
+              border: 1px solid var(--primary-border-hover) !important;
+              color: var(--primary-color) !important;
               padding: 4px 8px !important;
               border-radius: 4px !important;
               font-size: 12px !important;
@@ -9585,6 +9609,10 @@ window.openQuizAnalytics = function() {
 
   document.querySelector('#app').innerHTML = quizAnalyticsHTML;
   document.title = 'Quiz Analytics - darslinker';
+  
+  // Apply saved primary color to Quiz Analytics page
+  const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+  applyPrimaryColor(savedColor);
 };
 
 window.switchQuizTab = function(tabType, tabElement) {
