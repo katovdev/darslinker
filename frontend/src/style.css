@@ -3284,11 +3284,13 @@ body:has(.figma-dashboard) {
 }
 
 .figma-logo h1 {
+  font-family: 'League Spartan', sans-serif;
   font-size: 32px;
-  font-weight: 400;
+  font-weight: 600;
   color: #ffffff;
   margin: 0;
   margin-left: 30px;
+  letter-spacing: -0.5px;
 }
 
 .figma-logo span {
@@ -7470,6 +7472,79 @@ body.light-mode #courseSearchInput:focus,
 body.light-mode #courseSortSelect:focus {
   border-color: var(--primary-color) !important;
   background: #ffffff !important;
+}
+
+/* Light mode - Finance page cards */
+body.light-mode .figma-content-area.finance-page .finance-card,
+body.light-mode .figma-content-area.finance-page .finance-section,
+body.light-mode .figma-content-area.finance-page .payment-method-card,
+body.light-mode .figma-content-area.finance-page .promo-code-card,
+body.light-mode .figma-content-area.finance-page .transactions-section {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-card:hover,
+body.light-mode .figma-content-area.finance-page .payment-method-card:hover {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-card-title,
+body.light-mode .figma-content-area.finance-page .section-title {
+  color: var(--primary-color) !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-card-amount,
+body.light-mode .figma-content-area.finance-page .payment-card-name {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-card-subtitle {
+  color: #10b981 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .payment-card-number,
+body.light-mode .figma-content-area.finance-page .promo-code-description {
+  color: #6b7280 !important;
+}
+
+/* Light mode - Assignment page cards */
+body.light-mode .figma-content-area.assignments-page .assignments-card,
+body.light-mode .figma-content-area.assignments-page .assignments-section,
+body.light-mode .figma-content-area.assignments-page .assignment-item,
+body.light-mode .course-assignment-banner,
+body.light-mode .course-filter-section {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .figma-content-area.assignments-page .assignments-card:hover,
+body.light-mode .figma-content-area.assignments-page .assignment-item:hover {
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+body.light-mode .figma-content-area.assignments-page .assignments-card-title,
+body.light-mode .figma-content-area.assignments-page .assignments-section-title,
+body.light-mode .course-assignment-subtitle,
+body.light-mode .course-filter-label,
+body.light-mode .assignment-counter {
+  color: var(--primary-color) !important;
+  font-weight: 500 !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+  letter-spacing: 0.5px !important;
+}
+
+body.light-mode .figma-content-area.assignments-page .assignments-card-amount,
+body.light-mode .course-assignment-title,
+body.light-mode .assignment-title {
+  color: #1a1a1a !important;
 }
 
 body.light-mode .course-actions {
