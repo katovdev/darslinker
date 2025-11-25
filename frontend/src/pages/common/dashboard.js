@@ -125,7 +125,7 @@ function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="general-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="general-children">
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">${t('sidebar.dashboard')}</a>
+              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event); loadMainDashboard()">${t('sidebar.dashboard')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">${t('sidebar.profile')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">${t('sidebar.messages')}</a>
             </div>
@@ -4980,6 +4980,129 @@ window.backToDashboard = function() {
   initDashboard();
 };
 
+// Load main dashboard content (without reloading entire page)
+window.loadMainDashboard = function() {
+  const contentArea = document.querySelector('.figma-content-area');
+  const user = store.getState().user;
+  
+  if (contentArea && user) {
+    // Update page title
+    const pageTitle = document.getElementById('page-title');
+    if (pageTitle) {
+      pageTitle.textContent = t('dashboard.title');
+    }
+    
+    // Load main dashboard content
+    contentArea.innerHTML = `
+      <!-- Profile Section -->
+      <div class="figma-profile-section">
+        <div class="figma-profile-avatar">
+          <div class="figma-avatar-circle">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+        </div>
+        <div class="figma-profile-info">
+          <h2 class="figma-profile-name">${user.firstName} ${user.lastName}</h2>
+          <p class="figma-profile-title">${t('profile.title')}</p>
+          <p class="figma-profile-location">${t('profile.location')}</p>
+          <div class="figma-profile-rating">
+            <div class="figma-stars">
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+            <span class="figma-rating-text">${t('profile.rating')}</span>
+            <span class="figma-joined">${t('profile.joined')}</span>
+          </div>
+        </div>
+        <div class="figma-profile-buttons">
+          <button class="figma-profile-btn" onclick="openEditProfile()">${t('dashboard.profile.editProfile')}</button>
+          <button class="figma-profile-btn" onclick="customizeUI()">${t('dashboard.profile.customizeUI')}</button>
+        </div>
+      </div>
+
+      <!-- Stats Cards Grid -->
+      <div class="figma-stats-grid">
+        <!-- My Statistics Card -->
+        <div class="figma-stats-card">
+          <h3 class="figma-stats-title">${t('stats.myStatistics')}</h3>
+          <div class="figma-stats-list">
+            <div class="figma-stat-row">
+              <span class="figma-stat-label">${t('stats.activeCourses')}</span>
+              <span class="figma-stat-value">8</span>
+            </div>
+            <div class="figma-stat-row">
+              <span class="figma-stat-label">${t('stats.totalStudents')}</span>
+              <span class="figma-stat-value">1111</span>
+            </div>
+            <div class="figma-stat-row">
+              <span class="figma-stat-label">${t('stats.totalRevenue')}</span>
+              <span class="figma-stat-value">$12,460</span>
+            </div>
+            <div class="figma-stat-row">
+              <span class="figma-stat-label">${t('stats.avgRating')}</span>
+              <span class="figma-stat-value">4.9/5</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements Card -->
+        <div class="figma-stats-card">
+          <h3 class="figma-stats-title">${t('stats.achievements')}</h3>
+          <div class="figma-achievements-list">
+            <div class="figma-achievement-item">
+              <span class="figma-achievement-check">✓</span>
+              <span class="figma-achievement-text">${t('stats.topInstructor')}</span>
+            </div>
+            <div class="figma-achievement-item">
+              <span class="figma-achievement-check">✓</span>
+              <span class="figma-achievement-text">${t('stats.students1000')}</span>
+            </div>
+            <div class="figma-achievement-item">
+              <span class="figma-achievement-check">✓</span>
+              <span class="figma-achievement-text">${t('stats.revenue10k')}</span>
+            </div>
+            <div class="figma-achievement-item">
+              <span class="figma-achievement-check">✓</span>
+              <span class="figma-achievement-text">${t('stats.highRating')}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bio & Specialties Card -->
+        <div class="figma-stats-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h3 class="figma-stats-title">${t('stats.bioSpecialties')}</h3>
+            <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
+          </div>
+          <p class="figma-bio-text" id="bioText">${t('profile.bioDefault')}</p>
+          <div id="bioEditor" style="display: none;">
+            <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
+            <div style="margin-top: 10px; display: flex; gap: 8px;">
+              <button onclick="saveBio()" style="background: #7ea2d4; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.save')}</button>
+              <button onclick="cancelBioEdit()" style="background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.cancel')}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+};
+
 // Handle profile save
 function handleProfileSave(e) {
   e.preventDefault();
@@ -5549,130 +5672,21 @@ window.toggleLessonDropdown = function(button) {
 
 // Open My Courses Page
 window.openMyCourses = function() {
-  const userData = store.getState().user;
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (!contentArea) {
+    console.error('Content area not found');
+    return;
+  }
+  
+  // Update page title
+  const pageTitle = document.getElementById('page-title');
+  if (pageTitle) {
+    pageTitle.textContent = 'My Courses';
+  }
 
-  // Preserve sidebar menu state
-  const generalChildren = document.getElementById('general-children');
-  const isGeneralExpanded = generalChildren && !generalChildren.classList.contains('hidden');
-  const contentChildren = document.getElementById('content-children');
-  const isContentExpanded = contentChildren && !contentChildren.classList.contains('hidden');
-  const aiChildren = document.getElementById('ai-children');
-  const isAiExpanded = aiChildren && !aiChildren.classList.contains('hidden');
-  const analyticsChildren = document.getElementById('analytics-children');
-  const isAnalyticsExpanded = analyticsChildren && !analyticsChildren.classList.contains('hidden');
-  const rollsChildren = document.getElementById('rolls-children');
-  const isRollsExpanded = rollsChildren && !rollsChildren.classList.contains('hidden');
-  const settingsChildren = document.getElementById('settings-children');
-  const isSettingsExpanded = settingsChildren && !settingsChildren.classList.contains('hidden');
-
-  document.querySelector('#app').innerHTML = `
-    <div class="figma-dashboard">
-      <!-- Top Header -->
-      <div class="figma-header">
-        <div class="figma-logo">
-          <h1>dars<span>linker</span></h1>
-        </div>
-        <div class="figma-title">
-          <h2>My courses</h2>
-        </div>
-        <div class="figma-header-buttons">
-          <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">+ New Course</button>
-          <button class="figma-btn" onclick="backToDashboard()">← Back</button>
-        </div>
-      </div>
-
-      <!-- Main Layout -->
-      <div class="figma-main-layout">
-        <!-- Left Sidebar Menu -->
-        <div class="figma-sidebar">
-          <!-- General Menu -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isGeneralExpanded ? 'expanded' : ''}" onclick="toggleMenu('general')">
-              <span class="figma-menu-title">General</span>
-              <span class="figma-menu-arrow" id="general-arrow">${isGeneralExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isGeneralExpanded ? '' : 'hidden'}" id="general-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">Profile</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">Messages</a>
-            </div>
-          </div>
-
-          <!-- Content Management -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isContentExpanded ? 'expanded' : ''}" onclick="toggleMenu('content')">
-              <span class="figma-menu-title">Content Management</span>
-              <span class="figma-menu-arrow" id="content-arrow">${isContentExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">Create Course</a>
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)" id="my-courses-menu">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
-            </div>
-          </div>
-
-          <!-- AI Assistant -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isAiExpanded ? 'expanded' : ''}" onclick="toggleMenu('ai')">
-              <span class="figma-menu-title">AI Assistant</span>
-              <span class="figma-menu-arrow" id="ai-arrow">${isAiExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isAiExpanded ? '' : 'hidden'}" id="ai-children">
-              <a href="#" class="figma-menu-child">AI Assistant</a>
-            </div>
-          </div>
-
-          <!-- Analytics -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isAnalyticsExpanded ? 'expanded' : ''}" onclick="toggleMenu('analytics')">
-              <span class="figma-menu-title">Analytics</span>
-              <span class="figma-menu-arrow" id="analytics-arrow">${isAnalyticsExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isAnalyticsExpanded ? '' : 'hidden'}" id="analytics-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">Quiz Analytics</a>
-              <a href="#" class="figma-menu-child">Rating Comments</a>
-              <a href="#" class="figma-menu-child">Students Analytics</a>
-              <a href="#" class="figma-menu-child">Engagement</a>
-              <a href="#" class="figma-menu-child">Progress</a>
-            </div>
-          </div>
-
-          <!-- Rolls -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isRollsExpanded ? 'expanded' : ''}" onclick="toggleMenu('rolls')">
-              <span class="figma-menu-title">Rolls</span>
-              <span class="figma-menu-arrow" id="rolls-arrow">${isRollsExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isRollsExpanded ? '' : 'hidden'}" id="rolls-children">
-              <a href="#" class="figma-menu-child">Sub Admin</a>
-            </div>
-          </div>
-
-          <!-- Settings -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isSettingsExpanded ? 'expanded' : ''}" onclick="toggleMenu('settings')">
-              <span class="figma-menu-title">Settings</span>
-              <span class="figma-menu-arrow" id="settings-arrow">${isSettingsExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isSettingsExpanded ? '' : 'hidden'}" id="settings-children">
-              <a href="#" class="figma-menu-child">Language</a>
-              <a href="#" class="figma-menu-child">Customize UI</a>
-            </div>
-          </div>
-
-          <!-- Subscription at bottom -->
-          <div class="figma-subscription">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">My Subscription</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- My Courses Content -->
-        <div class="figma-content-area">
+  // Update content area only
+  contentArea.innerHTML = `
           <!-- Statistics Cards -->
           <div class="my-courses-stats" id="coursesStats">
             <!-- Statistics will be rendered dynamically -->
@@ -5711,9 +5725,6 @@ window.openMyCourses = function() {
           <div class="my-courses-grid" id="myCoursesGrid">
             <!-- Course cards will be injected here -->
           </div>
-        </div>
-      </div>
-    </div>
   `;
 
   // Load course data and initialize page
@@ -9966,7 +9977,7 @@ window.openCreateCourse = function() {
             </div>
             <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
               <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Create Course</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">My Courses</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('draft')">Drafts</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); filterFromSidebar('archived')">Archived</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Finance</a>
