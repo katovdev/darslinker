@@ -86,9 +86,39 @@ body.light-mode .figma-menu-child.active {
 
 body.light-mode .figma-stats-card,
 body.light-mode .figma-profile-section {
-  background: var(--card-bg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .figma-stats-card:hover {
+  background: #f9fafb !important;
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
+}
+
+body.light-mode .figma-stats-title {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .figma-stat-label {
+  color: #6b7280 !important;
+}
+
+body.light-mode .figma-stat-value {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .figma-bio-text {
+  color: #374151 !important;
+}
+
+body.light-mode .figma-achievement-text {
+  color: #374151 !important;
+}
+
+body.light-mode .figma-achievement-check {
+  color: #10b981 !important;
 }
 
 body.light-mode .form-input,
@@ -7276,19 +7306,20 @@ body.light-mode .my-courses-stats {
 }
 
 body.light-mode .stat-card-my-courses {
-  background: var(--card-bg) !important;
-  border: 1px solid var(--border-color) !important;
-  box-shadow: var(--shadow-sm) !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
 }
 
 body.light-mode .stat-card-my-courses:hover {
   transform: translateY(-4px);
-  box-shadow: var(--shadow-md) !important;
-  border-color: var(--primary-color) !important;
+  background: #f9fafb !important;
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
+  border-color: #7ea2d4 !important;
 }
 
 body.light-mode .stat-card-my-courses h3 {
-  color: var(--text-secondary) !important;
+  color: #6b7280 !important;
 }
 
 body.light-mode .stat-number {
@@ -7457,6 +7488,488 @@ body.light-mode .course-btn-delete:hover {
 /* Light mode Finance page - make it lighter and prettier */
 body.light-mode .figma-content-area.finance-page {
   background: var(--bg-primary) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-card:hover {
+  background: #f9fafb !important;
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.15) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-section {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .payment-method-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .payment-method-card:hover {
+  background: #f9fafb !important;
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .promo-code-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .promo-code-card:hover {
+  background: #f9fafb !important;
+  border-color: #d1d5db !important;
+}
+
+body.light-mode .figma-content-area.finance-page .transaction-search,
+body.light-mode .figma-content-area.finance-page .transaction-date-filter,
+body.light-mode .figma-content-area.finance-page .transaction-type-filter {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  color: #1a1a1a !important;
+}
+
+body.light-mode .figma-content-area.finance-page .transaction-search:focus,
+body.light-mode .figma-content-area.finance-page .transaction-date-filter:focus,
+body.light-mode .figma-content-area.finance-page .transaction-type-filter:focus {
+  border-color: #7ea2d4 !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-transactions-table th {
+  color: #6b7280 !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-transactions-table td {
+  color: #1a1a1a !important;
+  border-bottom: 1px solid #f3f4f6 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .payment-method-options-btn {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+}
+
+body.light-mode .figma-content-area.finance-page .payment-method-options-btn:hover {
+  background: #f9fafb !important;
+  border-color: #7ea2d4 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .three-dots {
+  color: #6b7280 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .payment-dropdown-menu {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .dropdown-item {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .figma-content-area.finance-page .dropdown-item:hover {
+  background: #f3f4f6 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .dropdown-item.edit {
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .dropdown-item.edit:hover {
+  background: rgba(126, 162, 212, 0.1) !important;
+}
+
+body.light-mode .figma-content-area.finance-page .section-title {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-card-title {
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .finance-card-amount {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .figma-content-area.finance-page .payment-card-name {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .figma-content-area.finance-page .payment-card-number {
+  color: #6b7280 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .promo-code-name {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .figma-content-area.finance-page .promo-code-description {
+  color: #6b7280 !important;
+}
+
+body.light-mode .figma-content-area.finance-page .promo-code-usage {
+  color: #9ca3af !important;
+}
+
+/* Light mode Assignments page - make it white and clean */
+body.light-mode .figma-content-area.assignments-page {
+  background: var(--bg-primary) !important;
+}
+
+body.light-mode .course-assignment-banner {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .course-assignment-title {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .course-filter-section {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .course-filter-label {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .course-select {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important;
+  color: #1a1a1a !important;
+}
+
+body.light-mode .course-select:hover,
+body.light-mode .course-select:focus {
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+}
+
+body.light-mode .course-select option {
+  background: #ffffff !important;
+  color: #1a1a1a !important;
+}
+
+body.light-mode .assignment-counter {
+  background: rgba(126, 162, 212, 0.1) !important;
+  border: 1px solid rgba(126, 162, 212, 0.3) !important;
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .assignments-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .assignments-card:hover {
+  background: #f9fafb !important;
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.15) !important;
+}
+
+body.light-mode .assignments-card-title {
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .assignments-card-amount {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .assignment-tab {
+  background: #ffffff !important;
+  color: #6b7280 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .assignment-tab.active {
+  background: rgba(126, 162, 212, 0.1) !important;
+  color: #7ea2d4 !important;
+  border-color: #7ea2d4 !important;
+}
+
+body.light-mode .assignments-section {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .assignments-section-title {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .assignment-item {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .assignment-item:hover {
+  background: #f9fafb !important;
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
+}
+
+body.light-mode .assignment-title {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .assignment-meta {
+  color: #6b7280 !important;
+}
+
+body.light-mode .assignment-description {
+  color: #374151 !important;
+}
+
+body.light-mode .grade-btn {
+  background: rgba(126, 162, 212, 0.1) !important;
+  border: 1px solid #7ea2d4 !important;
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .grade-btn:hover {
+  background: rgba(126, 162, 212, 0.2) !important;
+}
+
+/* Light mode Quiz Analytics page - make it white and clean */
+body.light-mode .figma-content-area.quiz-analytics-page {
+  background: var(--bg-primary) !important;
+}
+
+body.light-mode .quiz-stat-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .quiz-stat-card:hover {
+  background: #f9fafb !important;
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
+}
+
+body.light-mode .quiz-stat-title {
+  color: #6b7280 !important;
+}
+
+body.light-mode .quiz-stat-value {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .quiz-tabs {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
+}
+
+body.light-mode .quiz-tab {
+  color: #6b7280 !important;
+}
+
+body.light-mode .quiz-tab.active {
+  background: rgba(126, 162, 212, 0.1) !important;
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .quiz-content-section {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .quiz-section-header {
+  color: #1a1a1a !important;
+  border-bottom: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .quiz-item {
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .quiz-item:hover {
+  background: #ffffff !important;
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.1) !important;
+}
+
+body.light-mode .quiz-title {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .quiz-meta {
+  color: #6b7280 !important;
+}
+
+body.light-mode .quiz-description {
+  color: #6b7280 !important;
+}
+
+body.light-mode .quiz-action-btn {
+  background: #ffffff !important;
+  border: 1px solid #7ea2d4 !important;
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .quiz-action-btn:hover {
+  background: rgba(126, 162, 212, 0.1) !important;
+  border-color: #7ea2d4 !important;
+}
+
+/* Light mode Progress page - make it white and clean */
+body.light-mode .progress-page {
+  background: var(--bg-primary) !important;
+}
+
+body.light-mode .progress-stat-card {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .progress-stat-card:hover {
+  background: #f9fafb !important;
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.15) !important;
+}
+
+body.light-mode .progress-stat-title {
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .progress-stat-value {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .filter-btn {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  color: #6b7280 !important;
+}
+
+body.light-mode .filter-btn.active {
+  background: rgba(126, 162, 212, 0.1) !important;
+  border-color: #7ea2d4 !important;
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .filter-btn:hover {
+  border-color: #7ea2d4 !important;
+  color: #1a1a1a !important;
+}
+
+body.light-mode .students-progress-section {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+}
+
+body.light-mode .section-header {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .student-progress-card {
+  background: #f9fafb !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .student-progress-card:hover {
+  background: #ffffff !important;
+  border-color: #7ea2d4 !important;
+  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.1) !important;
+}
+
+body.light-mode .student-avatar-progress {
+  background: rgba(126, 162, 212, 0.15) !important;
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .student-name-email h4 {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .student-name-email p {
+  color: #6b7280 !important;
+}
+
+body.light-mode .action-btn {
+  background: #ffffff !important;
+  border: 1px solid #7ea2d4 !important;
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .action-btn:hover {
+  background: rgba(126, 162, 212, 0.1) !important;
+  border-color: #7ea2d4 !important;
+}
+
+body.light-mode .current-lesson {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+body.light-mode .lesson-title {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .lesson-subtitle {
+  color: #6b7280 !important;
+}
+
+body.light-mode .lesson-progress-bar {
+  background: #e5e7eb !important;
+}
+
+body.light-mode .progress-text {
+  color: #6b7280 !important;
+}
+
+body.light-mode .stat-label {
+  color: #6b7280 !important;
+}
+
+body.light-mode .stat-value {
+  color: #1a1a1a !important;
+}
+
+body.light-mode .show-more-progress-btn {
+  background: #ffffff !important;
+  border: 1px solid #7ea2d4 !important;
+  color: #7ea2d4 !important;
+}
+
+body.light-mode .show-more-progress-btn:hover {
+  background: rgba(126, 162, 212, 0.1) !important;
+}
+
+body.light-mode .progress-stats-row {
+  background: transparent !important;
+}
+
+body.light-mode .progress-stats-row .stat-item {
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 8px !important;
+  padding: 12px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
 body.light-mode .finance-stats-grid {

@@ -11,6 +11,9 @@ export function initDashboard() {
   initI18n();
   initTheme();
   
+  // Load and apply saved primary color
+  loadSavedPrimaryColor();
+  
   // Add language change listener to reload dashboard when language changes
   window.removeEventListener('languageChanged', handleLanguageChange);
   window.addEventListener('languageChanged', handleLanguageChange);
@@ -2012,10 +2015,144 @@ window.updateColorPreview = function(color) {
     document.getElementById('colorPicker').value = color;
     window.currentTheme.primaryColor = color;
     
+    // Apply color to entire app
+    applyPrimaryColor(color);
+    
     // Update active preset
     document.querySelectorAll('.preset-color').forEach(preset => {
       preset.classList.remove('active');
     });
+  }
+};
+
+// Apply primary color to entire app
+window.applyPrimaryColor = function(color) {
+  // Convert hex to RGB
+  const r = parseInt(color.slice(1, 3), 16);
+  const g = parseInt(color.slice(3, 5), 16);
+  const b = parseInt(color.slice(5, 7), 16);
+  
+  // Update CSS variables
+  document.documentElement.style.setProperty('--primary-color', color);
+  document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
+  document.documentElement.style.setProperty('--primary-hover', `rgba(${r}, ${g}, ${b}, 0.8)`);
+  document.documentElement.style.setProperty('--primary-light', `rgba(${r}, ${g}, ${b}, 0.2)`);
+  
+  // Update border-color variable (used in many places)
+  document.documentElement.style.setProperty('--border-color', `rgba(${r}, ${g}, ${b}, 0.3)`);
+  
+  // Create dynamic style tag to override hardcoded colors
+  let styleTag = document.getElementById('dynamic-primary-color');
+  if (!styleTag) {
+    styleTag = document.createElement('style');
+    styleTag.id = 'dynamic-primary-color';
+    document.head.appendChild(styleTag);
+  }
+  
+  // Override all hardcoded #7ea2d4 and rgba(126, 162, 212, ...) colors
+  styleTag.textContent = `
+    /* Override hardcoded blue colors with custom primary color */
+    .figma-title h2,
+    .figma-logo h1 span,
+    .figma-stats-title,
+    .figma-menu-child.active,
+    .figma-menu-child:hover,
+    .figma-menu-parent.expanded,
+    .figma-menu-title,
+    .figma-menu-arrow,
+    .figma-subscription .figma-single-link,
+    .figma-single-link:hover,
+    .assignments-card-title,
+    .finance-card-title,
+    .quiz-stat-title,
+    .progress-stat-title,
+    .section-title,
+    .assignments-section-title,
+    .course-assignment-subtitle,
+    .course-filter-label,
+    .assignment-counter {
+      color: ${color} !important;
+    }
+    
+    .figma-subscription {
+      border-top-color: ${color} !important;
+    }
+    
+    .figma-stats-card:hover,
+    .stat-card-my-courses:hover,
+    .assignments-card:hover,
+    .finance-card:hover,
+    .quiz-stat-card:hover,
+    .progress-stat-card:hover,
+    .student-progress-card:hover,
+    .assignment-item:hover,
+    .quiz-item:hover,
+    .payment-method-card:hover,
+    .figma-subscription .figma-single-link {
+      border-color: ${color} !important;
+    }
+    
+    .action-btn,
+    .grade-btn,
+    .quiz-action-btn,
+    .edit-btn,
+    .promo-edit-btn,
+    .edit-bio-btn,
+    .figma-header-buttons button,
+    .figma-header-buttons .figma-btn,
+    .figma-btn-primary,
+    .save-profile-btn,
+    button[onclick*="openEditProfile"],
+    button[onclick*="openCustomizeUI"],
+    button[onclick*="customizeUI"],
+    button[onclick*="openCreateCourse"],
+    button[onclick*="saveProfile"] {
+      border-color: ${color} !important;
+      color: ${color} !important;
+    }
+    
+    /* New Course button - transparent background like other buttons */
+    .figma-btn-primary,
+    button[onclick*="openCreateCourse"] {
+      background: transparent !important;
+    }
+    
+    .action-btn:hover,
+    .grade-btn:hover,
+    .figma-header-buttons .figma-btn:hover,
+    .figma-btn-primary:hover,
+    button[onclick*="openCreateCourse"]:hover {
+      background: rgba(${r}, ${g}, ${b}, 0.1) !important;
+    }
+    
+    .assignment-tab.active,
+    .quiz-tab.active,
+    .filter-btn.active {
+      background: rgba(${r}, ${g}, ${b}, 0.1) !important;
+      border-color: ${color} !important;
+      color: ${color} !important;
+    }
+    
+    .student-avatar-progress {
+      background: rgba(${r}, ${g}, ${b}, 0.15) !important;
+      color: ${color} !important;
+    }
+  `;
+  
+  // Save to localStorage
+  localStorage.setItem('primaryColor', color);
+  
+  console.log('Primary color updated to:', color);
+};
+
+// Load saved primary color from localStorage
+window.loadSavedPrimaryColor = function() {
+  const savedColor = localStorage.getItem('primaryColor');
+  if (savedColor && /^#[0-9A-F]{6}$/i.test(savedColor)) {
+    applyPrimaryColor(savedColor);
+    console.log('Loaded saved primary color:', savedColor);
+  } else {
+    console.log('No saved color, using default: #7ea2d4');
   }
 };
 
