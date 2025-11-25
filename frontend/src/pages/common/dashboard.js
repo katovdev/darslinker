@@ -2173,6 +2173,83 @@ window.applyPrimaryColor = function(color) {
       border-bottom-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
     }
     
+    /* My Courses page - stat cards */
+    .stat-card-my-courses {
+      border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+    }
+    
+    .stat-card-my-courses h3 {
+      color: rgba(${r}, ${g}, ${b}, 0.8) !important;
+    }
+    
+    .stat-number {
+      color: ${color} !important;
+    }
+    
+    /* My Courses page - filter tabs */
+    .course-filter-tabs {
+      border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+    }
+    
+    .filter-tab.active {
+      background: rgba(${r}, ${g}, ${b}, 0.2) !important;
+      color: ${color} !important;
+    }
+    
+    /* My Courses page - course cards */
+    .course-card-figma,
+    .my-course-card {
+      border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+    }
+    
+    .course-card-figma:hover,
+    .my-course-card:hover {
+      border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+    }
+    
+    .course-card-category {
+      color: ${color} !important;
+    }
+    
+    .course-card-footer {
+      border-top-color: rgba(${r}, ${g}, ${b}, 0.1) !important;
+    }
+    
+    /* My Courses page - search input */
+    #courseSearchInput {
+      border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+    }
+    
+    #courseSearchInput:focus {
+      border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+    }
+    
+    /* My Courses page - sort dropdown */
+    #courseSortSelect {
+      border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+    }
+    
+    /* My Courses page - revenue */
+    .course-revenue {
+      border-top-color: rgba(${r}, ${g}, ${b}, 0.1) !important;
+    }
+    
+    .revenue-amount {
+      color: ${color} !important;
+    }
+    
+    /* My Courses page - course buttons (Edit, Stats) */
+    .course-btn {
+      background: rgba(${r}, ${g}, ${b}, 0.2) !important;
+      border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+      color: ${color} !important;
+    }
+    
+    .course-btn:hover {
+      background: rgba(${r}, ${g}, ${b}, 0.3) !important;
+      border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+    }
+    
     .action-btn,
     .grade-btn,
     .quiz-action-btn,
