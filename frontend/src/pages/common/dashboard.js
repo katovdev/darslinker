@@ -2036,10 +2036,16 @@ window.applyPrimaryColor = function(color) {
   document.documentElement.style.setProperty('--primary-color', color);
   document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
   document.documentElement.style.setProperty('--primary-hover', `rgba(${r}, ${g}, ${b}, 0.8)`);
-  document.documentElement.style.setProperty('--primary-light', `rgba(${r}, ${g}, ${b}, 0.2)`);
+  document.documentElement.style.setProperty('--primary-light', `rgba(${r}, ${g}, ${b}, 0.1)`);
+  document.documentElement.style.setProperty('--primary-light-hover', `rgba(${r}, ${g}, ${b}, 0.15)`);
+  document.documentElement.style.setProperty('--primary-color-light', `rgba(${r}, ${g}, ${b}, 0.7)`);
   
-  // Update border-color variable (used in many places)
+  // Update border-color variables (used in many places)
   document.documentElement.style.setProperty('--border-color', `rgba(${r}, ${g}, ${b}, 0.3)`);
+  document.documentElement.style.setProperty('--primary-border', `rgba(${r}, ${g}, ${b}, 0.2)`);
+  document.documentElement.style.setProperty('--primary-border-light', `rgba(${r}, ${g}, ${b}, 0.1)`);
+  document.documentElement.style.setProperty('--primary-border-hover', `rgba(${r}, ${g}, ${b}, 0.4)`);
+  document.documentElement.style.setProperty('--primary-border-strong', `rgba(${r}, ${g}, ${b}, 0.5)`);
   
   // Create dynamic style tag to override hardcoded colors
   let styleTag = document.getElementById('dynamic-primary-color');
@@ -2248,6 +2254,43 @@ window.applyPrimaryColor = function(color) {
     .course-btn:hover {
       background: rgba(${r}, ${g}, ${b}, 0.3) !important;
       border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+    }
+    
+    /* Finance page - stat cards */
+    .figma-content-area.finance-page .finance-card {
+      border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+    }
+    
+    .figma-content-area.finance-page .finance-card:hover {
+      border-color: rgba(${r}, ${g}, ${b}, 0.4) !important;
+    }
+    
+    .figma-content-area.finance-page .finance-card-title {
+      color: ${color} !important;
+    }
+    
+    /* Finance page - transactions section */
+    .transactions-section {
+      border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+    }
+    
+    .transaction-search,
+    .transaction-date-filter {
+      border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+    }
+    
+    .transactions-table th,
+    .transactions-table td {
+      border-bottom-color: rgba(${r}, ${g}, ${b}, 0.1) !important;
+    }
+    
+    .transactions-table tbody tr:hover {
+      background: rgba(${r}, ${g}, ${b}, 0.05) !important;
+    }
+    
+    /* Finance page - payment method cards */
+    .figma-content-area.finance-page .payment-method-card {
+      border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
     }
     
     .action-btn,
@@ -6067,7 +6110,7 @@ window.openFinancePage = function() {
             }
             .figma-content-area.finance-page .finance-card {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 20px !important;
               display: flex !important;
@@ -6078,12 +6121,12 @@ window.openFinancePage = function() {
             }
             .figma-content-area.finance-page .finance-card:hover {
               transform: translateY(-5px) !important;
-              border-color: rgba(126, 162, 212, 0.4) !important;
+              border-color: var(--primary-border-hover) !important;
               background: rgba(58, 56, 56, 0.5) !important;
               box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
             }
             .figma-content-area.finance-page .finance-card-title {
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
               font-size: 14px !important;
               font-weight: 500 !important;
               margin: 0 !important;
@@ -6103,20 +6146,20 @@ window.openFinancePage = function() {
             }
             .figma-content-area.finance-page .finance-section {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 24px !important;
               transition: all 0.3s ease !important;
             }
             .figma-content-area.finance-page .section-title {
-              color: rgba(126, 162, 212, 1) !important;
+              color: var(--primary-color) !important;
               font-size: 18px !important;
               font-weight: 600 !important;
               margin: 0 0 20px 0 !important;
             }
             .figma-content-area.finance-page .payment-method-card {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 8px !important;
               padding: 16px !important;
               margin-bottom: 16px !important;
@@ -6124,7 +6167,7 @@ window.openFinancePage = function() {
               cursor: pointer !important;
             }
             .figma-content-area.finance-page .payment-method-card:hover {
-              border-color: rgba(126, 162, 212, 0.4) !important;
+              border-color: var(--primary-border-hover) !important;
               background: rgba(58, 56, 56, 0.5) !important;
               transform: translateY(-3px) !important;
               box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
@@ -6132,7 +6175,7 @@ window.openFinancePage = function() {
             .figma-content-area.finance-page .payment-method-options-btn {
               position: relative !important;
               background: rgba(32, 32, 32, 0.95) !important;
-              border: 1px solid rgba(126, 162, 212, 0.4) !important;
+              border: 1px solid var(--primary-border-hover) !important;
               border-radius: 6px !important;
               padding: 6px 8px !important;
               cursor: pointer !important;
@@ -6141,8 +6184,8 @@ window.openFinancePage = function() {
               box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3) !important;
             }
             .figma-content-area.finance-page .payment-method-options-btn:hover {
-              background: rgba(126, 162, 212, 0.15) !important;
-              border-color: rgba(126, 162, 212, 0.6) !important;
+              background: var(--primary-light) !important;
+              border-color: var(--primary-border-strong) !important;
               transform: translateY(-1px) !important;
               box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
             }
@@ -6152,7 +6195,7 @@ window.openFinancePage = function() {
               display: flex !important;
               align-items: center !important;
               justify-content: center !important;
-              color: #7ea2d4 !important;
+              color: var(--primary-color) !important;
               font-size: 16px !important;
               font-weight: bold !important;
               line-height: 1 !important;
@@ -6163,11 +6206,11 @@ window.openFinancePage = function() {
               right: 0 !important;
               margin-top: 8px !important;
               background: rgba(32, 32, 32, 0.95) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 12px !important;
               padding: 12px 0 !important;
               min-width: 140px !important;
-              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(126, 162, 212, 0.1) !important;
+              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), 0 0 0 1px var(--primary-border-light) !important;
               z-index: 1000 !important;
               display: none !important;
               overflow: hidden !important;
@@ -6189,15 +6232,15 @@ window.openFinancePage = function() {
               gap: 8px !important;
             }
             .figma-content-area.finance-page .dropdown-item:hover {
-              background: rgba(126, 162, 212, 0.1) !important;
+              background: var(--primary-light) !important;
               transform: translateX(2px) !important;
             }
             .figma-content-area.finance-page .dropdown-item.edit {
-              color: #7ea2d4 !important;
+              color: var(--primary-color) !important;
             }
             .figma-content-area.finance-page .dropdown-item.edit:hover {
-              background: rgba(126, 162, 212, 0.15) !important;
-              color: #a3c4f3 !important;
+              background: var(--primary-light-hover) !important;
+              color: var(--primary-color-light) !important;
             }
             .figma-content-area.finance-page .dropdown-item.delete {
               color: #ef4444 !important;
@@ -6242,7 +6285,7 @@ window.openFinancePage = function() {
             .figma-content-area.finance-page .transaction-date-filter,
             .figma-content-area.finance-page .transaction-type-filter {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 8px !important;
               padding: 8px 12px !important;
               color: #ffffff !important;
@@ -6255,7 +6298,7 @@ window.openFinancePage = function() {
             .figma-content-area.finance-page .transaction-search:focus,
             .figma-content-area.finance-page .transaction-date-filter:focus,
             .figma-content-area.finance-page .transaction-type-filter:focus {
-              border-color: rgba(126, 162, 212, 0.4) !important;
+              border-color: var(--primary-border-hover) !important;
               outline: none !important;
               background: rgba(58, 56, 56, 0.5) !important;
             }
@@ -6284,8 +6327,8 @@ window.openFinancePage = function() {
             }
             .figma-content-area.finance-page .add-payment-btn {
               background: transparent !important;
-              border: 1px solid rgba(126, 162, 212, 0.5) !important;
-              color: rgba(126, 162, 212, 1) !important;
+              border: 1px solid var(--primary-border-strong) !important;
+              color: var(--primary-color) !important;
               padding: 12px 16px !important;
               border-radius: 8px !important;
               font-size: 14px !important;
@@ -6302,13 +6345,13 @@ window.openFinancePage = function() {
               font-weight: 600 !important;
               text-align: left !important;
               padding: 12px !important;
-              border-bottom: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border-bottom: 1px solid var(--primary-border) !important;
             }
             .figma-content-area.finance-page .finance-transactions-table td {
               color: #ffffff !important;
               font-size: 14px !important;
               padding: 12px !important;
-              border-bottom: 1px solid rgba(126, 162, 212, 0.1) !important;
+              border-bottom: 1px solid var(--primary-border-light) !important;
             }
             .figma-content-area.finance-page .status-completed {
               background: rgba(16, 185, 129, 0.2) !important;
@@ -6320,7 +6363,7 @@ window.openFinancePage = function() {
             }
             .figma-content-area.finance-page .promo-code-card {
               background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
               border-radius: 8px !important;
               padding: 16px !important;
               margin-bottom: 16px !important;
@@ -6347,9 +6390,9 @@ window.openFinancePage = function() {
               font-size: 11px !important;
             }
             .figma-content-area.finance-page .promo-edit-btn {
-              background: rgba(126, 162, 212, 0.2) !important;
-              border: 1px solid rgba(126, 162, 212, 0.4) !important;
-              color: rgba(126, 162, 212, 1) !important;
+              background: var(--primary-light) !important;
+              border: 1px solid var(--primary-border-hover) !important;
+              color: var(--primary-color) !important;
               padding: 8px 16px !important;
               border-radius: 8px !important;
               font-size: 12px !important;
@@ -6358,8 +6401,8 @@ window.openFinancePage = function() {
             }
             .figma-content-area.finance-page .add-promo-btn {
               background: transparent !important;
-              border: 1px solid rgba(126, 162, 212, 0.5) !important;
-              color: rgba(126, 162, 212, 1) !important;
+              border: 1px solid var(--primary-border-strong) !important;
+              color: var(--primary-color) !important;
               padding: 12px 16px !important;
               border-radius: 8px !important;
               font-size: 14px !important;
@@ -6510,6 +6553,10 @@ window.openFinancePage = function() {
       </div>
     </div>
   `;
+  
+  // Apply saved primary color to Finance page
+  const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+  applyPrimaryColor(savedColor);
 };
 
 // Open AI Assistant Page
