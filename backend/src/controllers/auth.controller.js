@@ -291,15 +291,79 @@ const verifyRegistrationOtp = catchAsync(async (req, res) => {
     throw new BadRequestError(result.message);
   }
 
-  logger.info("OTP verified successfully - Account activated", {
-    identifier: normalizedIdentifier,
-    userId: result.data?.user?._id,
-  });
+  // Get the activated user for automatic login
+  const activatedUser = result.data?.user;
 
-  res.status(200).json({
-    success: true,
-    message: "OTP Code verified successfully",
-  });
+  if (activatedUser) {
+    // Generate tokens for immediate login after verification
+    const tokenPayload = {
+      userId: activatedUser._id.toString(),
+      email: activatedUser.email,
+      phone: activatedUser.phone,
+      role: activatedUser.role,
+      status: activatedUser.status,
+    };
+
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = generateRefreshToken(tokenPayload);
+
+    // Create session
+    const deviceInfo = parseDeviceInfo(req.headers["user-agent"]);
+    const deviceFingerprint = createDeviceFingerprint(deviceInfo);
+
+    const sessionData = {
+      userId: activatedUser._id,
+      ipAddress: req.ip,
+      deviceInfo: deviceInfo,
+      deviceFingerprint: deviceFingerprint,
+      userAgent: req.headers["user-agent"],
+      token: refreshToken,
+      expiresAt: getSessionExpiryDate(),
+    };
+
+    await Session.findOneAndUpdate(
+      {
+        userId: activatedUser._id,
+        deviceFingerprint: deviceFingerprint,
+      },
+      sessionData,
+      { upsert: true, new: true }
+    );
+
+    // Return user data with tokens for immediate login
+    const userResponse = {
+      _id: activatedUser._id,
+      firstName: activatedUser.firstName,
+      lastName: activatedUser.lastName,
+      email: activatedUser.email,
+      phone: activatedUser.phone,
+      role: activatedUser.role,
+      status: activatedUser.status,
+    };
+
+    logger.info("OTP verified successfully - Account activated and logged in", {
+      identifier: normalizedIdentifier,
+      userId: activatedUser._id,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Account verified and logged in successfully",
+      accessToken,
+      refreshToken,
+      user: userResponse,
+    });
+  } else {
+    logger.info("OTP verified successfully - Account activated", {
+      identifier: normalizedIdentifier,
+      userId: result.data?.user?._id,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "OTP Code verified successfully",
+    });
+  }
 });
 
 /**

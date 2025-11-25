@@ -1238,7 +1238,30 @@ function initRegisterPageFunctionality() {
       try {
         const result = await apiService.verifyRegistrationOtp(identifier, otpCode);
         if (result.success) {
-          showSuccessToast('Ro\'yxatdan o\'tish yakunlandi!');
+          // Check if auto-login data is provided (new format)
+          if (result.accessToken && result.user) {
+            // Auto-login after verification
+
+            // Clear old data from both localStorage and sessionStorage
+            localStorage.clear();
+            sessionStorage.clear();
+
+            // Save new user data and tokens
+            localStorage.setItem('accessToken', result.accessToken);
+            localStorage.setItem('refreshToken', result.refreshToken);
+            localStorage.setItem('currentUser', JSON.stringify(result.user));
+            localStorage.setItem('isAuthenticated', 'true');
+
+            // Also save to sessionStorage for dashboard compatibility
+            sessionStorage.setItem('currentUser', JSON.stringify(result.user));
+            sessionStorage.setItem('accessToken', result.accessToken);
+            sessionStorage.setItem('isAuthenticated', 'true');
+
+            showSuccessToast('Ro\'yxatdan o\'tish yakunlandi va avtomatik kirdingiz!');
+          } else {
+            // Old format - just show success message
+            showSuccessToast('Ro\'yxatdan o\'tish yakunlandi!');
+          }
 
           // Clear session storage
           sessionStorage.removeItem('registrationIdentifier');
