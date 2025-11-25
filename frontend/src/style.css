@@ -3414,9 +3414,9 @@ body:has(.figma-dashboard) {
   margin-top: 0;
   padding: 8px 16px 12px 16px;
   transition: all 0.3s ease;
-  border-left: 1px solid rgba(126, 162, 212, 0.2);
-  border-right: 1px solid rgba(126, 162, 212, 0.2);
-  border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+  border-left: 0.5px solid rgba(126, 162, 212, 0.2);
+  border-right: 0.5px solid rgba(126, 162, 212, 0.2);
+  border-bottom: 0.5px solid rgba(126, 162, 212, 0.2);
 }
 
 .figma-menu-children.hidden {

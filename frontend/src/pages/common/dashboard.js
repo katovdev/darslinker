@@ -2070,7 +2070,8 @@ window.applyPrimaryColor = function(color) {
     .assignments-section-title,
     .course-assignment-subtitle,
     .course-filter-label,
-    .assignment-counter {
+    .assignment-counter,
+    .course-section-title {
       color: ${color} !important;
     }
     
@@ -2088,8 +2089,88 @@ window.applyPrimaryColor = function(color) {
     .assignment-item:hover,
     .quiz-item:hover,
     .payment-method-card:hover,
-    .figma-subscription .figma-single-link {
+    .figma-subscription .figma-single-link,
+    .sidebar-menu,
+    .figma-menu-children,
+    .messages-welcome,
+    .messages-header,
+    .add-module-btn:hover,
+    .course-section {
       border-color: ${color} !important;
+    }
+    
+    /* Create Course page - radio buttons */
+    .radio-option input[type="radio"]:checked + .radio-custom {
+      border-color: ${color} !important;
+      background: ${color} !important;
+    }
+    
+    /* Create Course page - toggle switches */
+    input:checked + .toggle-slider {
+      background-color: ${color} !important;
+    }
+    
+    /* Create Course page - add lesson button */
+    .add-btn {
+      background: ${color} !important;
+      color: white !important;
+    }
+    
+    .add-btn:hover {
+      background: rgba(${r}, ${g}, ${b}, 0.9) !important;
+    }
+    
+    /* Create Course page - add module button */
+    .add-module-btn {
+      border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+      color: ${color} !important;
+    }
+    
+    .add-module-btn:hover {
+      background: rgba(${r}, ${g}, ${b}, 0.05) !important;
+    }
+    
+    /* Create Course page - publish button */
+    .btn-save,
+    .btn-save-profile {
+      background: linear-gradient(135deg, ${color} 0%, rgba(${r}, ${g}, ${b}, 0.85) 100%) !important;
+      border-color: rgba(${r}, ${g}, ${b}, 0.5) !important;
+    }
+    
+    .btn-save:hover,
+    .btn-save-profile:hover {
+      background: linear-gradient(135deg, rgba(${r}, ${g}, ${b}, 0.9) 0%, rgba(${r}, ${g}, ${b}, 0.75) 100%) !important;
+    }
+    
+    /* Create Course page - cancel button */
+    .btn-cancel,
+    .btn-cancel-profile {
+      border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+    }
+    
+    .btn-cancel:hover,
+    .btn-cancel-profile:hover {
+      border-color: rgba(${r}, ${g}, ${b}, 0.6) !important;
+      background: rgba(${r}, ${g}, ${b}, 0.15) !important;
+    }
+    
+    /* Create Course page - info tip box */
+    .info-tip {
+      border-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
+      color: ${color} !important;
+    }
+    
+    .info-tip svg {
+      color: ${color} !important;
+    }
+    
+    /* Create Course page - module items */
+    .module-item {
+      border-color: rgba(${r}, ${g}, ${b}, 0.15) !important;
+    }
+    
+    .module-header.expanded {
+      border-bottom-color: rgba(${r}, ${g}, ${b}, 0.2) !important;
     }
     
     .action-btn,
@@ -2112,9 +2193,32 @@ window.applyPrimaryColor = function(color) {
     }
     
     /* New Course button - transparent background like other buttons */
-    .figma-btn-primary,
+    .figma-btn-primary:not(.edit-profile-form button[type="submit"]),
     button[onclick*="openCreateCourse"] {
       background: transparent !important;
+    }
+    
+    /* Create Group button - use dynamic color background */
+    .create-group-btn {
+      background: ${color} !important;
+      border-color: ${color} !important;
+      color: #ffffff !important;
+    }
+    
+    /* Save changes button - use dynamic color background */
+    .edit-profile-form button[type="submit"],
+    button[type="submit"].save-profile-btn {
+      background: ${color} !important;
+      border-color: ${color} !important;
+      color: #ffffff !important;
+    }
+    
+    /* Cancel button - use dynamic color border and background */
+    .edit-profile-form button[type="button"],
+    button.cancel-btn {
+      background: rgba(${r}, ${g}, ${b}, 0.1) !important;
+      border-color: ${color} !important;
+      color: ${color} !important;
     }
     
     .action-btn:hover,
@@ -2123,6 +2227,15 @@ window.applyPrimaryColor = function(color) {
     .figma-btn-primary:hover,
     button[onclick*="openCreateCourse"]:hover {
       background: rgba(${r}, ${g}, ${b}, 0.1) !important;
+    }
+    
+    .edit-profile-form button[type="submit"]:hover {
+      background: rgba(${r}, ${g}, ${b}, 0.9) !important;
+    }
+    
+    .edit-profile-form button[type="button"]:hover,
+    button.cancel-btn:hover {
+      background: rgba(${r}, ${g}, ${b}, 0.2) !important;
     }
     
     .assignment-tab.active,
