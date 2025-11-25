@@ -105,7 +105,7 @@ function renderTeacherDashboard(user) {
           <h1>dars<span>linker</span></h1>
         </div>
         <div class="figma-title">
-          <h2>${t('dashboard.title')}</h2>
+          <h2 id="page-title">${t('dashboard.title')}</h2>
         </div>
         <div class="figma-header-buttons">
           <button class="figma-btn" onclick="startNewMeeting()">${t('header.newMeeting')}</button>
@@ -555,9 +555,7 @@ window.handleLogout = async function() {
   }
 };
 
-window.openCreateCourse = function() {
-  document.getElementById('course-modal').classList.remove('hidden');
-};
+// openCreateCourse is defined later in the file (line ~9692)
 
 window.closeModal = function(modalId) {
   document.getElementById(modalId).classList.add('hidden');
@@ -621,7 +619,7 @@ window.openEditProfile = function() {
           <h1>dars<span>linker</span></h1>
         </div>
         <div class="figma-title">
-          <h2>${t('editProfile.title')}</h2>
+          <h2 id="page-title">${t('editProfile.title')}</h2>
         </div>
         <div class="figma-header-buttons">
           <button class="figma-btn" onclick="backToDashboard()">
@@ -4934,7 +4932,7 @@ window.toggleMenu = function(menuName) {
 
     if (menuChildren && menuArrow && menuParent) {
       menuChildren.classList.add('hidden');
-      menuArrow.textContent = '▶';
+      // Arrow stays the same - no rotation
       menuParent.classList.remove('expanded');
     }
   });
@@ -4943,12 +4941,12 @@ window.toggleMenu = function(menuName) {
   if (isCurrentlyOpen) {
     // Keep it closed (it was open, now we closed all, so leave it closed)
     children.classList.add('hidden');
-    arrow.textContent = '▶';
+    // Arrow stays the same - no rotation
     parent.classList.remove('expanded');
   } else {
     // Open the clicked menu
     children.classList.remove('hidden');
-    arrow.textContent = '▼';
+    // Arrow stays the same - no rotation
     parent.classList.add('expanded');
   }
 };
@@ -5137,7 +5135,7 @@ window.openMessagesPage = function() {
           <h1>dars<span>linker</span></h1>
         </div>
         <div class="figma-title">
-          <h2>Messages</h2>
+          <h2 id="page-title">Messages</h2>
         </div>
         <div class="figma-header-buttons">
           <button class="figma-btn" onclick="backToDashboard()">← Back</button>
@@ -9694,116 +9692,21 @@ window.openCreateCourse = function() {
 
   // Check current general menu state before navigating
   const generalChildren = document.getElementById('general-children');
-  const isGeneralExpanded = generalChildren && !generalChildren.classList.contains('hidden');
-
-  // Check content management menu state
-  const contentChildren = document.getElementById('content-children');
-  const isContentExpanded = contentChildren && !contentChildren.classList.contains('hidden');
-
-  document.querySelector('#app').innerHTML = `
-    <div class="figma-dashboard">
-      <!-- Top Header -->
-      <div class="figma-header">
-        <div class="figma-logo">
-          <h1>dars<span>linker</span></h1>
-        </div>
-        <div class="figma-title">
-          <h2>Create course</h2>
-        </div>
-        <div class="figma-header-buttons">
-          <button class="figma-btn" onclick="backToDashboard()">← Back</button>
-        </div>
-      </div>
-
-      <!-- Main Layout -->
-      <div class="figma-main-layout">
-        <!-- Left Sidebar Menu -->
-        <div class="figma-sidebar">
-          <!-- General Menu -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isGeneralExpanded ? 'expanded' : ''}" onclick="toggleMenu('general')">
-              <span class="figma-menu-title">General</span>
-              <span class="figma-menu-arrow" id="general-arrow">${isGeneralExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isGeneralExpanded ? '' : 'hidden'}" id="general-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">Profile</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">Messages</a>
-            </div>
-          </div>
-
-          <!-- Content Management -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent ${isContentExpanded ? 'expanded' : ''}" onclick="toggleMenu('content')">
-              <span class="figma-menu-title">Content Management</span>
-              <span class="figma-menu-arrow" id="content-arrow">${isContentExpanded ? '▼' : '▶'}</span>
-            </div>
-            <div class="figma-menu-children ${isContentExpanded ? '' : 'hidden'}" id="content-children">
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Create Course</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">My Courses</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">Finance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">Assignments</a>
-            </div>
-          </div>
-
-          <!-- AI Assistant -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="openAIAssistantPage(); return false;">
-              <span class="figma-menu-title">AI Assistant</span>
-              <span class="figma-menu-arrow" id="ai-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="ai-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Chat Assistant</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Content Generator</a>
-            </div>
-          </div>
-
-          <!-- Analytics -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('analytics')">
-              <span class="figma-menu-title">Analytics</span>
-              <span class="figma-menu-arrow" id="analytics-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="analytics-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Student Progress</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Course Analytics</a>
-            </div>
-          </div>
-
-          <!-- Rolls -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('rolls')">
-              <span class="figma-menu-title">Rolls</span>
-              <span class="figma-menu-arrow" id="rolls-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="rolls-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Attendance</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Grade Book</a>
-            </div>
-          </div>
-
-          <!-- Settings -->
-          <div class="figma-menu-section">
-            <div class="figma-menu-parent" onclick="toggleMenu('settings')">
-              <span class="figma-menu-title">Settings</span>
-              <span class="figma-menu-arrow" id="settings-arrow">▶</span>
-            </div>
-            <div class="figma-menu-children hidden" id="settings-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Account Settings</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event)">Preferences</a>
-            </div>
-          </div>
-
-          <!-- Subscription -->
-          <div class="figma-subscription">
-            <div class="figma-menu-single">
-              <a href="#" class="figma-single-link">My Subscription</a>
-            </div>
-          </div>
-        </div>
-
-        <!-- Create Course Content -->
-        <div class="figma-content-area">
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (!contentArea) {
+    console.error('Content area not found');
+    return;
+  }
+  
+  // Update page title
+  const pageTitle = document.getElementById('page-title');
+  if (pageTitle) {
+    pageTitle.textContent = 'Create Course';
+  }
+  
+  // Update content area only
+  contentArea.innerHTML = `
           <form class="create-course-form" id="createCourseForm">
 
             <!-- Basic Information Section -->
@@ -10116,9 +10019,6 @@ window.openCreateCourse = function() {
             </div>
 
           </form>
-        </div>
-      </div>
-    </div>
   `;
 };
 
