@@ -8573,16 +8573,68 @@ window.addLesson = function(type, dropdownLink, event) {
           <h5>Add Assignment ${lessonNumber}</h5>
           <div class="form-group">
             <label>Assignment Title</label>
-            <input type="text" placeholder="Enter assignment title" />
+            <input type="text" placeholder="Enter assignment title" class="assignment-title" />
           </div>
           <div class="form-group">
             <label>Instructions</label>
-            <textarea placeholder="Enter assignment instructions" rows="4"></textarea>
+            <textarea placeholder="Enter assignment instructions" rows="4" class="assignment-instructions"></textarea>
           </div>
+          
+          <!-- Assignment Content Type Selection -->
           <div class="form-group">
-            <label>Due Date</label>
-            <input type="datetime-local" />
+            <label>Assignment Content Type</label>
+            <p class="content-type-hint">Choose one of them to add assignment content</p>
+            <div class="content-type-selector">
+              <label class="radio-option">
+                <input type="radio" name="assignment-content-type-${lessonNumber}" value="text" onchange="toggleAssignmentContentType(this)">
+                <span>Text Content</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="assignment-content-type-${lessonNumber}" value="file" onchange="toggleAssignmentContentType(this)">
+                <span>File Upload</span>
+              </label>
+            </div>
           </div>
+
+          <!-- Text Content Area -->
+          <div class="form-group assignment-text-content" style="display: none;">
+            <label>Assignment Content (Text)</label>
+            <textarea placeholder="Write your assignment content here..." rows="6" class="assignment-text"></textarea>
+          </div>
+
+          <!-- File Upload Area -->
+          <div class="form-group assignment-file-content" style="display: none;">
+            <label>Assignment File</label>
+            <div class="file-upload-area" onclick="this.querySelector('input').click()">
+              <input type="file" accept=".pdf,.doc,.docx,.txt,.zip" style="display: none;" onchange="handleAssignmentFileSelect(this)">
+              <div class="upload-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <p>Click to upload assignment file</p>
+                <span>PDF, DOC, DOCX, TXT, ZIP (Max 10MB)</span>
+              </div>
+              <div class="file-preview" style="display: none;">
+                <div class="file-info">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                  </svg>
+                  <span class="file-name"></span>
+                  <span class="file-size"></span>
+                </div>
+                <button type="button" class="remove-file-btn" onclick="removeAssignmentFile(this, event)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div class="form-actions">
             <button type="button" class="save-lesson-btn" onclick="saveLesson(this, 'assignment')">Save Assignment</button>
             <button type="button" class="cancel-lesson-btn" onclick="cancelLesson(this)">Cancel</button>
@@ -13882,4 +13934,89 @@ function handleLanguageChange() {
     // No active menu item, reload dashboard
     initDashboard();
   }
+}
+
+
+// Toggle Assignment Content Type (Text or File)
+window.toggleAssignmentContentType = function(radio) {
+  const lessonForm = radio.closest('.lesson-form');
+  const textContent = lessonForm.querySelector('.assignment-text-content');
+  const fileContent = lessonForm.querySelector('.assignment-file-content');
+  
+  if (radio.value === 'text') {
+    textContent.style.display = 'block';
+    fileContent.style.display = 'none';
+  } else {
+    textContent.style.display = 'none';
+    fileContent.style.display = 'block';
+  }
+};
+
+// Handle Assignment File Selection
+window.handleAssignmentFileSelect = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  // Check file size (10MB max)
+  const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+  if (file.size > maxSize) {
+    showErrorToast('File size exceeds 10MB limit');
+    input.value = '';
+    return;
+  }
+  
+  // Check file type
+  const allowedTypes = ['.pdf', '.doc', '.docx', '.txt', '.zip'];
+  const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+  if (!allowedTypes.includes(fileExtension)) {
+    showErrorToast('Invalid file type. Only PDF, DOC, DOCX, TXT, ZIP files are allowed');
+    input.value = '';
+    return;
+  }
+  
+  // Show file preview
+  const uploadArea = input.closest('.file-upload-area');
+  const placeholder = uploadArea.querySelector('.upload-placeholder');
+  const preview = uploadArea.querySelector('.file-preview');
+  const fileName = preview.querySelector('.file-name');
+  const fileSize = preview.querySelector('.file-size');
+  
+  placeholder.style.display = 'none';
+  preview.style.display = 'flex';
+  fileName.textContent = file.name;
+  fileSize.textContent = formatFileSize(file.size);
+  
+  // Store file data for later upload
+  uploadArea.dataset.fileName = file.name;
+  uploadArea.dataset.fileSize = file.size;
+};
+
+// Remove Assignment File
+window.removeAssignmentFile = function(button, event) {
+  event.stopPropagation();
+  
+  const uploadArea = button.closest('.file-upload-area');
+  const placeholder = uploadArea.querySelector('.upload-placeholder');
+  const preview = uploadArea.querySelector('.file-preview');
+  const fileInput = uploadArea.querySelector('input[type="file"]');
+  
+  // Reset file input
+  fileInput.value = '';
+  
+  // Hide preview, show placeholder
+  preview.style.display = 'none';
+  placeholder.style.display = 'block';
+  
+  // Clear stored data
+  delete uploadArea.dataset.fileName;
+  delete uploadArea.dataset.fileSize;
+};
+
+// Format file size helper
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
 }
