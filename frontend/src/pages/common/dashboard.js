@@ -99,6 +99,12 @@ function cleanupPageStyles() {
 }
 
 function renderTeacherDashboard(user) {
+  console.log('=== renderTeacherDashboard user data ===', user);
+  console.log('specialization:', user.specialization);
+  console.log('city:', user.city);
+  console.log('country:', user.country);
+  console.log('ratingAverage:', user.ratingAverage);
+  
   document.querySelector('#app').innerHTML = `
     <div class="figma-dashboard">
       <!-- Top Header exactly like Figma -->
@@ -220,28 +226,20 @@ function renderTeacherDashboard(user) {
             </div>
             <div class="figma-profile-info">
               <h2 class="figma-profile-name">${user.firstName} ${user.lastName}</h2>
-              <p class="figma-profile-title">${t('profile.title')}</p>
-              <p class="figma-profile-location">${t('profile.location')}</p>
+              <p class="figma-profile-title">${user.specialization || ''}</p>
+              <p class="figma-profile-location">${user.city && user.country ? `${user.city}, ${user.country}` : ''}</p>
               <div class="figma-profile-rating">
-                <div class="figma-stars">
-                  <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                  <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                  <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                  <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                  <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="#ffd700">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                  </svg>
-                </div>
-                <span class="figma-rating-text">${t('profile.rating')}</span>
-                <span class="figma-joined">${t('profile.joined')}</span>
+                ${user.ratingAverage > 0 ? `
+                  <div class="figma-stars">
+                    ${[1,2,3,4,5].map(star => `
+                      <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="${star <= user.ratingAverage ? '#ffd700' : 'rgba(255,255,255,0.3)'}">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    `).join('')}
+                  </div>
+                  <span class="figma-rating-text">${user.ratingAverage.toFixed(1)}/5 (${user.reviewsCount || 0} reviews)</span>
+                ` : ''}
+                <span class="figma-joined">• Joined ${new Date(user.createdAt).getFullYear()}</span>
               </div>
             </div>
             <div class="figma-profile-buttons">
@@ -301,12 +299,12 @@ function renderTeacherDashboard(user) {
             <!-- Bio & Specialties Card -->
             <div class="figma-stats-card">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 class="figma-stats-title">${t('stats.bioSpecialties')}</h3>
+                <h3 class="figma-stats-title">Bio & About Me</h3>
                 <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
               </div>
-              <p class="figma-bio-text" id="bioText">${t('profile.bioDefault')}</p>
+              <p class="figma-bio-text" id="bioText" style="color: rgba(255,255,255,0.5); font-style: italic;">${user.bio || 'No bio added yet. Click Edit to add your bio.'}</p>
               <div id="bioEditor" style="display: none;">
-                <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
+                <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
                 <div style="margin-top: 10px; display: flex; gap: 8px;">
                   <button onclick="saveBio()" style="background: #7ea2d4; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.save')}</button>
                   <button onclick="cancelBioEdit()" style="background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.cancel')}</button>
@@ -319,8 +317,8 @@ function renderTeacherDashboard(user) {
     </div>
   `;
 
-  // Load dashboard data
-  loadTeacherDashboardData();
+  // Load dashboard data from API
+  loadMainDashboard();
 
   // Set up event listeners
   setupTeacherEventListeners();
@@ -623,11 +621,25 @@ window.editProfile = function() {
 };
 
 window.openEditProfile = function() {
+  // Get fresh user data from state
   const user = store.getState().user;
-  
+
+  if (!user) {
+    console.error('No user found in state');
+    return;
+  }
+
+  console.log('🔍 Opening edit profile with user data:', {
+    bio: user.bio,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    fullUser: user
+  }); // Debug log
+
   // Check if dashboard structure exists
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (contentArea) {
     // Just update content area, keep sidebar
     updatePageTitle(t('editProfile.title'));
@@ -750,35 +762,35 @@ window.openEditProfile = function() {
               <div class="form-row">
                 <div class="form-field">
                   <label class="field-label">${t('editProfile.firstName')}</label>
-                  <input type="text" class="form-input" value="${user.firstName || 'John'}" />
+                  <input type="text" class="form-input" name="firstName" value="${user.firstName || ''}" />
                 </div>
                 <div class="form-field">
                   <label class="field-label">${t('editProfile.lastName')}</label>
-                  <input type="text" class="form-input" value="${user.lastName || 'Smith'}" />
+                  <input type="text" class="form-input" name="lastName" value="${user.lastName || ''}" />
                 </div>
               </div>
 
               <!-- Professional Title -->
               <div class="form-field">
                 <label class="field-label">${t('editProfile.professionalTitle')}</label>
-                <input type="text" class="form-input" value="${t('profile.title')}" />
+                <input type="text" class="form-input" name="specialization" value="${user.specialization || ''}" />
               </div>
 
               <!-- Bio -->
               <div class="form-field">
                 <label class="field-label">${t('editProfile.bio')}</label>
-                <textarea class="form-textarea" rows="4">${t('profile.bioDefault')}</textarea>
+                <textarea class="form-textarea" name="bio" rows="4">${user.bio || ''}</textarea>
               </div>
 
               <!-- Location -->
               <div class="form-row">
                 <div class="form-field">
                   <label class="field-label">${t('editProfile.city')}</label>
-                  <input type="text" class="form-input" value="Tashkent" />
+                  <input type="text" class="form-input" name="city" value="${user.city || ''}" />
                 </div>
                 <div class="form-field">
                   <label class="field-label">${t('editProfile.country')}</label>
-                  <input type="text" class="form-input" value="Uzbekistan" />
+                  <input type="text" class="form-input" name="country" value="${user.country || ''}" />
                 </div>
               </div>
             </div>
@@ -789,17 +801,17 @@ window.openEditProfile = function() {
 
               <div class="form-field">
                 <label class="field-label">${t('editProfile.emailAddress')}</label>
-                <input type="email" class="form-input" value="${user.email || 'john@example.com'}" />
+                <input type="email" class="form-input" name="email" value="${user.email || ''}" />
               </div>
 
               <div class="form-field">
                 <label class="field-label">${t('editProfile.phoneNumber')}</label>
-                <input type="tel" class="form-input" value="+998 99 123 45 67" />
+                <input type="tel" class="form-input" name="phone" value="${user.phone || ''}" />
               </div>
 
               <div class="form-field">
                 <label class="field-label">${t('editProfile.telegramUsername')}</label>
-                <input type="text" class="form-input" value="@john_teacher" />
+                <input type="text" class="form-input" name="telegramUsername" value="${user.telegramUsername || ''}" />
               </div>
             </div>
 
@@ -809,17 +821,17 @@ window.openEditProfile = function() {
 
               <div class="form-field">
                 <label class="field-label">${t('editProfile.accountHolder')}</label>
-                <input type="text" class="form-input" value="John Smith" />
+                <input type="text" class="form-input" name="accountHolder" value="${user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : ''}" />
               </div>
 
               <div class="form-row">
                 <div class="form-field">
                   <label class="field-label">${t('editProfile.bankName')}</label>
-                  <input type="text" class="form-input" value="" />
+                  <input type="text" class="form-input" name="bankName" value="${user.paymentMethods?.bankAccount || ''}" />
                 </div>
                 <div class="form-field">
                   <label class="field-label">${t('editProfile.cardNumber')}</label>
-                  <input type="text" class="form-input" value="" />
+                  <input type="text" class="form-input" name="cardNumber" value="${user.paymentMethods?.cardNumber || ''}" />
                 </div>
               </div>
             </div>
@@ -2413,11 +2425,42 @@ window.applyPrimaryColor = function(color) {
       background: rgba(${r}, ${g}, ${b}, 0.15) !important;
       color: ${color} !important;
     }
+
+    /* Bio editor styles */
+    #bioTextarea {
+      border: 1px solid rgba(${r}, ${g}, ${b}, 0.2) !important;
+      outline: none !important;
+      transition: all 0.2s ease !important;
+    }
+
+    #bioTextarea:focus {
+      border: 1px solid rgba(${r}, ${g}, ${b}, 0.7) !important;
+      box-shadow: 0 0 0 3px rgba(${r}, ${g}, ${b}, 0.15) !important;
+      outline: none !important;
+    }
+
+    /* Bio card - when editing */
+    #bioEditor {
+      border: 1px solid rgba(${r}, ${g}, ${b}, 0.2) !important;
+      border-radius: 8px !important;
+      padding: 12px !important;
+      background: rgba(${r}, ${g}, ${b}, 0.05) !important;
+    }
+
+    /* Bio save button */
+    button[onclick="saveBio()"] {
+      background: ${color} !important;
+      border-color: ${color} !important;
+    }
+
+    button[onclick="saveBio()"]:hover {
+      background: rgba(${r}, ${g}, ${b}, 0.9) !important;
+    }
   `;
   
   // Save to localStorage
   localStorage.setItem('primaryColor', color);
-  
+
   console.log('Primary color updated to:', color);
 };
 
@@ -4744,6 +4787,7 @@ function getMessagesHTML() {
 
 // Helper function to get edit profile HTML
 function getEditProfileHTML(user) {
+  console.log('getEditProfileHTML called with user bio:', user.bio); // Debug log
   return `
     <form class="edit-profile-form" id="editProfileForm">
       <!-- Personal Information Section -->
@@ -4823,7 +4867,7 @@ function getEditProfileHTML(user) {
 
         <div class="form-field">
           <label class="field-label">${t('editProfile.telegramUsername')}</label>
-          <input type="text" class="form-input" value="@john_teacher" />
+          <input type="text" class="form-input" name="telegramUsername" value="${user.telegramUsername || ''}" />
         </div>
       </div>
 
@@ -5010,12 +5054,12 @@ window.loadMainDashboard = async function() {
         <!-- Bio & Specialties Card -->
         <div class="figma-stats-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 class="figma-stats-title">${t('stats.bioSpecialties')}</h3>
+            <h3 class="figma-stats-title">Bio & About Me</h3>
             <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
           </div>
           <p class="figma-bio-text" id="bioText">${t('profile.bioDefault')}</p>
           <div id="bioEditor" style="display: none;">
-            <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
+            <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
             <div style="margin-top: 10px; display: flex; gap: 8px;">
               <button onclick="saveBio()" style="background: #7ea2d4; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.save')}</button>
               <button onclick="cancelBioEdit()" style="background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.cancel')}</button>
@@ -5089,7 +5133,7 @@ window.loadMainDashboard = async function() {
           <div class="figma-profile-avatar">
             <div class="figma-avatar-circle">
               ${teacher.profileImage
-                ? `<img src="${teacher.profileImage}" alt="Profile" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;">`
+                ? `<img src="${teacher.profileImage}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
                 : `<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                    </svg>`
@@ -5098,8 +5142,8 @@ window.loadMainDashboard = async function() {
           </div>
           <div class="figma-profile-info">
             <h2 class="figma-profile-name">${teacher.firstName} ${teacher.lastName}</h2>
-            <p class="figma-profile-title">${teacher.specialization || t('profile.title')}</p>
-            <p class="figma-profile-location">${t('profile.location')}</p>
+            <p class="figma-profile-title">${teacher.specialization || ''}</p>
+            <p class="figma-profile-location">${teacher.city && teacher.country ? `${teacher.city}, ${teacher.country}` : ''}</p>
             <div class="figma-profile-rating">
               <div class="figma-stars">
                 ${generateStars(overview.averageRating)}
@@ -5173,12 +5217,12 @@ window.loadMainDashboard = async function() {
           <!-- Bio & Specialties Card -->
           <div class="figma-stats-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-              <h3 class="figma-stats-title">${t('stats.bioSpecialties')}</h3>
+              <h3 class="figma-stats-title">Bio & About Me</h3>
               <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
             </div>
-            <p class="figma-bio-text" id="bioText">${teacher.bio || t('profile.bioDefault')}</p>
+            <p class="figma-bio-text" id="bioText">${teacher.bio || ''}</p>
             <div id="bioEditor" style="display: none;">
-              <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
+              <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
               <div style="margin-top: 10px; display: flex; gap: 8px;">
                 <button onclick="saveBio()" style="background: #7ea2d4; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.save')}</button>
                 <button onclick="cancelBioEdit()" style="background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.cancel')}</button>
@@ -5190,6 +5234,30 @@ window.loadMainDashboard = async function() {
 
       // Store dashboard data globally for other functions
       window.currentDashboardData = dashboardData.data;
+
+      // 🔄 SYNC FRESH TEACHER DATA TO STORE
+      // This is crucial for Edit Profile to have latest data
+      const currentUser = store.getState().user;
+      const updatedUser = {
+        ...currentUser,
+        bio: teacher.bio,
+        firstName: teacher.firstName,
+        lastName: teacher.lastName,
+        email: teacher.email,
+        phone: teacher.phone,
+        specialization: teacher.specialization,
+        city: teacher.city,
+        country: teacher.country,
+        profileImage: teacher.profileImage
+      };
+
+      store.setState({ user: updatedUser });
+
+      console.log('🔄 Synced teacher data to store:', {
+        oldBio: currentUser.bio,
+        newBio: teacher.bio,
+        updatedUser: updatedUser
+      });
 
     } else {
       throw new Error(dashboardData.message || 'Failed to load dashboard data');
@@ -5292,12 +5360,12 @@ window.loadMainDashboard = async function() {
         <!-- Bio & Specialties Card -->
         <div class="figma-stats-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 class="figma-stats-title">${t('stats.bioSpecialties')}</h3>
+            <h3 class="figma-stats-title">Bio & About Me</h3>
             <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
           </div>
           <p class="figma-bio-text" id="bioText">${t('profile.bioDefault')}</p>
           <div id="bioEditor" style="display: none;">
-            <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
+            <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
             <div style="margin-top: 10px; display: flex; gap: 8px;">
               <button onclick="saveBio()" style="background: #7ea2d4; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.save')}</button>
               <button onclick="cancelBioEdit()" style="background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.cancel')}</button>
@@ -5314,23 +5382,86 @@ window.editBio = function() {
   const bioText = document.getElementById('bioText');
   const bioEditor = document.getElementById('bioEditor');
   const bioTextarea = document.getElementById('bioTextarea');
-  
+  const user = store.getState().user;
+
   if (bioText && bioEditor && bioTextarea) {
-    bioTextarea.value = bioText.textContent;
+    // Use the actual user bio, not the display text which might have placeholder
+    bioTextarea.value = user.bio || '';
     bioText.style.display = 'none';
     bioEditor.style.display = 'block';
+    bioTextarea.focus();
   }
 };
 
-window.saveBio = function() {
+window.saveBio = async function() {
+  console.log('🔧 saveBio function called!'); // Debug log
+
   const bioText = document.getElementById('bioText');
   const bioEditor = document.getElementById('bioEditor');
   const bioTextarea = document.getElementById('bioTextarea');
-  
-  if (bioText && bioEditor && bioTextarea) {
-    bioText.textContent = bioTextarea.value;
-    bioText.style.display = 'block';
-    bioEditor.style.display = 'none';
+  const user = store.getState().user;
+
+  console.log('🔍 Elements found:', { bioText: !!bioText, bioEditor: !!bioEditor, bioTextarea: !!bioTextarea, user: !!user }); // Debug log
+
+  if (user) {
+    console.log('👤 User details:', { id: user._id, name: user.name, role: user.role });
+  }
+
+  if (!bioText || !bioEditor || !bioTextarea || !user) {
+    console.error('❌ Missing required elements or user');
+    return;
+  }
+
+  try {
+    const newBio = bioTextarea.value.trim();
+    console.log('📝 Saving bio:', newBio); // Debug log
+
+    // Check if we have auth token
+    const token = localStorage.getItem('accessToken');
+    console.log('🔐 Auth token exists:', !!token);
+    if (token) {
+      console.log('🔐 Token preview:', token.substring(0, 20) + '...');
+    }
+
+    // Check API base URL
+    console.log('🌐 API base URL:', apiService.baseURL);
+    console.log('🔗 Full API endpoint:', `${apiService.baseURL}/teachers/${user._id}`);
+
+    // Update via API
+    console.log('🚀 Making API call to update teacher profile...'); // Debug log
+    const result = await apiService.updateTeacherProfile(user._id, {
+      bio: newBio
+    });
+
+    console.log('📋 API response:', result); // Debug log
+
+    if (result && result.success) {
+      // Update local state
+      const updatedUser = { ...user, bio: newBio };
+      store.setState({
+        user: updatedUser
+      });
+
+      console.log('🔄 Updated store state with bio:', {
+        oldBio: user.bio,
+        newBio: newBio,
+        updatedUser: updatedUser
+      });
+
+      // Update UI
+      bioText.textContent = newBio || 'No bio added yet. Click Edit to add your bio.';
+      bioText.style.display = 'block';
+      bioEditor.style.display = 'none';
+
+      console.log('✅ Bio updated successfully in local state');
+      showSuccessToast('Bio updated successfully!');
+    } else {
+      throw new Error(result?.message || 'Failed to update bio');
+    }
+  } catch (error) {
+    console.error('❌ Bio update error:', error);
+    console.error('❌ Error stack:', error.stack);
+    showErrorToast(error.message || 'Failed to update bio');
   }
 };
 

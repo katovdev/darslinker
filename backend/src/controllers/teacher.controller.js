@@ -108,6 +108,14 @@ const update = catchAsync(async (req, res) => {
   const { id } = req.params;
   const updates = req.body;
 
+  // Debug logging
+  logger.info("🔧 Teacher profile update request received", {
+    teacherId: id,
+    updatesReceived: Object.keys(updates),
+    bioValue: updates.bio,
+    timestamp: new Date().toISOString()
+  });
+
   const existingTeacher = await validateAndFindById(Teacher, id, "Teacher");
   const existingTeacherData = handleValidationResult(existingTeacher);
 
@@ -215,9 +223,12 @@ const update = catchAsync(async (req, res) => {
     }
   );
 
-  logger.info("Teacher profile updated", {
+  logger.info("✅ Teacher profile updated successfully", {
     teacherId: id,
     updatedFields: Object.keys(updates),
+    newBioValue: updatedTeacher?.bio,
+    updateResult: !!updatedTeacher,
+    timestamp: new Date().toISOString()
   });
 
   res.status(200).json({
@@ -321,10 +332,13 @@ const getDashboardStats = catchAsync(async (req, res) => {
     ? ((currentMonthData.enrollments - lastMonthData.enrollments) / lastMonthData.enrollments) * 100
     : 0;
 
-  logger.info("Dashboard statistics retrieved", {
+  logger.info("📊 Dashboard statistics retrieved", {
     teacherId: id,
     totalCourses: stats.totalCourses,
-    totalRevenue: stats.totalRevenue
+    totalRevenue: stats.totalRevenue,
+    teacherBio: teacherData.bio,
+    teacherName: `${teacherData.firstName} ${teacherData.lastName}`,
+    timestamp: new Date().toISOString()
   });
 
   res.status(200).json({
@@ -356,6 +370,11 @@ const getDashboardStats = catchAsync(async (req, res) => {
         lastName: teacherData.lastName,
         profileImage: teacherData.profileImage,
         specialization: teacherData.specialization,
+        bio: teacherData.bio,
+        city: teacherData.city,
+        country: teacherData.country,
+        email: teacherData.email,
+        phone: teacherData.phone,
         reviewsCount: teacherData.reviewsCount || 0
       }
     }
