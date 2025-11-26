@@ -1741,6 +1741,125 @@ window.handleVideoUpload = async function(input) {
   }
 };
 
+// Quiz Type Selection
+window.selectQuizType = function(option, type) {
+  const selector = option.closest('.quiz-type-selector');
+  const options = selector.querySelectorAll('.quiz-type-option');
+
+  // Remove active class from all options
+  options.forEach(opt => opt.classList.remove('active'));
+
+  // Add active class to selected option
+  option.classList.add('active');
+
+  // Store selected type
+  option.closest('.lesson-form').setAttribute('data-quiz-type', type);
+};
+
+// Add Quiz Question
+window.addQuizQuestion = function(button) {
+  const lessonForm = button.closest('.lesson-form');
+  const questionsList = lessonForm.querySelector('.questions-list');
+  const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
+  const questionCount = questionsList.querySelectorAll('.question-item').length + 1;
+
+  const questionHTML = `
+    <div class="question-item">
+      <div class="question-header">
+        <span class="question-number">Question ${questionCount}</span>
+        <button type="button" class="delete-question-btn" onclick="deleteQuestion(this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <input type="text" class="question-input" placeholder="Enter question text..." />
+      <div class="answers-section">
+        <label style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; display: block;">Answer options:</label>
+        <div class="answers-list">
+          <div class="answer-item">
+            <div class="${quizType === 'multiple-choice' ? 'answer-radio' : 'answer-checkbox'}" onclick="toggleAnswer(this)">
+              ${quizType === 'multiple-choice' ? '○' : '☐'}
+            </div>
+            <input type="text" class="answer-input" placeholder="Enter answer option..." />
+          </div>
+          <div class="answer-item">
+            <div class="${quizType === 'multiple-choice' ? 'answer-radio' : 'answer-checkbox'}" onclick="toggleAnswer(this)">
+              ${quizType === 'multiple-choice' ? '○' : '☐'}
+            </div>
+            <input type="text" class="answer-input" placeholder="Enter answer option..." />
+          </div>
+        </div>
+        <button type="button" class="add-answer-btn" onclick="addAnswer(this)">+ Add Option</button>
+      </div>
+    </div>
+  `;
+
+  questionsList.insertAdjacentHTML('beforeend', questionHTML);
+};
+
+// Delete Question
+window.deleteQuestion = function(button) {
+  const questionItem = button.closest('.question-item');
+  const questionsList = questionItem.parentElement;
+
+  questionItem.remove();
+
+  // Update question numbers
+  const questions = questionsList.querySelectorAll('.question-item');
+  questions.forEach((question, index) => {
+    const numberSpan = question.querySelector('.question-number');
+    numberSpan.textContent = `Question ${index + 1}`;
+  });
+};
+
+// Add Option
+window.addAnswer = function(button) {
+  const answersSection = button.closest('.answers-section');
+  const answersList = answersSection.querySelector('.answers-list');
+  const lessonForm = button.closest('.lesson-form');
+  const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
+
+  const answerHTML = `
+    <div class="answer-item">
+      <div class="${quizType === 'multiple-choice' ? 'answer-radio' : 'answer-checkbox'}" onclick="toggleAnswer(this)">
+        ${quizType === 'multiple-choice' ? '○' : '☐'}
+      </div>
+      <input type="text" class="answer-input" placeholder="Enter answer option..." />
+    </div>
+  `;
+
+  answersList.insertAdjacentHTML('beforeend', answerHTML);
+};
+
+// Toggle Answer (Mark as Correct)
+window.toggleAnswer = function(element) {
+  const lessonForm = element.closest('.lesson-form');
+  const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
+
+  if (quizType === 'multiple-choice') {
+    // For multiple choice, only one answer can be correct
+    const allRadios = element.closest('.answers-list').querySelectorAll('.answer-radio');
+    allRadios.forEach(radio => {
+      radio.classList.remove('checked');
+      radio.textContent = '○';
+    });
+
+    element.classList.add('checked');
+    element.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>';
+  } else {
+    // For multiple correct, multiple answers can be correct
+    if (element.classList.contains('checked')) {
+      element.classList.remove('checked');
+      element.textContent = '☐';
+    } else {
+      element.classList.add('checked');
+      element.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>';
+    }
+  }
+};
+
 // Handle certificate file upload
 async function handleCertificateFileUpload(e) {
   const file = e.target.files[0];
@@ -8127,20 +8246,239 @@ window.addLesson = function(type, dropdownLink, event) {
             color: var(--text-primary);
             border-color: var(--border-hover);
           }
+          .quiz-type-selector {
+            display: flex;
+            gap: 12px;
+            margin-top: 8px;
+          }
+          .quiz-type-option {
+            flex: 1;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+          }
+          .quiz-type-option:hover {
+            border-color: var(--primary-color-40);
+            background: var(--bg-hover);
+          }
+          .quiz-type-option.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color-10);
+          }
+          .quiz-type-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--bg-tertiary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+          }
+          .quiz-type-option.active .quiz-type-icon {
+            background: var(--primary-color);
+            color: white;
+          }
+          .quiz-type-info h6 {
+            margin: 0 0 4px 0;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+          }
+          .quiz-type-info small {
+            color: var(--text-secondary);
+            font-size: 12px;
+          }
+          .questions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+          }
+          .add-question-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+          }
+          .add-question-btn:hover {
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
+          }
+          .question-item {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+          }
+          .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+          }
+          .question-number {
+            color: var(--primary-color);
+            font-size: 14px;
+            font-weight: 600;
+          }
+          .delete-question-btn {
+            background: none;
+            border: none;
+            color: var(--text-danger);
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+          }
+          .delete-question-btn:hover {
+            background: var(--bg-danger-light);
+          }
+          .question-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            margin-bottom: 12px;
+            outline: none;
+            transition: border-color 0.2s ease;
+          }
+          .question-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-color-10);
+          }
+          .answers-list {
+            margin-top: 12px;
+          }
+          .answer-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+          }
+          .answer-checkbox, .answer-radio {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .answer-radio {
+            border-radius: 50%;
+          }
+          .answer-checkbox.checked, .answer-radio.checked {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+          }
+          .answer-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+          }
+          .answer-input:focus {
+            border-color: var(--primary-color);
+          }
+          .add-answer-btn {
+            background: transparent;
+            color: var(--primary-color);
+            border: 1px dashed var(--primary-color-40);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+            transition: all 0.2s ease;
+          }
+          .add-answer-btn:hover {
+            background: var(--primary-color-10);
+            border-color: var(--primary-color);
+          }
         </style>
-        <div class="lesson-form">
+        <div class="lesson-form" data-quiz-type="multiple-choice">
           <h5>Add Quiz ${lessonNumber}</h5>
           <div class="form-group">
             <label>Quiz Title</label>
-            <input type="text" placeholder="Enter quiz title" />
+            <input type="text" class="quiz-title-input" placeholder="Enter quiz title" />
           </div>
           <div class="form-group">
             <label>Time Limit (minutes)</label>
-            <input type="number" placeholder="30" />
+            <input type="number" class="quiz-time-input" placeholder="30" min="1" />
           </div>
           <div class="form-group">
-            <label>Number of Questions</label>
-            <input type="number" placeholder="10" />
+            <label>Quiz Type</label>
+            <div class="quiz-type-selector">
+              <div class="quiz-type-option active" data-type="multiple-choice" onclick="selectQuizType(this, 'multiple-choice')">
+                <div class="quiz-type-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="3"/>
+                    <circle cx="12" cy="12" r="10"/>
+                  </svg>
+                </div>
+                <div class="quiz-type-info">
+                  <h6>Multiple Choice</h6>
+                  <small>Single correct answer</small>
+                </div>
+              </div>
+              <div class="quiz-type-option" data-type="multiple-correct" onclick="selectQuizType(this, 'multiple-correct')">
+                <div class="quiz-type-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <path d="M9 12l2 2 4-4"/>
+                  </svg>
+                </div>
+                <div class="quiz-type-info">
+                  <h6>Multiple Correct</h6>
+                  <small>Multiple correct answers</small>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="quiz-questions-section">
+            <div class="form-group">
+              <div class="questions-header">
+                <label>Questions</label>
+                <button type="button" class="add-question-btn" onclick="addQuizQuestion(this)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"/>
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Add Question
+                </button>
+              </div>
+              <div class="questions-list">
+                <!-- Questions will be added here -->
+              </div>
+            </div>
           </div>
           <div class="form-actions">
             <button type="button" class="save-lesson-btn" onclick="saveLesson(this, 'quiz')">Save Quiz</button>
@@ -8372,8 +8710,14 @@ window.saveLesson = function(button, type) {
   let lessonTitle = '';
   let duration = '';
 
-  // Extract lesson title
-  const titleInput = lessonForm.querySelector('.lesson-title-input') || lessonForm.querySelector('input[type="text"]');
+  // Extract lesson title based on type
+  let titleInput;
+  if (type === 'quiz') {
+    titleInput = lessonForm.querySelector('.quiz-title-input');
+  } else {
+    titleInput = lessonForm.querySelector('.lesson-title-input') || lessonForm.querySelector('input[type="text"]');
+  }
+
   if (titleInput && titleInput.value.trim()) {
     lessonTitle = titleInput.value.trim();
   } else {
@@ -8390,12 +8734,56 @@ window.saveLesson = function(button, type) {
     }
   }
 
+  // Validate quiz questions
+  if (type === 'quiz') {
+    const questions = lessonForm.querySelectorAll('.question-item');
+    if (questions.length === 0) {
+      showErrorToast('Please add at least one question');
+      return;
+    }
+
+    // Validate each question
+    for (let i = 0; i < questions.length; i++) {
+      const question = questions[i];
+      const questionInput = question.querySelector('.question-input');
+      const answerInputs = question.querySelectorAll('.answer-input');
+      const checkedAnswers = question.querySelectorAll('.answer-checkbox.checked, .answer-radio.checked');
+
+      // Check question text
+      if (!questionInput.value.trim()) {
+        showErrorToast(`Please enter text for question ${i + 1}`);
+        return;
+      }
+
+      // Check at least 2 answers
+      let filledAnswers = 0;
+      answerInputs.forEach(input => {
+        if (input.value.trim()) filledAnswers++;
+      });
+
+      if (filledAnswers < 2) {
+        showErrorToast(`Question ${i + 1} needs at least 2 answer options`);
+        return;
+      }
+
+      // Check at least one correct answer
+      if (checkedAnswers.length === 0) {
+        showErrorToast(`Please mark correct answer(s) for question ${i + 1}`);
+        return;
+      }
+    }
+  }
+
   // Get duration for display
   if (type === 'video') {
     duration = 'Video';
   } else if (type === 'quiz') {
-    const timeInput = lessonForm.querySelector('input[type="number"]');
-    duration = timeInput && timeInput.value ? timeInput.value + ' min' : '30 min';
+    const timeInput = lessonForm.querySelector('.quiz-time-input');
+    const questionCount = lessonForm.querySelectorAll('.question-item').length;
+    duration = `Quiz (${questionCount} questions)`;
+    if (timeInput && timeInput.value) {
+      duration += ` • ${timeInput.value} min`;
+    }
   } else if (type === 'assignment') {
     duration = 'Assignment';
   } else if (type === 'file') {

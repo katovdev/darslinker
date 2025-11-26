@@ -4277,6 +4277,58 @@ body:has(.figma-dashboard) {
   transition: all 0.3s ease;
 }
 
+/* Answer Checkbox and Radio Styles */
+.answer-checkbox,
+.answer-radio {
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(126, 162, 212, 0.5);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  font-size: 16px;
+  color: transparent;
+}
+
+.answer-radio {
+  border-radius: 50%;
+}
+
+.answer-checkbox:hover,
+.answer-radio:hover {
+  border-color: rgba(126, 162, 212, 0.8);
+  background: rgba(126, 162, 212, 0.1);
+}
+
+.answer-checkbox.checked {
+  background: rgba(126, 162, 212, 0.2);
+  border-color: #7ea2d4;
+}
+
+.answer-checkbox.checked::before {
+  content: '✓';
+  color: #7ea2d4;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.answer-radio.checked {
+  background: rgba(126, 162, 212, 0.2);
+  border-color: #7ea2d4;
+}
+
+.answer-radio.checked::before {
+  content: '';
+  width: 10px;
+  height: 10px;
+  background: #7ea2d4;
+  border-radius: 50%;
+}
+
 .cancel-lesson-btn:hover {
   background: rgba(255, 255, 255, 0.05);
   color: #ffffff;
