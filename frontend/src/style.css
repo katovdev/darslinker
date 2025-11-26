@@ -3541,6 +3541,7 @@ body:has(.figma-dashboard) {
   align-items: center;
   justify-content: center;
   position: relative;
+  overflow: hidden;
 }
 
 .figma-avatar-circle::before {
@@ -3551,6 +3552,13 @@ body:has(.figma-dashboard) {
   width: 40px;
   height: 40px;
   color: #a0a0a0;
+}
+
+.figma-avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .figma-profile-info {
@@ -8688,4 +8696,99 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn {
 
 body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
   background: #dc2626 !important;
+}
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(20, 20, 20, 0.95);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 300px;
+  max-width: 500px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  transform: translateX(400px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 10000;
+  border: 1px solid rgba(126, 162, 212, 0.3);
+}
+
+.toast-notification.show {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.toast-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.toast-success .toast-icon {
+  background: #4caf50;
+  color: white;
+}
+
+.toast-error .toast-icon {
+  background: #f44336;
+  color: white;
+}
+
+.toast-info .toast-icon {
+  background: #2196f3;
+  color: white;
+}
+
+.toast-message {
+  color: #ffffff;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+  .toast-notification {
+    right: 10px;
+    left: 10px;
+    min-width: auto;
+  }
+}
+
+
+/* Profile Picture Upload - Clickable Area */
+.profile-picture-upload {
+  transition: all 0.3s ease;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.profile-picture-upload:hover {
+  background: rgba(126, 162, 212, 0.05);
+  transform: translateY(-2px);
+}
+
+.profile-picture-upload:active {
+  transform: translateY(0);
+}
+
+.profile-picture-preview {
+  transition: all 0.3s ease;
+}
+
+.profile-picture-upload:hover .profile-picture-preview {
+  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.3);
 }

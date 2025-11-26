@@ -568,7 +568,7 @@ const login = catchAsync(async (req, res) => {
   });
 
   // Prepare user response (without password)
-  const userResponse = {
+  let userResponse = {
     _id: existingUser._id,
     firstName: existingUser.firstName,
     lastName: existingUser.lastName,
@@ -577,6 +577,22 @@ const login = catchAsync(async (req, res) => {
     role: existingUser.role,
     status: existingUser.status,
   };
+
+  // If teacher, get full teacher profile
+  if (existingUser.role === 'teacher') {
+    const teacherProfile = await Teacher.findById(existingUser._id).select('-password');
+    if (teacherProfile) {
+      userResponse = teacherProfile.toObject();
+    }
+  }
+
+  // If student, get full student profile
+  if (existingUser.role === 'student') {
+    const studentProfile = await Student.findById(existingUser._id).select('-password');
+    if (studentProfile) {
+      userResponse = studentProfile.toObject();
+    }
+  }
 
   res.status(200).json({
     success: true,

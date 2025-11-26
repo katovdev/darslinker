@@ -1010,7 +1010,7 @@ function initRegisterPageFunctionality() {
         firstName,
         lastName,
         password,
-        role: 'student' // Default role
+        role: 'teacher' // Default role - all users are teachers
       };
 
       // Add phone or email based on mode

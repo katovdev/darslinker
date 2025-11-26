@@ -3,6 +3,8 @@ import { apiService } from '../../utils/api.js';
 import { router } from '../../utils/router.js';
 import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
 import { getTheme, saveTheme, initTheme, presetColors } from '../../utils/theme.js';
+import { showSuccessToast, showErrorToast } from '../../utils/toast.js';
+import { config } from '../../utils/config.js';
 
 export function initDashboard() {
   console.log('=== Dashboard initializing ===');
@@ -208,9 +210,12 @@ function renderTeacherDashboard(user) {
           <div class="figma-profile-section">
             <div class="figma-profile-avatar">
               <div class="figma-avatar-circle">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                </svg>
+                ${user.profileImage
+                  ? `<img src="${user.profileImage}" alt="Profile">`
+                  : `<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>`
+                }
               </div>
             </div>
             <div class="figma-profile-info">
@@ -634,6 +639,13 @@ window.openEditProfile = function() {
     if (form) {
       form.addEventListener('submit', handleProfileSave);
     }
+    
+    // Add image upload handler
+    const imageInput = document.getElementById('profileImageInput');
+    if (imageInput) {
+      imageInput.addEventListener('change', handleImageUpload);
+    }
+    
     return;
   }
   
@@ -2475,127 +2487,6 @@ window.saveCustomization = function() {
     initDashboard();
   }, 800);
 };
-
-// Show success toast notification
-function showSuccessToast(message) {
-  // Remove existing toast if any
-  const existingToast = document.querySelector('.success-toast');
-  if (existingToast) {
-    existingToast.remove();
-  }
-  
-  // Create toast element
-  const toast = document.createElement('div');
-  toast.className = 'success-toast';
-  toast.innerHTML = `
-    <style>
-      .success-toast {
-        position: fixed;
-        top: 24px;
-        right: 24px;
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(5, 150, 105, 0.95));
-        color: white;
-        padding: 16px 24px;
-        border-radius: 12px;
-        box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
-        z-index: 999999;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        animation: slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-      }
-      
-      @keyframes slideInRight {
-        from {
-          transform: translateX(400px);
-          opacity: 0;
-        }
-        to {
-          transform: translateX(0);
-          opacity: 1;
-        }
-      }
-      
-      @keyframes slideOutRight {
-        from {
-          transform: translateX(0);
-          opacity: 1;
-        }
-        to {
-          transform: translateX(400px);
-          opacity: 0;
-        }
-      }
-      
-      .success-toast.hiding {
-        animation: slideOutRight 0.3s ease forwards;
-      }
-      
-      .toast-icon {
-        width: 24px;
-        height: 24px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-      }
-      
-      .toast-message {
-        font-size: 15px;
-        font-weight: 600;
-        letter-spacing: 0.3px;
-      }
-      
-      .toast-close {
-        width: 20px;
-        height: 20px;
-        background: rgba(255, 255, 255, 0.2);
-        border: none;
-        border-radius: 50%;
-        color: white;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        line-height: 1;
-        transition: all 0.2s ease;
-        flex-shrink: 0;
-      }
-      
-      .toast-close:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: scale(1.1);
-      }
-    </style>
-    
-    <div class="toast-icon">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </div>
-    
-    <div class="toast-message">${message}</div>
-    
-    <button class="toast-close" onclick="this.closest('.success-toast').remove()">×</button>
-  `;
-  
-  document.body.appendChild(toast);
-  
-  // Auto remove after 3 seconds
-  setTimeout(() => {
-    toast.classList.add('hiding');
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.remove();
-      }
-    }, 300);
-  }, 3000);
-}
 
 // Open My Subscription Page
 window.openMySubscription = function() {
@@ -4862,9 +4753,10 @@ function getEditProfileHTML(user) {
         <!-- Profile Picture -->
         <div class="profile-picture-section">
           <label class="field-label">${t('editProfile.profilePicture')}</label>
-          <input type="hidden" name="profileImage" value="${user.profileImage || ''}" />
-          <div class="profile-picture-upload">
-            <div class="profile-picture-preview">
+          <input type="hidden" name="profileImage" id="profileImageUrl" value="${user.profileImage || ''}" />
+          <input type="file" id="profileImageInput" accept="image/*" style="display: none;" />
+          <div class="profile-picture-upload" onclick="document.getElementById('profileImageInput').click()" style="cursor: pointer;">
+            <div class="profile-picture-preview" id="profilePicturePreview">
               ${user.profileImage
                 ? `<img src="${user.profileImage}" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">`
                 : `<svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
@@ -4872,8 +4764,8 @@ function getEditProfileHTML(user) {
                    </svg>`}
             </div>
             <div class="upload-instructions">
-              <p>${t('editProfile.uploadText')}</p>
-              <small>${t('editProfile.uploadHint')}</small>
+              <p style="margin: 0; font-weight: 500; color: #7ea2d4;">${t('editProfile.uploadPhoto') || 'Upload Photo'}</p>
+              <small style="color: rgba(255,255,255,0.6);">${t('editProfile.uploadHint') || 'JPG, PNG or GIF. Max 5MB'}</small>
             </div>
           </div>
         </div>
@@ -5003,7 +4895,8 @@ window.setActiveChild = function(element, event) {
 
 // Back to dashboard function
 window.backToDashboard = function() {
-  initDashboard();
+  // Reload dashboard to show updated data
+  location.reload();
 };
 
 // Load main dashboard content (without reloading entire page)
@@ -5019,9 +4912,8 @@ window.loadMainDashboard = async function() {
     pageTitle.textContent = t('dashboard.title');
   }
 
-  // For now, skip API call and show static content directly
-  // TODO: Enable API call once teacher profiles are created in backend
-  const useStaticData = true;
+  // Enable API call to load real dashboard data
+  const useStaticData = false;
 
   if (useStaticData) {
     // Show static dashboard content directly
@@ -5452,6 +5344,69 @@ window.cancelBioEdit = function() {
   }
 };
 
+// Handle image upload
+async function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    showErrorToast(t('editProfile.fileTooLarge') || 'File size too large. Max 5MB');
+    return;
+  }
+
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    showErrorToast(t('editProfile.invalidFileType') || 'Invalid file type. Only images allowed');
+    return;
+  }
+
+  try {
+    // Show loading
+    const preview = document.getElementById('profilePicturePreview');
+    preview.innerHTML = '<div style="width: 40px; height: 40px; border: 3px solid rgba(126,162,212,0.3); border-top: 3px solid #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite;"></div>';
+
+    // Upload to backend
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = localStorage.getItem('accessToken');
+    const response = await fetch(`${config.api.baseUrl}/upload/image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      // Update preview
+      preview.innerHTML = `<img src="${data.url}" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">`;
+      
+      // Update hidden input
+      document.getElementById('profileImageUrl').value = data.url;
+      
+      showSuccessToast(t('editProfile.imageUploaded') || 'Image uploaded successfully');
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Image upload error:', error);
+    showErrorToast(t('editProfile.uploadFailed') || 'Image upload failed');
+    
+    // Restore previous image
+    const user = store.getState().user;
+    const preview = document.getElementById('profilePicturePreview');
+    preview.innerHTML = user.profileImage 
+      ? `<img src="${user.profileImage}" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">`
+      : `<svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>`;
+  }
+}
+
 // Handle profile save
 async function handleProfileSave(e) {
   e.preventDefault();
@@ -5498,8 +5453,11 @@ async function handleProfileSave(e) {
       store.setState({
         user: { ...user, ...result.teacher }
       });
+      
+      // Update session storage
+      sessionStorage.setItem('currentUser', JSON.stringify({ ...user, ...result.teacher }));
 
-      showSuccessToast(t('notifications.profileSaved'));
+      showSuccessToast(t('editProfile.success') || 'Profile updated successfully');
       setTimeout(() => backToDashboard(), 1000);
     } else {
       throw new Error(result.message || 'Failed to update profile');
