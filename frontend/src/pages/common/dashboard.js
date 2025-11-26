@@ -3874,6 +3874,28 @@ window.applyPrimaryColor = function(color) {
       background: rgba(${r}, ${g}, ${b}, 0.9) !important;
     }
     
+    /* Create Course page - dropdown menu */
+    .dropdown-menu {
+      border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
+    }
+    
+    .dropdown-menu a {
+      color: ${color} !important;
+    }
+    
+    .dropdown-menu a:hover {
+      background: rgba(${r}, ${g}, ${b}, 0.15) !important;
+      color: #ffffff !important;
+    }
+    
+    .dropdown-menu a svg {
+      stroke: ${color} !important;
+    }
+    
+    .dropdown-menu a:hover svg {
+      stroke: #ffffff !important;
+    }
+    
     /* Create Course page - add module button */
     .add-module-btn {
       border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
@@ -7708,13 +7730,19 @@ window.deleteImage = function(event) {
 };
 
 // Add Lesson Function
-window.addLesson = function(type, dropdownLink) {
+window.addLesson = function(type, dropdownLink, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
   const moduleItem = dropdownLink.closest('.module-item');
   const lessonsList = moduleItem.querySelector('.lessons-list');
   const addDropdown = lessonsList.querySelector('.add-lesson-dropdown');
 
   // Hide dropdown
-  dropdownLink.closest('.dropdown-menu').style.display = 'none';
+  const dropdownMenu = dropdownLink.closest('.dropdown-menu');
+  dropdownMenu.classList.remove('show');
 
   // Get lesson count for numbering
   const existingLessons = lessonsList.querySelectorAll('.lesson-item').length;
@@ -7935,16 +7963,16 @@ window.addNewModule = function() {
       </div>
       <div class="lessons-list" style="display: none;">
         <div class="add-lesson-dropdown">
-          <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this)">+ Add</button>
+          <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add</button>
           <div class="dropdown-menu">
-            <a href="#" onclick="addLesson('video', this)">
+            <a href="#" onclick="addLesson('video', this, event)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2"/>
                 <rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
               </svg>
               Video
             </a>
-            <a href="#" onclick="addLesson('quiz', this)">
+            <a href="#" onclick="addLesson('quiz', this, event)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2"/>
@@ -7952,7 +7980,7 @@ window.addNewModule = function() {
               </svg>
               Quiz
             </a>
-            <a href="#" onclick="addLesson('assignment', this)">
+            <a href="#" onclick="addLesson('assignment', this, event)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
                 <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
@@ -7962,7 +7990,7 @@ window.addNewModule = function() {
               </svg>
               Assignment
             </a>
-            <a href="#" onclick="addLesson('file', this)">
+            <a href="#" onclick="addLesson('file', this, event)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" stroke-width="2"/>
                 <polyline points="13,2 13,9 20,9" stroke="currentColor" stroke-width="2"/>
@@ -8028,25 +8056,39 @@ window.deleteModule = function(button) {
 };
 
 // Toggle Lesson Dropdown
-window.toggleLessonDropdown = function(button) {
+window.toggleLessonDropdown = function(button, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
   const dropdown = button.nextElementSibling;
-  const isVisible = dropdown.style.display === 'block';
+  const isVisible = dropdown.classList.contains('show');
+
+  console.log('Toggle dropdown clicked', { isVisible, dropdown });
 
   // Close all other dropdowns first
   document.querySelectorAll('.dropdown-menu').forEach(menu => {
     if (menu !== dropdown) {
-      menu.style.display = 'none';
+      menu.classList.remove('show');
     }
   });
 
-  dropdown.style.display = isVisible ? 'none' : 'block';
+  // Toggle current dropdown
+  if (isVisible) {
+    dropdown.classList.remove('show');
+  } else {
+    dropdown.classList.add('show');
+  }
+
+  console.log('Dropdown after toggle:', dropdown.classList.contains('show'));
 
   // Close dropdown when clicking outside
   if (!isVisible) {
     setTimeout(() => {
       document.addEventListener('click', function closeDropdown(e) {
         if (!button.contains(e.target) && !dropdown.contains(e.target)) {
-          dropdown.style.display = 'none';
+          dropdown.classList.remove('show');
           document.removeEventListener('click', closeDropdown);
         }
       });
@@ -12254,7 +12296,7 @@ window.openCreateCourse = function() {
                       <button type="button" class="action-btn delete" onclick="deleteModule(this)">${t('createCourse.delete')}</button>
                     </div>
                   </div>
-                  <div class="lessons-list" style="display: none;">
+                  <div class="lessons-list">
                     <div class="lesson-item">
                       <span>Lesson 1: What is React?</span>
                       <span>15 min</span>
@@ -12264,16 +12306,16 @@ window.openCreateCourse = function() {
                       <span>45 min</span>
                     </div>
                     <div class="add-lesson-dropdown">
-                      <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this)">+ Add</button>
+                      <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add</button>
                       <div class="dropdown-menu">
-                        <a href="#" onclick="addLesson('video', this)">
+                        <a href="#" onclick="addLesson('video', this, event)">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2"/>
                             <rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
                           </svg>
                           Video
                         </a>
-                        <a href="#" onclick="addLesson('quiz', this)">
+                        <a href="#" onclick="addLesson('quiz', this, event)">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2"/>
@@ -12281,7 +12323,7 @@ window.openCreateCourse = function() {
                           </svg>
                           Quiz
                         </a>
-                        <a href="#" onclick="addLesson('assignment', this)">
+                        <a href="#" onclick="addLesson('assignment', this, event)">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
                             <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
@@ -12291,7 +12333,7 @@ window.openCreateCourse = function() {
                           </svg>
                           Assignment
                         </a>
-                        <a href="#" onclick="addLesson('file', this)">
+                        <a href="#" onclick="addLesson('file', this, event)">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" stroke-width="2"/>
                             <polyline points="13,2 13,9 20,9" stroke="currentColor" stroke-width="2"/>
@@ -12315,18 +12357,18 @@ window.openCreateCourse = function() {
                       <button type="button" class="action-btn delete" onclick="deleteModule(this)">Delete</button>
                     </div>
                   </div>
-                  <div class="lessons-list" style="display: none;">
+                  <div class="lessons-list">
                     <div class="add-lesson-dropdown">
-                      <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this)">+ Add</button>
+                      <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add</button>
                       <div class="dropdown-menu">
-                        <a href="#" onclick="addLesson('video', this)">
+                        <a href="#" onclick="addLesson('video', this, event)">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2"/>
                             <rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
                           </svg>
                           Video
                         </a>
-                        <a href="#" onclick="addLesson('quiz', this)">
+                        <a href="#" onclick="addLesson('quiz', this, event)">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                             <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2"/>
@@ -12334,7 +12376,7 @@ window.openCreateCourse = function() {
                           </svg>
                           Quiz
                         </a>
-                        <a href="#" onclick="addLesson('assignment', this)">
+                        <a href="#" onclick="addLesson('assignment', this, event)">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
                             <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
@@ -12344,7 +12386,7 @@ window.openCreateCourse = function() {
                           </svg>
                           Assignment
                         </a>
-                        <a href="#" onclick="addLesson('file', this)">
+                        <a href="#" onclick="addLesson('file', this, event)">
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" stroke-width="2"/>
                             <polyline points="13,2 13,9 20,9" stroke="currentColor" stroke-width="2"/>

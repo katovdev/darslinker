@@ -4040,14 +4040,16 @@ body:has(.figma-dashboard) {
 
 .modules-container {
   margin-top: 25px;
+  overflow: visible;
 }
 
 .module-item {
   background: rgba(40, 40, 40, 0.5);
   border: 1px solid rgba(126, 162, 212, 0.15);
   border-radius: 12px;
-  margin-bottom: 15px;
-  overflow: hidden;
+  margin-bottom: 80px;
+  overflow: visible;
+  position: relative;
 }
 
 .module-header {
@@ -4101,6 +4103,8 @@ body:has(.figma-dashboard) {
 
 .lessons-list {
   padding: 15px 25px 20px;
+  overflow: visible;
+  position: relative;
 }
 
 .lesson-item {
@@ -4120,7 +4124,9 @@ body:has(.figma-dashboard) {
 
 .add-lesson-dropdown {
   position: relative;
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
 }
 
 .add-btn {
@@ -4141,38 +4147,45 @@ body:has(.figma-dashboard) {
 .dropdown-menu {
   position: absolute;
   top: 100%;
-  left: 0;
-  background: rgba(40, 40, 40, 0.95);
-  border: 1px solid rgba(126, 162, 212, 0.2);
-  border-radius: 6px;
-  padding: 8px 0;
-  min-width: 120px;
-  z-index: 1000;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(40, 40, 40, 0.98);
+  border: 1px solid rgba(126, 162, 212, 0.3);
+  border-radius: 8px;
+  padding: 6px 0;
+  min-width: 150px;
+  z-index: 9999;
   display: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  margin-top: 8px;
+  backdrop-filter: blur(10px);
 }
 
-.add-lesson-dropdown:hover .dropdown-menu {
-  display: block;
+.dropdown-menu.show {
+  display: block !important;
 }
 
 .dropdown-menu a {
-  display: block;
-  padding: 8px 16px;
-  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  color: #7ea2d4;
   text-decoration: none;
   font-size: 13px;
-  transition: background-color 0.3s ease;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .dropdown-menu a:hover {
-  background: rgba(126, 162, 212, 0.1);
+  background: rgba(126, 162, 212, 0.15);
+  color: #ffffff;
 }
 
 .dropdown-menu a svg {
-  margin-right: 8px;
   width: 16px;
   height: 16px;
-  vertical-align: text-bottom;
+  flex-shrink: 0;
 }
 
 /* Lesson Form Styles */
