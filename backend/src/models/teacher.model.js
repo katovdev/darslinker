@@ -54,6 +54,19 @@ const teacherSchema = new mongoose.Schema(
     city: { type: String },
     country: { type: String },
     telegramUsername: { type: String },
+    socialLinks: {
+      linkedin: { type: String },
+      github: { type: String },
+      website: { type: String },
+      telegram: { type: String }
+    },
+    landingPageSettings: {
+      isPublished: { type: Boolean, default: false },
+      featuredCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
+      featuredTestimonials: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }],
+      themeColor: { type: String, default: "#7c3aed" },
+      customUrl: { type: String }
+    },
   },
   { timestamps: true, versionKey: false }
 );

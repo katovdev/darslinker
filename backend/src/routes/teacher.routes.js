@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTeacherProfile, findAll, findOne, update, getDashboardStats } from "../controllers/teacher.controller.js";
+import { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage } from "../controllers/teacher.controller.js";
 import {
   authenticate,
   isOwnerOrAdmin,
@@ -683,6 +683,160 @@ teacherRouter.get(
   authenticate,
   isOwnerOrAdmin,
   getDashboardStats
+);
+
+/**
+ * @swagger
+ * /teachers/{id}/landing-page:
+ *   get:
+ *     summary: Get teacher's public landing page data
+ *     description: Retrieve teacher's landing page information for public display
+ *     tags: [User Management - Teachers]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Teacher ID
+ *     responses:
+ *       200:
+ *         description: Landing page data retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     teacher:
+ *                       type: object
+ *                     featuredCourses:
+ *                       type: array
+ *                     featuredTestimonials:
+ *                       type: array
+ *                     themeColor:
+ *                       type: string
+ *       404:
+ *         description: Teacher not found or landing page not published
+ */
+teacherRouter.get(
+  "/:id/landing-page",
+  validate(teacherIdSchema, "params"),
+  getLandingPageData
+);
+
+/**
+ * @swagger
+ * /teachers/{id}/landing-page:
+ *   put:
+ *     summary: Update teacher's landing page settings
+ *     description: Update landing page configuration and content
+ *     tags: [User Management - Teachers]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Teacher ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               featuredCourses:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 maxItems: 6
+ *               featuredTestimonials:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 maxItems: 5
+ *               themeColor:
+ *                 type: string
+ *                 pattern: '^#[0-9A-Fa-f]{6}$'
+ *               socialLinks:
+ *                 type: object
+ *                 properties:
+ *                   linkedin:
+ *                     type: string
+ *                   github:
+ *                     type: string
+ *                   website:
+ *                     type: string
+ *                   telegram:
+ *                     type: string
+ *     responses:
+ *       200:
+ *         description: Landing page settings updated successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Cannot update other user's landing page
+ *       404:
+ *         description: Teacher not found
+ */
+teacherRouter.put(
+  "/:id/landing-page",
+  validate(teacherIdSchema, "params"),
+  authenticate,
+  isOwnerOrAdmin,
+  updateLandingPageSettings
+);
+
+/**
+ * @swagger
+ * /teachers/{id}/landing-page/publish:
+ *   post:
+ *     summary: Publish or unpublish teacher's landing page
+ *     description: Toggle the published status of teacher's landing page
+ *     tags: [User Management - Teachers]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Teacher ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isPublished:
+ *                 type: boolean
+ *                 description: Whether to publish or unpublish the landing page
+ *     responses:
+ *       200:
+ *         description: Landing page publish status updated successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: Teacher not found
+ */
+teacherRouter.post(
+  "/:id/landing-page/publish",
+  validate(teacherIdSchema, "params"),
+  authenticate,
+  isOwnerOrAdmin,
+  publishLandingPage
 );
 
 export default teacherRouter;

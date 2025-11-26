@@ -381,4 +381,248 @@ const getDashboardStats = catchAsync(async (req, res) => {
   });
 });
 
-export { createTeacherProfile, findAll, findOne, update, getDashboardStats };
+/**
+ * Get teacher's public landing page data
+ * @route GET /teachers/:id/landing-page
+ * @access Public
+ */
+const getLandingPageData = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  logger.info("🌐 Getting landing page data", {
+    teacherId: id,
+    timestamp: new Date().toISOString()
+  });
+
+  const teacher = await validateAndFindById(Teacher, id, "Teacher");
+  const teacherData = handleValidationResult(teacher);
+
+  // Check if landing page is published
+  if (!teacherData.landingPageSettings?.isPublished) {
+    logger.warn("Landing page not published", {
+      teacherId: id
+    });
+
+    return res.status(404).json({
+      success: false,
+      message: "Landing page not found or not published"
+    });
+  }
+
+  // Get featured courses with details
+  let featuredCourses = [];
+  if (teacherData.landingPageSettings.featuredCourses && teacherData.landingPageSettings.featuredCourses.length > 0) {
+    const Course = (await import("../models/course.model.js")).default;
+    featuredCourses = await Course.find({
+      _id: { $in: teacherData.landingPageSettings.featuredCourses },
+      status: 'published'
+    }).select('title description price enrollmentCount thumbnailImage rating createdAt');
+  }
+
+  // Get featured testimonials (reviews)
+  let featuredTestimonials = [];
+  if (teacherData.landingPageSettings.featuredTestimonials && teacherData.landingPageSettings.featuredTestimonials.length > 0) {
+    // For now, use teacher's reviews until we have a separate Review model
+    featuredTestimonials = teacherData.reviews.filter(review =>
+      teacherData.landingPageSettings.featuredTestimonials.includes(review._id.toString())
+    ).slice(0, 5);
+  }
+
+  const landingPageData = {
+    teacher: {
+      _id: teacherData._id,
+      firstName: teacherData.firstName,
+      lastName: teacherData.lastName,
+      email: teacherData.email,
+      profileImage: teacherData.profileImage,
+      specialization: teacherData.specialization,
+      bio: teacherData.bio,
+      city: teacherData.city,
+      country: teacherData.country,
+      ratingAverage: teacherData.ratingAverage || 0,
+      reviewsCount: teacherData.reviewsCount || 0,
+      socialLinks: teacherData.socialLinks || {},
+      certificates: teacherData.certificates || [],
+      joinedAt: teacherData.createdAt
+    },
+    featuredCourses,
+    featuredTestimonials,
+    themeColor: teacherData.landingPageSettings.themeColor || '#7c3aed',
+    stats: {
+      totalCourses: teacherData.courseCount || 0,
+      totalStudents: teacherData.studentCount || 0,
+      averageRating: teacherData.ratingAverage || 0,
+      totalReviews: teacherData.reviewsCount || 0
+    }
+  };
+
+  logger.info("✅ Landing page data retrieved successfully", {
+    teacherId: id,
+    coursesCount: featuredCourses.length,
+    testimonialsCount: featuredTestimonials.length
+  });
+
+  res.status(200).json({
+    success: true,
+    data: landingPageData
+  });
+});
+
+/**
+ * Update teacher's landing page settings
+ * @route PUT /teachers/:id/landing-page
+ * @access Private (Teacher only)
+ */
+const updateLandingPageSettings = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+
+  logger.info("🔧 Updating landing page settings", {
+    teacherId: id,
+    updatesReceived: Object.keys(updates),
+    timestamp: new Date().toISOString()
+  });
+
+  const teacher = await validateAndFindById(Teacher, id, "Teacher");
+  const existingTeacher = handleValidationResult(teacher);
+
+  // Prepare landing page settings update
+  const landingPageUpdates = {};
+
+  if (updates.featuredCourses !== undefined) {
+    if (!Array.isArray(updates.featuredCourses)) {
+      throw new ValidationError("Featured courses must be an array");
+    }
+    if (updates.featuredCourses.length > 6) {
+      throw new ValidationError("Maximum 6 featured courses allowed");
+    }
+    landingPageUpdates.featuredCourses = updates.featuredCourses;
+  }
+
+  if (updates.featuredTestimonials !== undefined) {
+    if (!Array.isArray(updates.featuredTestimonials)) {
+      throw new ValidationError("Featured testimonials must be an array");
+    }
+    if (updates.featuredTestimonials.length > 5) {
+      throw new ValidationError("Maximum 5 featured testimonials allowed");
+    }
+    landingPageUpdates.featuredTestimonials = updates.featuredTestimonials;
+  }
+
+  if (updates.themeColor !== undefined) {
+    if (typeof updates.themeColor !== 'string' || !/^#[0-9A-Fa-f]{6}$/.test(updates.themeColor)) {
+      throw new ValidationError("Theme color must be a valid hex color (e.g., #7c3aed)");
+    }
+    landingPageUpdates.themeColor = updates.themeColor;
+  }
+
+  // Prepare main profile updates
+  const profileUpdates = {};
+
+  if (updates.firstName !== undefined) profileUpdates.firstName = updates.firstName;
+  if (updates.lastName !== undefined) profileUpdates.lastName = updates.lastName;
+  if (updates.specialization !== undefined) profileUpdates.specialization = updates.specialization;
+  if (updates.bio !== undefined) profileUpdates.bio = updates.bio;
+
+  if (updates.socialLinks !== undefined) {
+    if (typeof updates.socialLinks !== 'object') {
+      throw new ValidationError("Social links must be an object");
+    }
+    profileUpdates.socialLinks = {
+      ...existingTeacher.socialLinks,
+      ...updates.socialLinks
+    };
+  }
+
+  // Combine updates
+  const finalUpdates = {
+    ...profileUpdates
+  };
+
+  if (Object.keys(landingPageUpdates).length > 0) {
+    finalUpdates.landingPageSettings = {
+      ...existingTeacher.landingPageSettings,
+      ...landingPageUpdates
+    };
+  }
+
+  // Update teacher profile
+  const updatedTeacher = await Teacher.findByIdAndUpdate(
+    id,
+    { $set: finalUpdates },
+    {
+      new: true,
+      runValidators: true,
+      select: "-password"
+    }
+  );
+
+  logger.info("✅ Landing page settings updated successfully", {
+    teacherId: id,
+    updatedFields: Object.keys(finalUpdates),
+    timestamp: new Date().toISOString()
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Landing page settings updated successfully",
+    teacher: updatedTeacher
+  });
+});
+
+/**
+ * Publish or unpublish teacher's landing page
+ * @route POST /teachers/:id/landing-page/publish
+ * @access Private (Teacher only)
+ */
+const publishLandingPage = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { isPublished } = req.body;
+
+  if (typeof isPublished !== 'boolean') {
+    throw new ValidationError("isPublished must be a boolean value");
+  }
+
+  logger.info("📢 Publishing/unpublishing landing page", {
+    teacherId: id,
+    isPublished,
+    timestamp: new Date().toISOString()
+  });
+
+  const teacher = await validateAndFindById(Teacher, id, "Teacher");
+  const existingTeacher = handleValidationResult(teacher);
+
+  // Update publish status
+  const updatedTeacher = await Teacher.findByIdAndUpdate(
+    id,
+    {
+      $set: {
+        'landingPageSettings.isPublished': isPublished,
+        'landingPageSettings.publishedAt': isPublished ? new Date() : null
+      }
+    },
+    {
+      new: true,
+      runValidators: true,
+      select: "-password"
+    }
+  );
+
+  const action = isPublished ? 'published' : 'unpublished';
+
+  logger.info(`✅ Landing page ${action} successfully`, {
+    teacherId: id,
+    isPublished
+  });
+
+  res.status(200).json({
+    success: true,
+    message: `Landing page ${action} successfully`,
+    teacher: {
+      _id: updatedTeacher._id,
+      landingPageSettings: updatedTeacher.landingPageSettings
+    }
+  });
+});
+
+export { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage };

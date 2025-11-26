@@ -1,3 +1,4 @@
+
 import { store } from '../../utils/store.js';
 import { apiService } from '../../utils/api.js';
 import { router } from '../../utils/router.js';
@@ -135,6 +136,7 @@ function renderTeacherDashboard(user) {
             <div class="figma-menu-children hidden" id="general-children">
               <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event); loadMainDashboard()">${t('sidebar.dashboard')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">${t('sidebar.profile')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openLandingSettings()">Landing</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">${t('sidebar.messages')}</a>
             </div>
           </div>
@@ -695,6 +697,7 @@ window.openEditProfile = function() {
             <div class="figma-menu-children">
               <a href="#" class="figma-menu-child" onclick="backToDashboard()">Dashboard</a>
               <a href="#" class="figma-menu-child active">Profile</a>
+              <a href="#" class="figma-menu-child" onclick="openLandingSettings()">Landing</a>
               <a href="#" class="figma-menu-child">Messages</a>
             </div>
           </div>
@@ -850,6 +853,1126 @@ window.openEditProfile = function() {
   // Add form submission handler
   document.getElementById('editProfileForm').addEventListener('submit', handleProfileSave);
 };
+
+// Open Landing Page Settings
+window.openLandingSettings = function() {
+  // Get fresh user data from state
+  const user = store.getState().user;
+
+  if (!user) {
+    console.error('No user found in state');
+    return;
+  }
+
+  console.log('🔍 Opening landing settings with user data:', user);
+
+  // Check if dashboard structure exists
+  const contentArea = document.querySelector('.figma-content-area');
+
+  if (contentArea) {
+    // Just update content area, keep sidebar
+    updatePageTitle('Landing Page Settings');
+    contentArea.innerHTML = getLandingSettingsHTML(user);
+    updateActiveMenuItem('Landing');
+
+    // Initialize landing settings
+    initializeLandingSettings();
+
+    return;
+  }
+
+  // If no dashboard structure, render full page
+  document.querySelector('#app').innerHTML = `
+    <div class="figma-dashboard">
+      <!-- Landing Settings Header -->
+      <div class="figma-header">
+        <div class="figma-logo">
+          <h1>dars<span>linker</span></h1>
+        </div>
+        <div class="figma-title">
+          <h2 id="page-title">Landing Page Settings</h2>
+        </div>
+        <div class="figma-header-buttons">
+          <button class="figma-btn" onclick="backToDashboard()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 6px;">
+              <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.42-1.41L7.83 13H20v-2z"/>
+            </svg>
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+
+      <!-- Landing Settings Content -->
+      <div class="figma-main-layout">
+        <!-- Left Sidebar Menu -->
+        <div class="figma-sidebar">
+          <!-- General Menu (Expandable) -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-parent expanded">
+              <span class="figma-menu-title">General</span>
+              <span class="figma-menu-arrow">▼</span>
+            </div>
+            <div class="figma-menu-children">
+              <a href="#" class="figma-menu-child" onclick="backToDashboard()">Dashboard</a>
+              <a href="#" class="figma-menu-child" onclick="openEditProfile()">Profile</a>
+              <a href="#" class="figma-menu-child active">Landing</a>
+              <a href="#" class="figma-menu-child">Messages</a>
+            </div>
+          </div>
+
+          <!-- Other Menu Items -->
+          <div class="figma-menu-section">
+            <div class="figma-menu-single">
+              <a href="#" class="figma-single-link">AI Assistant</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Landing Settings Form -->
+        <div class="figma-content-area">
+          ${getLandingSettingsHTML(user)}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Initialize landing settings
+  initializeLandingSettings();
+};
+
+// Helper function to get landing settings HTML
+function getLandingSettingsHTML(user) {
+  const landingURL = `https://darslinker.uz/teacher/${user.firstName?.toLowerCase()}-${user.lastName?.toLowerCase()}`;
+
+  return `
+    <div class="landing-settings-page">
+      <style>
+        .landing-settings-page {
+          padding: 24px;
+          max-width: 1200px;
+          margin: 0 auto;
+          color: #ffffff;
+        }
+
+        .landing-section {
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid var(--primary-color-20);
+          border-radius: 16px;
+          padding: 24px;
+          margin-bottom: 24px;
+        }
+
+        .landing-section-title {
+          font-size: 18px;
+          font-weight: 600;
+          margin-bottom: 16px;
+          color: #ffffff;
+        }
+
+        .landing-url-container {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+        }
+
+        .landing-url-input {
+          flex: 1;
+          background: rgba(20, 20, 20, 0.8);
+          border: 1px solid var(--primary-color-20);
+          border-radius: 8px;
+          padding: 12px;
+          color: #ffffff;
+          font-size: 14px;
+        }
+
+        .copy-link-btn {
+          background: var(--primary-color);
+          color: white;
+          border: none;
+          padding: 12px 16px;
+          border-radius: 8px;
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          white-space: nowrap;
+        }
+
+        .copy-link-btn:hover {
+          background: var(--primary-color-80);
+        }
+
+        .profile-upload-section {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 24px;
+          padding: 16px;
+          background: rgba(40, 40, 40, 0.5);
+          border-radius: 12px;
+        }
+
+        .profile-avatar-placeholder {
+          width: 64px;
+          height: 64px;
+          border-radius: 50%;
+          background: var(--primary-color-20);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--primary-color);
+        }
+
+        .upload-text {
+          color: var(--primary-color);
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+        }
+
+        .upload-subtitle {
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 12px;
+          margin-top: 4px;
+        }
+
+        .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+          margin-bottom: 16px;
+        }
+
+        .form-field {
+          margin-bottom: 16px;
+        }
+
+        .field-label {
+          display: block;
+          margin-bottom: 8px;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .form-input, .form-textarea {
+          width: 100%;
+          background: rgba(20, 20, 20, 0.8);
+          border: 1px solid var(--primary-color-20);
+          border-radius: 8px;
+          padding: 12px;
+          color: #ffffff;
+          font-size: 14px;
+          font-family: inherit;
+          outline: none;
+          transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+          border-color: var(--primary-color);
+        }
+
+        .form-textarea {
+          resize: vertical;
+          min-height: 100px;
+        }
+
+        .social-links-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
+        }
+
+        .certificate-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: rgba(40, 40, 40, 0.5);
+          border-radius: 8px;
+          padding: 16px;
+          margin-bottom: 12px;
+        }
+
+        .certificate-info h4 {
+          margin: 0 0 4px 0;
+          font-size: 14px;
+          font-weight: 600;
+          color: #ffffff;
+        }
+
+        .certificate-info p {
+          margin: 0;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .remove-btn {
+          background: none;
+          border: none;
+          color: rgba(239, 68, 68, 0.8);
+          cursor: pointer;
+          padding: 4px;
+        }
+
+        .add-new-btn {
+          background: var(--primary-color);
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+        }
+
+        .course-item, .testimonial-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          background: rgba(40, 40, 40, 0.5);
+          border: 1px solid var(--primary-color-20);
+          border-radius: 8px;
+          padding: 16px;
+          margin-bottom: 12px;
+        }
+
+        .course-item.selected, .testimonial-item.selected {
+          border-color: var(--primary-color);
+          background: var(--primary-color-10);
+        }
+
+        .course-checkbox, .testimonial-checkbox {
+          width: 18px;
+          height: 18px;
+          cursor: pointer;
+        }
+
+        .course-info h4, .testimonial-info h4 {
+          margin: 0 0 4px 0;
+          font-size: 14px;
+          font-weight: 600;
+          color: #ffffff;
+        }
+
+        .course-info p, .testimonial-info p {
+          margin: 0;
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .stars {
+          display: flex;
+          gap: 2px;
+          margin-top: 4px;
+        }
+
+        .star {
+          color: #ffd700;
+          font-size: 12px;
+        }
+
+        .theme-colors {
+          display: flex;
+          gap: 16px;
+          align-items: center;
+        }
+
+        .color-option {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          cursor: pointer;
+        }
+
+        .color-circle {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          border: 2px solid transparent;
+        }
+
+        .color-option.active .color-circle {
+          border-color: #ffffff;
+        }
+
+        .color-label {
+          font-size: 12px;
+          color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 16px;
+          margin-top: 32px;
+          padding-top: 24px;
+          border-top: 1px solid var(--primary-color-20);
+        }
+
+        .btn-cancel {
+          background: transparent;
+          color: rgba(255, 255, 255, 0.7);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 14px;
+          cursor: pointer;
+        }
+
+        .btn-save {
+          background: var(--primary-color);
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 500;
+          cursor: pointer;
+        }
+
+        .empty-state {
+          text-align: center;
+          padding: 32px;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .empty-state-icon {
+          font-size: 48px;
+          margin-bottom: 16px;
+          opacity: 0.5;
+        }
+      </style>
+
+      <form id="landingSettingsForm">
+        <!-- Landing Page URL Section -->
+        <div class="landing-section">
+          <div class="landing-section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="display: inline-block; margin-right: 8px;">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="M8 12h8M12 8l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Your Landing Page URL
+          </div>
+          <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 16px; font-size: 14px;">
+            Share this link with your students
+          </p>
+          <div class="landing-url-container">
+            <input type="text" class="landing-url-input" value="${landingURL}" readonly>
+            <button type="button" class="copy-link-btn" onclick="copyLandingURL('${landingURL}')">Copy link</button>
+          </div>
+        </div>
+
+        <!-- Customize Landing Page Section -->
+        <div class="landing-section">
+          <div class="landing-section-title">Customize Your Landing Page</div>
+
+          <!-- Hero Section - Profile Info -->
+          <h3 style="color: #ffffff; margin-bottom: 16px; font-size: 16px;">Hero Section - Profile Info</h3>
+
+          <!-- Upload Photo -->
+          <input type="file" id="landingProfilePhotoInput" accept="image/*" style="display: none;">
+          <div class="profile-upload-section" onclick="document.getElementById('landingProfilePhotoInput').click()" style="cursor: pointer;">
+            <div class="profile-avatar-placeholder" id="landingProfileAvatar">
+              ${user.profileImage 
+                ? `<img src="${user.profileImage}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`
+                : `<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>`
+              }
+            </div>
+            <div>
+              <div class="upload-text">Upload new photo</div>
+              <div class="upload-subtitle">Recommended dimensions: JPG or PNG</div>
+            </div>
+          </div>
+
+          <!-- Name Fields -->
+          <div class="form-row">
+            <div class="form-field">
+              <label class="field-label">First Name</label>
+              <input type="text" class="form-input" name="firstName" value="${user.firstName || ''}" placeholder="John">
+            </div>
+            <div class="form-field">
+              <label class="field-label">Last Name</label>
+              <input type="text" class="form-input" name="lastName" value="${user.lastName || ''}" placeholder="Smith">
+            </div>
+          </div>
+
+          <!-- Professional Title -->
+          <div class="form-field">
+            <label class="field-label">Professional Title / Specialty</label>
+            <input type="text" class="form-input" name="specialty" value="${user.specialization || ''}" placeholder="Web Development & UI/UX Design">
+          </div>
+
+          <!-- Bio -->
+          <div class="form-field">
+            <label class="field-label">Bio / About Me</label>
+            <textarea class="form-textarea" name="bio" placeholder="Passionate about helping students achieve their goals!">${user.bio || ''}</textarea>
+          </div>
+
+          <!-- Social Media Links -->
+          <h4 style="color: #ffffff; margin: 24px 0 16px 0; font-size: 14px;">Social media links</h4>
+          <div class="social-links-grid">
+            <div class="form-field">
+              <input type="url" class="form-input" name="linkedin" placeholder="https://linkedin.com/in/john">
+            </div>
+            <div class="form-field">
+              <input type="url" class="form-input" name="github" placeholder="https://github.com/john">
+            </div>
+            <div class="form-field">
+              <input type="url" class="form-input" name="website" placeholder="https://john.dev">
+            </div>
+            <div class="form-field">
+              <input type="text" class="form-input" name="telegram" placeholder="@john@darslinker.uz">
+            </div>
+          </div>
+        </div>
+
+        <!-- Certificates & Achievements -->
+        <div class="landing-section">
+          <div class="landing-section-title">Certificates & Achievements</div>
+          <div id="certificatesList">
+            <!-- Certificates will be loaded here -->
+          </div>
+          <button type="button" class="add-new-btn" onclick="addNewCertificate()">+ Add new</button>
+        </div>
+
+        <!-- Featured Courses -->
+        <div class="landing-section">
+          <div class="landing-section-title">Featured Courses on Landing Page</div>
+          <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 16px; font-size: 14px;">
+            Select up to 6 courses to display on your landing page
+          </p>
+          <div id="featuredCoursesList">
+            <!-- Featured courses will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Featured Testimonials -->
+        <div class="landing-section">
+          <div class="landing-section-title">Featured Testimonials</div>
+          <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 16px; font-size: 14px;">
+            Select best reviews to showcase (up to 5)
+          </p>
+          <div id="featuredTestimonialsList">
+            <!-- Featured testimonials will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Theme & Colors -->
+        <div class="landing-section">
+          <div class="landing-section-title">Theme & Colors</div>
+          <h4 style="color: #ffffff; margin-bottom: 16px; font-size: 14px;">Primary Color</h4>
+          <div class="theme-colors">
+            <div class="color-option active" data-color="#7c3aed">
+              <div class="color-circle" style="background: #7c3aed;"></div>
+              <div class="color-label">#7c3aed</div>
+            </div>
+            <div class="color-option" data-color="#0a0e27">
+              <div class="color-circle" style="background: #0a0e27;"></div>
+              <div class="color-label">#0a0e27</div>
+            </div>
+            <div class="color-option" data-color="#0e0e0">
+              <div class="color-circle" style="background: #0e0e0;"></div>
+              <div class="color-label">#0e0e0</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
+          <button type="submit" class="btn-save">Save and publish</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+// Initialize landing settings functionality
+function initializeLandingSettings() {
+  // Load courses, testimonials, and certificates
+  loadFeaturedCourses();
+  loadFeaturedTestimonials();
+  loadCertificates();
+
+  // Add form submission handler
+  const form = document.getElementById('landingSettingsForm');
+  if (form) {
+    form.addEventListener('submit', handleLandingSettingsSave);
+  }
+
+  // Add color selection handlers
+  document.querySelectorAll('.color-option').forEach(option => {
+    option.addEventListener('click', function() {
+      document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Add certificate file upload handler
+  const certFileInput = document.getElementById('certificateFileInput');
+  if (certFileInput) {
+    certFileInput.addEventListener('change', handleCertificateFileUpload);
+  }
+
+  // Add profile photo upload handler for landing page
+  const landingPhotoInput = document.getElementById('landingProfilePhotoInput');
+  if (landingPhotoInput) {
+    landingPhotoInput.addEventListener('change', handleLandingProfilePhotoUpload);
+  }
+}
+
+// Handle landing profile photo upload
+async function handleLandingProfilePhotoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    showErrorToast('File size too large. Max 5MB');
+    return;
+  }
+
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    showErrorToast('Invalid file type. Only images allowed');
+    return;
+  }
+
+  try {
+    // Show loading
+    const avatar = document.getElementById('landingProfileAvatar');
+    avatar.innerHTML = '<div style="width: 30px; height: 30px; border: 3px solid rgba(126,162,212,0.3); border-top: 3px solid #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite;"></div>';
+
+    // Upload to Cloudinary
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = localStorage.getItem('accessToken');
+    const response = await fetch(`${config.api.baseUrl}/upload/image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      // Update avatar preview
+      avatar.innerHTML = `<img src="${data.url}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+      
+      // Update user profile via API
+      const user = store.getState().user;
+      const result = await apiService.updateTeacherProfile(user._id, { profileImage: data.url });
+      
+      if (result.success) {
+        // Update store and session
+        store.setState({ user: { ...user, ...result.teacher } });
+        sessionStorage.setItem('currentUser', JSON.stringify({ ...user, ...result.teacher }));
+        showSuccessToast('Profile photo updated successfully');
+      }
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Photo upload error:', error);
+    showErrorToast('Failed to upload photo');
+    
+    // Restore previous image
+    const user = store.getState().user;
+    const avatar = document.getElementById('landingProfileAvatar');
+    avatar.innerHTML = user.profileImage 
+      ? `<img src="${user.profileImage}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`
+      : `<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>`;
+  }
+}
+
+// Handle certificate file upload
+async function handleCertificateFileUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Validate file size (max 10MB)
+  if (file.size > 10 * 1024 * 1024) {
+    showErrorToast('File size too large. Max 10MB');
+    return;
+  }
+
+  // Validate file type
+  const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif', 'application/pdf'];
+  if (!validTypes.includes(file.type)) {
+    showErrorToast('Invalid file type. Only images and PDF allowed');
+    return;
+  }
+
+  try {
+    // Show file name
+    document.getElementById('certificateFileName').textContent = `Uploading ${file.name}...`;
+
+    // Upload to Cloudinary
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = localStorage.getItem('accessToken');
+    const endpoint = file.type === 'application/pdf' ? '/upload/document' : '/upload/image';
+    
+    const response = await fetch(`${config.api.baseUrl}${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      // Update URL input with uploaded file URL
+      document.getElementById('certificateUrlInput').value = data.url;
+      document.getElementById('certificateFileName').textContent = `✓ ${file.name}`;
+      showSuccessToast('Certificate file uploaded successfully');
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Certificate upload error:', error);
+    showErrorToast('Failed to upload certificate file');
+    document.getElementById('certificateFileName').textContent = '';
+  }
+}
+
+// Copy landing page URL to clipboard
+window.copyLandingURL = function(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    showSuccessToast('Landing page URL copied to clipboard!');
+  }).catch(() => {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = url;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    showSuccessToast('Landing page URL copied to clipboard!');
+  });
+};
+
+// Load featured courses from backend
+async function loadFeaturedCourses() {
+  try {
+    const user = store.getState().user;
+    const response = await apiService.getCourses(user._id);
+
+    const coursesList = document.getElementById('featuredCoursesList');
+    if (!coursesList) return;
+
+    if (response.success && response.courses && response.courses.length > 0) {
+      coursesList.innerHTML = response.courses.map(course => `
+        <div class="course-item" data-course-id="${course._id}">
+          <input type="checkbox" class="course-checkbox" name="featuredCourses" value="${course._id}">
+          <div class="course-info">
+            <h4>${course.title}</h4>
+            <p>${course.enrollmentCount || 0} students • ${course.price ? '$' + course.price : 'Free'}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Add event listeners for course selection
+      coursesList.querySelectorAll('.course-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const item = this.closest('.course-item');
+          if (this.checked) {
+            item.classList.add('selected');
+          } else {
+            item.classList.remove('selected');
+          }
+
+          // Limit selection to 6 courses
+          const selectedCourses = coursesList.querySelectorAll('.course-checkbox:checked');
+          if (selectedCourses.length > 6) {
+            this.checked = false;
+            item.classList.remove('selected');
+            showErrorToast('You can select maximum 6 courses for your landing page');
+          }
+        });
+      });
+    } else {
+      coursesList.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+          </div>
+          <h3 style="margin-bottom: 8px;">No courses yet</h3>
+          <p>Create your first course to feature it on your landing page</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error loading courses:', error);
+    document.getElementById('featuredCoursesList').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon" style="color: #ef4444;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <h3 style="margin-bottom: 8px;">Failed to load courses</h3>
+        <p>Please try again later</p>
+      </div>
+    `;
+  }
+}
+
+// Load featured testimonials from backend
+async function loadFeaturedTestimonials() {
+  try {
+    const user = store.getState().user;
+    const testimonialsList = document.getElementById('featuredTestimonialsList');
+    if (!testimonialsList) return;
+
+    // Get teacher profile with reviews from backend
+    let testimonials = [];
+    
+    try {
+      const teacherProfile = await apiService.getTeacherProfile(user._id);
+      if (teacherProfile.success && teacherProfile.teacher.reviews) {
+        testimonials = teacherProfile.teacher.reviews.map(review => ({
+          _id: review._id || review.studentId,
+          studentName: review.studentName || 'Anonymous Student',
+          rating: review.rating || 5,
+          comment: review.comment || '',
+          courseName: review.courseName || 'Course'
+        }));
+      }
+    } catch (error) {
+      console.log('Could not load reviews from backend, using empty state');
+    }
+
+    if (testimonials.length > 0) {
+      testimonialsList.innerHTML = testimonials.map(testimonial => `
+        <div class="testimonial-item" data-testimonial-id="${testimonial._id}">
+          <input type="checkbox" class="testimonial-checkbox" name="featuredTestimonials" value="${testimonial._id}">
+          <div class="testimonial-info">
+            <h4>${testimonial.studentName}</h4>
+            <p>"${testimonial.comment.length > 60 ? testimonial.comment.substring(0, 60) + '...' : testimonial.comment}"</p>
+            <div class="stars">
+              ${'★'.repeat(testimonial.rating)}${'☆'.repeat(5 - testimonial.rating)}
+            </div>
+          </div>
+        </div>
+      `).join('');
+
+      // Add event listeners for testimonial selection
+      testimonialsList.querySelectorAll('.testimonial-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+          const item = this.closest('.testimonial-item');
+          if (this.checked) {
+            item.classList.add('selected');
+          } else {
+            item.classList.remove('selected');
+          }
+
+          // Limit selection to 5 testimonials
+          const selectedTestimonials = testimonialsList.querySelectorAll('.testimonial-checkbox:checked');
+          if (selectedTestimonials.length > 5) {
+            this.checked = false;
+            item.classList.remove('selected');
+            showErrorToast('You can select maximum 5 testimonials for your landing page');
+          }
+        });
+      });
+    } else {
+      testimonialsList.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon" style="color: #fbbf24;">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <h3 style="margin-bottom: 8px;">No reviews yet</h3>
+          <p>Student reviews will appear here once you start receiving feedback</p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error loading testimonials:', error);
+    document.getElementById('featuredTestimonialsList').innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state-icon" style="color: #ef4444;">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+        </div>
+        <h3 style="margin-bottom: 8px;">Failed to load testimonials</h3>
+        <p>Please try again later</p>
+      </div>
+    `;
+  }
+}
+
+// Load certificates from backend
+async function loadCertificates() {
+  try {
+    const user = store.getState().user;
+    const certificatesList = document.getElementById('certificatesList');
+    if (!certificatesList) return;
+
+    // Check if user has certificates in their profile
+    if (user.certificates && user.certificates.length > 0) {
+      certificatesList.innerHTML = user.certificates.map((cert, index) => `
+        <div class="certificate-item" data-certificate-index="${index}">
+          <div class="certificate-info">
+            <h4>${cert.title}</h4>
+            <p>${cert.issuer} • ${cert.issueDate || cert.year || '2023'}</p>
+          </div>
+          <button type="button" class="remove-btn" onclick="removeCertificate(${index})">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </button>
+        </div>
+      `).join('');
+    } else {
+      // Show mock certificate if no certificates exist
+      certificatesList.innerHTML = `
+        <div class="certificate-item">
+          <div class="certificate-info">
+            <h4>Meta Front-End Developer</h4>
+            <p>Meta (Facebook) • 2023</p>
+          </div>
+          <button type="button" class="remove-btn" onclick="removeMockCertificate(this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+            </svg>
+          </button>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error loading certificates:', error);
+  }
+}
+
+// Add new certificate
+window.addNewCertificate = function() {
+  // Create a simple modal for adding certificate
+  const modal = document.createElement('div');
+  modal.className = 'certificate-modal';
+  modal.innerHTML = `
+    <div class="modal-overlay" onclick="closeCertificateModal()"></div>
+    <div class="modal-content">
+      <h3 style="margin-bottom: 20px; color: #ffffff;">Add Certificate</h3>
+      <form id="addCertificateForm">
+        <div class="form-field">
+          <label class="field-label">Certificate Title</label>
+          <input type="text" class="form-input" name="title" placeholder="e.g. Full Stack Web Developer" required>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Issuing Organization</label>
+          <input type="text" class="form-input" name="issuer" placeholder="e.g. Meta (Facebook)" required>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Issue Year</label>
+          <input type="number" class="form-input" name="year" placeholder="2023" min="2000" max="${new Date().getFullYear()}" required>
+        </div>
+        <div class="form-field">
+          <label class="field-label">Certificate URL (optional)</label>
+          <input type="url" class="form-input" name="url" id="certificateUrlInput" placeholder="https://...">
+        </div>
+        <div class="form-field">
+          <label class="field-label">Or Upload Certificate Image/PDF</label>
+          <input type="file" id="certificateFileInput" accept="image/*,.pdf" style="display: none;">
+          <button type="button" class="btn-upload-cert" onclick="document.getElementById('certificateFileInput').click()">
+            📎 Choose File
+          </button>
+          <span id="certificateFileName" style="margin-left: 12px; color: rgba(255,255,255,0.6); font-size: 13px;"></span>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" onclick="closeCertificateModal()">Cancel</button>
+          <button type="submit" class="btn-save">Add Certificate</button>
+        </div>
+      </form>
+    </div>
+    <style>
+      .certificate-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .modal-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.8);
+      }
+      .modal-content {
+        position: relative;
+        background: rgba(58, 56, 56, 0.95);
+        border-radius: 16px;
+        padding: 24px;
+        width: 90%;
+        max-width: 500px;
+        border: 1px solid rgba(126, 162, 212, 0.2);
+      }
+      .modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 24px;
+      }
+    </style>
+  `;
+
+  document.body.appendChild(modal);
+
+  // Handle form submission
+  document.getElementById('addCertificateForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const certificate = {
+      title: formData.get('title'),
+      issuer: formData.get('issuer'),
+      issueDate: formData.get('year'),
+      url: formData.get('url') || ''
+    };
+
+    // Add to certificates list (in real app, save to backend)
+    const certificatesList = document.getElementById('certificatesList');
+    const newCertificateHTML = `
+      <div class="certificate-item">
+        <div class="certificate-info">
+          <h4>${certificate.title}</h4>
+          <p>${certificate.issuer} • ${certificate.issueDate}</p>
+        </div>
+        <button type="button" class="remove-btn" onclick="removeMockCertificate(this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+          </svg>
+        </button>
+      </div>
+    `;
+
+    if (certificatesList.querySelector('.empty-state')) {
+      certificatesList.innerHTML = newCertificateHTML;
+    } else {
+      certificatesList.insertAdjacentHTML('beforeend', newCertificateHTML);
+    }
+
+    closeCertificateModal();
+    showSuccessToast('Certificate added successfully!');
+  });
+};
+
+// Close certificate modal
+window.closeCertificateModal = function() {
+  const modal = document.querySelector('.certificate-modal');
+  if (modal) {
+    modal.remove();
+  }
+};
+
+// Remove certificate
+window.removeCertificate = function(index) {
+  const item = document.querySelector(`[data-certificate-index="${index}"]`);
+  if (item) {
+    item.remove();
+    showSuccessToast('Certificate removed');
+  }
+};
+
+// Remove mock certificate
+window.removeMockCertificate = function(button) {
+  const item = button.closest('.certificate-item');
+  if (item) {
+    item.remove();
+    showSuccessToast('Certificate removed');
+  }
+};
+
+// Handle landing settings form submission
+async function handleLandingSettingsSave(event) {
+  event.preventDefault();
+
+  try {
+    const formData = new FormData(event.target);
+    const user = store.getState().user;
+
+    // Collect form data
+    const landingData = {
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      specialization: formData.get('specialty'),
+      bio: formData.get('bio'),
+      socialLinks: {
+        linkedin: formData.get('linkedin'),
+        github: formData.get('github'),
+        website: formData.get('website'),
+        telegram: formData.get('telegram')
+      },
+      featuredCourses: formData.getAll('featuredCourses'),
+      featuredTestimonials: formData.getAll('featuredTestimonials'),
+      themeColor: document.querySelector('.color-option.active')?.dataset.color || '#7c3aed'
+    };
+
+    console.log('💾 Saving landing page data:', landingData);
+
+    // Update teacher profile with landing page data
+    const result = await apiService.updateTeacherProfile(user._id, {
+      firstName: landingData.firstName,
+      lastName: landingData.lastName,
+      specialization: landingData.specialization,
+      bio: landingData.bio,
+      socialLinks: landingData.socialLinks,
+      landingPageSettings: {
+        featuredCourses: landingData.featuredCourses,
+        featuredTestimonials: landingData.featuredTestimonials,
+        themeColor: landingData.themeColor
+      }
+    });
+
+    if (result.success) {
+      // Update local state
+      const updatedUser = {
+        ...user,
+        ...landingData,
+        landingPageSettings: landingData
+      };
+      store.setState({ user: updatedUser });
+
+      showSuccessToast('Landing page settings saved successfully!');
+
+      // Optionally redirect back to dashboard
+      setTimeout(() => {
+        backToDashboard();
+      }, 1500);
+    } else {
+      throw new Error(result.message || 'Failed to save landing page settings');
+    }
+  } catch (error) {
+    console.error('❌ Landing page save error:', error);
+    showErrorToast(error.message || 'Failed to save landing page settings');
+  }
+}
 
 window.customizeUI = function() {
   openCustomizeUI();
@@ -2007,6 +3130,17 @@ function getCustomizeUIHTML() {
                  title="${color.name}">
             </div>
           `).join('')}
+          
+          <!-- Add Custom Color Button -->
+          <div class="preset-color add-color-btn" 
+               onclick="openColorPickerModal()"
+               title="Add Custom Color"
+               style="background: transparent; border: 2px dashed var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -2491,6 +3625,204 @@ window.selectPresetColor = function(color) {
     preset.classList.remove('active');
   });
   event.target.classList.add('active');
+};
+
+// Open color picker modal with full palette
+window.openColorPickerModal = function() {
+  // Generate color palette grid
+  const generateColorPalette = () => {
+    const colors = [];
+    // Grayscale row
+    for (let i = 0; i <= 10; i++) {
+      const val = Math.round((i / 10) * 255);
+      colors.push(`rgb(${val}, ${val}, ${val})`);
+    }
+    
+    // Color rows - Hue variations
+    const hues = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]; // 12 hues
+    const saturations = [100, 80, 60, 40, 20]; // 5 saturation levels
+    const lightnesses = [50, 60, 70, 80, 90]; // 5 lightness levels
+    
+    hues.forEach(hue => {
+      lightnesses.forEach(lightness => {
+        colors.push(`hsl(${hue}, 100%, ${lightness}%)`);
+      });
+    });
+    
+    return colors;
+  };
+  
+  const colors = generateColorPalette();
+  
+  const modal = document.createElement('div');
+  modal.id = 'colorPickerModal';
+  modal.innerHTML = `
+    <div class="modal-overlay" onclick="closeColorPickerModal()"></div>
+    <div class="color-picker-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #ffffff; margin: 0;">Choose Color</h3>
+        <button onclick="closeColorPickerModal()" style="background: none; border: none; color: rgba(255,255,255,0.6); font-size: 24px; cursor: pointer; padding: 0; width: 32px; height: 32px;">×</button>
+      </div>
+      
+      <!-- Color Palette Grid -->
+      <div class="color-palette-grid">
+        ${colors.map(color => `
+          <div class="palette-color" 
+               style="background: ${color};" 
+               onclick="selectPaletteColor('${color}')"
+               title="${color}">
+          </div>
+        `).join('')}
+      </div>
+      
+      <!-- Selected Color Preview -->
+      <div style="margin-top: 20px; padding: 16px; background: rgba(20,20,20,0.5); border-radius: 12px; display: flex; align-items: center; gap: 16px;">
+        <div id="selectedColorPreview" style="width: 60px; height: 60px; border-radius: 12px; background: #7ea2d4; border: 2px solid rgba(255,255,255,0.2);"></div>
+        <div style="flex: 1;">
+          <label style="color: rgba(255,255,255,0.6); font-size: 12px; display: block; margin-bottom: 4px;">Selected Color:</label>
+          <input type="text" id="selectedColorHex" value="#7ea2d4" readonly
+                 style="width: 100%; padding: 10px; background: rgba(20,20,20,0.8); border: 1px solid rgba(126,162,212,0.3); border-radius: 8px; color: #ffffff; font-family: monospace; font-size: 14px;">
+        </div>
+      </div>
+      
+      <div class="modal-actions" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+        <button onclick="closeColorPickerModal()" class="btn-cancel">Cancel</button>
+        <button onclick="applyCustomColor()" class="btn-save">Apply Color</button>
+      </div>
+    </div>
+    
+    <style>
+      #colorPickerModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .color-picker-modal-content {
+        position: relative;
+        background: rgba(30, 30, 30, 0.98);
+        border-radius: 20px;
+        padding: 28px;
+        width: 90%;
+        max-width: 650px;
+        max-height: 85vh;
+        overflow-y: auto;
+        border: 2px solid var(--primary-color);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--primary-color);
+      }
+      .color-palette-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 4px;
+      }
+      .palette-color {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+      }
+      .palette-color:hover {
+        transform: scale(1.15);
+        border-color: rgba(255,255,255,0.8);
+        z-index: 10;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      }
+    </style>
+  `;
+  
+  document.body.appendChild(modal);
+  
+  // Store selected color
+  window.selectedCustomColor = '#7ea2d4';
+};
+
+// Close color picker modal
+window.closeColorPickerModal = function() {
+  const modal = document.getElementById('colorPickerModal');
+  if (modal) {
+    modal.remove();
+  }
+};
+
+// Select color from palette
+window.selectPaletteColor = function(color) {
+  // Convert RGB/HSL to HEX
+  const rgbToHex = (rgb) => {
+    const result = rgb.match(/\d+/g);
+    if (!result) return color;
+    const r = parseInt(result[0]);
+    const g = parseInt(result[1]);
+    const b = parseInt(result[2]);
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  };
+  
+  const hslToHex = (hsl) => {
+    const result = hsl.match(/\d+/g);
+    if (!result) return color;
+    let h = parseInt(result[0]) / 360;
+    let s = parseInt(result[1]) / 100;
+    let l = parseInt(result[2]) / 100;
+    
+    let r, g, b;
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+    
+    const toHex = x => {
+      const hex = Math.round(x * 255).toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    };
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  };
+  
+  let hexColor = color;
+  if (color.startsWith('rgb')) {
+    hexColor = rgbToHex(color);
+  } else if (color.startsWith('hsl')) {
+    hexColor = hslToHex(color);
+  }
+  
+  // Update preview
+  document.getElementById('selectedColorPreview').style.background = color;
+  document.getElementById('selectedColorHex').value = hexColor;
+  window.selectedCustomColor = hexColor;
+};
+
+// Apply custom color
+window.applyCustomColor = function() {
+  const color = window.selectedCustomColor || '#7ea2d4';
+  
+  document.getElementById('colorInput').value = color;
+  updateColorPreview(color);
+  
+  // Update active state
+  document.querySelectorAll('.preset-color').forEach(preset => {
+    preset.classList.remove('active');
+  });
+  
+  showSuccessToast('Custom color applied!');
+  closeColorPickerModal();
 };
 
 // Toggle light mode
@@ -5651,6 +6983,7 @@ window.openMessagesPage = function() {
             <div class="figma-menu-children ${isGeneralExpanded ? '' : 'hidden'}" id="general-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); backToDashboard()">Dashboard</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">Profile</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openLandingSettings()">Landing</a>
               <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event)">Messages</a>
             </div>
           </div>

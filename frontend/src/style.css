@@ -8792,3 +8792,41 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
 .profile-picture-upload:hover .profile-picture-preview {
   box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.3);
 }
+
+
+/* Certificate Upload Button */
+.btn-upload-cert {
+  background: rgba(126, 162, 212, 0.2);
+  color: #7ea2d4;
+  border: 1px solid rgba(126, 162, 212, 0.5);
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-upload-cert:hover {
+  background: rgba(126, 162, 212, 0.3);
+  border-color: #7ea2d4;
+  transform: translateY(-1px);
+}
+
+.btn-upload-cert:active {
+  transform: translateY(0);
+}
+
+
+/* Empty State Icon */
+.empty-state-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.empty-state-icon svg {
+  opacity: 0.6;
+}

@@ -88,12 +88,14 @@ export function initTheme() {
 
 // Preset colors
 export const presetColors = [
-  { name: 'Project Blue', value: '#7ea2d4' }, // Current project color
-  { name: 'Red', value: '#b91c1c' },
-  { name: 'Cream', value: '#d4c5a9' },
-  { name: 'Teal', value: '#0f766e' },
-  { name: 'Navy', value: '#1e3a8a' },
-  { name: 'Pink', value: '#ffc0cb' },
+  { name: 'Project Blue', value: '#7ea2d4' },
   { name: 'Purple', value: '#a855f7' },
-  { name: 'Gold', value: '#b8860b' },
+  { name: 'Pink', value: '#ec4899' },
+  { name: 'Red', value: '#ef4444' },
+  { name: 'Orange', value: '#f97316' },
+  { name: 'Green', value: '#22c55e' },
+  { name: 'Teal', value: '#14b8a6' },
+  { name: 'Navy', value: '#1e40af' },
+  { name: 'Cream', value: '#d4c5a9' },
+  { name: 'Gold', value: '#d4af37' },
 ];
