@@ -55,12 +55,28 @@ function generateRefreshToken(payload) {
  */
 function verifyAccessToken(token) {
   try {
+    console.log("🔑 Token verification debug:", {
+      hasToken: !!token,
+      tokenLength: token?.length,
+      tokenStart: token?.substring(0, 10) + "...",
+      secretKey: JWT_ACCESS_TOKEN_SECRET_KEY ? "Present" : "Missing"
+    });
+
     if (!token) {
+      console.error("❌ No token provided");
       throw new Error("Token is required");
     }
 
-    return jwt.verify(token, JWT_ACCESS_TOKEN_SECRET_KEY);
+    const decoded = jwt.verify(token, JWT_ACCESS_TOKEN_SECRET_KEY);
+    console.log("✅ Token verified successfully:", { userId: decoded.userId, role: decoded.role });
+    return decoded;
   } catch (error) {
+    console.error("❌ Token verification failed:", {
+      errorName: error.name,
+      errorMessage: error.message,
+      tokenProvided: !!token
+    });
+
     if (error.name === "TokenExpiredError") {
       throw new Error("Access token has expired");
     } else if (error.name === "JsonWebTokenError") {

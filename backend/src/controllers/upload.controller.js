@@ -131,19 +131,42 @@ export const uploadVideo = catchAsync(async (req, res) => {
  * @access Private
  */
 export const uploadDocument = catchAsync(async (req, res) => {
+  logger.info("📄 Document upload request received", {
+    userId: req.user?.userId,
+    hasFile: !!req.file,
+    fileDetails: req.file ? {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      path: req.file.path
+    } : null
+  });
+
   if (!req.file) {
+    logger.error("No file uploaded in document upload request", {
+      userId: req.user?.userId
+    });
     throw new ValidationError("No file uploaded");
   }
 
   try {
+    logger.info("🚀 Starting Cloudinary upload for document", {
+      userId: req.user?.userId,
+      fileName: req.file.originalname,
+      filePath: req.file.path
+    });
+
     const result = await cloudinary.uploader.upload(req.file.path, {
       folder: "darslinker/documents",
       resource_type: "raw"
     });
 
-    logger.info("Document uploaded successfully", {
+    logger.info("✅ Document uploaded successfully to Cloudinary", {
       userId: req.user?.userId,
-      documentUrl: result.secure_url
+      documentUrl: result.secure_url,
+      publicId: result.public_id,
+      format: result.format,
+      size: result.bytes
     });
 
     res.status(200).json({
@@ -155,10 +178,12 @@ export const uploadDocument = catchAsync(async (req, res) => {
       size: result.bytes
     });
   } catch (error) {
-    logger.error("Document upload failed", {
+    logger.error("❌ Document upload failed", {
       error: error.message,
-      userId: req.user?.userId
+      stack: error.stack,
+      userId: req.user?.userId,
+      fileName: req.file?.originalname
     });
-    throw new ValidationError("Failed to upload document");
+    throw new ValidationError("Failed to upload document: " + error.message);
   }
 });

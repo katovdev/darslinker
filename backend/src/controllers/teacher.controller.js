@@ -113,6 +113,8 @@ const update = catchAsync(async (req, res) => {
     teacherId: id,
     updatesReceived: Object.keys(updates),
     bioValue: updates.bio,
+    certificatesReceived: updates.certificates ? JSON.stringify(updates.certificates) : 'undefined',
+    certificatesLength: updates.certificates ? updates.certificates.length : 0,
     timestamp: new Date().toISOString()
   });
 
@@ -178,18 +180,37 @@ const update = catchAsync(async (req, res) => {
   }
 
   if (updates.certificates !== undefined) {
+    logger.info("📋 Processing certificates update", {
+      certificatesBeforeValidation: JSON.stringify(updates.certificates),
+      isArray: Array.isArray(updates.certificates)
+    });
+
     if (!Array.isArray(updates.certificates)) {
       throw new ValidationError("Certificates must be an array");
     }
 
+    const originalLength = updates.certificates.length;
     updates.certificates = updates.certificates.filter((cert) => {
-      if (!cert || typeof cert !== "object") return false;
+      if (!cert || typeof cert !== "object") {
+        logger.info("📋 Filtering out invalid cert:", cert);
+        return false;
+      }
 
       if (cert.title) cert.title = String(cert.title).trim();
       if (cert.issuer) cert.issuer = String(cert.issuer).trim();
       if (cert.url) cert.url = String(cert.url).trim();
 
-      return cert.title && cert.issuer;
+      const isValid = cert.title && cert.issuer;
+      if (!isValid) {
+        logger.info("📋 Filtering out cert without title/issuer:", cert);
+      }
+      return isValid;
+    });
+
+    logger.info("📋 Certificates after processing", {
+      originalLength,
+      processedLength: updates.certificates.length,
+      processedCertificates: JSON.stringify(updates.certificates)
     });
   }
 
@@ -227,6 +248,8 @@ const update = catchAsync(async (req, res) => {
     teacherId: id,
     updatedFields: Object.keys(updates),
     newBioValue: updatedTeacher?.bio,
+    savedCertificates: updatedTeacher?.certificates ? JSON.stringify(updatedTeacher.certificates) : 'undefined',
+    savedCertificatesLength: updatedTeacher?.certificates ? updatedTeacher.certificates.length : 0,
     updateResult: !!updatedTeacher,
     timestamp: new Date().toISOString()
   });
@@ -375,7 +398,8 @@ const getDashboardStats = catchAsync(async (req, res) => {
         country: teacherData.country,
         email: teacherData.email,
         phone: teacherData.phone,
-        reviewsCount: teacherData.reviewsCount || 0
+        reviewsCount: teacherData.reviewsCount || 0,
+        certificates: teacherData.certificates || []
       }
     }
   });

@@ -77,6 +77,45 @@ export const updateTeacherProfileSchema = Joi.object({
       "boolean.base": "AI Assistant setting must be a boolean value",
     }),
   }).optional(),
+
+  certificates: Joi.array()
+    .items(
+      Joi.object({
+        title: Joi.string().trim().min(3).max(200).required().messages({
+          "string.empty": "Certificate title is required",
+          "string.min": "Certificate title must be at least 3 characters long",
+          "string.max": "Certificate title cannot exceed 200 characters",
+          "any.required": "Certificate title is required",
+        }),
+        issuer: Joi.string().trim().min(2).max(200).required().messages({
+          "string.empty": "Certificate issuer is required",
+          "string.min": "Certificate issuer must be at least 2 characters long",
+          "string.max": "Certificate issuer cannot exceed 200 characters",
+          "any.required": "Certificate issuer is required",
+        }),
+        issueDate: Joi.alternatives()
+          .try(
+            Joi.date().max("now"),
+            Joi.number().integer().min(1900).max(new Date().getFullYear())
+          )
+          .required()
+          .messages({
+            "date.max": "Issue date cannot be in the future",
+            "number.min": "Issue year must be after 1900",
+            "number.max": "Issue year cannot be in the future",
+            "any.required": "Issue date is required",
+          }),
+        url: Joi.string().trim().uri().optional().allow("").messages({
+          "string.uri": "Certificate URL must be a valid URL",
+        }),
+      })
+    )
+    .max(10)
+    .optional()
+    .messages({
+      "array.base": "Certificates must be an array",
+      "array.max": "Cannot have more than 10 certificates",
+    }),
 })
   .min(1)
   .messages({

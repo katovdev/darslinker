@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { uploadImage, uploadCourseCover, uploadVideo, uploadDocument } from "../controllers/upload.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
-import upload from "../middlewares/upload.middleware.js";
+import upload, { uploadSingleDocument } from "../middlewares/upload.middleware.js";
 
 const uploadRouter = Router();
 
@@ -81,7 +81,7 @@ uploadRouter.post("/video", authenticate, upload.single("file"), uploadVideo);
  * @swagger
  * /upload/document:
  *   post:
- *     summary: Upload document
+ *     summary: Upload document (certificate, PDF, etc.)
  *     tags: [Upload]
  *     security:
  *       - BearerAuth: []
@@ -99,6 +99,20 @@ uploadRouter.post("/video", authenticate, upload.single("file"), uploadVideo);
  *       200:
  *         description: Document uploaded successfully
  */
-uploadRouter.post("/document", authenticate, upload.single("file"), uploadDocument);
+// Add request logging middleware
+uploadRouter.use("/document", (req, res, next) => {
+  console.log("🔍 Document upload route hit:", {
+    method: req.method,
+    url: req.url,
+    headers: {
+      'content-type': req.get('content-type'),
+      'authorization': req.get('authorization') ? 'Bearer ***' : 'None'
+    },
+    timestamp: new Date().toISOString()
+  });
+  next();
+});
+
+uploadRouter.post("/document", authenticate, uploadSingleDocument, uploadDocument);
 
 export default uploadRouter;

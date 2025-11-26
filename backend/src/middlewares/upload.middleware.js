@@ -52,14 +52,51 @@ const fileFilter = (req, file, cb) => {
 };
 
 /**
+ * File filter for documents (images and PDFs only, no videos)
+ * @param {Object} req - Express request object
+ * @param {Object} file - Uploaded file
+ * @param {Function} cb - Callback function
+ */
+const documentFileFilter = (req, file, cb) => {
+  // Allowed formats for documents (images and PDF only)
+  const allowedFormats = /jpeg|jpg|png|pdf/;
+  const allowedMimetypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+
+  const extname = path.extname(file.originalname).toLowerCase();
+  const mimetype = file.mimetype;
+
+  // Check if file format is allowed
+  if (allowedFormats.test(extname.slice(1)) && allowedMimetypes.includes(mimetype)) {
+    return cb(null, true);
+  }
+
+  cb(
+    new Error(
+      "Invalid file type. Only images (JPEG, PNG) and PDF documents are allowed"
+    )
+  );
+};
+
+/**
  * Multer upload middleware configuration
  */
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 100 * 1024 * 1024, // 50MB max file size
+    fileSize: 100 * 1024 * 1024, // 100MB max file size
   },
   fileFilter: fileFilter,
+});
+
+/**
+ * Multer upload middleware for documents (images and PDFs)
+ */
+const uploadDocument = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB max file size for documents
+  },
+  fileFilter: documentFileFilter,
 });
 
 /**
@@ -84,6 +121,31 @@ export const uploadCourseMedia = upload.fields([
   { name: "courseImage", maxCount: 1 },
   { name: "videoUrl", maxCount: 1 },
 ]);
+
+/**
+ * Upload single document middleware (for certificates, etc.)
+ */
+export const uploadSingleDocument = (req, res, next) => {
+  const middleware = uploadDocument.single("file");
+
+  middleware(req, res, (err) => {
+    if (err) {
+      console.error("❌ Multer document upload error:", {
+        error: err.message,
+        code: err.code,
+        field: err.field,
+        stack: err.stack
+      });
+    } else {
+      console.log("✅ Multer document processing completed", {
+        hasFile: !!req.file,
+        fileName: req.file?.originalname,
+        size: req.file?.size
+      });
+    }
+    next(err);
+  });
+};
 
 /**
  * Error handling middleware for multer

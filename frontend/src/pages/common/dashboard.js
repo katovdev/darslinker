@@ -1083,6 +1083,40 @@ function getLandingSettingsHTML(user) {
           gap: 16px;
         }
 
+        #certificatesList {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 20px;
+        }
+
+        .certificate-card {
+          position: relative;
+          background: rgba(58, 56, 56, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          overflow: hidden;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .certificate-card:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .certificate-image {
+          width: 100%;
+          height: 200px;
+          overflow: hidden;
+        }
+
+        .certificate-content {
+          padding: 16px;
+        }
+
+        .certificate-remove-btn:hover {
+          background: rgba(239, 68, 68, 0.8) !important;
+        }
+
         .certificate-item {
           display: flex;
           justify-content: space-between;
@@ -1123,6 +1157,7 @@ function getLandingSettingsHTML(user) {
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
+          margin-top: 20px;
         }
 
         .course-item, .testimonial-item {
@@ -1522,7 +1557,16 @@ function initializeLandingSettings() {
 // Handle landing profile photo upload
 async function handleLandingProfilePhotoUpload(e) {
   const file = e.target.files[0];
-  if (!file) return;
+  if (!file) {
+    console.log('❌ No file selected for photo upload');
+    return;
+  }
+
+  console.log('📸 Starting photo upload:', {
+    fileName: file.name,
+    fileSize: file.size,
+    fileType: file.type
+  });
 
   // Validate file size (max 5MB)
   if (file.size > 5 * 1024 * 1024) {
@@ -1546,6 +1590,9 @@ async function handleLandingProfilePhotoUpload(e) {
     formData.append('file', file);
 
     const token = localStorage.getItem('accessToken');
+    console.log('🔐 Using token for photo upload:', token ? 'Token present' : 'No token found');
+
+    console.log('📡 Uploading to:', `${config.api.baseUrl}/upload/image`);
     const response = await fetch(`${config.api.baseUrl}/upload/image`, {
       method: 'POST',
       headers: {
@@ -1554,7 +1601,9 @@ async function handleLandingProfilePhotoUpload(e) {
       body: formData
     });
 
+    console.log('📡 Upload response status:', response.status);
     const data = await response.json();
+    console.log('📡 Upload response data:', data);
 
     if (data.success) {
       // Update avatar preview
@@ -1562,13 +1611,19 @@ async function handleLandingProfilePhotoUpload(e) {
       
       // Update user profile via API
       const user = store.getState().user;
+      console.log('👤 Updating teacher profile with image URL:', data.url);
       const result = await apiService.updateTeacherProfile(user._id, { profileImage: data.url });
-      
+      console.log('👤 Profile update result:', result);
+
       if (result.success) {
         // Update store and session
         store.setState({ user: { ...user, ...result.teacher } });
         sessionStorage.setItem('currentUser', JSON.stringify({ ...user, ...result.teacher }));
+        console.log('✅ Photo upload and profile update completed successfully');
         showSuccessToast('Profile photo updated successfully');
+      } else {
+        console.error('❌ Profile update failed:', result.message);
+        showErrorToast('Failed to update profile with new photo');
       }
     } else {
       throw new Error(data.message);
@@ -1714,70 +1769,187 @@ function rgbToHex(rgb) {
   return `#${r}${g}${b}`;
 }
 
-// Open color picker modal for landing settings
+// Open color picker modal for landing settings (same as Customize UI)
 window.openLandingColorPickerModal = function() {
   const currentColor = document.getElementById('landingColorInput')?.value || '#7ea2d4';
   
-  const modalHTML = `
-    <div id="landingColorPickerModalOverlay" onclick="closeLandingColorPickerModal()" 
-         style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 9998; display: flex; align-items: center; justify-content: center;">
-      <div onclick="event.stopPropagation()" 
-           style="background: rgba(58, 56, 56, 0.95); border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; border: 1px solid var(--primary-color-20); z-index: 9999;">
-        <h3 style="color: #ffffff; margin-bottom: 20px; font-size: 18px; font-weight: 600;">Choose Custom Color</h3>
-        
-        <div style="margin-bottom: 20px;">
-          <div style="display: flex; gap: 16px; align-items: center;">
-            <div style="flex: 1;">
-              <label style="color: rgba(255,255,255,0.6); font-size: 12px; display: block; margin-bottom: 4px;">Pick a color:</label>
-              <input type="color" id="modalLandingColorPicker" value="${currentColor}" 
-                     style="width: 100%; height: 60px; border: 2px solid var(--primary-color-20); border-radius: 8px; cursor: pointer; background: transparent;"
-                     oninput="updateModalLandingColorPreview(this.value)">
-            </div>
-            <div style="flex: 1;">
-              <label style="color: rgba(255,255,255,0.6); font-size: 12px; display: block; margin-bottom: 4px;">Hex Code:</label>
-              <input type="text" id="modalLandingColorHex" value="${currentColor}"
-                     style="width: 100%; padding: 10px; background: rgba(20,20,20,0.8); border: 1px solid var(--primary-color-20); border-radius: 8px; color: #ffffff; font-family: monospace; font-size: 14px;"
-                     oninput="updateModalLandingColorFromHex(this.value)">
-            </div>
+  // Generate color palette grid
+  const generateColorPalette = () => {
+    const colors = [];
+    // Grayscale row
+    for (let i = 0; i <= 10; i++) {
+      const val = Math.round((i / 10) * 255);
+      colors.push(`rgb(${val}, ${val}, ${val})`);
+    }
+    
+    // Color rows - Hue variations
+    const hues = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
+    const lightnesses = [50, 60, 70, 80, 90];
+    
+    hues.forEach(hue => {
+      lightnesses.forEach(lightness => {
+        colors.push(`hsl(${hue}, 100%, ${lightness}%)`);
+      });
+    });
+    
+    return colors;
+  };
+  
+  const colors = generateColorPalette();
+  
+  const modal = document.createElement('div');
+  modal.id = 'landingColorPickerModal';
+  modal.innerHTML = `
+    <div class="modal-overlay" onclick="closeLandingColorPickerModal()"></div>
+    <div class="color-picker-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="color: #ffffff; margin: 0;">Choose Color</h3>
+        <button onclick="closeLandingColorPickerModal()" style="background: none; border: none; color: rgba(255,255,255,0.6); font-size: 24px; cursor: pointer; padding: 0; width: 32px; height: 32px;">×</button>
+      </div>
+      
+      <!-- Color Palette Grid -->
+      <div class="color-palette-grid">
+        ${colors.map(color => `
+          <div class="palette-color" 
+               style="background: ${color};" 
+               onclick="selectLandingPaletteColor('${color}')"
+               title="${color}">
           </div>
-        </div>
-        
-        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
-          <button class="btn-cancel" onclick="closeLandingColorPickerModal()">Cancel</button>
-          <button class="btn-save" onclick="applyLandingCustomColor()">Apply Color</button>
+        `).join('')}
+      </div>
+      
+      <!-- Selected Color Preview -->
+      <div style="margin-top: 20px; padding: 16px; background: rgba(20,20,20,0.5); border-radius: 12px; display: flex; align-items: center; gap: 16px;">
+        <div id="selectedLandingColorPreview" style="width: 60px; height: 60px; border-radius: 12px; background: ${currentColor}; border: 2px solid rgba(255,255,255,0.2);"></div>
+        <div style="flex: 1;">
+          <label style="color: rgba(255,255,255,0.6); font-size: 12px; display: block; margin-bottom: 4px;">Selected Color:</label>
+          <input type="text" id="selectedLandingColorHex" value="${currentColor}" readonly
+                 style="width: 100%; padding: 10px; background: rgba(20,20,20,0.8); border: 1px solid var(--primary-color-20); border-radius: 8px; color: #ffffff; font-family: monospace; font-size: 14px;">
         </div>
       </div>
+      
+      <div class="modal-actions" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
+        <button onclick="closeLandingColorPickerModal()" class="btn-cancel">Cancel</button>
+        <button onclick="applyLandingCustomColor()" class="btn-save">Apply Color</button>
+      </div>
     </div>
+    
+    <style>
+      #landingColorPickerModal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #landingColorPickerModal .color-picker-modal-content {
+        position: relative;
+        background: rgba(30, 30, 30, 0.98);
+        border-radius: 20px;
+        padding: 28px;
+        width: 90%;
+        max-width: 650px;
+        max-height: 85vh;
+        overflow-y: auto;
+        border: 2px solid var(--primary-color);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--primary-color);
+      }
+      #landingColorPickerModal .color-palette-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 4px;
+      }
+      #landingColorPickerModal .palette-color {
+        width: 100%;
+        aspect-ratio: 1;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+      }
+      #landingColorPickerModal .palette-color:hover {
+        transform: scale(1.15);
+        border-color: rgba(255,255,255,0.8);
+        z-index: 10;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      }
+    </style>
   `;
   
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  document.body.appendChild(modal);
+  window.selectedLandingCustomColor = currentColor;
 };
 
 window.closeLandingColorPickerModal = function() {
-  const modal = document.getElementById('landingColorPickerModalOverlay');
+  const modal = document.getElementById('landingColorPickerModal');
   if (modal) modal.remove();
 };
 
-window.updateModalLandingColorPreview = function(color) {
-  const hexInput = document.getElementById('modalLandingColorHex');
-  if (hexInput) hexInput.value = color;
-};
-
-window.updateModalLandingColorFromHex = function(hex) {
-  if (/^#[0-9A-F]{6}$/i.test(hex)) {
-    const picker = document.getElementById('modalLandingColorPicker');
-    if (picker) picker.value = hex;
+window.selectLandingPaletteColor = function(color) {
+  // Convert RGB/HSL to HEX
+  const rgbToHex = (rgb) => {
+    const result = rgb.match(/\d+/g);
+    if (!result) return color;
+    const r = parseInt(result[0]);
+    const g = parseInt(result[1]);
+    const b = parseInt(result[2]);
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+  };
+  
+  const hslToHex = (hsl) => {
+    const result = hsl.match(/\d+/g);
+    if (!result) return color;
+    let h = parseInt(result[0]) / 360;
+    let s = parseInt(result[1]) / 100;
+    let l = parseInt(result[2]) / 100;
+    
+    let r, g, b;
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1/6) return p + (q - p) * 6 * t;
+        if (t < 1/2) return q;
+        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        return p;
+      };
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1/3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1/3);
+    }
+    
+    const toHex = x => {
+      const hex = Math.round(x * 255).toString(16);
+      return hex.length === 1 ? '0' + hex : hex;
+    };
+    return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
+  };
+  
+  let hexColor = color;
+  if (color.startsWith('rgb')) {
+    hexColor = rgbToHex(color);
+  } else if (color.startsWith('hsl')) {
+    hexColor = hslToHex(color);
   }
+  
+  // Update preview
+  document.getElementById('selectedLandingColorPreview').style.background = color;
+  document.getElementById('selectedLandingColorHex').value = hexColor;
+  window.selectedLandingCustomColor = hexColor;
 };
 
 window.applyLandingCustomColor = function() {
-  const color = document.getElementById('modalLandingColorHex')?.value || '#7ea2d4';
-  if (/^#[0-9A-F]{6}$/i.test(color)) {
-    selectLandingPresetColor(color);
-    closeLandingColorPickerModal();
-  } else {
-    showErrorToast('Invalid color format. Please use hex format like #7ea2d4');
-  }
+  const color = window.selectedLandingCustomColor || '#7ea2d4';
+  selectLandingPresetColor(color);
+  closeLandingColorPickerModal();
 };
 
 // Load featured courses from backend
@@ -1947,15 +2119,37 @@ async function loadCertificates() {
     const certificatesList = document.getElementById('certificatesList');
     if (!certificatesList) return;
 
-    // Check if user has certificates in their profile
-    if (user.certificates && user.certificates.length > 0) {
-      certificatesList.innerHTML = user.certificates.map((cert, index) => `
-        <div class="certificate-item" data-certificate-index="${index}">
-          <div class="certificate-info">
-            <h4>${cert.title}</h4>
-            <p>${cert.issuer} • ${cert.issueDate || cert.year || '2023'}</p>
+    console.log('🔄 Loading certificates from backend...');
+
+    // Fetch fresh teacher data from backend to get latest certificates
+    const response = await apiService.getTeacherDashboard(user._id);
+    console.log('📡 Full API response:', response);
+
+    if (response && response.success && response.data && response.data.teacher) {
+      const latestTeacher = response.data.teacher;
+      console.log('👤 Teacher data structure:', latestTeacher);
+      console.log('📋 Teacher certificates field:', latestTeacher.certificates);
+      console.log('📋 Certificates array length:', (latestTeacher.certificates || []).length);
+
+      // Update store with latest teacher data
+      const updatedUser = { ...user, ...latestTeacher };
+      store.setState({ user: updatedUser });
+
+      console.log('✅ Latest certificates from backend:', latestTeacher.certificates || []);
+
+      // Check if user has certificates in their profile
+      if (latestTeacher.certificates && latestTeacher.certificates.length > 0) {
+      certificatesList.innerHTML = latestTeacher.certificates.map((cert, index) => `
+        <div class="certificate-card" data-certificate-index="${index}">
+          <div class="certificate-image">
+            <img src="${cert.url}" alt="${cert.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px 8px 0 0;">
           </div>
-          <button type="button" class="remove-btn" onclick="removeCertificate(${index})">
+          <div class="certificate-content">
+            <h4 style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 600;">${cert.title}</h4>
+            <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.7); font-size: 14px;">${cert.issuer}</p>
+            <p style="margin: 0; color: rgba(255,255,255,0.5); font-size: 13px;">${cert.issueDate || cert.year || '2023'}</p>
+          </div>
+          <button type="button" class="certificate-remove-btn" onclick="removeCertificate(${index})" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
               <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
             </svg>
@@ -1963,55 +2157,84 @@ async function loadCertificates() {
         </div>
       `).join('');
     } else {
-      // Show mock certificate if no certificates exist
+      // Show empty state when no certificates exist
       certificatesList.innerHTML = `
-        <div class="certificate-item">
-          <div class="certificate-info">
-            <h4>Meta Front-End Developer</h4>
-            <p>Meta (Facebook) • 2023</p>
-          </div>
-          <button type="button" class="remove-btn" onclick="removeMockCertificate(this)">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-            </svg>
-          </button>
+        <div class="empty-state">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="margin-bottom: 16px;">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="14,2 14,8 20,8" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="16" y1="13" x2="8" y2="13" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"/>
+            <line x1="16" y1="17" x2="8" y2="17" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p style="color: rgba(255,255,255,0.6); margin: 0; text-align: center;">No certificates added yet. Add your first certificate to showcase your expertise.</p>
         </div>
       `;
+      }
+    } else {
+      console.error('❌ Failed to load teacher data for certificates');
+      // Fallback to local data if API fails
+      const localCertificates = user.certificates || [];
+      if (localCertificates.length > 0) {
+        certificatesList.innerHTML = localCertificates.map((cert, index) => `
+          <div class="certificate-card" data-certificate-index="${index}">
+            <div class="certificate-image">
+              <img src="${cert.url}" alt="${cert.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px 8px 0 0;">
+            </div>
+            <div class="certificate-content">
+              <h4 style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 600;">${cert.title}</h4>
+              <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.7); font-size: 14px;">${cert.issuer}</p>
+              <p style="margin: 0; color: rgba(255,255,255,0.5); font-size: 13px;">${cert.issueDate || cert.year || '2023'}</p>
+            </div>
+            <button type="button" class="certificate-remove-btn" onclick="removeCertificate(${index})" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+              </svg>
+            </button>
+          </div>
+        `).join('');
+      } else {
+        certificatesList.innerHTML = `
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="margin-bottom: 16px;">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="14,2 14,8 20,8" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <line x1="16" y1="13" x2="8" y2="13" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"/>
+              <line x1="16" y1="17" x2="8" y2="17" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <p style="color: rgba(255,255,255,0.6); margin: 0; text-align: center;">No certificates added yet. Add your first certificate to showcase your expertise.</p>
+          </div>
+        `;
+      }
     }
   } catch (error) {
-    console.error('Error loading certificates:', error);
+    console.error('❌ Error loading certificates:', error);
   }
 }
 
 // Add new certificate
-window.addNewCertificate = function() {
-  // Create a simple modal for adding certificate
+window.addNewCertificate = async function() {
   const modal = document.createElement('div');
   modal.className = 'certificate-modal';
   modal.innerHTML = `
     <div class="modal-overlay" onclick="closeCertificateModal()"></div>
-    <div class="modal-content">
+    <div class="modal-content" onclick="event.stopPropagation()">
       <h3 style="margin-bottom: 20px; color: #ffffff;">Add Certificate</h3>
       <form id="addCertificateForm">
         <div class="form-field">
-          <label class="field-label">Certificate Title</label>
+          <label class="field-label">Certificate Title *</label>
           <input type="text" class="form-input" name="title" placeholder="e.g. Full Stack Web Developer" required>
         </div>
         <div class="form-field">
-          <label class="field-label">Issuing Organization</label>
+          <label class="field-label">Issuing Organization *</label>
           <input type="text" class="form-input" name="issuer" placeholder="e.g. Meta (Facebook)" required>
         </div>
         <div class="form-field">
-          <label class="field-label">Issue Year</label>
+          <label class="field-label">Issue Year *</label>
           <input type="number" class="form-input" name="year" placeholder="2023" min="2000" max="${new Date().getFullYear()}" required>
         </div>
         <div class="form-field">
-          <label class="field-label">Certificate URL (optional)</label>
-          <input type="url" class="form-input" name="url" id="certificateUrlInput" placeholder="https://...">
-        </div>
-        <div class="form-field">
-          <label class="field-label">Or Upload Certificate Image/PDF</label>
-          <input type="file" id="certificateFileInput" accept="image/*,.pdf" style="display: none;">
+          <label class="field-label">Upload Certificate Image *</label>
+          <input type="file" id="certificateFileInput" accept="image/jpeg,image/jpg,image/png" style="display: none;" onchange="handleCertificateFileSelect(event)">
           <button type="button" class="btn-upload-cert" onclick="document.getElementById('certificateFileInput').click()">
             📎 Choose File
           </button>
@@ -2019,7 +2242,7 @@ window.addNewCertificate = function() {
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-cancel" onclick="closeCertificateModal()">Cancel</button>
-          <button type="submit" class="btn-save">Add Certificate</button>
+          <button type="submit" class="btn-save" id="addCertificateBtn">Add Certificate</button>
         </div>
       </form>
     </div>
@@ -2036,7 +2259,7 @@ window.addNewCertificate = function() {
         justify-content: center;
       }
       .modal-overlay {
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         right: 0;
@@ -2050,7 +2273,8 @@ window.addNewCertificate = function() {
         padding: 24px;
         width: 90%;
         max-width: 500px;
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid var(--primary-color-20);
+        z-index: 10000;
       }
       .modal-actions {
         display: flex;
@@ -2062,43 +2286,114 @@ window.addNewCertificate = function() {
   `;
 
   document.body.appendChild(modal);
+  window.certificateFileToUpload = null;
 
   // Handle form submission
-  document.getElementById('addCertificateForm').addEventListener('submit', function(e) {
+  document.getElementById('addCertificateForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    
     const formData = new FormData(this);
-    const certificate = {
-      title: formData.get('title'),
-      issuer: formData.get('issuer'),
-      issueDate: formData.get('year'),
-      url: formData.get('url') || ''
-    };
-
-    // Add to certificates list (in real app, save to backend)
-    const certificatesList = document.getElementById('certificatesList');
-    const newCertificateHTML = `
-      <div class="certificate-item">
-        <div class="certificate-info">
-          <h4>${certificate.title}</h4>
-          <p>${certificate.issuer} • ${certificate.issueDate}</p>
-        </div>
-        <button type="button" class="remove-btn" onclick="removeMockCertificate(this)">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-          </svg>
-        </button>
-      </div>
-    `;
-
-    if (certificatesList.querySelector('.empty-state')) {
-      certificatesList.innerHTML = newCertificateHTML;
-    } else {
-      certificatesList.insertAdjacentHTML('beforeend', newCertificateHTML);
+    const title = formData.get('title');
+    const issuer = formData.get('issuer');
+    const year = formData.get('year');
+    
+    if (!window.certificateFileToUpload) {
+      showErrorToast('Please upload a certificate file');
+      return;
     }
 
-    closeCertificateModal();
-    showSuccessToast('Certificate added successfully!');
+    try {
+      const btn = document.getElementById('addCertificateBtn');
+      btn.disabled = true;
+      btn.textContent = 'Uploading...';
+
+      console.log('📋 Starting certificate creation:', { title, issuer, year });
+
+      // Upload file to backend
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', window.certificateFileToUpload);
+
+      const token = localStorage.getItem('accessToken');
+      console.log('📤 Uploading certificate file...');
+      const uploadResponse = await fetch(`${config.api.baseUrl}/upload/document`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: uploadFormData
+      });
+
+      console.log('📤 Upload response status:', uploadResponse.status);
+
+      if (!uploadResponse.ok) {
+        throw new Error('Upload failed');
+      }
+
+      const uploadData = await uploadResponse.json();
+      console.log('📤 Upload data:', uploadData);
+
+      if (!uploadData.success) {
+        throw new Error(uploadData.message || 'Upload failed');
+      }
+
+      // Save certificate to user profile
+      const user = store.getState().user;
+      const certificates = user.certificates || [];
+      const newCertificate = {
+        title,
+        issuer,
+        issueDate: year,
+        url: uploadData.url
+      };
+      certificates.push(newCertificate);
+
+      console.log('📋 Saving certificate to profile:', newCertificate);
+      console.log('📋 Updated certificates array:', certificates);
+
+      const result = await apiService.updateTeacherProfile(user._id, { certificates });
+      console.log('📋 Profile update result:', result);
+
+      if (result.success) {
+        console.log('✅ Certificate saved successfully, updating local state');
+        store.setState({ user: { ...user, certificates } });
+        loadCertificates();
+        closeCertificateModal();
+        showSuccessToast('Certificate added successfully!');
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      console.error('Certificate add error:', error);
+      showErrorToast(error.message || 'Failed to add certificate');
+      const btn = document.getElementById('addCertificateBtn');
+      btn.disabled = false;
+      btn.textContent = 'Add Certificate';
+    }
   });
+};
+
+// Handle certificate file selection
+window.handleCertificateFileSelect = function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Validate file size (max 10MB)
+  if (file.size > 10 * 1024 * 1024) {
+    showErrorToast('File size too large. Max 10MB');
+    event.target.value = '';
+    return;
+  }
+
+  // Validate file type (only images and PDF, no videos)
+  const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+  if (!validTypes.includes(file.type)) {
+    showErrorToast('Invalid file type. Only images (JPEG, PNG) and PDF allowed');
+    event.target.value = '';
+    return;
+  }
+
+  window.certificateFileToUpload = file;
+  document.getElementById('certificateFileName').textContent = file.name;
 };
 
 // Close certificate modal
@@ -2109,21 +2404,55 @@ window.closeCertificateModal = function() {
   }
 };
 
-// Remove certificate
+// Remove certificate with confirmation
 window.removeCertificate = function(index) {
-  const item = document.querySelector(`[data-certificate-index="${index}"]`);
-  if (item) {
-    item.remove();
-    showSuccessToast('Certificate removed');
-  }
+  const user = store.getState().user;
+  const certificate = user.certificates?.[index];
+  
+  if (!certificate) return;
+  
+  // Show confirmation modal
+  const modal = document.createElement('div');
+  modal.innerHTML = `
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 9999; display: flex; align-items: center; justify-content: center;" onclick="this.remove()">
+      <div onclick="event.stopPropagation()" style="background: rgba(58, 56, 56, 0.98); border-radius: 16px; padding: 28px; width: 90%; max-width: 420px; border: 2px solid var(--primary-color-20);">
+        <div style="text-align: center; margin-bottom: 20px;">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 16px;">
+            <circle cx="12" cy="12" r="10" stroke="#ef4444" stroke-width="2"/>
+            <path d="M12 8v4M12 16h.01" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <h3 style="color: #ffffff; margin: 0 0 8px 0; font-size: 20px;">Delete Certificate?</h3>
+          <p style="color: rgba(255,255,255,0.6); margin: 0; font-size: 14px;">Are you sure you want to delete "${certificate.title}"? This action cannot be undone.</p>
+        </div>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+          <button onclick="this.closest('div[style*=fixed]').remove()" class="btn-cancel">Cancel</button>
+          <button onclick="confirmRemoveCertificate(${index})" style="background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer;">Delete</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
 };
 
-// Remove mock certificate
-window.removeMockCertificate = function(button) {
-  const item = button.closest('.certificate-item');
-  if (item) {
-    item.remove();
-    showSuccessToast('Certificate removed');
+window.confirmRemoveCertificate = async function(index) {
+  try {
+    const user = store.getState().user;
+    const certificates = [...(user.certificates || [])];
+    certificates.splice(index, 1);
+
+    const result = await apiService.updateTeacherProfile(user._id, { certificates });
+
+    if (result.success) {
+      store.setState({ user: { ...user, certificates } });
+      loadCertificates();
+      document.querySelector('div[style*="position: fixed"]')?.remove();
+      showSuccessToast('Certificate deleted successfully');
+    } else {
+      throw new Error(result.message);
+    }
+  } catch (error) {
+    console.error('Certificate delete error:', error);
+    showErrorToast('Failed to delete certificate');
   }
 };
 
