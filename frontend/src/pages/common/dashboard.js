@@ -942,6 +942,7 @@ window.openLandingSettings = function() {
 
 // Helper function to get landing settings HTML
 function getLandingSettingsHTML(user) {
+  const theme = getTheme();
   const landingURL = `https://darslinker.uz/teacher/${user.firstName?.toLowerCase()}-${user.lastName?.toLowerCase()}`;
 
   return `
@@ -1241,6 +1242,82 @@ function getLandingSettingsHTML(user) {
           margin-bottom: 16px;
           opacity: 0.5;
         }
+
+        /* Landing Color Picker Styles */
+        .color-picker-wrapper-landing {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 20px;
+        }
+        .color-preview-landing {
+          width: 60px;
+          height: 60px;
+          border-radius: 12px;
+          border: 2px solid var(--primary-color-20);
+          cursor: pointer;
+          transition: all 0.3s ease;
+          position: relative;
+        }
+        .color-preview-landing:hover {
+          transform: scale(1.05);
+          border-color: var(--primary-color);
+        }
+        .color-input-wrapper-landing {
+          flex: 1;
+          position: relative;
+        }
+        .color-input-landing {
+          width: 100%;
+          padding: 12px 16px;
+          background: rgba(20, 20, 20, 0.8);
+          border: 1px solid var(--primary-color-20);
+          border-radius: 8px;
+          color: #ffffff;
+          font-size: 14px;
+          font-family: monospace;
+          outline: none;
+          transition: border-color 0.2s ease;
+        }
+        .color-input-landing:focus {
+          border-color: var(--primary-color);
+        }
+        #landingColorPicker {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+          cursor: pointer;
+        }
+        .preset-colors-label-landing {
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 14px;
+          margin-bottom: 12px;
+          font-weight: 500;
+        }
+        .preset-colors-landing {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        .preset-color-landing {
+          width: 48px;
+          height: 48px;
+          border-radius: 12px;
+          cursor: pointer;
+          border: 2px solid transparent;
+          transition: all 0.3s ease;
+        }
+        .preset-color-landing:hover {
+          transform: scale(1.1);
+          border-color: #ffffff;
+        }
+        .preset-color-landing.active {
+          border-color: #ffffff;
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        }
       </style>
 
       <form id="landingSettingsForm">
@@ -1362,19 +1439,38 @@ function getLandingSettingsHTML(user) {
         <!-- Theme & Colors -->
         <div class="landing-section">
           <div class="landing-section-title">Theme & Colors</div>
-          <h4 style="color: #ffffff; margin-bottom: 16px; font-size: 14px;">Primary Color</h4>
-          <div class="theme-colors">
-            <div class="color-option active" data-color="#7c3aed">
-              <div class="color-circle" style="background: #7c3aed;"></div>
-              <div class="color-label">#7c3aed</div>
+          <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 16px; font-size: 14px;">
+            Choose a primary color for your landing page
+          </p>
+          
+          <div class="color-picker-wrapper-landing">
+            <div class="color-preview-landing" id="landingColorPreview" style="background-color: ${user.landingPageSettings?.themeColor || theme.primaryColor};">
+              <input type="color" id="landingColorPicker" value="${user.landingPageSettings?.themeColor || theme.primaryColor}" onchange="updateLandingColorFromPicker(this.value)">
             </div>
-            <div class="color-option" data-color="#0a0e27">
-              <div class="color-circle" style="background: #0a0e27;"></div>
-              <div class="color-label">#0a0e27</div>
+            <div class="color-input-wrapper-landing">
+              <input type="text" class="color-input-landing" id="landingColorInput" value="${user.landingPageSettings?.themeColor || theme.primaryColor}" placeholder="#7ea2d4" oninput="updateLandingColorPreview(this.value)">
             </div>
-            <div class="color-option" data-color="#0e0e0">
-              <div class="color-circle" style="background: #0e0e0;"></div>
-              <div class="color-label">#0e0e0</div>
+          </div>
+          
+          <div class="preset-colors-label-landing">Quick Presets</div>
+          <div class="preset-colors-landing" id="landingPresetColors">
+            ${presetColors.map(color => `
+              <div class="preset-color-landing ${(user.landingPageSettings?.themeColor || theme.primaryColor) === color.value ? 'active' : ''}" 
+                   style="background-color: ${color.value};" 
+                   onclick="selectLandingPresetColor('${color.value}')"
+                   title="${color.name}">
+              </div>
+            `).join('')}
+            
+            <!-- Add Custom Color Button -->
+            <div class="preset-color-landing add-color-btn-landing" 
+                 onclick="openLandingColorPickerModal()"
+                 title="Add Custom Color"
+                 style="background: transparent; border: 2px dashed var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
             </div>
           </div>
         </div>
@@ -1560,6 +1656,128 @@ window.copyLandingURL = function(url) {
     document.body.removeChild(textArea);
     showSuccessToast('Landing page URL copied to clipboard!');
   });
+};
+
+// Landing Color Picker Functions
+window.updateLandingColorPreview = function(color) {
+  if (/^#[0-9A-F]{6}$/i.test(color)) {
+    const preview = document.getElementById('landingColorPreview');
+    const picker = document.getElementById('landingColorPicker');
+    if (preview) preview.style.backgroundColor = color;
+    if (picker) picker.value = color;
+    
+    // Update active preset
+    document.querySelectorAll('.preset-color-landing').forEach(preset => {
+      preset.classList.remove('active');
+    });
+  }
+};
+
+window.updateLandingColorFromPicker = function(color) {
+  const input = document.getElementById('landingColorInput');
+  const preview = document.getElementById('landingColorPreview');
+  if (input) input.value = color;
+  if (preview) preview.style.backgroundColor = color;
+  
+  // Update active preset
+  document.querySelectorAll('.preset-color-landing').forEach(preset => {
+    preset.classList.remove('active');
+  });
+};
+
+window.selectLandingPresetColor = function(color) {
+  const input = document.getElementById('landingColorInput');
+  const preview = document.getElementById('landingColorPreview');
+  const picker = document.getElementById('landingColorPicker');
+  
+  if (input) input.value = color;
+  if (preview) preview.style.backgroundColor = color;
+  if (picker) picker.value = color;
+  
+  // Update active state
+  document.querySelectorAll('.preset-color-landing').forEach(preset => {
+    preset.classList.remove('active');
+    if (preset.style.backgroundColor === color || rgbToHex(preset.style.backgroundColor) === color) {
+      preset.classList.add('active');
+    }
+  });
+};
+
+// Helper function to convert RGB to Hex
+function rgbToHex(rgb) {
+  if (!rgb || rgb.startsWith('#')) return rgb;
+  const match = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+  if (!match) return rgb;
+  const r = parseInt(match[1]).toString(16).padStart(2, '0');
+  const g = parseInt(match[2]).toString(16).padStart(2, '0');
+  const b = parseInt(match[3]).toString(16).padStart(2, '0');
+  return `#${r}${g}${b}`;
+}
+
+// Open color picker modal for landing settings
+window.openLandingColorPickerModal = function() {
+  const currentColor = document.getElementById('landingColorInput')?.value || '#7ea2d4';
+  
+  const modalHTML = `
+    <div id="landingColorPickerModalOverlay" onclick="closeLandingColorPickerModal()" 
+         style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 9998; display: flex; align-items: center; justify-content: center;">
+      <div onclick="event.stopPropagation()" 
+           style="background: rgba(58, 56, 56, 0.95); border-radius: 16px; padding: 24px; width: 90%; max-width: 400px; border: 1px solid var(--primary-color-20); z-index: 9999;">
+        <h3 style="color: #ffffff; margin-bottom: 20px; font-size: 18px; font-weight: 600;">Choose Custom Color</h3>
+        
+        <div style="margin-bottom: 20px;">
+          <div style="display: flex; gap: 16px; align-items: center;">
+            <div style="flex: 1;">
+              <label style="color: rgba(255,255,255,0.6); font-size: 12px; display: block; margin-bottom: 4px;">Pick a color:</label>
+              <input type="color" id="modalLandingColorPicker" value="${currentColor}" 
+                     style="width: 100%; height: 60px; border: 2px solid var(--primary-color-20); border-radius: 8px; cursor: pointer; background: transparent;"
+                     oninput="updateModalLandingColorPreview(this.value)">
+            </div>
+            <div style="flex: 1;">
+              <label style="color: rgba(255,255,255,0.6); font-size: 12px; display: block; margin-bottom: 4px;">Hex Code:</label>
+              <input type="text" id="modalLandingColorHex" value="${currentColor}"
+                     style="width: 100%; padding: 10px; background: rgba(20,20,20,0.8); border: 1px solid var(--primary-color-20); border-radius: 8px; color: #ffffff; font-family: monospace; font-size: 14px;"
+                     oninput="updateModalLandingColorFromHex(this.value)">
+            </div>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px;">
+          <button class="btn-cancel" onclick="closeLandingColorPickerModal()">Cancel</button>
+          <button class="btn-save" onclick="applyLandingCustomColor()">Apply Color</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+};
+
+window.closeLandingColorPickerModal = function() {
+  const modal = document.getElementById('landingColorPickerModalOverlay');
+  if (modal) modal.remove();
+};
+
+window.updateModalLandingColorPreview = function(color) {
+  const hexInput = document.getElementById('modalLandingColorHex');
+  if (hexInput) hexInput.value = color;
+};
+
+window.updateModalLandingColorFromHex = function(hex) {
+  if (/^#[0-9A-F]{6}$/i.test(hex)) {
+    const picker = document.getElementById('modalLandingColorPicker');
+    if (picker) picker.value = hex;
+  }
+};
+
+window.applyLandingCustomColor = function() {
+  const color = document.getElementById('modalLandingColorHex')?.value || '#7ea2d4';
+  if (/^#[0-9A-F]{6}$/i.test(color)) {
+    selectLandingPresetColor(color);
+    closeLandingColorPickerModal();
+  } else {
+    showErrorToast('Invalid color format. Please use hex format like #7ea2d4');
+  }
 };
 
 // Load featured courses from backend
@@ -1931,7 +2149,7 @@ async function handleLandingSettingsSave(event) {
       },
       featuredCourses: formData.getAll('featuredCourses'),
       featuredTestimonials: formData.getAll('featuredTestimonials'),
-      themeColor: document.querySelector('.color-option.active')?.dataset.color || '#7c3aed'
+      themeColor: document.getElementById('landingColorInput')?.value || '#7ea2d4'
     };
 
     console.log('💾 Saving landing page data:', landingData);
@@ -2969,6 +3187,7 @@ function getCustomizeUIHTML() {
           border: 2px solid var(--border-color);
           cursor: pointer;
           transition: all 0.3s ease;
+          position: relative;
         }
         .color-preview:hover {
           transform: scale(1.05);
@@ -2976,6 +3195,7 @@ function getCustomizeUIHTML() {
         }
         .color-input-wrapper {
           flex: 1;
+          position: relative;
         }
         .color-input {
           width: 100%;
@@ -2986,6 +3206,15 @@ function getCustomizeUIHTML() {
           color: var(--text-primary);
           font-size: 14px;
           font-family: monospace;
+        }
+        #colorPicker {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+          cursor: pointer;
         }
         .preset-colors-label {
           color: var(--text-secondary);
@@ -3114,10 +3343,11 @@ function getCustomizeUIHTML() {
         <p class="section-subtitle">${t('customizeUI.customColor')}</p>
         
         <div class="color-picker-wrapper">
-          <div class="color-preview" id="colorPreview" style="background-color: ${theme.primaryColor};" onclick="document.getElementById('colorPicker').click()"></div>
+          <div class="color-preview" id="colorPreview" style="background-color: ${theme.primaryColor};">
+            <input type="color" id="colorPicker" value="${theme.primaryColor}" onchange="updateColorFromPicker(this.value)">
+          </div>
           <div class="color-input-wrapper">
             <input type="text" class="color-input" id="colorInput" value="${theme.primaryColor}" placeholder="#7ea2d4" oninput="updateColorPreview(this.value)">
-            <input type="color" id="colorPicker" value="${theme.primaryColor}" style="display: none;" onchange="updateColorFromPicker(this.value)">
           </div>
         </div>
         
