@@ -1643,6 +1643,104 @@ async function handleLandingProfilePhotoUpload(e) {
   }
 }
 
+// Handle video upload for lesson creation
+window.handleVideoUpload = async function(input) {
+  const file = input.files[0];
+  if (!file) return;
+
+  const lessonForm = input.closest('.lesson-form');
+  const uploadSection = lessonForm.querySelector('.video-upload-section');
+  const uploadContent = uploadSection.querySelector('.upload-content');
+  const uploadProgress = uploadSection.querySelector('.upload-progress');
+  const uploadSuccess = uploadSection.querySelector('.upload-success');
+  const progressFill = uploadProgress.querySelector('.progress-fill');
+  const uploadStatus = uploadProgress.querySelector('.upload-status');
+  const videoUrlInput = lessonForm.querySelector('.video-url-input');
+  const videoFilename = uploadSuccess.querySelector('.video-filename');
+
+  // Validate file size (max 100MB)
+  if (file.size > 100 * 1024 * 1024) {
+    showErrorToast('File size too large. Maximum 100MB allowed');
+    input.value = '';
+    return;
+  }
+
+  // Validate file type
+  if (!file.type.startsWith('video/')) {
+    showErrorToast('Invalid file type. Only video files allowed');
+    input.value = '';
+    return;
+  }
+
+  try {
+    // Show upload progress
+    uploadContent.style.display = 'none';
+    uploadProgress.style.display = 'block';
+    uploadSuccess.style.display = 'none';
+
+    // Upload to backend
+    const formData = new FormData();
+    formData.append('file', file);
+    const token = localStorage.getItem('accessToken');
+
+    const xhr = new XMLHttpRequest();
+
+    // Track upload progress
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable) {
+        const percentComplete = (e.loaded / e.total) * 100;
+        progressFill.style.width = percentComplete + '%';
+        uploadStatus.textContent = `Uploading... ${Math.round(percentComplete)}%`;
+      }
+    });
+
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        try {
+          const response = JSON.parse(xhr.responseText);
+          if (response.success) {
+            // Store video URL
+            videoUrlInput.value = response.url;
+            videoFilename.textContent = file.name;
+
+            // Show success state
+            uploadProgress.style.display = 'none';
+            uploadSuccess.style.display = 'block';
+
+            showSuccessToast('Video uploaded successfully');
+          } else {
+            throw new Error(response.message || 'Upload failed');
+          }
+        } catch (e) {
+          throw new Error('Failed to parse server response');
+        }
+      } else {
+        throw new Error(`Upload failed with status: ${xhr.status}`);
+      }
+    };
+
+    xhr.onerror = function() {
+      throw new Error('Network error during upload');
+    };
+
+    xhr.open('POST', `${config.api.baseUrl}/upload/video`);
+    xhr.setRequestHeader('Authorization', `Bearer ${token}`);
+    xhr.send(formData);
+
+  } catch (error) {
+    console.error('Video upload error:', error);
+    showErrorToast('Failed to upload video. Please try again.');
+
+    // Reset upload section
+    uploadContent.style.display = 'block';
+    uploadProgress.style.display = 'none';
+    uploadSuccess.style.display = 'none';
+    progressFill.style.width = '0%';
+    input.value = '';
+    videoUrlInput.value = '';
+  }
+};
+
 // Handle certificate file upload
 async function handleCertificateFileUpload(e) {
   const file = e.target.files[0];
@@ -7753,19 +7851,193 @@ window.addLesson = function(type, dropdownLink, event) {
   switch(type) {
     case 'video':
       lessonHTML = `
+        <style>
+          .lesson-form {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+          }
+          .lesson-form h5 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+          }
+          .lesson-form .form-group {
+            margin-bottom: 16px;
+          }
+          .lesson-form .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+          }
+          .lesson-form .lesson-title-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+          }
+          .lesson-form .lesson-title-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-color-10);
+          }
+          .video-upload-section .video-upload-area {
+            border: 2px dashed var(--primary-color-40);
+            border-radius: 16px;
+            padding: 48px 24px;
+            text-align: center;
+            background: var(--bg-tertiary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: inset 0 2px 8px var(--shadow-light);
+          }
+          .video-upload-section .video-upload-area:hover {
+            border-color: var(--primary-color-60);
+            background: var(--bg-hover);
+            transform: translateY(-2px);
+            box-shadow: inset 0 2px 8px var(--shadow-medium), 0 8px 20px var(--primary-color-10);
+          }
+          .video-upload-section .upload-content {
+            color: var(--text-secondary);
+          }
+          .video-upload-section .upload-content svg {
+            color: var(--primary-color);
+            margin-bottom: 16px;
+          }
+          .video-upload-section .upload-content p {
+            margin: 8px 0 4px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+          }
+          .video-upload-section .upload-content small {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+          }
+          .video-upload-section .upload-progress {
+            color: var(--text-secondary);
+          }
+          .video-upload-section .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 16px 0;
+          }
+          .video-upload-section .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-color-80));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+          }
+          .video-upload-section .upload-status {
+            font-size: 14px;
+            margin: 8px 0 0 0;
+            color: var(--text-secondary);
+          }
+          .video-upload-section .upload-success {
+            color: var(--text-primary);
+          }
+          .video-upload-section .upload-success svg {
+            margin-bottom: 12px;
+            color: var(--success-color);
+          }
+          .video-upload-section .upload-success .video-filename {
+            font-size: 14px;
+            font-weight: 500;
+            margin: 8px 0 4px 0;
+            color: var(--text-primary);
+          }
+          .video-upload-section .upload-success small {
+            font-size: 12px;
+            color: var(--success-color);
+          }
+          .lesson-form .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+          }
+          .lesson-form .save-lesson-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .lesson-form .save-lesson-btn:hover {
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
+          }
+          .lesson-form .cancel-lesson-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .lesson-form .cancel-lesson-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+          }
+        </style>
         <div class="lesson-form">
           <h5>Add Video Lesson ${lessonNumber}</h5>
           <div class="form-group">
             <label>Lesson Title</label>
-            <input type="text" placeholder="Enter lesson title" />
+            <input type="text" class="lesson-title-input" placeholder="Enter lesson title" required />
           </div>
           <div class="form-group">
             <label>Video File</label>
-            <input type="file" accept="video/*" />
-          </div>
-          <div class="form-group">
-            <label>Duration (minutes)</label>
-            <input type="number" placeholder="0" />
+            <div class="video-upload-section">
+              <input type="file" class="video-file-input" accept="video/*" style="display: none;" onchange="handleVideoUpload(this)" />
+              <input type="hidden" class="video-url-input" />
+              <div class="video-upload-area" onclick="this.previousElementSibling.previousElementSibling.click()">
+                <div class="upload-content">
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M23 7l-7 5 7 5V7z"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                  </svg>
+                  <p>📹 Video yuklash uchun bosing</p>
+                  <small>Video formatlar: MP4, MOV, AVI, WMV (Maksimal 100MB)</small>
+                </div>
+                <div class="upload-progress" style="display: none;">
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 0%"></div>
+                  </div>
+                  <p class="upload-status">Uploading...</p>
+                </div>
+                <div class="upload-success" style="display: none;">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20,6 9,17 4,12"/>
+                  </svg>
+                  <p class="video-filename"></p>
+                  <small>Video uploaded successfully</small>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="form-actions">
             <button type="button" class="save-lesson-btn" onclick="saveLesson(this, 'video')">Save Lesson</button>
@@ -7777,6 +8049,85 @@ window.addLesson = function(type, dropdownLink, event) {
 
     case 'quiz':
       lessonHTML = `
+        <style>
+          .lesson-form {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+          }
+          .lesson-form h5 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+          }
+          .lesson-form .form-group {
+            margin-bottom: 16px;
+          }
+          .lesson-form .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+          }
+          .lesson-form input, .lesson-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+            font-family: inherit;
+          }
+          .lesson-form input:focus, .lesson-form textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-color-10);
+          }
+          .lesson-form .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+          }
+          .lesson-form .save-lesson-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .lesson-form .save-lesson-btn:hover {
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
+          }
+          .lesson-form .cancel-lesson-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .lesson-form .cancel-lesson-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+          }
+        </style>
         <div class="lesson-form">
           <h5>Add Quiz ${lessonNumber}</h5>
           <div class="form-group">
@@ -7801,6 +8152,85 @@ window.addLesson = function(type, dropdownLink, event) {
 
     case 'assignment':
       lessonHTML = `
+        <style>
+          .lesson-form {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+          }
+          .lesson-form h5 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+          }
+          .lesson-form .form-group {
+            margin-bottom: 16px;
+          }
+          .lesson-form .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+          }
+          .lesson-form input, .lesson-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+            font-family: inherit;
+          }
+          .lesson-form input:focus, .lesson-form textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-color-10);
+          }
+          .lesson-form .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+          }
+          .lesson-form .save-lesson-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .lesson-form .save-lesson-btn:hover {
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
+          }
+          .lesson-form .cancel-lesson-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .lesson-form .cancel-lesson-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+          }
+        </style>
         <div class="lesson-form">
           <h5>Add Assignment ${lessonNumber}</h5>
           <div class="form-group">
@@ -7825,6 +8255,85 @@ window.addLesson = function(type, dropdownLink, event) {
 
     case 'file':
       lessonHTML = `
+        <style>
+          .lesson-form {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 16px;
+          }
+          .lesson-form h5 {
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+          }
+          .lesson-form .form-group {
+            margin-bottom: 16px;
+          }
+          .lesson-form .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
+          }
+          .lesson-form input, .lesson-form textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease;
+            font-family: inherit;
+          }
+          .lesson-form input:focus, .lesson-form textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-color-10);
+          }
+          .lesson-form .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+          }
+          .lesson-form .save-lesson-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .lesson-form .save-lesson-btn:hover {
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
+          }
+          .lesson-form .cancel-lesson-btn {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+          }
+          .lesson-form .cancel-lesson-btn:hover {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
+          }
+        </style>
         <div class="lesson-form">
           <h5>Add File Lesson ${lessonNumber}</h5>
           <div class="form-group">
@@ -7863,19 +8372,27 @@ window.saveLesson = function(button, type) {
   let lessonTitle = '';
   let duration = '';
 
-  // Extract lesson title from first input
-  const titleInput = lessonForm.querySelector('input[type="text"]');
+  // Extract lesson title
+  const titleInput = lessonForm.querySelector('.lesson-title-input') || lessonForm.querySelector('input[type="text"]');
   if (titleInput && titleInput.value.trim()) {
     lessonTitle = titleInput.value.trim();
   } else {
-    alert('Please enter a lesson title');
+    showErrorToast('Please enter a lesson title');
     return;
+  }
+
+  // Validate video upload for video lessons
+  if (type === 'video') {
+    const videoUrlInput = lessonForm.querySelector('.video-url-input');
+    if (!videoUrlInput || !videoUrlInput.value.trim()) {
+      showErrorToast('Please upload a video file first');
+      return;
+    }
   }
 
   // Get duration for display
   if (type === 'video') {
-    const durationInput = lessonForm.querySelector('input[type="number"]');
-    duration = durationInput && durationInput.value ? durationInput.value + ' min' : '0 min';
+    duration = 'Video';
   } else if (type === 'quiz') {
     const timeInput = lessonForm.querySelector('input[type="number"]');
     duration = timeInput && timeInput.value ? timeInput.value + ' min' : '30 min';
