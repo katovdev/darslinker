@@ -9573,11 +9573,11 @@ body.light-mode .course-btn-modern {
 
 .course-status-badge-modern {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 12px;
+  top: 10px;
+  left: 10px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 10px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -9622,6 +9622,8 @@ body.light-mode .course-btn-modern {
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.5;
+  height: 42px; /* Fixed height for 2 lines (14px * 1.5 * 2) */
+  min-height: 42px;
 }
 
 .course-stats-grid-modern {
@@ -9793,4 +9795,19 @@ button.filter-tab.active {
   .stats-cards-grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* Course Category Badge */
+.course-category-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }

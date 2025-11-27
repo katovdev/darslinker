@@ -544,6 +544,13 @@ async function handleCreateCourse(e) {
     return;
   }
 
+  // Check course limit (max 2 courses)
+  const currentCourses = window.myCoursesData || [];
+  if (currentCourses.length >= 2) {
+    showErrorToast('You have already created 2 courses. Upgrade your plan to create more courses.');
+    return;
+  }
+
   // Determine which button was clicked
   const clickedButton = e.submitter;
   const action = clickedButton?.value || 'publish'; // Default to publish
@@ -13406,6 +13413,13 @@ window.submitPayout = function() {
 window.openCreateCourse = function() {
   const userData = store.getState().user;
 
+  // Check course limit (max 2 courses)
+  const currentCourses = window.myCoursesData || [];
+  if (currentCourses.length >= 2) {
+    showErrorToast('You have already created 2 courses. Upgrade your plan to create more courses.');
+    return;
+  }
+
   // Check current general menu state before navigating
   const generalChildren = document.getElementById('general-children');
   const contentArea = document.querySelector('.figma-content-area');
@@ -14493,6 +14507,7 @@ function renderMyCoursesCards(courses) {
       
       <!-- Course Info -->
       <div class="course-card-body-modern">
+        <div class="course-category-badge">${course.category || 'Uncategorized'}</div>
         <h3 class="course-title-modern">${course.title}</h3>
         <p class="course-description-modern">${course.description || ''}</p>
         
