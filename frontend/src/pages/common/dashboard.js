@@ -1771,6 +1771,40 @@ async function handleLandingProfilePhotoUpload(e) {
   }
 }
 
+// Helper function to get video duration
+function getVideoDuration(file) {
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.onloadedmetadata = function() {
+      URL.revokeObjectURL(video.src);
+      const duration = video.duration;
+      const hours = Math.floor(duration / 3600);
+      const minutes = Math.floor((duration % 3600) / 60);
+      const seconds = Math.floor(duration % 60);
+
+      const formattedDuration = hours > 0
+        ? `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
+        : `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+      resolve(formattedDuration);
+    };
+    video.onerror = function() {
+      resolve('00:00'); // fallback
+    };
+    video.src = URL.createObjectURL(file);
+  });
+}
+
+// Helper function to create hidden input
+function createHiddenInput(form, className) {
+  const input = document.createElement('input');
+  input.type = 'hidden';
+  input.className = className;
+  form.appendChild(input);
+  return input;
+}
+
 // Handle video upload for lesson creation
 window.handleVideoUpload = async function(input) {
   const file = input.files[0];
@@ -1799,6 +1833,11 @@ window.handleVideoUpload = async function(input) {
     input.value = '';
     return;
   }
+
+  // Get video duration
+  const videoDuration = await getVideoDuration(file);
+  const durationInput = lessonForm.querySelector('.video-duration-input') || createHiddenInput(lessonForm, 'video-duration-input');
+  durationInput.value = videoDuration;
 
   try {
     // Show upload progress
@@ -9033,7 +9072,8 @@ window.saveLesson = function(button, type) {
 
   // Get duration for display
   if (type === 'video') {
-    duration = 'Video';
+    const durationInput = lessonForm.querySelector('.video-duration-input');
+    duration = durationInput ? durationInput.value : '00:00';
   } else if (type === 'quiz') {
     const timeInput = lessonForm.querySelector('.quiz-time-input');
     const questionCount = lessonForm.querySelectorAll('.question-item').length;
@@ -9082,16 +9122,39 @@ window.saveLesson = function(button, type) {
       iconSVG = '';
   }
 
+  // Get video URL if it's a video lesson
+  let videoUrl = '';
+  if (type === 'video') {
+    const videoUrlInput = lessonForm.querySelector('.video-url-input');
+    videoUrl = videoUrlInput ? videoUrlInput.value : '';
+  }
+
   // Create lesson item HTML
-  const lessonHTML = `
-    <div class="lesson-item">
-      <div class="lesson-title-with-icon">
-        <span class="lesson-icon">${iconSVG}</span>
-        <span>${lessonTitle}</span>
+  let lessonHTML = '';
+  if (type === 'video') {
+    lessonHTML = `
+      <div class="lesson-item" data-video-url="${videoUrl}">
+        <div class="lesson-title-with-icon">
+          <span class="lesson-icon">${iconSVG}</span>
+          <span>${lessonTitle}</span>
+        </div>
+        <div class="lesson-info-actions">
+          <span class="lesson-duration">${duration}</span>
+          <button class="view-btn" onclick="viewVideo(this)">Ko'rish</button>
+        </div>
       </div>
-      <span>${duration}</span>
-    </div>
-  `;
+    `;
+  } else {
+    lessonHTML = `
+      <div class="lesson-item">
+        <div class="lesson-title-with-icon">
+          <span class="lesson-icon">${iconSVG}</span>
+          <span>${lessonTitle}</span>
+        </div>
+        <span>${duration}</span>
+      </div>
+    `;
+  }
 
   // Insert before the lesson form
   lessonForm.insertAdjacentHTML('beforebegin', lessonHTML);
@@ -9101,6 +9164,57 @@ window.saveLesson = function(button, type) {
 
   // Update module info (lesson count)
   updateModuleInfo(moduleItem);
+};
+
+// View Video Function
+window.viewVideo = function(button) {
+  const lessonItem = button.closest('.lesson-item');
+  const videoUrl = lessonItem.dataset.videoUrl;
+  const lessonTitle = lessonItem.querySelector('.lesson-title-with-icon span:last-child').textContent;
+
+  if (!videoUrl) {
+    showErrorToast('Video URL not found');
+    return;
+  }
+
+  // Create video modal
+  const modalHTML = `
+    <div class="video-modal" onclick="closeVideoModal()">
+      <div class="video-modal-content" onclick="event.stopPropagation()">
+        <div class="video-modal-header">
+          <h3>${lessonTitle}</h3>
+          <button class="close-modal-btn" onclick="closeVideoModal()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="video-container">
+          <video controls autoplay style="width: 100%; height: auto;">
+            <source src="${videoUrl}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Add modal to body
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  // Disable body scroll
+  document.body.style.overflow = 'hidden';
+};
+
+// Close Video Modal Function
+window.closeVideoModal = function() {
+  const modal = document.querySelector('.video-modal');
+  if (modal) {
+    modal.remove();
+  }
+  // Re-enable body scroll
+  document.body.style.overflow = '';
 };
 
 // Cancel Lesson Function
