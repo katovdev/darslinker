@@ -9868,9 +9868,23 @@ button.filter-tab.active {
 }
 
 .view-btn:hover {
-  background: var(--primary-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(126, 162, 212, 0.3);
+  /* No hover effect */
+}
+
+.edit-btn {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-btn:hover {
+  /* No hover effect */
 }
 
 /* Video Modal Styles */
@@ -9938,4 +9952,191 @@ button.filter-tab.active {
   border-radius: 8px;
   max-width: 800px;
   min-width: 400px;
+}
+
+/* Quiz Form Styles */
+.add-question-btn {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.add-question-btn:hover {
+  /* No hover effect */
+}
+
+.add-answer-btn {
+  background: var(--card-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.add-answer-btn:hover {
+  /* No hover effect */
+}
+
+.question-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  transition: all 0.2s ease;
+}
+
+.question-item:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.1);
+}
+
+.question-header {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.question-input {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.question-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+}
+
+.remove-question-btn {
+  background: var(--card-hover);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.remove-question-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+}
+
+.answer-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.answer-input {
+  flex: 1;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+  font-size: 13px;
+  transition: border-color 0.2s ease;
+}
+
+.answer-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(126, 162, 212, 0.1);
+}
+
+.answer-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.answer-checkbox:hover {
+  border-color: var(--primary-color);
+}
+
+.answer-checkbox.checked {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: white;
+}
+
+.answer-checkbox .checkmark {
+  font-size: 12px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.answer-checkbox.checked .checkmark {
+  opacity: 1;
+}
+
+/* Form Buttons - Disable ALL hover effects */
+.save-lesson-btn:hover,
+.cancel-lesson-btn:hover,
+.btn-primary:hover,
+.btn-secondary:hover,
+.add-question-btn:hover,
+.add-answer-btn:hover,
+.edit-btn:hover,
+.view-btn:hover,
+.create-questions-btn:hover,
+.modal-close-btn:hover,
+.remove-question-btn:hover {
+  background: inherit !important;
+  color: inherit !important;
+  border-color: inherit !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Delete Button Styles */
+.delete-btn {
+  background: #ff3b30;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-btn:hover {
+  /* No hover effect */
 }

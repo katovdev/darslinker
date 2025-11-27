@@ -613,12 +613,19 @@ async function handleCreateCourse(e) {
         else if (duration.includes('Assignment')) type = 'assignment';
         else if (duration.includes('File')) type = 'file';
         
-        lessons.push({
+        // Get full lesson data from stored data
+        const lessonData = lessonItem.lessonData || {};
+        
+        const lesson = {
           type,
           title: lessonTitle,
           order: lessonIndex + 1,
           duration,
-        });
+          ...lessonData // Include all lesson data (fileName, fileUrl, instructions, etc.)
+        };
+        
+        console.log('📚 Lesson data being saved:', lesson);
+        lessons.push(lesson);
       });
       
       if (lessons.length > 0) {
@@ -8850,7 +8857,7 @@ window.addLesson = function(type, dropdownLink, event) {
           <div class="form-group assignment-file-content" style="display: none;">
             <label>Assignment File</label>
             <div class="file-upload-area" onclick="this.querySelector('input').click()">
-              <input type="file" accept=".pdf,.doc,.docx,.txt,.zip" style="display: none;" onchange="handleAssignmentFileSelect(this)">
+              <input type="file" class="assignment-file" accept=".pdf,.doc,.docx,.txt,.zip" style="display: none;" onchange="handleAssignmentFileSelect(this)">
               <div class="upload-placeholder">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -8996,7 +9003,7 @@ window.addLesson = function(type, dropdownLink, event) {
 };
 
 // Save Lesson Function
-window.saveLesson = function(button, type) {
+window.saveLesson = async function(button, type) {
   const lessonForm = button.closest('.lesson-form');
   const inputs = lessonForm.querySelectorAll('input, textarea');
   const moduleItem = lessonForm.closest('.module-item');
@@ -9129,35 +9136,171 @@ window.saveLesson = function(button, type) {
     videoUrl = videoUrlInput ? videoUrlInput.value : '';
   }
 
-  // Create lesson item HTML
+  // Store lesson data for editing
+  const lessonData = {
+    type: type,
+    title: lessonTitle,
+    duration: duration,
+    videoUrl: videoUrl
+  };
+
+  // Get lesson form data for editing
+  if (type === 'quiz') {
+    const questions = [];
+    const questionItems = lessonForm.querySelectorAll('.question-item');
+
+    console.log('🎯 SAVE: Found question items:', questionItems.length);
+
+    questionItems.forEach((questionItem, questionIndex) => {
+      const questionText = questionItem.querySelector('.question-input')?.value || '';
+      const answers = [];
+      // Support both formats: new modal format and old format
+      const answerItems = questionItem.querySelectorAll('.answer-item, .answer-option');
+
+      console.log(`🎯 SAVE: Question ${questionIndex}: "${questionText}"`);
+      console.log(`🎯 SAVE: Answer items found: ${answerItems.length}`);
+
+      answerItems.forEach((answerItem, answerIndex) => {
+        const answerInput = answerItem.querySelector('.answer-input');
+        // Support both radio and checkbox formats
+        const answerCheckbox = answerItem.querySelector('.answer-checkbox, .answer-radio');
+
+        if (answerInput && answerInput.value.trim()) {
+          // Check for multiple ways to determine if answer is correct
+          const isCorrect = answerCheckbox && (
+            answerCheckbox.classList.contains('checked') ||
+            answerCheckbox.textContent.includes('●') ||
+            answerCheckbox.textContent.includes('☑')
+          );
+          const answer = {
+            text: answerInput.value.trim(),
+            isCorrect: isCorrect
+          };
+
+          console.log(`🎯 SAVE: Answer ${answerIndex}:`, answer);
+          answers.push(answer);
+        }
+      });
+
+      if (questionText.trim() && answers.length > 0) {
+        const question = {
+          question: questionText,
+          answers: answers
+        };
+        console.log(`🎯 SAVE: Adding question:`, question);
+        questions.push(question);
+      }
+    });
+
+    console.log('🎯 SAVE: Total questions saved:', questions);
+
+    lessonData.questions = questions;
+    lessonData.timeLimit = lessonForm.querySelector('.quiz-time-input')?.value || '';
+  } else if (type === 'assignment') {
+    const instructionsInput = lessonForm.querySelector('.assignment-instructions');
+
+    // Get content type (text or file)
+    const contentTypeRadio = lessonForm.querySelector('input[name*="assignment-content-type"]:checked');
+    const contentType = contentTypeRadio ? contentTypeRadio.value : 'text';
+
+    lessonData.instructions = instructionsInput?.value || '';
+    lessonData.contentType = contentType;
+
+    if (contentType === 'text') {
+      const textContentInput = lessonForm.querySelector('.assignment-text');
+      lessonData.textContent = textContentInput?.value || '';
+    } else if (contentType === 'file') {
+      const fileInput = lessonForm.querySelector('.assignment-file');
+      console.log('🔍 Assignment file input found:', !!fileInput);
+      console.log('🔍 Files selected:', fileInput?.files?.length || 0);
+      
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        const file = fileInput.files[0];
+        lessonData.fileName = file.name;
+        
+        // Upload file to server
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          
+          const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+          const uploadUrl = `${apiBaseUrl}/upload/document`;
+          console.log('📤 Uploading assignment file to:', uploadUrl);
+          
+          const response = await fetch(uploadUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+            },
+            body: formData,
+          });
+          
+          const result = await response.json();
+          if (result.success && result.url) {
+            lessonData.fileUrl = result.url;
+            console.log('✅ Assignment file uploaded:', result.url);
+          }
+        } catch (error) {
+          console.error('❌ File upload failed:', error);
+          showErrorToast('File upload failed. Please try again.');
+          return; // Don't save lesson if file upload fails
+        }
+      }
+    }
+
+    console.log('🎯 SAVE Assignment - Final lessonData:', lessonData);
+  } else if (type === 'file') {
+    const descriptionInput = lessonForm.querySelector('textarea[placeholder*="file"], textarea[placeholder*="describe"]');
+    const fileInput = lessonForm.querySelector('input[type="file"]');
+
+    lessonData.description = descriptionInput?.value || '';
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      lessonData.fileName = fileInput.files[0].name;
+    }
+  }
+
+  // Create lesson item HTML with edit and delete buttons
   let lessonHTML = '';
   if (type === 'video') {
     lessonHTML = `
-      <div class="lesson-item" data-video-url="${videoUrl}">
+      <div class="lesson-item" data-lesson='${JSON.stringify(lessonData).replace(/'/g, "&apos;")}' data-video-url="${videoUrl}">
         <div class="lesson-title-with-icon">
           <span class="lesson-icon">${iconSVG}</span>
           <span>${lessonTitle}</span>
         </div>
         <div class="lesson-info-actions">
           <span class="lesson-duration">${duration}</span>
+          <button class="edit-btn" onclick="editLesson(this)">Edit</button>
+          <button class="delete-btn" onclick="deleteLesson(this)">Delete</button>
           <button class="view-btn" onclick="viewVideo(this)">Ko'rish</button>
         </div>
       </div>
     `;
   } else {
     lessonHTML = `
-      <div class="lesson-item">
+      <div class="lesson-item" data-lesson='${JSON.stringify(lessonData).replace(/'/g, "&apos;")}'>
         <div class="lesson-title-with-icon">
           <span class="lesson-icon">${iconSVG}</span>
           <span>${lessonTitle}</span>
         </div>
-        <span>${duration}</span>
+        <div class="lesson-info-actions">
+          <span class="lesson-duration">${duration}</span>
+          <button class="edit-btn" onclick="editLesson(this)">Edit</button>
+          <button class="delete-btn" onclick="deleteLesson(this)">Delete</button>
+        </div>
       </div>
     `;
   }
 
   // Insert before the lesson form
   lessonForm.insertAdjacentHTML('beforebegin', lessonHTML);
+  
+  // Get the newly created lesson item and store lesson data
+  const newLessonItem = lessonForm.previousElementSibling;
+  newLessonItem.lessonData = lessonData;
+  
+  // Also update the data-lesson attribute for edit functionality
+  newLessonItem.setAttribute('data-lesson', JSON.stringify(lessonData).replace(/'/g, "&apos;"));
 
   // Remove the form
   lessonForm.remove();
@@ -9215,6 +9358,695 @@ window.closeVideoModal = function() {
   }
   // Re-enable body scroll
   document.body.style.overflow = '';
+};
+
+// Edit Lesson Function
+window.editLesson = function(button) {
+  const lessonItem = button.closest('.lesson-item');
+  const lessonDataStr = lessonItem.dataset.lesson;
+
+  if (!lessonDataStr) {
+    showErrorToast('Lesson data not found');
+    return;
+  }
+
+  let lessonData;
+  try {
+    lessonData = JSON.parse(lessonDataStr.replace(/&apos;/g, "'"));
+    console.log('🎯 Edit lesson data:', lessonData); // Debug log
+    console.log('🎯 Lesson type:', lessonData.type);
+    if (lessonData.type === 'assignment') {
+      console.log('🎯 Assignment - Title:', lessonData.title);
+      console.log('🎯 Assignment - Instructions:', lessonData.instructions);
+      console.log('🎯 Assignment - ContentType:', lessonData.contentType);
+      console.log('🎯 Assignment - TextContent:', lessonData.textContent);
+      console.log('🎯 Assignment - FileName:', lessonData.fileName);
+    }
+  console.log('🎯 Questions data in edit:', lessonData.questions);
+  console.log('🎯 Questions array length:', lessonData.questions ? lessonData.questions.length : 'undefined');
+  } catch (error) {
+    console.error('Error parsing lesson data:', error);
+    showErrorToast('Invalid lesson data format');
+    return;
+  }
+
+  const moduleItem = lessonItem.closest('.module-item');
+  const lessonsList = moduleItem.querySelector('.lessons-list');
+
+  // Hide the lesson item temporarily
+  lessonItem.style.display = 'none';
+
+  // Create edit form based on lesson type
+  let editFormHTML = '';
+
+  if (lessonData.type === 'quiz') {
+    console.log('🎯 Creating quiz edit form with questions:', lessonData.questions); // Debug log
+    editFormHTML = createQuizEditForm(lessonData);
+  } else if (lessonData.type === 'video') {
+    editFormHTML = createVideoEditForm(lessonData);
+  } else if (lessonData.type === 'assignment') {
+    editFormHTML = createAssignmentEditForm(lessonData);
+  } else if (lessonData.type === 'file') {
+    editFormHTML = createFileEditForm(lessonData);
+  }
+
+  // Insert edit form before the lesson item
+  lessonItem.insertAdjacentHTML('beforebegin', editFormHTML);
+};
+
+// Create Quiz Edit Form
+function createQuizEditForm(lessonData) {
+  console.log('🎯 createQuizEditForm called with data:', lessonData);
+  console.log('🎯 Questions array:', lessonData.questions);
+  console.log('🎯 Questions exists?', !!lessonData.questions);
+  console.log('🎯 Questions length:', lessonData.questions ? lessonData.questions.length : 0);
+
+  const questionsHTML = lessonData.questions && Array.isArray(lessonData.questions) ? lessonData.questions.map((q, questionIndex) => {
+    console.log(`🎯 Processing question ${questionIndex}:`, q);
+
+    const answersHTML = q.answers && Array.isArray(q.answers) ? q.answers.map((answer, answerIndex) => {
+      const escapedText = (answer.text || '').replace(/"/g, '&quot;');
+      const isCorrect = answer.isCorrect;
+      const symbol = isCorrect ? '●' : '○'; // Radio format
+      return `
+        <div class="answer-item">
+          <div class="answer-radio ${isCorrect ? 'checked' : ''}" onclick="toggleAnswer(this)">
+            ${symbol}
+          </div>
+          <input type="text" class="answer-input" value="${escapedText}" placeholder="Answer option ${answerIndex + 1}" />
+        </div>
+      `;
+    }).join('') : '';
+
+    const escapedQuestion = (q.question || '').replace(/"/g, '&quot;');
+
+    return `
+      <div class="question-item">
+        <div class="question-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <div style="display: flex; flex-direction: column; gap: 4px;">
+            <span class="question-number" style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Question ${questionIndex + 1}</span>
+            <span class="question-instruction" style="font-size: 12px; color: var(--primary-color); font-weight: 500;">Choose 1 correct answer</span>
+          </div>
+          <button type="button" class="delete-question-btn" onclick="deleteQuestion(this)" style="background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.3); border-radius: 6px; padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <input type="text" class="question-input" value="${escapedQuestion}" placeholder="Enter question text..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary); margin-bottom: 12px;" />
+        <div class="answers-section">
+          <label style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; display: block;">
+            Answer options:
+          </label>
+          <div class="answers-list" data-max-correct="1">
+            ${answersHTML}
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('') : '';
+
+  console.log('🎯 Generated questionsHTML:', questionsHTML);
+
+  const escapedTitle = (lessonData.title || '').replace(/"/g, '&quot;');
+
+  return `
+    <div class="lesson-form lesson-edit-form" data-quiz-type="multiple-choice">
+      <h5>Edit Quiz: ${escapedTitle}</h5>
+      <div class="form-group">
+        <label>Quiz Title</label>
+        <input type="text" class="quiz-title-input" value="${escapedTitle}" placeholder="Enter quiz title" />
+      </div>
+      <div class="form-group">
+        <label>Time Limit (minutes)</label>
+        <input type="number" class="quiz-time-input" value="${lessonData.timeLimit || ''}" placeholder="30" min="1" />
+      </div>
+      <div class="form-group">
+        <div class="questions-header">
+          <label>Questions</label>
+          <button type="button" class="add-question-btn" onclick="openCreateQuestionsModal(this)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Create Questions
+          </button>
+        </div>
+        <div class="questions-list">
+          ${questionsHTML}
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="save-lesson-btn" onclick="updateLesson(this, 'quiz')">Update Quiz</button>
+        <button type="button" class="cancel-lesson-btn" onclick="cancelEdit(this)">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+// Create Video Edit Form
+function createVideoEditForm(lessonData) {
+  return `
+    <div class="lesson-form lesson-edit-form">
+      <h5>Edit Video: ${lessonData.title}</h5>
+      <div class="form-group">
+        <label>Lesson Title</label>
+        <input type="text" class="lesson-title-input" value="${lessonData.title}" placeholder="Enter lesson title" required />
+      </div>
+      <div class="form-group">
+        <label>Video File</label>
+        <div class="video-upload-section">
+          <input type="file" class="video-file-input" accept="video/*" style="display: none;" onchange="handleVideoUpload(this)" />
+          <input type="hidden" class="video-url-input" value="${lessonData.videoUrl || ''}" />
+          <input type="hidden" class="video-duration-input" value="${lessonData.duration || ''}" />
+          <div class="current-video-info" style="padding: 16px; border: 1px dashed var(--border-color); border-radius: 8px; text-align: center;">
+            <p style="color: var(--text-secondary); margin: 8px 0;">Current video: ${lessonData.title}</p>
+            <p style="color: var(--text-secondary); margin: 8px 0; font-size: 14px;">Duration: ${lessonData.duration}</p>
+            <button type="button" onclick="this.parentNode.style.display='none'; this.parentNode.nextElementSibling.style.display='block';" style="background: var(--primary-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Change Video</button>
+          </div>
+          <div class="video-upload-area" style="display: none;" onclick="this.previousElementSibling.previousElementSibling.previousElementSibling.click()">
+            <div class="upload-content">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 7l-7 5 7 5V7z"/>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              </svg>
+              <p>Click to upload new video</p>
+              <small>MP4, MOV, AVI up to 100MB</small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="save-lesson-btn" onclick="updateLesson(this, 'video')">Update Video</button>
+        <button type="button" class="cancel-lesson-btn" onclick="cancelEdit(this)">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+// Create Assignment Edit Form
+function createAssignmentEditForm(lessonData) {
+  console.log('🎯 createAssignmentEditForm received:', lessonData);
+  console.log('🎯 File info - fileName:', lessonData.fileName);
+  console.log('🎯 File info - fileUrl:', lessonData.fileUrl);
+  console.log('🎯 File info - content:', lessonData.content);
+  console.log('🎯 File info - textContent:', lessonData.textContent);
+  
+  const escapedTitle = (lessonData.title || '').replace(/"/g, '&quot;');
+  const escapedInstructions = (lessonData.instructions || '').replace(/"/g, '&quot;');
+  const escapedTextContent = (lessonData.textContent || '').replace(/"/g, '&quot;');
+  const contentType = lessonData.contentType || 'text';
+  const randomId = Math.random().toString(36).substr(2, 9);
+
+  console.log('🎯 createAssignmentEditForm - Title:', escapedTitle);
+  console.log('🎯 createAssignmentEditForm - Instructions:', escapedInstructions);
+  console.log('🎯 createAssignmentEditForm - ContentType:', contentType);
+
+  return `
+    <div class="lesson-form lesson-edit-form">
+      <h5>Edit Assignment: ${escapedTitle}</h5>
+      <div class="form-group">
+        <label>Assignment Title</label>
+        <input type="text" class="assignment-title" value="${escapedTitle}" placeholder="Enter assignment title" />
+      </div>
+      <div class="form-group">
+        <label>Instructions</label>
+        <textarea class="assignment-instructions" placeholder="Enter assignment instructions" rows="4">${escapedInstructions}</textarea>
+      </div>
+
+      <!-- Assignment Content Type Selection -->
+      <div class="form-group">
+        <label>Assignment Content Type</label>
+        <p class="content-type-hint" style="color: var(--text-secondary); font-size: 14px; margin: 8px 0;">Choose one of them to add assignment content</p>
+        <div class="content-type-selector" style="display: flex; gap: 16px; margin: 12px 0;">
+          <label class="radio-option" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="radio" name="assignment-content-type-${randomId}" value="text" ${contentType === 'text' ? 'checked' : ''} onchange="toggleAssignmentContentType(this)">
+            <span>Text Content</span>
+          </label>
+          <label class="radio-option" style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+            <input type="radio" name="assignment-content-type-${randomId}" value="file" ${contentType === 'file' ? 'checked' : ''} onchange="toggleAssignmentContentType(this)">
+            <span>File Upload</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Text Content Area -->
+      <div class="form-group assignment-text-content" style="display: ${contentType === 'text' ? 'block' : 'none'};">
+        <label>Assignment Content (Text)</label>
+        <textarea placeholder="Write your assignment content here..." rows="6" class="assignment-text">${escapedTextContent}</textarea>
+      </div>
+
+      <!-- File Upload Area -->
+      <div class="form-group assignment-file-content" style="display: ${contentType === 'file' ? 'block' : 'none'};">
+        <label>Assignment Content (File)</label>
+        ${lessonData.fileName ? `
+          <div class="current-file-display" style="background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 32px; height: 32px; background: var(--primary-color); border-radius: 6px; display: flex; align-items: center; justify-content: center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                  <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                  <polyline points="13,2 13,9 20,9"/>
+                </svg>
+              </div>
+              <div style="flex: 1;">
+                <div style="font-weight: 500; color: var(--text-primary);">${lessonData.fileName}</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">Current assignment file</div>
+              </div>
+              <button type="button" onclick="document.querySelector('.assignment-file').click()" style="color: var(--primary-color); background: transparent; border: 1px solid var(--primary-color); border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer;">
+                Replace
+              </button>
+            </div>
+          </div>
+        ` : `
+          <div style="background: var(--bg-tertiary); border: 1px dashed var(--border-color); border-radius: 8px; padding: 16px; margin-bottom: 12px; text-align: center;">
+            <div style="color: var(--text-secondary); font-size: 14px;">No file uploaded yet</div>
+          </div>
+        `}
+        <input type="file" class="assignment-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" style="display: none;" />
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="save-lesson-btn" onclick="updateLesson(this, 'assignment')">Update Assignment</button>
+        <button type="button" class="cancel-lesson-btn" onclick="cancelEdit(this)">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+// Create File Edit Form
+function createFileEditForm(lessonData) {
+  const escapedTitle = (lessonData.title || '').replace(/"/g, '&quot;');
+  const escapedDescription = (lessonData.description || '').replace(/"/g, '&quot;');
+
+  // File info display
+  const currentFileDisplay = lessonData.fileName ? `
+    <div class="current-file-display" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; margin-bottom: 12px;">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 40px; height: 40px; background: var(--primary-color-10); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2">
+              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+              <polyline points="13,2 13,9 20,9"/>
+            </svg>
+          </div>
+          <div>
+            <h6 style="margin: 0 0 4px 0; color: var(--text-primary); font-size: 14px; font-weight: 600;">${lessonData.fileName}</h6>
+            <p style="margin: 0; color: var(--text-secondary); font-size: 12px;">Current file</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          ${lessonData.fileUrl ? `<button type="button" onclick="window.open('${lessonData.fileUrl}', '_blank')" style="background: var(--primary-color); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">View File</button>` : ''}
+          <button type="button" onclick="this.closest('.current-file-display').style.display='none'; this.closest('.form-group').querySelector('.new-file-upload').style.display='block'" style="background: var(--bg-primary); color: var(--text-secondary); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">Replace</button>
+        </div>
+      </div>
+    </div>
+    <div class="new-file-upload" style="display: none;">
+      <input type="file" class="file-upload-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" />
+      <small style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; display: block;">Choose a new file to replace the current one</small>
+    </div>
+  ` : `
+    <div class="new-file-upload">
+      <input type="file" class="file-upload-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" />
+      <small style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; display: block;">No file uploaded yet. Choose a file to upload.</small>
+    </div>
+  `;
+
+  return `
+    <div class="lesson-form lesson-edit-form">
+      <h5>Edit File: ${escapedTitle}</h5>
+      <div class="form-group">
+        <label>File Title</label>
+        <input type="text" class="file-title" value="${escapedTitle}" placeholder="Enter file title" />
+      </div>
+      <div class="form-group">
+        <label>File Upload</label>
+        ${currentFileDisplay}
+      </div>
+      <div class="form-group">
+        <label>Description</label>
+        <textarea class="file-description" placeholder="Describe this file and what students should learn" rows="3">${escapedDescription}</textarea>
+      </div>
+      <div class="form-actions">
+        <button type="button" class="save-lesson-btn" onclick="updateLesson(this, 'file')">Update File</button>
+        <button type="button" class="cancel-lesson-btn" onclick="cancelEdit(this)">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+// Update Lesson Function
+window.updateLesson = function(button, type) {
+  const editForm = button.closest('.lesson-edit-form');
+  const moduleItem = editForm.closest('.module-item');
+  const hiddenLessonItem = editForm.nextElementSibling;
+
+  console.log('🎯 UPDATE: editForm found:', !!editForm);
+  console.log('🎯 UPDATE: hiddenLessonItem found:', !!hiddenLessonItem);
+  console.log('🎯 UPDATE: moduleItem found:', !!moduleItem);
+
+  // Get updated data based on type
+  let updatedData = { type: type };
+
+  if (type === 'quiz') {
+    const titleInput = editForm.querySelector('.quiz-title-input');
+    const timeInput = editForm.querySelector('.quiz-time-input');
+    const questions = [];
+
+    editForm.querySelectorAll('.question-item').forEach(questionItem => {
+      const questionText = questionItem.querySelector('.question-input')?.value || '';
+      const answers = [];
+      // Support both formats: new modal format and old format
+      const answerItems = questionItem.querySelectorAll('.answer-item, .answer-option');
+
+      answerItems.forEach((answerItem, index) => {
+        const answerInput = answerItem.querySelector('.answer-input');
+        const answerCheckbox = answerItem.querySelector('.answer-checkbox, .answer-radio');
+
+        if (answerInput && answerInput.value.trim()) {
+          const isCorrect = answerCheckbox && (
+            answerCheckbox.classList.contains('checked') ||
+            answerCheckbox.textContent.includes('●') ||
+            answerCheckbox.textContent.includes('☑')
+          );
+          answers.push({
+            text: answerInput.value.trim(),
+            isCorrect: isCorrect
+          });
+        }
+      });
+
+      if (questionText.trim() && answers.length > 0) {
+        questions.push({
+          question: questionText,
+          answers: answers
+        });
+      }
+    });
+
+    updatedData.title = titleInput ? titleInput.value.trim() : '';
+    updatedData.timeLimit = timeInput ? timeInput.value : '';
+    updatedData.questions = questions;
+    updatedData.duration = `Quiz (${questions.length} questions)${timeInput && timeInput.value ? ` • ${timeInput.value} min` : ''}`;
+
+  } else if (type === 'video') {
+    const titleInput = editForm.querySelector('.lesson-title-input');
+    const videoUrlInput = editForm.querySelector('.video-url-input');
+    const durationInput = editForm.querySelector('.video-duration-input');
+
+    updatedData.title = titleInput.value.trim();
+    updatedData.videoUrl = videoUrlInput.value;
+    updatedData.duration = durationInput.value || '00:00';
+
+  } else if (type === 'assignment') {
+    const titleInput = editForm.querySelector('.assignment-title');
+    const instructionsInput = editForm.querySelector('.assignment-instructions');
+
+    // Get content type (text or file)
+    const contentTypeRadio = editForm.querySelector('input[name*="assignment-content-type"]:checked');
+    const contentType = contentTypeRadio ? contentTypeRadio.value : 'text';
+
+    // Get existing data to preserve file info
+    const existingDataStr = hiddenLessonItem.getAttribute('data-lesson');
+    let existingData = {};
+    if (existingDataStr) {
+      try {
+        existingData = JSON.parse(existingDataStr.replace(/&apos;/g, "'"));
+      } catch (e) {
+        console.error('Error parsing existing data:', e);
+      }
+    }
+
+    updatedData.title = titleInput.value.trim();
+    updatedData.instructions = instructionsInput.value;
+    updatedData.contentType = contentType;
+    updatedData.duration = 'Assignment';
+
+    if (contentType === 'text') {
+      const textContentInput = editForm.querySelector('.assignment-text');
+      updatedData.textContent = textContentInput?.value || '';
+      // Clear file data if switching to text
+      delete updatedData.fileName;
+      delete updatedData.fileUrl;
+    } else if (contentType === 'file') {
+      const fileInput = editForm.querySelector('.assignment-file');
+      
+      // Keep existing file data
+      updatedData.fileName = existingData.fileName;
+      updatedData.fileUrl = existingData.fileUrl;
+      
+      // If new file is uploaded, update it
+      if (fileInput && fileInput.files && fileInput.files[0]) {
+        updatedData.fileName = fileInput.files[0].name;
+        // You can add file upload logic here later
+      }
+    }
+
+  } else if (type === 'file') {
+    const titleInput = editForm.querySelector('.file-title');
+    const descriptionInput = editForm.querySelector('.file-description');
+    const fileInput = editForm.querySelector('.file-upload-input');
+
+    updatedData.title = titleInput ? titleInput.value.trim() : '';
+    updatedData.description = descriptionInput ? descriptionInput.value : '';
+    updatedData.duration = 'File';
+
+    // If new file is uploaded, handle it (you can extend this later)
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      updatedData.fileName = fileInput.files[0].name;
+    }
+  }
+
+  // Validate title
+  if (!updatedData.title) {
+    showErrorToast('Please enter a title');
+    return;
+  }
+
+  // Get icon based on type
+  let iconSVG = '';
+  switch(type) {
+    case 'video':
+      iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M23 7l-7 5 7 5V7z"/>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+      </svg>`;
+      break;
+    case 'quiz':
+      iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+      </svg>`;
+      break;
+    case 'assignment':
+      iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14,2 14,8 20,8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10,9 9,9 8,9"/>
+      </svg>`;
+      break;
+    case 'file':
+      iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+        <polyline points="13,2 13,9 20,9"/>
+      </svg>`;
+      break;
+  }
+
+  // Update the lesson data attribute
+  hiddenLessonItem.setAttribute('data-lesson', JSON.stringify(updatedData).replace(/'/g, "&apos;"));
+  console.log('🎯 UPDATE: Updated data:', updatedData);
+
+  // Update the title in the lesson item display
+  const titleElement = hiddenLessonItem.querySelector('.lesson-title-with-icon span:last-child');
+  console.log('🎯 UPDATE: titleElement found:', !!titleElement);
+  console.log('🎯 UPDATE: old title:', titleElement ? titleElement.textContent : 'not found');
+  console.log('🎯 UPDATE: new title:', updatedData.title);
+
+  if (titleElement) {
+    titleElement.textContent = updatedData.title;
+    console.log('🎯 UPDATE: title updated to:', titleElement.textContent);
+  }
+
+  // Update the duration in the lesson item display
+  const durationElement = hiddenLessonItem.querySelector('.lesson-duration');
+  console.log('🎯 UPDATE: durationElement found:', !!durationElement);
+  console.log('🎯 UPDATE: old duration:', durationElement ? durationElement.textContent : 'not found');
+  console.log('🎯 UPDATE: new duration:', updatedData.duration);
+
+  if (durationElement) {
+    durationElement.textContent = updatedData.duration;
+    console.log('🎯 UPDATE: duration updated to:', durationElement.textContent);
+  }
+
+  // For video lessons, update video URL
+  if (type === 'video' && updatedData.videoUrl) {
+    hiddenLessonItem.setAttribute('data-video-url', updatedData.videoUrl);
+  }
+
+  // Show the updated lesson item and remove edit form
+  hiddenLessonItem.style.display = '';
+  editForm.remove();
+
+  // Update module info
+  updateModuleInfo(moduleItem);
+
+  showSuccessToast('Lesson updated successfully');
+};
+
+// Cancel Edit Function
+window.cancelEdit = function(button) {
+  const editForm = button.closest('.lesson-edit-form');
+  const hiddenLessonItem = editForm.nextElementSibling;
+
+  // Show the original lesson item
+  hiddenLessonItem.style.display = '';
+
+  // Remove edit form
+  editForm.remove();
+};
+
+// Add Question Function
+window.addQuestion = function(button) {
+  const questionsContainer = button.closest('.form-group').querySelector('.questions-list');
+
+  const questionHTML = `
+    <div class="question-item">
+      <div class="question-header">
+        <input type="text" class="question-input" placeholder="Enter your question" />
+        <button type="button" class="remove-question-btn" onclick="removeQuestion(this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="answers-section">
+        <div class="answer-option">
+          <input type="text" class="answer-input" placeholder="Answer option 1" />
+          <div class="answer-checkbox" onclick="toggleAnswerSelection(this)">
+            <span class="checkmark">✓</span>
+          </div>
+        </div>
+        <div class="answer-option">
+          <input type="text" class="answer-input" placeholder="Answer option 2" />
+          <div class="answer-checkbox" onclick="toggleAnswerSelection(this)">
+            <span class="checkmark">✓</span>
+          </div>
+        </div>
+        <button type="button" class="add-answer-btn" onclick="addAnswer(this)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Add Answer
+        </button>
+      </div>
+    </div>
+  `;
+
+  questionsContainer.insertAdjacentHTML('beforeend', questionHTML);
+};
+
+// Remove Question Function
+window.removeQuestion = function(button) {
+  const questionItem = button.closest('.question-item');
+  if (questionItem) {
+    questionItem.remove();
+  }
+};
+
+// Add Answer Function
+window.addAnswer = function(button) {
+  const answersSection = button.closest('.answers-section');
+  const answerCount = answersSection.querySelectorAll('.answer-option').length + 1;
+
+  const answerHTML = `
+    <div class="answer-option">
+      <input type="text" class="answer-input" placeholder="Answer option ${answerCount}" />
+      <div class="answer-checkbox" onclick="toggleAnswerSelection(this)">
+        <span class="checkmark">✓</span>
+      </div>
+    </div>
+  `;
+
+  button.insertAdjacentHTML('beforebegin', answerHTML);
+};
+
+// Toggle Answer Selection Function
+window.toggleAnswerSelection = function(checkbox) {
+  checkbox.classList.toggle('checked');
+};
+
+// Custom Confirm Dialog
+window.showCustomConfirm = function(message, onConfirm) {
+  const modalHTML = `
+    <div class="delete-confirm-overlay" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 10000; align-items: center; justify-content: center;">
+      <div class="delete-confirm-modal" style="background: var(--bg-secondary); border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);">
+        <div class="delete-confirm-header" style="text-align: center; margin-bottom: 16px;">
+          <div class="delete-icon" style="width: 48px; height: 48px; background: rgba(255, 59, 48, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" stroke-width="2">
+              <path d="m3 6 3 0"></path>
+              <path d="m19 6-1 0"></path>
+              <path d="m8 6 0-2c0-1 1-2 2-2l4 0c1 0 2 1 2 2l0 2"></path>
+              <path d="m10 12 0 6"></path>
+              <path d="m14 12 0 6"></path>
+              <path d="M6 6l1 14c0 1 1 2 2 2l6 0c1 0 2-1 2-2l1-14"></path>
+            </svg>
+          </div>
+          <h3 style="margin: 0 0 8px 0; color: var(--text-primary); font-size: 18px; font-weight: 600;">Delete Lesson</h3>
+          <p style="margin: 0; color: var(--text-secondary); font-size: 14px; line-height: 1.5;">${message}</p>
+        </div>
+        <div class="delete-confirm-actions" style="display: flex; gap: 12px; justify-content: center;">
+          <button class="cancel-btn" onclick="closeCustomConfirm()" style="background: var(--bg-tertiary); color: var(--text-secondary); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; min-width: 80px;">
+            Cancel
+          </button>
+          <button class="confirm-btn" style="background: #ff3b30; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; min-width: 80px;">
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Remove existing modal if any
+  const existingModal = document.querySelector('.delete-confirm-overlay');
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  // Add modal to DOM
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+  // Add click handler to confirm button
+  const confirmBtn = document.querySelector('.delete-confirm-overlay .confirm-btn');
+  confirmBtn.onclick = function() {
+    closeCustomConfirm();
+    if (onConfirm) onConfirm();
+  };
+};
+
+window.closeCustomConfirm = function() {
+  const modal = document.querySelector('.delete-confirm-overlay');
+  if (modal) {
+    modal.remove();
+  }
+};
+
+// Delete Lesson Function
+window.deleteLesson = function(button) {
+  const lessonItem = button.closest('.lesson-item');
+  const moduleItem = lessonItem.closest('.module-item');
+  const lessonTitle = lessonItem.querySelector('.lesson-title-with-icon span:last-child').textContent;
+
+  showCustomConfirm(`Are you sure you want to delete "${lessonTitle}"?`, function() {
+    lessonItem.remove();
+    updateModuleInfo(moduleItem);
+    showSuccessToast('Lesson deleted successfully');
+  });
 };
 
 // Cancel Lesson Function
