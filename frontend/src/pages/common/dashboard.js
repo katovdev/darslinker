@@ -15721,120 +15721,165 @@ function openCourseEditPage(courseData) {
     pageTitle.textContent = 'Edit Course';
   }
   
-  // Create edit course form with pre-filled data
+  // Use the same layout as create course page, but with pre-filled data
   contentArea.innerHTML = `
-    <div class="create-course-container">
-      <form id="editCourseForm" class="create-course-form" onsubmit="handleEditCourse(event, '${courseData._id}')">
-        
-        <!-- Course Basic Information -->
-        <div class="form-section">
-          <h3 class="section-title">Course Information</h3>
-          
-          <div class="form-group">
-            <label class="field-label">Course Title</label>
-            <input type="text" name="title" class="form-input" value="${courseData.title || ''}" placeholder="Enter course title" required />
-          </div>
-          
-          <div class="form-group">
-            <label class="field-label">Course Description</label>
-            <textarea name="description" class="form-textarea" rows="4" placeholder="Describe your course" required>${courseData.description || ''}</textarea>
-          </div>
-          
-          <div class="form-group">
-            <label class="field-label">Category</label>
-            <select name="category" class="form-select" required>
-              <option value="">Select Category</option>
-              <option value="Web Development" ${courseData.category === 'Web Development' ? 'selected' : ''}>Web Development</option>
-              <option value="Mobile Development" ${courseData.category === 'Mobile Development' ? 'selected' : ''}>Mobile Development</option>
-              <option value="Data Science" ${courseData.category === 'Data Science' ? 'selected' : ''}>Data Science</option>
-              <option value="Design" ${courseData.category === 'Design' ? 'selected' : ''}>Design</option>
-              <option value="Business" ${courseData.category === 'Business' ? 'selected' : ''}>Business</option>
-              <option value="Marketing" ${courseData.category === 'Marketing' ? 'selected' : ''}>Marketing</option>
-            </select>
-          </div>
-          
-          <!-- Course Type and Pricing -->
-          <div class="form-group">
-            <label class="field-label">Course Type</label>
-            <div class="radio-group">
-              <label class="radio-option">
-                <input type="radio" name="courseType" value="free" ${courseData.courseType === 'free' ? 'checked' : ''} onchange="togglePricing(this)">
-                <span>Free Course</span>
-              </label>
-              <label class="radio-option">
-                <input type="radio" name="courseType" value="paid" ${courseData.courseType === 'paid' ? 'checked' : ''} onchange="togglePricing(this)">
-                <span>Paid Course</span>
-              </label>
-            </div>
-          </div>
-          
-          <!-- Pricing Section -->
-          <div class="pricing-section" style="display: ${courseData.courseType === 'paid' ? 'block' : 'none'};">
-            <div class="form-row">
-              <div class="form-group">
-                <label class="field-label">Course Price ($)</label>
-                <input type="number" name="price" class="form-input" value="${courseData.price || ''}" placeholder="0" min="0" step="0.01">
+          <form class="create-course-form" id="editCourseForm" onsubmit="handleEditCourse(event, '${courseData._id}')">
+
+            <!-- Basic Information Section -->
+            <div class="course-section">
+              <h3 class="course-section-title">${t('createCourse.basicInfo')}</h3>
+
+              <div class="form-field">
+                <label class="field-label">${t('createCourse.courseTitle')}</label>
+                <input type="text" class="form-input" name="title" value="${courseData.title || ''}" placeholder="${t('createCourse.courseTitlePlaceholder')}" required />
               </div>
-              <div class="form-group">
-                <label class="field-label">Discount Price ($)</label>
-                <input type="number" name="discountPrice" class="form-input" value="${courseData.discountPrice || ''}" placeholder="0" min="0" step="0.01">
+
+              <div class="form-field">
+                <label class="field-label">Description</label>
+                <textarea class="form-textarea" name="description" rows="4" placeholder="Write a description of your course..." required>${courseData.description || ''}</textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="field-label">${t('createCourse.category')}</label>
+                  <select class="form-input" name="category" required>
+                    <option value="">Select category...</option>
+                    <option value="Web Development" ${courseData.category === 'Web Development' ? 'selected' : ''}>Web Development</option>
+                    <option value="Mobile Development" ${courseData.category === 'Mobile Development' ? 'selected' : ''}>Mobile Development</option>
+                    <option value="Programming" ${courseData.category === 'Programming' ? 'selected' : ''}>Programming</option>
+                    <option value="Data Science" ${courseData.category === 'Data Science' ? 'selected' : ''}>Data Science</option>
+                    <option value="Machine Learning" ${courseData.category === 'Machine Learning' ? 'selected' : ''}>Machine Learning</option>
+                    <option value="Artificial Intelligence" ${courseData.category === 'Artificial Intelligence' ? 'selected' : ''}>Artificial Intelligence</option>
+                    <option value="Design" ${courseData.category === 'Design' ? 'selected' : ''}>Design</option>
+                    <option value="UI/UX Design" ${courseData.category === 'UI/UX Design' ? 'selected' : ''}>UI/UX Design</option>
+                    <option value="Graphic Design" ${courseData.category === 'Graphic Design' ? 'selected' : ''}>Graphic Design</option>
+                    <option value="Marketing" ${courseData.category === 'Marketing' ? 'selected' : ''}>Marketing</option>
+                    <option value="Digital Marketing" ${courseData.category === 'Digital Marketing' ? 'selected' : ''}>Digital Marketing</option>
+                    <option value="Business" ${courseData.category === 'Business' ? 'selected' : ''}>Business</option>
+                    <option value="Finance" ${courseData.category === 'Finance' ? 'selected' : ''}>Finance</option>
+                    <option value="Photography" ${courseData.category === 'Photography' ? 'selected' : ''}>Photography</option>
+                    <option value="Video Editing" ${courseData.category === 'Video Editing' ? 'selected' : ''}>Video Editing</option>
+                    <option value="Music" ${courseData.category === 'Music' ? 'selected' : ''}>Music</option>
+                    <option value="Language Learning" ${courseData.category === 'Language Learning' ? 'selected' : ''}>Language Learning</option>
+                    <option value="Health & Fitness" ${courseData.category === 'Health & Fitness' ? 'selected' : ''}>Health & Fitness</option>
+                    <option value="Lifestyle" ${courseData.category === 'Lifestyle' ? 'selected' : ''}>Lifestyle</option>
+                    <option value="Security" ${courseData.category === 'Security' ? 'selected' : ''}>Security</option>
+                    <option value="Cybersecurity" ${courseData.category === 'Cybersecurity' ? 'selected' : ''}>Cybersecurity</option>
+                    <option value="Blockchain" ${courseData.category === 'Blockchain' ? 'selected' : ''}>Blockchain</option>
+                    <option value="Cloud Computing" ${courseData.category === 'Cloud Computing' ? 'selected' : ''}>Cloud Computing</option>
+                    <option value="DevOps" ${courseData.category === 'DevOps' ? 'selected' : ''}>DevOps</option>
+                    <option value="Game Development" ${courseData.category === 'Game Development' ? 'selected' : ''}>Game Development</option>
+                    <option value="Database" ${courseData.category === 'Database' ? 'selected' : ''}>Database</option>
+                    <option value="Testing" ${courseData.category === 'Testing' ? 'selected' : ''}>Testing</option>
+                    <option value="Other" ${courseData.category === 'Other' ? 'selected' : ''}>Other</option>
+                  </select>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Course Image Section -->
+            <div class="course-section">
+              <h3 class="course-section-title">${t('createCourse.courseImage')}</h3>
+
+              <div class="form-field">
+                <label class="field-label">${t('createCourse.courseThumbnail')}</label>
+                <div class="upload-area" id="uploadArea" onclick="triggerFileUpload()">
+                  <input type="file" id="thumbnailInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)" />
+                  ${courseData.thumbnail ? `
+                    <div class="image-preview" id="imagePreview">
+                      <img id="previewImg" src="${courseData.thumbnail}" alt="Course thumbnail" />
+                      <div class="image-overlay">
+                        <button type="button" class="image-action-btn" onclick="changeImage(event)">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                          ${t('createCourse.change')}
+                        </button>
+                        <button type="button" class="image-action-btn delete" onclick="deleteImage(event)">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                            <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14zM10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                          </svg>
+                          ${t('createCourse.delete')}
+                        </button>
+                      </div>
+                    </div>
+                  ` : `
+                    <div class="upload-content" id="uploadContent">
+                      <div class="upload-icon">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                          <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z" fill="currentColor"/>
+                        </svg>
+                      </div>
+                      <div class="upload-text">
+                        <p>${t('createCourse.uploadThumbnail')}</p>
+                        <small>${t('createCourse.thumbnailHint')}</small>
+                      </div>
+                    </div>
+                  `}
+                </div>
               </div>
             </div>
-          </div>
-          
-          <!-- Course Thumbnail -->
-          <div class="form-group">
-            <label class="field-label">Course Thumbnail</label>
-            ${courseData.thumbnail ? `
-              <div class="current-thumbnail" style="margin-bottom: 12px;">
-                <img src="${courseData.thumbnail}" alt="Current thumbnail" style="width: 200px; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);">
-                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Current thumbnail</p>
+
+            <!-- Pricing & Access Section -->
+            <div class="course-section">
+              <h3 class="course-section-title">${t('createCourse.pricingAccess')}</h3>
+
+              <div class="form-field">
+                <label class="field-label">${t('createCourse.courseType')}</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="courseType" value="paid" ${courseData.courseType === 'paid' ? 'checked' : ''} onchange="toggleEditPricing(this)" />
+                    <span class="radio-custom"></span>
+                    <span>${t('createCourse.paid')}</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="courseType" value="free" ${courseData.courseType === 'free' ? 'checked' : ''} onchange="toggleEditPricing(this)" />
+                    <span class="radio-custom"></span>
+                    <span>${t('createCourse.free')}</span>
+                  </label>
+                </div>
               </div>
-            ` : ''}
-            <div class="upload-area" id="uploadArea" onclick="triggerFileUpload()">
-              <input type="file" id="thumbnailInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)" />
-              <div class="upload-content" id="uploadContent">
-                <div class="upload-icon">📁</div>
-                <p>Click to upload new thumbnail (optional)</p>
-                <span>PNG, JPG up to 5MB</span>
+
+              <div class="form-row" id="pricingFields" style="display: ${courseData.courseType === 'paid' ? 'flex' : 'none'};">
+                <div class="form-field">
+                  <label class="field-label">${t('createCourse.coursePrice')}</label>
+                  <input type="number" class="form-input" name="price" value="${courseData.price || ''}" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
+                </div>
+                <div class="form-field">
+                  <label class="field-label">${t('createCourse.discountPrice')}</label>
+                  <input type="number" class="form-input" name="discountPrice" value="${courseData.discountPrice || ''}" placeholder="${t('createCourse.discountPricePlaceholder')}" step="0.01" />
+                  <small class="field-note">${t('createCourse.discountNote')}</small>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-        
-        <!-- Course Content -->
-        <div class="form-section">
-          <h3 class="section-title">Course Content</h3>
-          <div class="course-content-info">
-            <div class="info-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-              </svg>
-              <span>Organize your course into modules (sections) and lessons. You can add videos, files, quizzes, and assignments.</span>
+
+            <!-- Course Structure Section -->
+            <div class="course-section">
+              <h3 class="course-section-title">${t('createCourse.courseStructure')}</h3>
+
+              <div class="info-tip">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span>Organize your course into modules (sections) and lessons. You can add videos, files, quizzes, and assignments.</span>
+              </div>
+
+              <div class="modules-container" id="modulesContainer">
+                <!-- Modules will be loaded here -->
+                <button type="button" class="add-module-btn" onclick="addNewModule()">+ Add New Module</button>
+              </div>
             </div>
-          </div>
-          
-          <!-- Modules Container -->
-          <div class="modules-container" id="modulesContainer">
-            <!-- Modules will be loaded here -->
-          </div>
-          
-          <button type="button" class="add-module-btn" onclick="addModule()">
-            <span class="plus-icon">+</span>
-            Add Module
-          </button>
-        </div>
-        
-        <!-- Form Actions -->
-        <div class="form-actions course-actions">
-          <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
-          <button type="submit" class="btn-secondary" name="action" value="draft">Save as Draft</button>
-          <button type="submit" class="btn-save" name="action" value="publish">Update Course</button>
-        </div>
-        
-      </form>
-    </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions course-actions">
+              <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
+              <button type="submit" class="btn-secondary" name="action" value="draft">Save as Draft</button>
+              <button type="submit" class="btn-save" name="action" value="publish">Update Course</button>
+            </div>
+
+          </form>
   `;
   
   // Load existing modules and lessons
@@ -15843,6 +15888,14 @@ function openCourseEditPage(courseData) {
   // Set uploaded thumbnail URL if exists
   if (courseData.thumbnail) {
     window.uploadedThumbnailUrl = courseData.thumbnail;
+  }
+  
+  // Hide upload content if image exists
+  if (courseData.thumbnail) {
+    const uploadContent = document.getElementById('uploadContent');
+    if (uploadContent) {
+      uploadContent.classList.add('hidden');
+    }
   }
 }
 
@@ -15974,16 +16027,31 @@ function loadCourseModules(courseData) {
               break;
           }
           
+          // Create proper lesson HTML with all buttons
+          let actionButtons = `
+            <button class="edit-btn" onclick="editLesson(this, event)">Edit</button>
+            <button class="delete-btn" onclick="deleteLesson(this, event)">Delete</button>
+          `;
+          
+          // Add view button for video lessons
+          if (lesson.type === 'video' && lesson.videoUrl) {
+            actionButtons += `<button class="view-btn" onclick="viewVideo(this, event)">Ko'rish</button>`;
+          }
+          
+          // Add view questions button for quiz lessons
+          if (lesson.type === 'quiz' && lesson.questions && lesson.questions.length > 0) {
+            actionButtons += `<button class="view-btn" onclick="viewQuizQuestions(this, event)">Questions (${lesson.questions.length})</button>`;
+          }
+          
           lessonHTML = `
-            <div class="lesson-item" data-lesson='${JSON.stringify(lesson).replace(/'/g, "&apos;")}'>
+            <div class="lesson-item" data-lesson='${JSON.stringify(lesson).replace(/'/g, "&apos;")}' data-video-url="${lesson.videoUrl || ''}">
               <div class="lesson-title-with-icon">
                 <span class="lesson-icon">${iconSVG}</span>
                 <span>${lesson.title}</span>
               </div>
               <div class="lesson-info-actions">
                 <span class="lesson-duration">${lesson.duration || lesson.type}</span>
-                <button class="edit-btn" onclick="editLesson(this, event)">Edit</button>
-                <button class="delete-btn" onclick="deleteLesson(this, event)">Delete</button>
+                ${actionButtons}
               </div>
             </div>
           `;
@@ -16157,5 +16225,77 @@ window.togglePricing = function(radio) {
   const pricingSection = document.querySelector('.pricing-section');
   if (pricingSection) {
     pricingSection.style.display = radio.value === 'paid' ? 'block' : 'none';
+  }
+};
+
+// Toggle Pricing Fields for Edit Course
+window.toggleEditPricing = function(radio) {
+  const pricingFields = document.getElementById('pricingFields');
+  if (pricingFields) {
+    pricingFields.style.display = radio.value === 'paid' ? 'flex' : 'none';
+  }
+};
+
+// View Quiz Questions Function
+window.viewQuizQuestions = function(button, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  const lessonItem = button.closest('.lesson-item');
+  const lessonData = lessonItem.lessonData || {};
+  const questions = lessonData.questions || [];
+  
+  if (questions.length === 0) {
+    showErrorToast('No questions found for this quiz');
+    return;
+  }
+  
+  // Create quiz questions modal
+  const questionsHTML = questions.map((q, index) => `
+    <div class="quiz-question-item" style="margin-bottom: 16px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+      <h4 style="margin: 0 0 8px 0; color: var(--text-primary);">Question ${index + 1}</h4>
+      <p style="margin: 0 0 12px 0; color: var(--text-primary);">${q.question}</p>
+      <div class="quiz-options">
+        ${q.options.map((option, optIndex) => `
+          <div style="margin: 4px 0; padding: 8px; background: ${q.correctAnswers && q.correctAnswers.includes(optIndex) ? 'rgba(34, 197, 94, 0.2)' : 'rgba(255,255,255,0.1)'}; border-radius: 4px; color: var(--text-primary);">
+            ${String.fromCharCode(65 + optIndex)}. ${option} ${q.correctAnswers && q.correctAnswers.includes(optIndex) ? '✓' : ''}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  
+  const modalHTML = `
+    <div class="quiz-modal" onclick="closeQuizModal()" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;">
+      <div class="quiz-modal-content" onclick="event.stopPropagation()" style="max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; background: var(--bg-secondary); border-radius: 12px; padding: 24px;">
+        <div class="quiz-modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: var(--text-primary);">Quiz Questions: ${lessonData.title}</h3>
+          <button onclick="closeQuizModal()" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 4px;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="quiz-questions-list">
+          ${questionsHTML}
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+          <button onclick="closeQuizModal()" style="background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer;">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+};
+
+// Close Quiz Modal
+window.closeQuizModal = function() {
+  const modal = document.querySelector('.quiz-modal');
+  if (modal) {
+    modal.remove();
   }
 };
