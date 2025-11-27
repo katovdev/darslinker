@@ -9270,9 +9270,9 @@ window.saveLesson = async function(button, type) {
         </div>
         <div class="lesson-info-actions">
           <span class="lesson-duration">${duration}</span>
-          <button class="edit-btn" onclick="editLesson(this)">Edit</button>
-          <button class="delete-btn" onclick="deleteLesson(this)">Delete</button>
-          <button class="view-btn" onclick="viewVideo(this)">Ko'rish</button>
+          <button class="edit-btn" onclick="editLesson(this, event)">Edit</button>
+          <button class="delete-btn" onclick="deleteLesson(this, event)">Delete</button>
+          <button class="view-btn" onclick="viewVideo(this, event)">Ko'rish</button>
         </div>
       </div>
     `;
@@ -9285,8 +9285,8 @@ window.saveLesson = async function(button, type) {
         </div>
         <div class="lesson-info-actions">
           <span class="lesson-duration">${duration}</span>
-          <button class="edit-btn" onclick="editLesson(this)">Edit</button>
-          <button class="delete-btn" onclick="deleteLesson(this)">Delete</button>
+          <button class="edit-btn" onclick="editLesson(this, event)">Edit</button>
+          <button class="delete-btn" onclick="deleteLesson(this, event)">Delete</button>
         </div>
       </div>
     `;
@@ -9310,7 +9310,12 @@ window.saveLesson = async function(button, type) {
 };
 
 // View Video Function
-window.viewVideo = function(button) {
+window.viewVideo = function(button, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
   const lessonItem = button.closest('.lesson-item');
   const videoUrl = lessonItem.dataset.videoUrl;
   const lessonTitle = lessonItem.querySelector('.lesson-title-with-icon span:last-child').textContent;
@@ -9361,7 +9366,12 @@ window.closeVideoModal = function() {
 };
 
 // Edit Lesson Function
-window.editLesson = function(button) {
+window.editLesson = function(button, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
   const lessonItem = button.closest('.lesson-item');
   const lessonDataStr = lessonItem.dataset.lesson;
 
@@ -10037,7 +10047,12 @@ window.closeCustomConfirm = function() {
 };
 
 // Delete Lesson Function
-window.deleteLesson = function(button) {
+window.deleteLesson = function(button, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
   const lessonItem = button.closest('.lesson-item');
   const moduleItem = lessonItem.closest('.module-item');
   const lessonTitle = lessonItem.querySelector('.lesson-title-with-icon span:last-child').textContent;
@@ -10103,8 +10118,8 @@ window.addNewModule = function() {
           <p>0 lessons • 0 hours</p>
         </div>
         <div class="module-actions" onclick="event.stopPropagation()">
-          <button type="button" class="action-btn" onclick="editModule(this)">Edit</button>
-          <button type="button" class="action-btn delete" onclick="deleteModule(this)">Delete</button>
+          <button type="button" class="action-btn" onclick="editModule(this, event)">Edit</button>
+          <button type="button" class="action-btn delete" onclick="deleteModule(this, event)">Delete</button>
         </div>
       </div>
       <div class="lessons-list" style="display: none;">
@@ -10169,7 +10184,12 @@ window.toggleModule = function(moduleHeader) {
 };
 
 // Edit Module
-window.editModule = function(button) {
+window.editModule = function(button, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
   const moduleHeader = button.closest('.module-header');
   const moduleTitle = moduleHeader.querySelector('h4');
   const currentTitle = moduleTitle.textContent;
@@ -10221,7 +10241,12 @@ window.saveModuleTitle = function() {
 };
 
 // Delete Module
-window.deleteModule = function(button) {
+window.deleteModule = function(button, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
   const moduleItem = button.closest('.module-item');
   const moduleTitle = moduleItem.querySelector('h4').textContent;
   
@@ -15563,9 +15588,31 @@ window.sortCourses = function() {
 };
 
 // Edit Course
-window.editCourse = function(courseId) {
+window.editCourse = async function(courseId) {
   console.log('Edit course:', courseId);
-  showErrorToast('Edit functionality coming soon!');
+  
+  try {
+    // Get course data from backend
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/courses/${courseId}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    
+    const result = await response.json();
+    console.log('Course data loaded:', result);
+    
+    if (result.success && result.course) {
+      // Open course edit page with loaded data
+      openCourseEditPage(result.course);
+    } else {
+      showErrorToast('Failed to load course data');
+    }
+  } catch (error) {
+    console.error('Error loading course:', error);
+    showErrorToast('Failed to load course data');
+  }
 };
 
 // View Course Stats
@@ -15655,3 +15702,460 @@ function updateCourseStats(courses) {
   if (totalRevenueEl) totalRevenueEl.textContent = '$' + totalRevenue.toLocaleString();
   if (liveStudentsEl) liveStudentsEl.textContent = liveStudents;
 }
+
+// Open Course Edit Page
+function openCourseEditPage(courseData) {
+  console.log('Opening course edit page with data:', courseData);
+  
+  const userData = store.getState().user;
+  const contentArea = document.querySelector('.figma-content-area');
+  
+  if (!contentArea) {
+    console.error('Content area not found');
+    return;
+  }
+  
+  // Update page title
+  const pageTitle = document.getElementById('page-title');
+  if (pageTitle) {
+    pageTitle.textContent = 'Edit Course';
+  }
+  
+  // Create edit course form with pre-filled data
+  contentArea.innerHTML = `
+    <div class="create-course-container">
+      <form id="editCourseForm" class="create-course-form" onsubmit="handleEditCourse(event, '${courseData._id}')">
+        
+        <!-- Course Basic Information -->
+        <div class="form-section">
+          <h3 class="section-title">Course Information</h3>
+          
+          <div class="form-group">
+            <label class="field-label">Course Title</label>
+            <input type="text" name="title" class="form-input" value="${courseData.title || ''}" placeholder="Enter course title" required />
+          </div>
+          
+          <div class="form-group">
+            <label class="field-label">Course Description</label>
+            <textarea name="description" class="form-textarea" rows="4" placeholder="Describe your course" required>${courseData.description || ''}</textarea>
+          </div>
+          
+          <div class="form-group">
+            <label class="field-label">Category</label>
+            <select name="category" class="form-select" required>
+              <option value="">Select Category</option>
+              <option value="Web Development" ${courseData.category === 'Web Development' ? 'selected' : ''}>Web Development</option>
+              <option value="Mobile Development" ${courseData.category === 'Mobile Development' ? 'selected' : ''}>Mobile Development</option>
+              <option value="Data Science" ${courseData.category === 'Data Science' ? 'selected' : ''}>Data Science</option>
+              <option value="Design" ${courseData.category === 'Design' ? 'selected' : ''}>Design</option>
+              <option value="Business" ${courseData.category === 'Business' ? 'selected' : ''}>Business</option>
+              <option value="Marketing" ${courseData.category === 'Marketing' ? 'selected' : ''}>Marketing</option>
+            </select>
+          </div>
+          
+          <!-- Course Type and Pricing -->
+          <div class="form-group">
+            <label class="field-label">Course Type</label>
+            <div class="radio-group">
+              <label class="radio-option">
+                <input type="radio" name="courseType" value="free" ${courseData.courseType === 'free' ? 'checked' : ''} onchange="togglePricing(this)">
+                <span>Free Course</span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="courseType" value="paid" ${courseData.courseType === 'paid' ? 'checked' : ''} onchange="togglePricing(this)">
+                <span>Paid Course</span>
+              </label>
+            </div>
+          </div>
+          
+          <!-- Pricing Section -->
+          <div class="pricing-section" style="display: ${courseData.courseType === 'paid' ? 'block' : 'none'};">
+            <div class="form-row">
+              <div class="form-group">
+                <label class="field-label">Course Price ($)</label>
+                <input type="number" name="price" class="form-input" value="${courseData.price || ''}" placeholder="0" min="0" step="0.01">
+              </div>
+              <div class="form-group">
+                <label class="field-label">Discount Price ($)</label>
+                <input type="number" name="discountPrice" class="form-input" value="${courseData.discountPrice || ''}" placeholder="0" min="0" step="0.01">
+              </div>
+            </div>
+          </div>
+          
+          <!-- Course Thumbnail -->
+          <div class="form-group">
+            <label class="field-label">Course Thumbnail</label>
+            ${courseData.thumbnail ? `
+              <div class="current-thumbnail" style="margin-bottom: 12px;">
+                <img src="${courseData.thumbnail}" alt="Current thumbnail" style="width: 200px; height: 120px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color);">
+                <p style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">Current thumbnail</p>
+              </div>
+            ` : ''}
+            <div class="upload-area" id="uploadArea" onclick="triggerFileUpload()">
+              <input type="file" id="thumbnailInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)" />
+              <div class="upload-content" id="uploadContent">
+                <div class="upload-icon">📁</div>
+                <p>Click to upload new thumbnail (optional)</p>
+                <span>PNG, JPG up to 5MB</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Course Content -->
+        <div class="form-section">
+          <h3 class="section-title">Course Content</h3>
+          <div class="course-content-info">
+            <div class="info-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <span>Organize your course into modules (sections) and lessons. You can add videos, files, quizzes, and assignments.</span>
+            </div>
+          </div>
+          
+          <!-- Modules Container -->
+          <div class="modules-container" id="modulesContainer">
+            <!-- Modules will be loaded here -->
+          </div>
+          
+          <button type="button" class="add-module-btn" onclick="addModule()">
+            <span class="plus-icon">+</span>
+            Add Module
+          </button>
+        </div>
+        
+        <!-- Form Actions -->
+        <div class="form-actions course-actions">
+          <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
+          <button type="submit" class="btn-secondary" name="action" value="draft">Save as Draft</button>
+          <button type="submit" class="btn-save" name="action" value="publish">Update Course</button>
+        </div>
+        
+      </form>
+    </div>
+  `;
+  
+  // Load existing modules and lessons
+  loadCourseModules(courseData);
+  
+  // Set uploaded thumbnail URL if exists
+  if (courseData.thumbnail) {
+    window.uploadedThumbnailUrl = courseData.thumbnail;
+  }
+}
+
+// Add Module function for edit page
+window.addModule = function() {
+  const modulesContainer = document.getElementById('modulesContainer');
+  const existingModules = modulesContainer.querySelectorAll('.module-item').length;
+  const newModuleNumber = existingModules + 1;
+
+  const newModuleHTML = `
+    <div class="module-item">
+      <div class="module-header" onclick="toggleModule(this)">
+        <div class="module-info">
+          <h4>Module ${newModuleNumber}: New Module</h4>
+          <p>0 lessons • 0 hours</p>
+        </div>
+        <div class="module-actions" onclick="event.stopPropagation()">
+          <button type="button" class="action-btn" onclick="editModule(this, event)">Edit</button>
+          <button type="button" class="action-btn delete" onclick="deleteModule(this, event)">Delete</button>
+        </div>
+      </div>
+      <div class="lessons-container" style="display: block;">
+        <div class="add-lesson-dropdown">
+          <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add Lesson</button>
+          <div class="dropdown-menu">
+            <a href="#" onclick="addLesson('video', this, event)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2"/>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Video
+            </a>
+            <a href="#" onclick="addLesson('quiz', this, event)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+              </svg>
+              Quiz
+            </a>
+            <a href="#" onclick="addLesson('assignment', this, event)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
+                <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
+                <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/>
+                <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
+                <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Assignment
+            </a>
+            <a href="#" onclick="addLesson('file', this, event)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" stroke-width="2"/>
+                <polyline points="13,2 13,9 20,9" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              File
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Insert before the "Add Module" button
+  const addButton = modulesContainer.querySelector('.add-module-btn');
+  if (addButton) {
+    addButton.insertAdjacentHTML('beforebegin', newModuleHTML);
+  } else {
+    modulesContainer.insertAdjacentHTML('beforeend', newModuleHTML);
+  }
+};
+
+// Load Course Modules and Lessons
+function loadCourseModules(courseData) {
+  const modulesContainer = document.getElementById('modulesContainer');
+  
+  if (courseData.modules && courseData.modules.length > 0) {
+    courseData.modules.forEach((module, moduleIndex) => {
+      // Add module
+      addModule();
+      
+      const moduleItems = document.querySelectorAll('.module-item');
+      const currentModule = moduleItems[moduleItems.length - 1];
+      
+      // Set module title
+      const moduleTitle = currentModule.querySelector('.module-info h4');
+      if (moduleTitle) {
+        moduleTitle.textContent = module.title || `Module ${moduleIndex + 1}`;
+      }
+      
+      // Add lessons to this module
+      if (module.lessons && module.lessons.length > 0) {
+        module.lessons.forEach(lesson => {
+          // Add lesson based on type
+          const lessonContainer = currentModule.querySelector('.lessons-container');
+          
+          // Create lesson item HTML
+          let lessonHTML = '';
+          let iconSVG = '';
+          
+          switch(lesson.type) {
+            case 'video':
+              iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 7l-7 5 7 5V7z"/>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              </svg>`;
+              break;
+            case 'quiz':
+              iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+              </svg>`;
+              break;
+            case 'assignment':
+              iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14,2 14,8 20,8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+                <polyline points="10,9 9,9 8,9"/>
+              </svg>`;
+              break;
+            case 'file':
+              iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+                <polyline points="13,2 13,9 20,9"/>
+              </svg>`;
+              break;
+          }
+          
+          lessonHTML = `
+            <div class="lesson-item" data-lesson='${JSON.stringify(lesson).replace(/'/g, "&apos;")}'>
+              <div class="lesson-title-with-icon">
+                <span class="lesson-icon">${iconSVG}</span>
+                <span>${lesson.title}</span>
+              </div>
+              <div class="lesson-info-actions">
+                <span class="lesson-duration">${lesson.duration || lesson.type}</span>
+                <button class="edit-btn" onclick="editLesson(this, event)">Edit</button>
+                <button class="delete-btn" onclick="deleteLesson(this, event)">Delete</button>
+              </div>
+            </div>
+          `;
+          
+          lessonContainer.insertAdjacentHTML('beforeend', lessonHTML);
+          
+          // Store lesson data
+          const newLessonItem = lessonContainer.lastElementChild;
+          newLessonItem.lessonData = lesson;
+        });
+      }
+      
+      // Update module info
+      updateModuleInfo(currentModule);
+    });
+  }
+}
+
+// Handle Edit Course Form Submission
+window.handleEditCourse = async function(e, courseId) {
+  e.preventDefault();
+  
+  const user = store.getState().user;
+  if (!user) {
+    showErrorToast('User not found');
+    return;
+  }
+  
+  // Determine which button was clicked
+  const clickedButton = e.submitter;
+  const action = clickedButton?.value || 'publish';
+  const status = action === 'draft' ? 'draft' : 'active';
+  
+  console.log('📝 Updating course with action:', action, 'status:', status);
+
+  // Show loading state
+  const originalText = clickedButton.textContent;
+  clickedButton.textContent = action === 'draft' ? 'Saving...' : 'Updating...';
+  clickedButton.disabled = true;
+
+  try {
+    const formData = new FormData(e.target);
+    
+    // Get basic course info
+    const title = formData.get('title');
+    const description = formData.get('description');
+    const category = formData.get('category');
+    const courseType = formData.get('courseType') || 'free';
+    const price = courseType === 'paid' ? parseInt(formData.get('price')) || 0 : 0;
+    const discountPrice = courseType === 'paid' ? parseInt(formData.get('discountPrice')) || 0 : 0;
+    
+    // Get thumbnail URL (use existing or newly uploaded)
+    const thumbnail = window.uploadedThumbnailUrl || '';
+    
+    console.log('🖼️ Thumbnail check:', {
+      uploadedThumbnailUrl: window.uploadedThumbnailUrl,
+      thumbnail: thumbnail,
+      hasThumbnail: !!thumbnail
+    });
+    
+    // Validate required fields
+    if (!title || !description || !category) {
+      throw new Error('Please fill in all required fields');
+    }
+    
+    if (!thumbnail) {
+      throw new Error('Please upload a course thumbnail');
+    }
+    
+    // Collect modules data
+    const modules = [];
+    const moduleItems = document.querySelectorAll('.module-item');
+    
+    moduleItems.forEach((moduleItem, moduleIndex) => {
+      const moduleTitle = moduleItem.querySelector('.module-info h4')?.textContent || `Module ${moduleIndex + 1}`;
+      const lessons = [];
+      
+      const lessonItems = moduleItem.querySelectorAll('.lesson-item');
+      lessonItems.forEach((lessonItem, lessonIndex) => {
+        // Get full lesson data from stored data
+        const lessonData = lessonItem.lessonData || {};
+        
+        const lesson = {
+          type: lessonData.type || 'video',
+          title: lessonData.title || `Lesson ${lessonIndex + 1}`,
+          order: lessonIndex + 1,
+          duration: lessonData.duration || '',
+          ...lessonData // Include all lesson data
+        };
+        
+        console.log('📚 Lesson data being updated:', lesson);
+        lessons.push(lesson);
+      });
+      
+      if (lessons.length > 0) {
+        modules.push({
+          title: moduleTitle,
+          order: moduleIndex + 1,
+          lessons,
+        });
+      }
+    });
+    
+    const courseData = {
+      title,
+      description,
+      category,
+      thumbnail,
+      level: 'beginner',
+      language: 'Uzbek',
+      duration: '0',
+      courseType,
+      price: courseType === 'paid' ? price : 0,
+      discountPrice: courseType === 'paid' ? discountPrice : 0,
+      status,
+      modules,
+      teacher: user._id,
+    };
+    
+    console.log('📦 Sending updated course data:', courseData);
+
+    // Call API to update course
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const updateCourseUrl = `${apiBaseUrl}/courses/${courseId}`;
+    
+    console.log('📤 Updating course at:', updateCourseUrl);
+    
+    const response = await fetch(updateCourseUrl, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(courseData),
+    });
+    
+    const result = await response.json();
+    console.log('📥 API Response:', result);
+
+    if (!response.ok) {
+      console.error('❌ Update errors:', result.errors || result.message);
+      throw new Error(result.message || 'Update failed');
+    }
+
+    if (result.success) {
+      const message = status === 'draft' 
+        ? 'Course updated and saved as draft!' 
+        : 'Course updated successfully!';
+      showSuccessToast(message);
+      setTimeout(() => {
+        openMyCourses(); // Go back to My Courses page
+      }, 1500);
+    } else {
+      throw new Error(result.message || 'Failed to update course');
+    }
+
+  } catch (error) {
+    console.error('Error updating course:', error);
+    showErrorToast(error.message || 'Failed to update course. Please try again.');
+  } finally {
+    // Restore button state
+    if (clickedButton) {
+      clickedButton.textContent = originalText;
+      clickedButton.disabled = false;
+    }
+  }
+};
+
+// Toggle Pricing Section for Edit Course
+window.togglePricing = function(radio) {
+  const pricingSection = document.querySelector('.pricing-section');
+  if (pricingSection) {
+    pricingSection.style.display = radio.value === 'paid' ? 'block' : 'none';
+  }
+};

@@ -789,7 +789,15 @@ courseRouter.get("/:id", validate(courseIdSchema, "params"), findOne);
  */
 courseRouter.patch(
   "/:id",
-  validate(courseIdSchema, "paramas"),
+  validate(courseIdSchema, "params"),
+  validate(updateCourseSchema),
+  update
+);
+
+// Also support PUT method for course updates
+courseRouter.put(
+  "/:id",
+  validate(courseIdSchema, "params"),
   validate(updateCourseSchema),
   update
 );
