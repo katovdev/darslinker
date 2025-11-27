@@ -39,20 +39,31 @@ export function initDashboard() {
     return;
   }
 
-  // Get user data from session storage and update store
-  const currentUserData = sessionStorage.getItem('currentUser');
-  console.log('Raw currentUser from sessionStorage:', currentUserData);
+  // Get user data - try localStorage first (most recent), then sessionStorage
+  let currentUserData = localStorage.getItem('currentUser');
+  let source = 'localStorage';
+  
+  if (!currentUserData || currentUserData === 'undefined' || currentUserData === 'null') {
+    currentUserData = sessionStorage.getItem('currentUser');
+    source = 'sessionStorage';
+  }
+  
+  console.log(`Raw currentUser from ${source}:`, currentUserData);
 
   let userData = null;
   if (currentUserData && currentUserData !== 'undefined' && currentUserData !== 'null') {
     try {
       userData = JSON.parse(currentUserData);
+      console.log('✅ Parsed user data:', userData);
+      
+      // Sync to both storages
+      sessionStorage.setItem('currentUser', JSON.stringify(userData));
+      localStorage.setItem('currentUser', JSON.stringify(userData));
     } catch (error) {
       console.error('Error parsing user data:', error);
       userData = null;
     }
   }
-  console.log('Parsed user data:', userData);
 
   if (!userData) {
     console.log('No user data, redirecting to login');
@@ -73,6 +84,11 @@ export function initDashboard() {
 
   // Force teacher dashboard for testing
   console.log('Forcing teacher dashboard for testing');
+  console.log('👤 User data being passed to renderTeacherDashboard:', {
+    firstName: userData.firstName,
+    lastName: userData.lastName,
+    fullData: userData
+  });
   renderTeacherDashboard(userData);
 
   // Original logic (commented out for testing):
@@ -528,33 +544,138 @@ async function handleCreateCourse(e) {
     return;
   }
 
+  // Determine which button was clicked
+  const clickedButton = e.submitter;
+  const action = clickedButton?.value || 'publish'; // Default to publish
+  const status = action === 'draft' ? 'draft' : 'active';
+  
+  console.log('📝 Form submitted with action:', action, 'status:', status);
+
   // Show loading state
-  const submitButton = e.target.querySelector('button[type="submit"]');
-  const originalText = submitButton.textContent;
-  submitButton.textContent = 'Creating...';
-  submitButton.disabled = true;
+  const originalText = clickedButton.textContent;
+  clickedButton.textContent = action === 'draft' ? 'Saving...' : 'Publishing...';
+  clickedButton.disabled = true;
 
   try {
     const formData = new FormData(e.target);
-    const courseData = {
-      title: formData.get('title'),
-      description: formData.get('description'),
-      category: formData.get('category'),
-      price: parseInt(formData.get('price')),
-      teacherId: user._id
-    };
-
+    
+    // Get basic course info
+    const title = formData.get('title');
+    const description = formData.get('description');
+    const category = formData.get('category');
+    const courseType = formData.get('courseType') || 'free';
+    const price = courseType === 'paid' ? parseInt(formData.get('price')) || 0 : 0;
+    const discountPrice = courseType === 'paid' ? parseInt(formData.get('discountPrice')) || 0 : 0;
+    
+    // Get thumbnail URL (should be uploaded already)
+    const thumbnail = window.uploadedThumbnailUrl || '';
+    
+    console.log('🖼️ Thumbnail check:', {
+      uploadedThumbnailUrl: window.uploadedThumbnailUrl,
+      thumbnail: thumbnail,
+      hasThumbnail: !!thumbnail
+    });
+    
     // Validate required fields
-    if (!courseData.title || !courseData.description || !courseData.category) {
+    if (!title || !description || !category) {
       throw new Error('Please fill in all required fields');
     }
+    
+    if (!thumbnail) {
+      console.error('❌ No thumbnail found! window.uploadedThumbnailUrl:', window.uploadedThumbnailUrl);
+      throw new Error('Please upload a course thumbnail');
+    }
+    
+    // Collect modules data
+    const modules = [];
+    const moduleItems = document.querySelectorAll('.module-item');
+    
+    moduleItems.forEach((moduleItem, moduleIndex) => {
+      const moduleTitle = moduleItem.querySelector('.module-info h4')?.textContent || `Module ${moduleIndex + 1}`;
+      const lessons = [];
+      
+      const lessonItems = moduleItem.querySelectorAll('.lesson-item');
+      lessonItems.forEach((lessonItem, lessonIndex) => {
+        const lessonTitleElement = lessonItem.querySelector('.lesson-title-with-icon span:last-child');
+        const lessonTitle = lessonTitleElement?.textContent || `Lesson ${lessonIndex + 1}`;
+        const duration = lessonItem.querySelector('span:last-child')?.textContent || '';
+        
+        // Determine lesson type from duration text
+        let type = 'video';
+        if (duration.includes('Quiz')) type = 'quiz';
+        else if (duration.includes('Assignment')) type = 'assignment';
+        else if (duration.includes('File')) type = 'file';
+        
+        lessons.push({
+          type,
+          title: lessonTitle,
+          order: lessonIndex + 1,
+          duration,
+        });
+      });
+      
+      if (lessons.length > 0) {
+        modules.push({
+          title: moduleTitle,
+          order: moduleIndex + 1,
+          lessons,
+        });
+      }
+    });
+    
+    console.log('👤 Current user:', user);
+    console.log('👤 User ID:', user._id);
+    
+    const courseData = {
+      title,
+      description,
+      category,
+      thumbnail,
+      level: 'beginner', // Default value
+      language: 'Uzbek', // Default value
+      duration: '0', // Will be calculated from lessons
+      courseType,
+      price: courseType === 'paid' ? price : 0,
+      discountPrice: courseType === 'paid' ? discountPrice : 0,
+      status, // 'draft' or 'active' based on button clicked
+      modules,
+      teacher: user._id,
+    };
+    
+    console.log('📦 Sending course data:', courseData);
+    console.log('📦 Teacher field:', courseData.teacher);
 
     // Call API to create course
-    const result = await apiService.createCourse(courseData);
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const createCourseUrl = `${apiBaseUrl}/courses`;
+    
+    console.log('📤 Creating course at:', createCourseUrl);
+    
+    const response = await fetch(createCourseUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(courseData),
+    });
+    
+    const result = await response.json();
+    console.log('📥 API Response:', result);
+
+    if (!response.ok) {
+      console.error('❌ Validation errors:', result.errors || result.message);
+      throw new Error(result.message || 'Validation failed');
+    }
 
     if (result.success) {
-      showSuccessToast('Course created successfully!');
-      backToDashboard();
+      const message = status === 'draft' 
+        ? 'Course saved as draft!' 
+        : 'Course published successfully!';
+      showSuccessToast(message);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
     } else {
       throw new Error(result.message || 'Failed to create course');
     }
@@ -564,9 +685,9 @@ async function handleCreateCourse(e) {
     showErrorToast(error.message || 'Failed to create course. Please try again.');
   } finally {
     // Restore button state
-    if (submitButton) {
-      submitButton.textContent = originalText;
-      submitButton.disabled = false;
+    if (clickedButton) {
+      clickedButton.textContent = originalText;
+      clickedButton.disabled = false;
     }
   }
 }
@@ -7079,6 +7200,16 @@ window.setActiveChild = function(element, event) {
 
 // Back to dashboard function
 window.backToDashboard = function() {
+  console.log('🔙 Going back to dashboard');
+  
+  // Make sure user data is in sessionStorage before reload
+  const currentUser = store.getState().user;
+  if (currentUser) {
+    sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    console.log('💾 User data saved before reload:', currentUser);
+  }
+  
   // Reload dashboard to show updated data
   location.reload();
 };
@@ -7709,6 +7840,8 @@ async function handleProfileSave(e) {
       profileImage: formData.get('profileImage') || ''
     };
 
+    console.log('📝 Profile data collected from form:', profileData);
+
     // Remove empty fields
     Object.keys(profileData).forEach(key => {
       if (profileData[key] === null || profileData[key] === undefined || profileData[key] === '') {
@@ -7716,18 +7849,35 @@ async function handleProfileSave(e) {
       }
     });
 
+    console.log('📤 Sending profile update to API:', profileData);
+    console.log('👤 User ID:', user._id);
+
     // Update profile via API
+    console.log('🌐 Making API request to:', `/teachers/${user._id}`);
     const result = await apiService.updateTeacherProfile(user._id, profileData);
+    console.log('✅ API Response:', result);
+    console.log('✅ Updated teacher data:', result.teacher);
 
     if (result.success) {
+      const updatedUser = { ...user, ...result.teacher };
+      
+      console.log('💾 Updating user state:', updatedUser);
+      
       // Update user state with new data
       store.setState({
-        user: { ...user, ...result.teacher }
+        user: updatedUser
       });
       
-      // Update session storage
-      sessionStorage.setItem('currentUser', JSON.stringify({ ...user, ...result.teacher }));
+      // Update BOTH localStorage and sessionStorage
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      sessionStorage.setItem('currentUser', JSON.stringify(updatedUser));
+      
+      // Also update auth_user if it exists
+      if (localStorage.getItem('auth_user')) {
+        localStorage.setItem('auth_user', JSON.stringify(updatedUser));
+      }
 
+      console.log('✅ User state updated successfully');
       showSuccessToast(t('editProfile.success') || 'Profile updated successfully');
       setTimeout(() => backToDashboard(), 1000);
     } else {
@@ -7909,32 +8059,70 @@ window.triggerFileUpload = function() {
 };
 
 // Handle Image Upload
-window.handleImageUpload = function(event) {
+window.handleImageUpload = async function(event) {
   const file = event.target.files[0];
-  if (file) {
-    // Check file size (5MB limit)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('File size must be less than 5MB');
-      return;
+  if (!file) return;
+  
+  // Check file size (5MB limit)
+  if (file.size > 5 * 1024 * 1024) {
+    showErrorToast('File size must be less than 5MB');
+    return;
+  }
+
+  // Check file type
+  if (!file.type.startsWith('image/')) {
+    showErrorToast('Please select an image file');
+    return;
+  }
+
+  // Show preview immediately
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const uploadContent = document.getElementById('uploadContent');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+
+    previewImg.src = e.target.result;
+    uploadContent.classList.add('hidden');
+    imagePreview.classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+  
+  // Upload to server
+  try {
+    const formData = new FormData();
+    formData.append('file', file); // Backend expects 'file' not 'image'
+    
+    // Use API base URL from config
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const uploadUrl = apiBaseUrl.replace('/api', '') + '/api/upload/image';
+    
+    console.log('📤 Uploading to:', uploadUrl);
+    
+    const response = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: formData,
+    });
+    
+    const result = await response.json();
+    
+    console.log('📤 Upload response:', result);
+    
+    // Backend returns url directly, not in data object
+    if (result.success && result.url) {
+      window.uploadedThumbnailUrl = result.url;
+      console.log('✅ Thumbnail uploaded successfully! URL saved to window.uploadedThumbnailUrl:', result.url);
+      showSuccessToast('Thumbnail uploaded successfully!');
+    } else {
+      console.error('❌ Upload failed:', result);
+      throw new Error('Failed to upload thumbnail');
     }
-
-    // Check file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
-      return;
-    }
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      const uploadContent = document.getElementById('uploadContent');
-      const imagePreview = document.getElementById('imagePreview');
-      const previewImg = document.getElementById('previewImg');
-
-      previewImg.src = e.target.result;
-      uploadContent.classList.add('hidden');
-      imagePreview.classList.remove('hidden');
-    };
-    reader.readAsDataURL(file);
+  } catch (error) {
+    console.error('Error uploading thumbnail:', error);
+    showErrorToast('Failed to upload thumbnail. Please try again.');
   }
 };
 
@@ -9138,7 +9326,10 @@ window.confirmDeleteModule = function() {
         title.textContent = newTitle;
       }
     });
+    
+    showSuccessToast('Module deleted successfully!');
   }
+  closeDeleteModuleModal();
 };
 
 // Toggle Lesson Dropdown
@@ -9183,7 +9374,7 @@ window.toggleLessonDropdown = function(button, event) {
 };
 
 // Open My Courses Page
-window.openMyCourses = function() {
+window.openMyCourses = async function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (!contentArea) {
@@ -9199,11 +9390,6 @@ window.openMyCourses = function() {
 
   // Update content area only
   contentArea.innerHTML = `
-          <!-- Statistics Cards -->
-          <div class="my-courses-stats" id="coursesStats">
-            <!-- Statistics will be rendered dynamically -->
-          </div>
-
           <!-- Search and Sort Section -->
           <div class="courses-controls">
             <div class="search-section">
@@ -9220,39 +9406,53 @@ window.openMyCourses = function() {
                 <option value="oldest">Oldest first</option>
                 <option value="name-asc">Name A-Z</option>
                 <option value="name-desc">Name Z-A</option>
-                <option value="students-desc">Most students</option>
-                <option value="revenue-desc">Highest revenue</option>
-                <option value="rating-desc">Best rating</option>
               </select>
               <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()" style="margin-left: 15px;">+ Add Course</button>
             </div>
           </div>
 
+          <!-- Statistics Cards -->
+          <div class="stats-cards-grid" id="courseStatsCards">
+            <div class="stat-card">
+              <div class="stat-card-label">Total courses</div>
+              <div class="stat-card-value" id="totalCoursesCount">0</div>
+              <div class="stat-card-change positive">+0 new this month</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-label">Total enrolled</div>
+              <div class="stat-card-value" id="totalEnrolledCount">0</div>
+              <div class="stat-card-change positive">+0 new students</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-label">Total revenue</div>
+              <div class="stat-card-value" id="totalRevenueAmount">$0</div>
+              <div class="stat-card-change positive">+$0 this month</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-card-label">Live now</div>
+              <div class="stat-card-value" id="liveStudentsCount">0</div>
+              <div class="stat-card-sublabel">Students online</div>
+            </div>
+          </div>
+
           <!-- Course Filter Tabs -->
           <div class="course-filter-tabs" id="courseFilterTabs">
-            <!-- Filter tabs will be rendered dynamically -->
+            <button class="filter-tab active" data-filter="active" onclick="filterCourses('active')">Active</button>
+            <button class="filter-tab" data-filter="draft" onclick="filterCourses('draft')">Draft</button>
+            <button class="filter-tab" data-filter="archived" onclick="filterCourses('archived')">Archived</button>
+            <button class="filter-tab" data-filter="free" onclick="filterCourses('free')">Free</button>
+            <button class="filter-tab" data-filter="paid" onclick="filterCourses('paid')">Paid</button>
+            <button class="filter-tab" data-filter="all" onclick="filterCourses('all')">All</button>
           </div>
 
           <!-- Course Cards Grid -->
           <div class="my-courses-grid" id="myCoursesGrid">
-            <!-- Course cards will be injected here -->
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">Loading courses...</div>
           </div>
   `;
 
-  // Load course data and initialize page
-  updateCoursesStatistics();
-  updateFilterTabs();
-  renderMyCoursesCards();
-
-  // Check if there's a pending filter from sidebar navigation
-  const pendingFilter = sessionStorage.getItem('pendingFilter');
-  if (pendingFilter) {
-    sessionStorage.removeItem('pendingFilter');
-    // Apply the pending filter after a short delay to ensure page is fully loaded
-    setTimeout(() => {
-      applyFilterFromSidebar(pendingFilter);
-    }, 100);
-  }
+  // Load courses from backend
+  await loadMyCoursesFromBackend();
 };
 
 // Enhanced interactive course data
@@ -13429,8 +13629,9 @@ window.openCreateCourse = function() {
 
             <!-- Form Actions -->
             <div class="form-actions course-actions">
-              <button type="button" class="btn-cancel" onclick="backToDashboard()">${t('createCourse.saveAsDraft')}</button>
-              <button type="submit" class="btn-save">${t('createCourse.publishCourse')}</button>
+              <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
+              <button type="submit" class="btn-secondary" name="action" value="draft">${t('createCourse.saveAsDraft')}</button>
+              <button type="submit" class="btn-save" name="action" value="publish">${t('createCourse.publishCourse')}</button>
             </div>
 
           </form>
@@ -13535,8 +13736,8 @@ function updateFilterTabs() {
   `;
 }
 
-// Render my courses cards into the grid
-function renderMyCoursesCards(courses = myCoursesData) {
+// OLD VERSION - REMOVED (duplicate function)
+/* function renderMyCoursesCards(courses = myCoursesData) {
   const grid = document.getElementById('myCoursesGrid');
   if (!grid) return;
 
@@ -13544,7 +13745,25 @@ function renderMyCoursesCards(courses = myCoursesData) {
   courses = applyCurrentFilters(courses);
 
   if (courses.length === 0) {
-    grid.innerHTML = '<div class="no-courses">No courses found with current filters.</div>';
+    grid.innerHTML = `
+      <div style="
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 60px 20px;
+        text-align: center;
+        color: var(--text-secondary);
+      ">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 20px; opacity: 0.5;">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+        <h3 style="margin-bottom: 8px; font-size: 18px;">No courses found</h3>
+        <p style="opacity: 0.7;">Try adjusting your filters or search terms</p>
+      </div>
+    `;
     return;
   }
 
@@ -13591,7 +13810,7 @@ function renderMyCoursesCards(courses = myCoursesData) {
       </div>
     </div>
   `).join('');
-}
+} */
 
 // Apply current filters, search and sort
 function applyCurrentFilters(courses) {
@@ -14201,4 +14420,277 @@ function addSingleQuizQuestion(questionsList, quizType, questionNumber, answerOp
   `;
   
   questionsList.insertAdjacentHTML('beforeend', questionHTML);
+}
+
+
+// Load My Courses from Backend
+async function loadMyCoursesFromBackend() {
+  try {
+    const user = store.getState().user;
+    if (!user) return;
+    
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const url = `${apiBaseUrl}/courses?teacher=${user._id}`;
+    console.log('Fetching from URL:', url);
+    
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    
+    const result = await response.json();
+    
+    if (result.success && result.courses) {
+      window.myCoursesData = result.courses;
+      updateCourseStats(result.courses);
+      renderMyCoursesCards(result.courses);
+    } else {
+      updateCourseStats([]);
+      renderMyCoursesCards([]);
+    }
+  } catch (error) {
+    console.error('Error loading courses:', error);
+    renderMyCoursesCards([]);
+  }
+}
+
+// Render My Courses Cards - Rasmdagidek design
+function renderMyCoursesCards(courses) {
+  const grid = document.getElementById('myCoursesGrid');
+  if (!grid) return;
+
+  if (!courses || courses.length === 0) {
+    grid.innerHTML = `
+      <div style="
+        grid-column: 1 / -1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--text-secondary);
+      ">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 24px; opacity: 0.4;">
+          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+        </svg>
+        <h3 style="margin-bottom: 12px; font-size: 20px; font-weight: 600; color: var(--text-primary);">No courses yet</h3>
+        <p style="margin-bottom: 24px; opacity: 0.7; font-size: 15px;">Create your first course to get started</p>
+        <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">Create Course</button>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = courses.map(course => `
+    <div class="course-card-modern" data-course-id="${course._id}">
+      <!-- Thumbnail -->
+      <div class="course-thumbnail-modern" style="background-image: url('${course.thumbnail}');">
+        <div class="course-status-badge-modern status-${course.status.toLowerCase()}">${course.status}</div>
+      </div>
+      
+      <!-- Course Info -->
+      <div class="course-card-body-modern">
+        <h3 class="course-title-modern">${course.title}</h3>
+        <p class="course-description-modern">${course.description || ''}</p>
+        
+        <!-- Stats Grid -->
+        <div class="course-stats-grid-modern">
+          <div class="stat-item-modern">
+            <div class="stat-value-modern">${course.totalStudents || 0}</div>
+            <div class="stat-label-modern">Students</div>
+          </div>
+          <div class="stat-item-modern">
+            <div class="stat-value-modern">${course.rating || 0}</div>
+            <div class="stat-label-modern">Rating</div>
+          </div>
+          <div class="stat-item-modern">
+            <div class="stat-value-modern">${course.totalLessons || 0}</div>
+            <div class="stat-label-modern">Lessons</div>
+          </div>
+          <div class="stat-item-modern">
+            <div class="stat-value-modern">${course.price > 0 ? '$' + course.price : 'Free'}</div>
+            <div class="stat-label-modern">Price</div>
+          </div>
+        </div>
+        
+        <!-- Revenue -->
+        <div class="course-revenue-modern">
+          <span class="revenue-label-modern">Revenue</span>
+          <span class="revenue-amount-modern">$${(course.revenue || 0).toLocaleString()}</span>
+        </div>
+        
+        <!-- Actions -->
+        <div class="course-actions-modern">
+          <button class="course-btn-modern" onclick="editCourse('${course._id}')">Edit</button>
+          <button class="course-btn-modern" onclick="viewCourseStats('${course._id}')">Stats</button>
+          <button class="course-btn-modern course-btn-delete-modern" onclick="deleteCourseConfirm('${course._id}', '${course.title}')">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Filter Courses
+window.filterCourses = function(filter) {
+  const tabs = document.querySelectorAll('.filter-tab');
+  tabs.forEach(tab => {
+    if (tab.getAttribute('data-filter') === filter) {
+      tab.classList.add('active');
+    } else {
+      tab.classList.remove('active');
+    }
+  });
+  
+  const courses = window.myCoursesData || [];
+  let filtered = courses;
+  
+  if (filter === 'all') {
+    filtered = courses;
+  } else if (filter === 'free') {
+    filtered = courses.filter(course => course.courseType === 'free' || course.price === 0);
+  } else if (filter === 'paid') {
+    filtered = courses.filter(course => course.courseType === 'paid' || course.price > 0);
+  } else {
+    // Status filter (active, draft, archived)
+    filtered = courses.filter(course => course.status.toLowerCase() === filter);
+  }
+  
+  renderMyCoursesCards(filtered);
+};
+
+// Search Courses
+window.searchCourses = function() {
+  const searchInput = document.getElementById('courseSearchInput');
+  const searchTerm = searchInput.value.toLowerCase();
+  
+  const courses = window.myCoursesData || [];
+  const filtered = courses.filter(course => 
+    course.title.toLowerCase().includes(searchTerm) ||
+    (course.description && course.description.toLowerCase().includes(searchTerm)) ||
+    course.category.toLowerCase().includes(searchTerm)
+  );
+  
+  renderMyCoursesCards(filtered);
+};
+
+// Sort Courses
+window.sortCourses = function() {
+  const sortSelect = document.getElementById('courseSortSelect');
+  const sortValue = sortSelect.value;
+  
+  let courses = [...(window.myCoursesData || [])];
+  
+  switch(sortValue) {
+    case 'newest':
+      courses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      break;
+    case 'oldest':
+      courses.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      break;
+    case 'name-asc':
+      courses.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+    case 'name-desc':
+      courses.sort((a, b) => b.title.localeCompare(a.title));
+      break;
+  }
+  
+  renderMyCoursesCards(courses);
+};
+
+// Edit Course
+window.editCourse = function(courseId) {
+  console.log('Edit course:', courseId);
+  showErrorToast('Edit functionality coming soon!');
+};
+
+// View Course Stats
+window.viewCourseStats = function(courseId) {
+  console.log('View stats:', courseId);
+  showErrorToast('Stats functionality coming soon!');
+};
+
+// Delete Course Confirm
+window.deleteCourseConfirm = function(courseId, courseTitle) {
+  const modalHTML = `
+    <div class="modal-overlay" id="deleteCourseModal" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 10000; align-items: center; justify-content: center;" onclick="if(event.target === this) closeDeleteCourseModal()">
+      <div class="modal-content" style="max-width: 500px; width: 90%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: var(--text-primary);">Delete Course</h3>
+          <button class="modal-close-btn" onclick="closeDeleteCourseModal()" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 4px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="color: var(--text-primary); margin: 0 0 16px 0;">Are you sure you want to delete this course?</p>
+          <div style="background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <p style="color: #ff3b30; margin: 0; font-weight: 500;">${courseTitle}</p>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">This action cannot be undone. All course data will be permanently deleted.</p>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 20px;">
+          <button class="btn-secondary" onclick="closeDeleteCourseModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Cancel</button>
+          <button onclick="deleteCourse('${courseId}')" style="background: #ff3b30; color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Delete Course</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+};
+
+window.closeDeleteCourseModal = function() {
+  const modal = document.getElementById('deleteCourseModal');
+  if (modal) modal.remove();
+};
+
+window.deleteCourse = async function(courseId) {
+  try {
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/courses/${courseId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      showSuccessToast('Course deleted successfully!');
+      closeDeleteCourseModal();
+      await loadMyCoursesFromBackend();
+    } else {
+      throw new Error(result.message || 'Failed to delete course');
+    }
+  } catch (error) {
+    console.error('Error deleting course:', error);
+    showErrorToast(error.message || 'Failed to delete course');
+  }
+};
+
+
+// Update Course Statistics
+function updateCourseStats(courses) {
+  const totalCourses = courses.length;
+  const totalEnrolled = courses.reduce((sum, course) => sum + (course.totalStudents || 0), 0);
+  const totalRevenue = courses.reduce((sum, course) => sum + (course.revenue || 0), 0);
+  const liveStudents = Math.floor(totalEnrolled * 0.08); // Estimate 8% online
+  
+  // Update DOM
+  const totalCoursesEl = document.getElementById('totalCoursesCount');
+  const totalEnrolledEl = document.getElementById('totalEnrolledCount');
+  const totalRevenueEl = document.getElementById('totalRevenueAmount');
+  const liveStudentsEl = document.getElementById('liveStudentsCount');
+  
+  if (totalCoursesEl) totalCoursesEl.textContent = totalCourses;
+  if (totalEnrolledEl) totalEnrolledEl.textContent = totalEnrolled.toLocaleString();
+  if (totalRevenueEl) totalRevenueEl.textContent = '$' + totalRevenue.toLocaleString();
+  if (liveStudentsEl) liveStudentsEl.textContent = liveStudents;
 }

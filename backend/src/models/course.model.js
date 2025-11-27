@@ -7,14 +7,9 @@ const courseSchema = new mongoose.Schema(
       required: [true, "Course title is required"],
       trim: true,
     },
-    shortDescription: {
+    description: {
       type: String,
-      required: [true, "Course short description is required"],
-      trim: true,
-    },
-    fullDescription: {
-      type: String,
-      required: [true, "Course full description is required"],
+      required: [true, "Course description is required"],
       trim: true,
     },
     category: {
@@ -22,46 +17,88 @@ const courseSchema = new mongoose.Schema(
       required: [true, "Course category is required"],
       trim: true,
     },
-    level: {
+    thumbnail: {
       type: String,
-      required: [true, "Course level is required"],
-      trim: true,
-    },
-    language: {
-      type: String,
-      required: [true, "Course language is required"],
-      trim: true,
-    },
-    duration: {
-      type: String,
-      required: [true, "Course duration is required"],
-      trim: true,
-    },
-    courseImage: {
-      type: String,
-      required: [true, "Course image is required"],
-    },
-    videoUrl: {
-      type: String,
-      required: false,
+      required: [true, "Course thumbnail is required"],
     },
     courseType: {
       type: String,
-      enum: ["paid", "free", "active", "draft", "archived"],
+      enum: ["paid", "free"],
       default: "free",
+    },
+    price: {
+      type: Number,
+      default: 0,
+    },
+    discountPrice: {
+      type: Number,
+      default: 0,
     },
     status: {
       type: String,
       enum: ["active", "draft", "archived"],
       default: "draft",
     },
-    coursePrice: {
-      type: Number,
-      required: [true, "Course price is required"],
+    teacher: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
+      required: [true, "Teacher is required"],
     },
-    discountPrice: {
+    modules: [{
+      title: {
+        type: String,
+        required: true,
+      },
+      order: {
+        type: Number,
+        required: true,
+      },
+      lessons: [{
+        type: {
+          type: String,
+          enum: ["video", "quiz", "assignment", "file"],
+          required: true,
+        },
+        title: {
+          type: String,
+          required: true,
+        },
+        order: {
+          type: Number,
+          required: true,
+        },
+        videoUrl: String,
+        fileUrl: String,
+        duration: String,
+        quiz: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Quiz",
+        },
+        assignment: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Assignment",
+        },
+      }],
+    }],
+    totalStudents: {
       type: Number,
-      required: false,
+      default: 0,
+    },
+    totalLessons: {
+      type: Number,
+      default: 0,
+    },
+    rating: {
+      type: Number,
+      default: 0,
+    },
+    reviewsCount: {
+      type: Number,
+      default: 0,
+    },
+    revenue: {
+      type: Number,
+      default: 0,
     },
   },
   {

@@ -12,18 +12,19 @@ export const createCourseSchema = Joi.object({
     "any.required": "Course title is required",
   }),
 
-  shortDescription: Joi.string().trim().min(10).max(300).required().messages({
-    "string.empty": "Course short description is required",
-    "string.min":
-      "Course short description must be at least 10 characters long",
-    "string.max": "Course short description cannot exceed 300 characters",
-    "any.required": "Course short description is required",
+  description: Joi.string().trim().min(10).required().messages({
+    "string.empty": "Course description is required",
+    "string.min": "Course description must be at least 10 characters long",
+    "any.required": "Course description is required",
   }),
 
-  fullDescription: Joi.string().trim().min(50).required().messages({
-    "string.empty": "Course full description is required",
+  shortDescription: Joi.string().trim().min(10).max(300).optional().allow("").messages({
+    "string.min": "Course short description must be at least 10 characters long",
+    "string.max": "Course short description cannot exceed 300 characters",
+  }),
+
+  fullDescription: Joi.string().trim().min(50).optional().allow("").messages({
     "string.min": "Course full description must be at least 50 characters long",
-    "any.required": "Course full description is required",
   }),
 
   category: Joi.string().trim().required().messages({
@@ -52,10 +53,14 @@ export const createCourseSchema = Joi.object({
     "any.required": "Course duration is required",
   }),
 
-  courseImage: Joi.string().trim().uri().required().messages({
-    "string.empty": "Course image URL is required",
+  thumbnail: Joi.string().trim().uri().required().messages({
+    "string.empty": "Course thumbnail URL is required",
+    "string.uri": "Course thumbnail must be a valid URL",
+    "any.required": "Course thumbnail is required",
+  }),
+
+  courseImage: Joi.string().trim().uri().optional().allow("").messages({
     "string.uri": "Course image must be a valid URL",
-    "any.required": "Course image is required",
   }),
 
   videoUrl: Joi.string().trim().uri().optional().allow("").messages({
@@ -68,10 +73,14 @@ export const createCourseSchema = Joi.object({
 
   status: Joi.string().valid("active", "draft", "archived").default("draft"),
 
-  coursePrice: Joi.number().min(0).required().messages({
+  price: Joi.number().min(0).default(0).messages({
     "number.base": "Course price must be a number",
     "number.min": "Course price cannot be negative",
-    "any.required": "Course price is required",
+  }),
+
+  coursePrice: Joi.number().min(0).optional().messages({
+    "number.base": "Course price must be a number",
+    "number.min": "Course price cannot be negative",
   }),
 
   discountPrice: Joi.number()
@@ -89,6 +98,13 @@ export const createCourseSchema = Joi.object({
       "number.min": "Discount price cannot be negative",
       "any.invalid": "Discount price must be less than course price",
     }),
+
+  teacher: Joi.string().trim().required().messages({
+    "string.empty": "Teacher ID is required",
+    "any.required": "Teacher ID is required",
+  }),
+
+  modules: Joi.array().optional().default([]),
 });
 
 /**

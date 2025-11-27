@@ -23,17 +23,15 @@ const unlinkAsync = promisify(fs.unlink);
 const create = catchAsync(async (req, res) => {
   const {
     title,
-    shortDescription,
-    fullDescription,
+    description,
     category,
-    level,
-    language,
-    duration,
-    courseImage,
-    videoUrl,
+    thumbnail,
     courseType,
-    coursePrice,
+    price,
     discountPrice,
+    status,
+    modules,
+    teacher,
   } = req.body;
 
   const existingCourse = await Course.findOne({ title: title.trim() });
@@ -41,19 +39,28 @@ const create = catchAsync(async (req, res) => {
     throw new ConflictError("A course with this title already exists");
   }
 
+  // Calculate total lessons
+  let totalLessons = 0;
+  if (modules && Array.isArray(modules)) {
+    modules.forEach(module => {
+      if (module.lessons && Array.isArray(module.lessons)) {
+        totalLessons += module.lessons.length;
+      }
+    });
+  }
+
   const course = await Course.create({
     title,
-    shortDescription,
-    fullDescription,
+    description,
     category,
-    level,
-    language,
-    duration,
-    courseImage,
-    videoUrl: videoUrl || "",
+    thumbnail,
     courseType: courseType || "free",
-    coursePrice: Number(coursePrice),
-    discountPrice: discountPrice ? Number(discountPrice) : null,
+    price: courseType === "paid" ? Number(price) : 0,
+    discountPrice: discountPrice ? Number(discountPrice) : 0,
+    modules: modules || [],
+    teacher,
+    totalLessons,
+    status: status || "draft", // Use provided status or default to draft
   });
 
   logger.info("Course created successfully", {
@@ -61,6 +68,7 @@ const create = catchAsync(async (req, res) => {
     title: course.title,
     category: course.category,
     courseType: course.courseType,
+    totalLessons,
   });
 
   res.status(200).json({
@@ -78,10 +86,9 @@ const create = catchAsync(async (req, res) => {
 const findAll = catchAsync(async (req, res) => {
   const {
     category,
-    level,
     courseType,
-    language,
     search,
+    teacher,
     page = 1,
     limit = 20,
     sortBy = "createdAt",
@@ -102,23 +109,18 @@ const findAll = catchAsync(async (req, res) => {
     filter.category = { $regex: category, $options: "i" };
   }
 
-  if (level) {
-    filter.level = level;
-  }
-
   if (courseType) {
     filter.courseType = courseType;
   }
 
-  if (language) {
-    filter.language = { $regex: language, $options: "i" };
+  if (teacher) {
+    filter.teacher = teacher;
   }
 
   if (search) {
     filter.$or = [
       { title: { $regex: search, $options: "i" } },
-      { shortDescription: { $regex: search, $options: "i" } },
-      { fullDescription: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
     ];
   }
 

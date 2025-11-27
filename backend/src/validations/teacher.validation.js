@@ -42,6 +42,24 @@ export const createTeacherProfileSchema = Joi.object({
  * Validates teacher-specific profile data
  */
 export const updateTeacherProfileSchema = Joi.object({
+  firstName: Joi.string().trim().min(2).max(50).optional().messages({
+    "string.min": "First name must be at least 2 characters long",
+    "string.max": "First name cannot exceed 50 characters",
+  }),
+
+  lastName: Joi.string().trim().min(2).max(50).optional().messages({
+    "string.min": "Last name must be at least 2 characters long",
+    "string.max": "Last name cannot exceed 50 characters",
+  }),
+
+  email: Joi.string().trim().email().optional().messages({
+    "string.email": "Please provide a valid email address",
+  }),
+
+  phone: Joi.string().trim().optional().messages({
+    "string.base": "Phone must be a valid string",
+  }),
+
   bio: Joi.string().trim().min(10).max(1000).optional().allow("").messages({
     "string.min": "Bio must be at least 10 characters long",
     "string.max": "Bio cannot exceed 1000 characters",

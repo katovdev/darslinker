@@ -16,7 +16,7 @@ connectToDB();
 
 const app = express();
 
-// CORS middleware
+// CORS middleware - must be before other middleware
 app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:5173',
@@ -26,6 +26,14 @@ app.use((req, res, next) => {
   ];
   
   const origin = req.headers.origin;
+  
+  console.log('🌐 CORS Request:', {
+    method: req.method,
+    path: req.path,
+    origin: origin,
+    allowed: allowedOrigins.includes(origin)
+  });
+  
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
   }
@@ -33,13 +41,15 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Max-Age', '86400'); // 24 hours
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
-    res.sendStatus(200);
-  } else {
-    next();
+    console.log('✅ Handling OPTIONS preflight request');
+    return res.status(200).end();
   }
+  
+  next();
 });
 
 app.use(express.json());
