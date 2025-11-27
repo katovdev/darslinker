@@ -9033,17 +9033,98 @@ window.editModule = function(button) {
   const moduleTitle = moduleHeader.querySelector('h4');
   const currentTitle = moduleTitle.textContent;
 
-  const newTitle = prompt('Enter new module title:', currentTitle);
-  if (newTitle && newTitle.trim()) {
-    moduleTitle.textContent = newTitle.trim();
+  const modalHTML = `
+    <div class="modal-overlay" id="editModuleModal" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 10000; align-items: center; justify-content: center;" onclick="if(event.target === this) closeEditModuleModal()">
+      <div class="modal-content" style="max-width: 500px; width: 90%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: var(--text-primary);">Edit Module Title</h3>
+          <button class="modal-close-btn" onclick="closeEditModuleModal()" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 4px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-size: 14px; font-weight: 500;">Module Title</label>
+            <input type="text" id="moduleTitle" value="${currentTitle}" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 20px;">
+          <button class="btn-secondary" onclick="closeEditModuleModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Cancel</button>
+          <button class="btn-primary" onclick="saveModuleTitle()" style="background: var(--primary-color); color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Save</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  
+  // Store reference to module title element
+  window.currentModuleTitle = moduleTitle;
+};
+
+window.closeEditModuleModal = function() {
+  const modal = document.getElementById('editModuleModal');
+  if (modal) modal.remove();
+};
+
+window.saveModuleTitle = function() {
+  const newTitle = document.getElementById('moduleTitle').value.trim();
+  if (newTitle && window.currentModuleTitle) {
+    window.currentModuleTitle.textContent = newTitle;
+    showSuccessToast('Module title updated successfully!');
   }
+  closeEditModuleModal();
 };
 
 // Delete Module
 window.deleteModule = function(button) {
-  if (confirm('Are you sure you want to delete this module?')) {
-    const moduleItem = button.closest('.module-item');
-    moduleItem.remove();
+  const moduleItem = button.closest('.module-item');
+  const moduleTitle = moduleItem.querySelector('h4').textContent;
+  
+  const modalHTML = `
+    <div class="modal-overlay" id="deleteModuleModal" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 10000; align-items: center; justify-content: center;" onclick="if(event.target === this) closeDeleteModuleModal()">
+      <div class="modal-content" style="max-width: 500px; width: 90%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: var(--text-primary);">Delete Module</h3>
+          <button class="modal-close-btn" onclick="closeDeleteModuleModal()" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 4px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="color: var(--text-primary); margin: 0 0 16px 0;">Are you sure you want to delete this module?</p>
+          <div style="background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.3); border-radius: 8px; padding: 12px; margin-bottom: 16px;">
+            <p style="color: #ff3b30; margin: 0; font-weight: 500;">${moduleTitle}</p>
+          </div>
+          <p style="color: var(--text-secondary); font-size: 13px; margin: 0;">This action cannot be undone. All lessons in this module will be deleted.</p>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 20px;">
+          <button class="btn-secondary" onclick="closeDeleteModuleModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Cancel</button>
+          <button onclick="confirmDeleteModule()" style="background: #ff3b30; color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Delete Module</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  
+  // Store reference to module item
+  window.currentModuleToDelete = moduleItem;
+};
+
+window.closeDeleteModuleModal = function() {
+  const modal = document.getElementById('deleteModuleModal');
+  if (modal) modal.remove();
+};
+
+window.confirmDeleteModule = function() {
+  if (window.currentModuleToDelete) {
+    window.currentModuleToDelete.remove();
 
     // Renumber remaining modules
     const modulesContainer = document.getElementById('modulesContainer');
