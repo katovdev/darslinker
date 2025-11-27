@@ -9193,3 +9193,90 @@ body.light-mode .remove-file-btn:hover {
   font-size: 14px;
   font-weight: 500;
 }
+
+
+/* Setting Header with Lock Icon */
+.setting-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lock-icon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+/* Coming Soon Badge */
+.coming-soon-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  background: rgba(255, 193, 7, 0.15);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #ffc107;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Disabled Setting Item */
+.setting-item.disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+}
+
+.setting-item.disabled::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
+.toggle-switch.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle-switch.disabled input {
+  cursor: not-allowed;
+}
+
+/* Light Mode */
+body.light-mode .coming-soon-badge {
+  background: rgba(255, 193, 7, 0.1);
+  border-color: rgba(255, 193, 7, 0.4);
+  color: #f57c00;
+}
+
+body.light-mode .setting-item.disabled::after {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+
+/* Lesson Title with Icon */
+.lesson-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.lesson-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+.lesson-icon svg {
+  color: var(--primary-color);
+}

@@ -8852,10 +8852,48 @@ window.saveLesson = function(button, type) {
     duration = 'File';
   }
 
+  // Get icon based on type
+  let iconSVG = '';
+  switch(type) {
+    case 'video':
+      iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M23 7l-7 5 7 5V7z"/>
+        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+      </svg>`;
+      break;
+    case 'quiz':
+      iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+        <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
+      </svg>`;
+      break;
+    case 'assignment':
+      iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14,2 14,8 20,8"/>
+        <line x1="16" y1="13" x2="8" y2="13"/>
+        <line x1="16" y1="17" x2="8" y2="17"/>
+        <polyline points="10,9 9,9 8,9"/>
+      </svg>`;
+      break;
+    case 'file':
+      iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+        <polyline points="13,2 13,9 20,9"/>
+      </svg>`;
+      break;
+    default:
+      iconSVG = '';
+  }
+
   // Create lesson item HTML
   const lessonHTML = `
     <div class="lesson-item">
-      <span>${lessonTitle}</span>
+      <div class="lesson-title-with-icon">
+        <span class="lesson-icon">${iconSVG}</span>
+        <span>${lessonTitle}</span>
+      </div>
       <span>${duration}</span>
     </div>
   `;
@@ -8943,7 +8981,7 @@ window.addNewModule = function() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2"/>
-                <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2"/>
+                <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
               </svg>
               Quiz
             </a>
@@ -13255,35 +13293,53 @@ window.openCreateCourse = function() {
               <h3 class="course-section-title">Additional Settings</h3>
 
               <div class="settings-list">
-                <div class="setting-item">
+                <div class="setting-item disabled">
                   <div class="setting-info">
-                    <h4>Enable Q&A for students</h4>
+                    <div class="setting-header">
+                      <h4>Enable Q&A for students</h4>
+                      <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                    </div>
                     <p>Students can ask questions under lessons</p>
                   </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" checked />
+                  <label class="toggle-switch disabled">
+                    <input type="checkbox" disabled />
                     <span class="toggle-slider"></span>
                   </label>
                 </div>
 
-                <div class="setting-item">
+                <div class="setting-item disabled">
                   <div class="setting-info">
-                    <h4>Enable AI auto-responses</h4>
+                    <div class="setting-header">
+                      <h4>Enable AI auto-responses</h4>
+                      <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                    </div>
                     <p>AI will automatically answer common student questions</p>
                   </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" />
+                  <label class="toggle-switch disabled">
+                    <input type="checkbox" disabled />
                     <span class="toggle-slider"></span>
                   </label>
                 </div>
 
-                <div class="setting-item">
+                <div class="setting-item disabled">
                   <div class="setting-info">
-                    <h4>Issue certificate upon completion</h4>
+                    <div class="setting-header">
+                      <h4>Issue certificate upon completion</h4>
+                      <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                      </svg>
+                    </div>
                     <p>Students receive a certificate when they finish the course</p>
                   </div>
-                  <label class="toggle-switch">
-                    <input type="checkbox" checked />
+                  <label class="toggle-switch disabled">
+                    <input type="checkbox" disabled />
                     <span class="toggle-slider"></span>
                   </label>
                 </div>
