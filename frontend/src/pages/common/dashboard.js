@@ -1849,11 +1849,21 @@ window.toggleAnswer = function(element) {
     element.classList.add('checked');
     element.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="6"/></svg>';
   } else {
-    // For multiple correct, multiple answers can be correct
+    // For multiple correct, check max limit
+    const answersList = element.closest('.answers-list');
+    const maxCorrect = parseInt(answersList.getAttribute('data-max-correct')) || 999;
+    const currentChecked = answersList.querySelectorAll('.answer-checkbox.checked').length;
+    
     if (element.classList.contains('checked')) {
+      // Unchecking
       element.classList.remove('checked');
       element.textContent = '☐';
     } else {
+      // Checking - validate max limit
+      if (currentChecked >= maxCorrect) {
+        showErrorToast(`You can only select ${maxCorrect} correct answer${maxCorrect > 1 ? 's' : ''} for this question`);
+        return;
+      }
       element.classList.add('checked');
       element.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>';
     }
@@ -8467,12 +8477,12 @@ window.addLesson = function(type, dropdownLink, event) {
             <div class="form-group">
               <div class="questions-header">
                 <label>Questions</label>
-                <button type="button" class="add-question-btn" onclick="addQuizQuestion(this)">
+                <button type="button" class="create-questions-btn" onclick="openCreateQuestionsModal(this)">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <line x1="12" y1="5" x2="12" y2="19"/>
                     <line x1="5" y1="12" x2="19" y2="12"/>
                   </svg>
-                  Add Question
+                  Create Questions
                 </button>
               </div>
               <div class="questions-list">
@@ -13106,13 +13116,8 @@ window.openCreateCourse = function() {
               </div>
 
               <div class="form-field">
-                <label class="field-label">${t('createCourse.shortDescription')}</label>
-                <textarea class="form-textarea" name="description" rows="2" placeholder="${t('createCourse.shortDescPlaceholder')}" required></textarea>
-              </div>
-
-              <div class="form-field">
-                <label class="field-label">${t('createCourse.fullDescription')}</label>
-                <textarea class="form-textarea" rows="4" placeholder="${t('createCourse.fullDescPlaceholder')}"></textarea>
+                <label class="field-label">Description</label>
+                <textarea class="form-textarea" name="description" rows="4" placeholder="Write a description of your course..." required></textarea>
               </div>
 
               <div class="form-row">
@@ -13125,28 +13130,33 @@ window.openCreateCourse = function() {
                     <option value="Programming">Programming</option>
                     <option value="Data Science">Data Science</option>
                     <option value="Machine Learning">Machine Learning</option>
+                    <option value="Artificial Intelligence">Artificial Intelligence</option>
                     <option value="Design">Design</option>
+                    <option value="UI/UX Design">UI/UX Design</option>
+                    <option value="Graphic Design">Graphic Design</option>
                     <option value="Marketing">Marketing</option>
+                    <option value="Digital Marketing">Digital Marketing</option>
+                    <option value="Business">Business</option>
+                    <option value="Finance">Finance</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Video Editing">Video Editing</option>
+                    <option value="Music">Music</option>
+                    <option value="Language Learning">Language Learning</option>
+                    <option value="Health & Fitness">Health & Fitness</option>
+                    <option value="Lifestyle">Lifestyle</option>
                     <option value="Security">Security</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
                     <option value="Blockchain">Blockchain</option>
+                    <option value="Cloud Computing">Cloud Computing</option>
+                    <option value="DevOps">DevOps</option>
+                    <option value="Game Development">Game Development</option>
+                    <option value="Database">Database</option>
+                    <option value="Testing">Testing</option>
+                    <option value="Other">Other</option>
                   </select>
-                </div>
-                <div class="form-field">
-                  <label class="field-label">${t('createCourse.level')}</label>
-                  <input type="text" class="form-input" placeholder="${t('createCourse.levelPlaceholder')}" required />
                 </div>
               </div>
 
-              <div class="form-row">
-                <div class="form-field">
-                  <label class="field-label">${t('createCourse.language')}</label>
-                  <input type="text" class="form-input" placeholder="${t('createCourse.languagePlaceholder')}" required />
-                </div>
-                <div class="form-field">
-                  <label class="field-label">${t('createCourse.duration')}</label>
-                  <input type="text" class="form-input" placeholder="${t('createCourse.durationPlaceholder')}" required />
-                </div>
-              </div>
             </div>
 
             <!-- Course Image Section -->
@@ -13186,12 +13196,6 @@ window.openCreateCourse = function() {
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="form-field">
-                <label class="field-label">${t('createCourse.previewVideo')}</label>
-                <input type="url" class="form-input" placeholder="${t('createCourse.previewVideoPlaceholder')}" />
-                <small class="field-note">${t('createCourse.previewVideoNote')}</small>
               </div>
             </div>
 
@@ -13237,125 +13241,12 @@ window.openCreateCourse = function() {
                   <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                   <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-                <span>${t('createCourse.structureTip')}</span>
+                <span>Organize your course into modules (sections) and lessons. You can add videos, files, quizzes, and assignments.</span>
               </div>
 
               <div class="modules-container" id="modulesContainer">
-                <!-- Module 1 -->
-                <div class="module-item">
-                  <div class="module-header" onclick="toggleModule(this)">
-                    <div class="module-info">
-                      <h4>Module 1: Introduction to React</h4>
-                      <p>5 lessons • 2 hours</p>
-                    </div>
-                    <div class="module-actions" onclick="event.stopPropagation()">
-                      <button type="button" class="action-btn" onclick="editModule(this)">${t('createCourse.edit')}</button>
-                      <button type="button" class="action-btn delete" onclick="deleteModule(this)">${t('createCourse.delete')}</button>
-                    </div>
-                  </div>
-                  <div class="lessons-list">
-                    <div class="lesson-item">
-                      <span>Lesson 1: What is React?</span>
-                      <span>15 min</span>
-                    </div>
-                    <div class="lesson-item">
-                      <span>Lesson 2: Setting Up React</span>
-                      <span>45 min</span>
-                    </div>
-                    <div class="add-lesson-dropdown">
-                      <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add</button>
-                      <div class="dropdown-menu">
-                        <a href="#" onclick="addLesson('video', this, event)">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2"/>
-                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                          </svg>
-                          Video
-                        </a>
-                        <a href="#" onclick="addLesson('quiz', this, event)">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2"/>
-                          </svg>
-                          Quiz
-                        </a>
-                        <a href="#" onclick="addLesson('assignment', this, event)">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
-                            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
-                            <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/>
-                            <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
-                            <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
-                          </svg>
-                          Assignment
-                        </a>
-                        <a href="#" onclick="addLesson('file', this, event)">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" stroke-width="2"/>
-                            <polyline points="13,2 13,9 20,9" stroke="currentColor" stroke-width="2"/>
-                          </svg>
-                          File
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Module 2 -->
-                <div class="module-item">
-                  <div class="module-header" onclick="toggleModule(this)">
-                    <div class="module-info">
-                      <h4>Module 2: Advanced React Concepts</h4>
-                      <p>0 lessons • 0 hours</p>
-                    </div>
-                    <div class="module-actions" onclick="event.stopPropagation()">
-                      <button type="button" class="action-btn" onclick="editModule(this)">Edit</button>
-                      <button type="button" class="action-btn delete" onclick="deleteModule(this)">Delete</button>
-                    </div>
-                  </div>
-                  <div class="lessons-list">
-                    <div class="add-lesson-dropdown">
-                      <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add</button>
-                      <div class="dropdown-menu">
-                        <a href="#" onclick="addLesson('video', this, event)">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2"/>
-                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                          </svg>
-                          Video
-                        </a>
-                        <a href="#" onclick="addLesson('quiz', this, event)">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2"/>
-                          </svg>
-                          Quiz
-                        </a>
-                        <a href="#" onclick="addLesson('assignment', this, event)">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="currentColor" stroke-width="2"/>
-                            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2"/>
-                            <line x1="16" y1="13" x2="8" y2="13" stroke="currentColor" stroke-width="2"/>
-                            <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
-                            <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
-                          </svg>
-                          Assignment
-                        </a>
-                        <a href="#" onclick="addLesson('file', this, event)">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" stroke-width="2"/>
-                            <polyline points="13,2 13,9 20,9" stroke="currentColor" stroke-width="2"/>
-                          </svg>
-                          File
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <button type="button" class="add-module-btn" onclick="addNewModule()">Add new module</button>
+                <!-- Modules will be added here -->
+                <button type="button" class="add-module-btn" onclick="addNewModule()">+ Add New Module</button>
               </div>
             </div>
 
@@ -14019,4 +13910,158 @@ function formatFileSize(bytes) {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+
+// Open Create Questions Modal
+window.openCreateQuestionsModal = function(button) {
+  console.log('openCreateQuestionsModal called');
+  const lessonForm = button.closest('.lesson-form');
+  const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
+  console.log('Quiz type:', quizType);
+  
+  // Remove existing modal if any
+  const existingModal = document.getElementById('createQuestionsModal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
+  const correctAnswersField = quizType === 'multiple-correct' ? `
+    <div class="form-group">
+      <label>Number of Correct Answers per Question</label>
+      <input type="number" id="correctAnswersCount" min="1" max="10" value="2" placeholder="Enter number of correct answers" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+      <small style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; display: block;">This will be applied to all questions</small>
+    </div>
+  ` : '';
+  
+  const modalHTML = `
+    <div class="modal-overlay" id="createQuestionsModal" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 10000; align-items: center; justify-content: center;" onclick="if(event.target === this) closeCreateQuestionsModal()">
+      <div class="modal-content" style="max-width: 500px; width: 90%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+          <h3 style="margin: 0; color: var(--text-primary);">Create Quiz Questions</h3>
+          <button class="modal-close-btn" onclick="closeCreateQuestionsModal()" style="background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 4px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-size: 14px; font-weight: 500;">Number of Questions</label>
+            <input type="number" id="questionsCount" min="1" max="50" value="5" placeholder="Enter number of questions" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+          </div>
+          ${correctAnswersField}
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label style="display: block; margin-bottom: 8px; color: var(--text-primary); font-size: 14px; font-weight: 500;">Answer Options per Question</label>
+            <input type="number" id="answerOptionsCount" min="2" max="10" value="4" placeholder="Enter number of answer options" style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary);">
+          </div>
+        </div>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 20px;">
+          <button class="btn-secondary" onclick="closeCreateQuestionsModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Cancel</button>
+          <button class="btn-primary" onclick="createQuizQuestions()" style="background: var(--primary-color); color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Create Questions</button>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  console.log('Modal added to DOM');
+};
+
+// Close Create Questions Modal
+window.closeCreateQuestionsModal = function() {
+  const modal = document.getElementById('createQuestionsModal');
+  if (modal) {
+    modal.remove();
+  }
+};
+
+// Create Quiz Questions
+window.createQuizQuestions = function() {
+  const questionsCount = parseInt(document.getElementById('questionsCount').value) || 5;
+  const answerOptionsCount = parseInt(document.getElementById('answerOptionsCount').value) || 4;
+  const correctAnswersCountInput = document.getElementById('correctAnswersCount');
+  const correctAnswersCount = correctAnswersCountInput ? parseInt(correctAnswersCountInput.value) || 1 : 1;
+  
+  // Validate
+  if (questionsCount < 1 || questionsCount > 50) {
+    showErrorToast('Please enter a valid number of questions (1-50)');
+    return;
+  }
+  
+  if (answerOptionsCount < 2 || answerOptionsCount > 10) {
+    showErrorToast('Please enter a valid number of answer options (2-10)');
+    return;
+  }
+  
+  if (correctAnswersCount > answerOptionsCount) {
+    showErrorToast('Number of correct answers cannot exceed number of answer options');
+    return;
+  }
+  
+  // Find the lesson form
+  const lessonForm = document.querySelector('.lesson-form[data-quiz-type]');
+  if (!lessonForm) return;
+  
+  const questionsList = lessonForm.querySelector('.questions-list');
+  const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
+  
+  // Clear existing questions
+  questionsList.innerHTML = '';
+  
+  // Create questions
+  for (let i = 1; i <= questionsCount; i++) {
+    addSingleQuizQuestion(questionsList, quizType, i, answerOptionsCount, correctAnswersCount);
+  }
+  
+  closeCreateQuestionsModal();
+  showSuccessToast(`${questionsCount} questions created successfully!`);
+};
+
+// Add Single Quiz Question (helper function)
+function addSingleQuizQuestion(questionsList, quizType, questionNumber, answerOptionsCount, correctAnswersCount) {
+  const instructionText = quizType === 'multiple-correct' 
+    ? `Choose ${correctAnswersCount} correct answer${correctAnswersCount > 1 ? 's' : ''}`
+    : 'Choose 1 correct answer';
+  
+  let answersHTML = '';
+  for (let i = 0; i < answerOptionsCount; i++) {
+    answersHTML += `
+      <div class="answer-item">
+        <div class="${quizType === 'multiple-choice' ? 'answer-radio' : 'answer-checkbox'}" onclick="toggleAnswer(this)" data-max-correct="${correctAnswersCount}">
+          ${quizType === 'multiple-choice' ? '○' : '☐'}
+        </div>
+        <input type="text" class="answer-input" placeholder="Enter answer option ${i + 1}..." />
+      </div>
+    `;
+  }
+  
+  const questionHTML = `
+    <div class="question-item">
+      <div class="question-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <span class="question-number" style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Question ${questionNumber}</span>
+          <span class="question-instruction" style="font-size: 12px; color: var(--primary-color); font-weight: 500;">${instructionText}</span>
+        </div>
+        <button type="button" class="delete-question-btn" onclick="deleteQuestion(this)" style="background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.3); border-radius: 6px; padding: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ff3b30" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <input type="text" class="question-input" placeholder="Enter question text..." style="width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-tertiary); color: var(--text-primary); margin-bottom: 12px;" />
+      <div class="answers-section">
+        <label style="font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; display: block;">
+          Answer options:
+        </label>
+        <div class="answers-list" data-max-correct="${correctAnswersCount}">
+          ${answersHTML}
+        </div>
+      </div>
+    </div>
+  `;
+  
+  questionsList.insertAdjacentHTML('beforeend', questionHTML);
 }
