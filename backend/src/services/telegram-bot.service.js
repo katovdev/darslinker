@@ -63,11 +63,22 @@ async function pollUpdates() {
         await handleUpdate(update);
       }
     } catch (error) {
-      // Ignore timeout errors (they're normal for long polling)
-      if (error.code !== 'ETIMEDOUT' && error.code !== 'ECONNABORTED') {
-        logger.error('❌ Error polling updates:', error.message);
+      // Ignore timeout and conflict errors (they're normal for long polling)
+      const errorMessage = error.message || String(error);
+      const statusCode = error.response?.status;
+      
+      if (
+        error.code !== 'ETIMEDOUT' && 
+        error.code !== 'ECONNABORTED' && 
+        statusCode !== 409 && // Conflict - another instance is polling
+        !errorMessage.includes('409')
+      ) {
+        logger.error('❌ Error polling updates:', errorMessage);
       }
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait 1 second before retry
+      
+      // Wait longer on conflict errors
+      const waitTime = statusCode === 409 ? 5000 : 1000;
+      await new Promise(resolve => setTimeout(resolve, waitTime));
     }
   }
 }
