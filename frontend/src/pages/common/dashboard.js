@@ -3206,7 +3206,6 @@ function generateLandingPageHTML(teacher) {
         .about {
             background: #232323;
             padding: 80px 0;
-            text-align: center;
         }
 
         .about h2 {
@@ -3348,87 +3347,125 @@ function generateLandingPageHTML(teacher) {
         .profile {
             background: #232323 !important;
             padding: 80px 0;
+        }
+
+        .profile-card {
+            background: rgba(58, 56, 56, 0.6);
+            border: 1px solid rgba(126, 162, 212, 0.3);
+            border-radius: 20px;
+            padding: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: 80px;
+            align-items: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .profile-info {
+            text-align: left;
+        }
+
+        .profile-info h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .profile-specialization {
+            color: ${themeColor};
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .profile-about-title {
+            color: #ffffff;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            margin-top: 20px;
+        }
+
+        .profile-bio {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+
+        .profile-image-container {
             text-align: center;
+            position: relative;
         }
 
         .profile-image {
-            width: 180px;
-            height: 180px;
+            width: 350px;
+            height: 350px;
             border-radius: 50%;
-            margin: 0 auto 20px;
             object-fit: cover;
-            border: 4px solid ${themeColor};
+            border: 6px solid ${themeColor};
+            box-shadow: 0 15px 50px rgba(126, 162, 212, 0.4);
         }
 
         .profile-placeholder {
-            width: 180px;
-            height: 180px;
+            width: 350px;
+            height: 350px;
             border-radius: 50%;
-            background: ${themeColor};
-            margin: 0 auto 20px;
+            background: linear-gradient(135deg, ${themeColor}, ${themeColor}dd);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 60px;
+            font-size: 100px;
             color: white;
             font-weight: bold;
-        }
-
-        .profile h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            color: #ffffff;
-        }
-
-        .profile .specialization {
-            color: #ffffff;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
+            box-shadow: 0 15px 50px rgba(126, 162, 212, 0.4);
         }
 
         .social-links {
             display: flex;
-            justify-content: center;
             gap: 15px;
-            margin-top: 20px;
+            justify-content: flex-start;
         }
 
         .social-link {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             background: ${themeColor};
-            border-radius: 50%;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             text-decoration: none;
             transition: all 0.3s ease;
+            font-size: 20px;
         }
 
         .social-link:hover {
             background: ${themeColor}dd;
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(126, 162, 212, 0.4);
         }
 
         .social-media-section {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 10px;
-            padding: 10px 0;
+            gap: 15px;
+            justify-content: flex-start;
         }
 
         .social-media-link {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
+            width: 45px;
+            height: 45px;
             background: rgba(126, 162, 212, 0.1);
             border: 2px solid ${themeColor};
-            border-radius: 50%;
+            border-radius: 12px;
             color: ${themeColor};
             text-decoration: none;
             transition: all 0.3s ease;
@@ -3442,6 +3479,222 @@ function generateLandingPageHTML(teacher) {
         }
 
 
+
+        /* Personal Features Section */
+        .personal-features {
+            background: #232323;
+            padding: 80px 0;
+        }
+
+        .features-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .features-text {
+            color: #ffffff;
+        }
+
+
+        .features-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .features-description {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+        }
+
+        .slide-controls {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 20px;
+            margin-top: 30px;
+            margin-left: 60px;
+        }
+
+        .slide-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(126, 162, 212, 0.3);
+            background: transparent;
+            border-radius: 50%;
+            color: ${themeColor};
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .slide-btn:hover {
+            background: ${themeColor};
+            color: white;
+            border-color: ${themeColor};
+            transform: translateY(-2px);
+        }
+
+        .slide-dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(126, 162, 212, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: ${themeColor};
+            transform: scale(1.2);
+        }
+
+        .features-slide-container {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 20px;
+        }
+
+        .features-slider {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease;
+            width: 500%;
+        }
+
+        .feature-slide {
+            width: 20%;
+            height: 100%;
+            padding: 20px;
+            flex-shrink: 0;
+        }
+
+        .slide-card {
+            background: rgba(58, 56, 56, 0.8);
+            border: 1px solid rgba(126, 162, 212, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+
+        .slide-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        .slide-card p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+        }
+
+        /* Demo Elements */
+        .progress-demo {
+            margin-top: 20px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(126, 162, 212, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, ${themeColor}, ${themeColor}dd);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            color: ${themeColor};
+            font-weight: 600;
+        }
+
+        .bonus-badge {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .test-demo {
+            margin-top: 20px;
+        }
+
+        .test-score {
+            font-size: 2rem;
+            font-weight: bold;
+            color: ${themeColor};
+            margin-bottom: 5px;
+        }
+
+        .test-result {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .promo-code {
+            background: ${themeColor};
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: monospace;
+            font-size: 1.1rem;
+            display: inline-block;
+        }
+
+        .cabinet-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .mini-avatar {
+            width: 40px;
+            height: 40px;
+            background: ${themeColor};
+            border-radius: 50%;
+        }
+
+        .cabinet-name {
+            color: #ffffff;
+            font-weight: 600;
+        }
 
         /* Contact Section */
         .contact {
@@ -3522,6 +3775,62 @@ function generateLandingPageHTML(teacher) {
                 flex-direction: column;
                 align-items: center;
             }
+
+            .profile-card {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 30px;
+                text-align: center;
+            }
+
+            .profile-info {
+                order: 2;
+                text-align: center;
+            }
+
+            .profile-image-container {
+                order: 1;
+            }
+
+            .profile-image,
+            .profile-placeholder {
+                width: 250px;
+                height: 250px;
+                margin: 0 auto;
+                font-size: 80px;
+            }
+
+            .social-media-section {
+                justify-content: center;
+            }
+
+            .profile-info h2 {
+                font-size: 2rem;
+            }
+
+            .features-content {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                text-align: center;
+            }
+
+            .features-slide-container {
+                height: 350px;
+            }
+
+            .slide-card {
+                padding: 30px;
+            }
+
+            .slide-controls {
+                gap: 15px;
+            }
+
+            .slide-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -3562,58 +3871,54 @@ function generateLandingPageHTML(teacher) {
     <!-- Profile Section -->
     <section class="profile">
         <div class="container">
-            ${teacher.profileImage 
-                ? `<img src="${teacher.profileImage}" alt="${fullName}" class="profile-image">`
-                : `<div class="profile-placeholder">${fullName.charAt(0) || 'T'}</div>`
-            }
-            
-            <h2>${fullName || 'Teacher'}</h2>
-            <div class="specialization">${teacher.specialization || 'Senior Software Engineer'}</div>
-            
-            <div class="social-links">
-                ${teacher.socialLinks?.instagram ? `<a href="https://instagram.com/${teacher.socialLinks.instagram}" class="social-link" target="_blank">📷</a>` : ''}
-                ${teacher.socialLinks?.telegram ? `<a href="https://t.me/${teacher.socialLinks.telegram}" class="social-link" target="_blank">📱</a>` : ''}
-                ${teacher.socialLinks?.linkedin ? `<a href="${teacher.socialLinks.linkedin}" class="social-link" target="_blank">💼</a>` : ''}
-                ${teacher.socialLinks?.youtube ? `<a href="${teacher.socialLinks.youtube}" class="social-link" target="_blank">📺</a>` : ''}
-            </div>
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: #ffffff; text-align: center;">Men Haqimda</h2>
+            <div class="profile-card">
+                <!-- Profile Information - Left Side -->
+                <div class="profile-info">
+                    <h2>${fullName || 'Teacher'}</h2>
+                    <div class="profile-specialization">${teacher.specialization || 'Senior Software Engineer'}</div>
+                    <div class="profile-bio">${teacher.bio || 'Men 7 yildan ortiq dasturlash sohasida faoliyat yuritaman. 500+ o\'quvchiga dasturlashni o\'rgatganman va ularning ko\'pchiligi hozir yirik kompaniyalarda ishlaydilar.'}</div>
 
-            <div class="social-media-section">
-                <!-- Instagram -->
-                <a href="${teacher.socialLinks?.instagram ? `https://instagram.com/${teacher.socialLinks.instagram}` : '#'}" class="social-media-link" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                </a>
-                
-                <!-- Telegram -->
-                <a href="${teacher.socialLinks?.telegram ? `https://t.me/${teacher.socialLinks.telegram}` : '#'}" class="social-media-link" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                    </svg>
-                </a>
-                
-                <!-- LinkedIn -->
-                <a href="${teacher.socialLinks?.linkedin || '#'}" class="social-media-link" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                </a>
-                
-                <!-- YouTube -->
-                <a href="${teacher.socialLinks?.youtube || '#'}" class="social-media-link" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                    </svg>
-                </a>
-            </div>
-        </div>
-    </section>
+                    <!-- Social Media Links -->
+                    <div class="social-media-section">
+                        <!-- Instagram -->
+                        <a href="${teacher.socialLinks?.instagram ? `https://instagram.com/${teacher.socialLinks.instagram}` : '#'}" class="social-media-link" target="_blank">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
 
-    <!-- About Section -->
-    <section class="about">
-        <div class="container">
-            <h2>Men Haqimda</h2>
-            <p>${teacher.bio || 'Men 7 yildan ortiq dasturlash sohasida faoliyat yuritaman. 500+ o\'quvchiga dasturlashni o\'rgatganman va ularning ko\'pchiligi hozir yirik kompaniyalarda ishlaydilar.'}</p>
+                        <!-- Telegram -->
+                        <a href="${teacher.socialLinks?.telegram ? `https://t.me/${teacher.socialLinks.telegram}` : '#'}" class="social-media-link" target="_blank">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                            </svg>
+                        </a>
+
+                        <!-- LinkedIn -->
+                        <a href="${teacher.socialLinks?.linkedin || '#'}" class="social-media-link" target="_blank">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+
+                        <!-- YouTube -->
+                        <a href="${teacher.socialLinks?.youtube || '#'}" class="social-media-link" target="_blank">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Profile Image - Right Side -->
+                <div class="profile-image-container">
+                    ${teacher.profileImage
+                        ? `<img src="${teacher.profileImage}" alt="${fullName}" class="profile-image">`
+                        : `<div class="profile-placeholder">${fullName.charAt(0) || 'T'}</div>`
+                    }
+                </div>
+            </div>
         </div>
     </section>
 
@@ -3718,40 +4023,95 @@ function generateLandingPageHTML(teacher) {
     </section>
     `}
 
-    <!-- Contact Section -->
-    <section class="contact">
+    <!-- Personal Features Section -->
+    <section class="personal-features">
         <div class="container">
-            <h2>Savollaringiz bormi?</h2>
-            <p>Men bilan bog'lanishingiz mumkin. Barcha savollaringizga javob beraman!</p>
-            
-            <div class="social-media-section">
-                <!-- Instagram -->
-                <a href="${teacher.socialLinks?.instagram ? `https://instagram.com/${teacher.socialLinks.instagram}` : '#'}" class="social-media-link" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                    </svg>
-                </a>
-                
-                <!-- Telegram -->
-                <a href="${teacher.socialLinks?.telegram ? `https://t.me/${teacher.socialLinks.telegram}` : '#'}" class="social-media-link" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-                    </svg>
-                </a>
-                
-                <!-- LinkedIn -->
-                <a href="${teacher.socialLinks?.linkedin || '#'}" class="social-media-link" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                    </svg>
-                </a>
-                
-                <!-- YouTube -->
-                <a href="${teacher.socialLinks?.youtube || '#'}" class="social-media-link" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                    </svg>
-                </a>
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: #ffffff; text-align: center;">Imkoniyatlar</h2>
+            <div class="features-content">
+                <!-- Left Side - Text Content -->
+                <div class="features-text">
+                    <h2 class="features-title">DarsLinker platformasi o'quvchilarga beradigan imkoniyatlar</h2>
+
+                    <!-- Navigation Controls -->
+                    <div class="slide-controls">
+                        <button class="slide-btn prev-btn" id="prevBtn">‹</button>
+
+                        <div class="slide-dots">
+                            <span class="dot active" data-slide="0"></span>
+                            <span class="dot" data-slide="1"></span>
+                            <span class="dot" data-slide="2"></span>
+                            <span class="dot" data-slide="3"></span>
+                            <span class="dot" data-slide="4"></span>
+                        </div>
+
+                        <button class="slide-btn next-btn" id="nextBtn">›</button>
+                    </div>
+                </div>
+
+                <!-- Right Side - Sliding Features -->
+                <div class="features-slide-container">
+                    <div class="features-slider" id="featuresSlider">
+                        <!-- Slide 1 - Progress Tracking -->
+                        <div class="feature-slide">
+                            <div class="slide-card">
+                                <h3>Progress Tracking</h3>
+                                <p>O'qish jarayonini real vaqtda kuzatish va batafsil statistikalar ko'rish</p>
+                                <div class="progress-demo">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                    <span class="progress-text">75% tugallandi</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2 - Referral System -->
+                        <div class="feature-slide">
+                            <div class="slide-card">
+                                <h3>Referal Tizimi</h3>
+                                <p>Do'stlaringizni taklif qilib maxsus chegirmalar va bonuslar oling</p>
+                                <div class="referral-demo">
+                                    <span class="bonus-badge">30% chegirma</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3 - Tests & Quizzes -->
+                        <div class="feature-slide">
+                            <div class="slide-card">
+                                <h3>Test va Quiz</h3>
+                                <p>Kurs davomida interaktiv testlardan o'tish va darhol natija olish</p>
+                                <div class="test-demo">
+                                    <div class="test-score">9/10</div>
+                                    <span class="test-result">A'lo natija!</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 4 - Promocodes -->
+                        <div class="feature-slide">
+                            <div class="slide-card">
+                                <h3>Promokod Tizimi</h3>
+                                <p>Maxsus promokodlar va chegirmalardan foydalaning</p>
+                                <div class="promo-demo">
+                                    <span class="promo-code">SAVE50</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 5 - Personal Cabinet -->
+                        <div class="feature-slide">
+                            <div class="slide-card">
+                                <h3>Shaxsiy Kabinet</h3>
+                                <p>Barcha ma'lumotlaringiz bir joyda - profil, kurslar, sertifikatlar</p>
+                                <div class="cabinet-demo">
+                                    <div class="mini-avatar"></div>
+                                    <span class="cabinet-name">Shaxsiy profil</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -3762,6 +4122,133 @@ function generateLandingPageHTML(teacher) {
             <p>&copy; 2025 ${fullName}. DarsLinker platformasi orqali yaratilgan.</p>
         </div>
     </footer>
+
+    <script>
+        // Features Auto Slider
+        let currentSlide = 0;
+        let autoSlideInterval;
+        const slides = document.querySelectorAll('.feature-slide');
+        const dots = document.querySelectorAll('.dot');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            // Move slider to show current slide
+            const slider = document.querySelector('.features-slider');
+            const translateValue = -index * 20; // Each slide is 20% width
+            slider.style.transform = 'translateX(' + translateValue + '%)';
+
+            // Update dots
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[index].classList.add('active');
+
+            // For infinite carousel, buttons are never disabled
+        }
+
+        function nextSlide() {
+            const slider = document.querySelector('.features-slider');
+
+            if (currentSlide === totalSlides - 1) {
+                // From last slide to first slide with smooth transition
+                currentSlide = 0;
+
+                // Temporarily move to a position beyond the last slide
+                slider.style.transition = 'transform 0.5s ease';
+                slider.style.transform = 'translateX(-100%)';
+
+                // After animation, snap to first slide
+                setTimeout(() => {
+                    slider.style.transition = 'none';
+                    slider.style.transform = 'translateX(0%)';
+
+                    // Update dots only (no button states for infinite loop)
+                    dots.forEach(dot => dot.classList.remove('active'));
+                    dots[0].classList.add('active');
+
+                    // Restore smooth transition for next moves
+                    setTimeout(() => {
+                        slider.style.transition = 'transform 0.5s ease';
+                    }, 50);
+                }, 500);
+            } else {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function startAutoSlide() {
+            autoSlideInterval = setInterval(nextSlide, 7000); // 7 seconds
+        }
+
+        function stopAutoSlide() {
+            clearInterval(autoSlideInterval);
+        }
+
+        function resetAutoSlide() {
+            stopAutoSlide();
+            setTimeout(startAutoSlide, 2000); // Wait 2 seconds before restarting
+        }
+
+        // Manual navigation - dots
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                currentSlide = index;
+                showSlide(currentSlide);
+                resetAutoSlide();
+            });
+        });
+
+        // Manual navigation - buttons
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                const slider = document.querySelector('.features-slider');
+
+                if (currentSlide === 0) {
+                    // From first slide to last slide with smooth transition
+                    currentSlide = totalSlides - 1;
+
+                    // Temporarily move to before first slide
+                    slider.style.transition = 'transform 0.5s ease';
+                    slider.style.transform = 'translateX(20%)';
+
+                    setTimeout(() => {
+                        slider.style.transition = 'none';
+                        slider.style.transform = 'translateX(-80%)';
+                        dots.forEach(dot => dot.classList.remove('active'));
+                        dots[totalSlides - 1].classList.add('active');
+
+                        setTimeout(() => {
+                            slider.style.transition = 'transform 0.5s ease';
+                        }, 50);
+                    }, 500);
+                } else {
+                    currentSlide--;
+                    showSlide(currentSlide);
+                }
+                resetAutoSlide();
+            });
+        }
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                nextSlide();
+                resetAutoSlide();
+            });
+        }
+
+        // Pause auto-slide on hover
+        const featuresContainer = document.querySelector('.features-slide-container');
+        if (featuresContainer) {
+            featuresContainer.addEventListener('mouseenter', stopAutoSlide);
+            featuresContainer.addEventListener('mouseleave', startAutoSlide);
+        }
+
+        // Initialize slider
+        showSlide(0);
+        startAutoSlide();
+    </script>
 </body>
 </html>
   `;
