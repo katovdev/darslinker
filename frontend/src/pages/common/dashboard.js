@@ -2519,15 +2519,27 @@ async function loadFeaturedCourses() {
     if (!coursesList) return;
 
     if (response.success && response.courses && response.courses.length > 0) {
-      coursesList.innerHTML = response.courses.map(course => `
-        <div class="course-item" data-course-id="${course._id}">
-          <input type="checkbox" class="course-checkbox" name="featuredCourses" value="${course._id}">
-          <div class="course-info">
-            <h4>${course.title}</h4>
-            <p>${course.enrollmentCount || 0} students • ${course.price ? '$' + course.price : 'Free'}</p>
+      // Get previously selected courses
+      const selectedCourseIds = user.landingPageSettings?.featuredCourses || [];
+      
+      console.log('🎓 Loading featured courses...');
+      console.log('🎓 User landing page settings:', user.landingPageSettings);
+      console.log('🎓 Selected course IDs:', selectedCourseIds);
+      console.log('🎓 Available courses:', response.courses.map(c => ({ id: c._id, title: c.title })));
+      
+      coursesList.innerHTML = response.courses.map(course => {
+        const isSelected = selectedCourseIds.includes(course._id);
+        console.log(`🎓 Course ${course.title}: isSelected = ${isSelected}`);
+        return `
+          <div class="course-item ${isSelected ? 'selected' : ''}" data-course-id="${course._id}">
+            <input type="checkbox" class="course-checkbox" name="featuredCourses" value="${course._id}" ${isSelected ? 'checked' : ''}>
+            <div class="course-info">
+              <h4>${course.title}</h4>
+              <p>${course.enrollmentCount || 0} students • ${course.courseType === 'free' ? 'Free' : (course.price ? course.price.toLocaleString() + ' so\'m' : 'Free')}</p>
+            </div>
           </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
 
       // Add event listeners for course selection
       coursesList.querySelectorAll('.course-checkbox').forEach(checkbox => {
@@ -3092,6 +3104,8 @@ async function handleLandingSettingsSave(event) {
     };
 
     console.log('💾 Saving landing page data:', landingData);
+    console.log('🎓 Featured courses being saved:', landingData.featuredCourses);
+    console.log('🎓 Featured courses count:', landingData.featuredCourses.length);
 
     // Update teacher profile with landing page data including theme color
     const teacherUpdateData = {
@@ -3107,7 +3121,11 @@ async function handleLandingSettingsSave(event) {
       }
     };
 
+    console.log('📤 Sending update request to backend:', teacherUpdateData);
+    console.log('📤 teacherUpdateData.landingPageSettings:', teacherUpdateData.landingPageSettings);
+    console.log('📤 teacherUpdateData.landingPageSettings.featuredCourses:', teacherUpdateData.landingPageSettings.featuredCourses);
     const result = await apiService.updateTeacherProfile(user._id, teacherUpdateData);
+    console.log('📥 Update response from backend:', result);
 
     if (result.success) {
       // Update local state
@@ -3171,6 +3189,11 @@ window.openLandingPreview = async function() {
 function generateLandingPageHTML(teacher) {
   const themeColor = '#7EA2D4'; // Force to blue color
   const fullName = `${teacher.firstName || ''} ${teacher.lastName || ''}`.trim();
+  
+  // Debug: Check courses data
+  console.log('🎓 Teacher courses data:', teacher.courses);
+  console.log('🎓 Courses length:', teacher.courses?.length);
+  console.log('🎓 Landing page settings:', teacher.landingPageSettings);
 
   return `
 <!DOCTYPE html>
@@ -3194,6 +3217,10 @@ function generateLandingPageHTML(teacher) {
             overflow-x: hidden;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -3203,7 +3230,7 @@ function generateLandingPageHTML(teacher) {
         /* Header */
         .header {
             background: #232323;
-            padding: 15px 0;
+            padding: 25px 0;
             box-shadow: 0 2px 10px rgba(126, 162, 212, 0.1);
             border-bottom: 1px solid rgba(126, 162, 212, 0.2);
         }
@@ -3218,7 +3245,7 @@ function generateLandingPageHTML(teacher) {
             display: flex;
             align-items: center;
             font-family: 'League Spartan', sans-serif;
-            font-size: 24px;
+            font-size: 32px;
             font-weight: 600;
         }
 
@@ -3249,7 +3276,7 @@ function generateLandingPageHTML(teacher) {
         /* Hero Section */
         .hero {
             background: white;
-            padding: 180px 0;
+            padding: 200px 0;
             text-align: center;
         }
 
@@ -3524,7 +3551,7 @@ function generateLandingPageHTML(teacher) {
 
         .course-image {
             width: 100%;
-            height: 200px;
+            height: 250px;
             object-fit: cover;
         }
 
@@ -3541,7 +3568,7 @@ function generateLandingPageHTML(teacher) {
 
         .course-meta {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
             margin-top: 15px;
         }
@@ -3550,13 +3577,6 @@ function generateLandingPageHTML(teacher) {
             font-size: 1.1rem;
             font-weight: 600;
             color: ${themeColor};
-        }
-
-        .course-rating {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            color: #ffa500;
         }
 
         /* Profile Section */
@@ -4209,51 +4229,27 @@ function generateLandingPageHTML(teacher) {
     <section class="courses" id="courses">
         <div class="container">
             <h2>Mavjud Kurslar</h2>
-            <div class="courses-grid">
-                ${teacher.courses.slice(0, 3).map(course => `
+            <div class="courses-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
+                ${teacher.courses.map(course => `
                     <div class="course-card">
                         ${course.thumbnail 
                             ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-image">`
-                            : `<div style="height: 200px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>`
+                            : `<div style="height: 250px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>`
                         }
                         <div class="course-content">
                             <h3 class="course-title">${course.title}</h3>
+                            <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; margin: 10px 0; line-height: 1.5;">${course.description ? (course.description.length > 100 ? course.description.substring(0, 100) + '...' : course.description) : ''}</p>
                             <div class="course-meta">
-                                <div class="course-price">${course.courseType === 'free' ? 'Bepul' : (course.price + ' so\'m')}</div>
-                                <div class="course-rating">
-                                    <span>⭐</span>
-                                    <span>${course.rating || '4.8'}</span>
-                                </div>
+                                <div class="course-price">${course.courseType === 'free' ? 'Bepul' : (course.discountPrice ? course.discountPrice.toLocaleString() + ' so\'m' : course.price.toLocaleString() + ' so\'m')}</div>
                             </div>
+                            ${course.enrollmentCount ? `<p style="color: rgba(255, 255, 255, 0.5); font-size: 13px; margin-top: 8px;">👥 ${course.enrollmentCount} students enrolled</p>` : ''}
                         </div>
                     </div>
                 `).join('')}
             </div>
         </div>
     </section>
-    ` : `
-    <!-- Default Course Section -->
-    <section class="courses" id="courses">
-        <div class="container">
-            <h2>Mavjud Kurslar</h2>
-            <div class="courses-grid">
-                <div class="course-card">
-                    <div style="height: 200px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🐍</div>
-                    <div class="course-content">
-                        <h3 class="course-title">Python Asoslari</h3>
-                        <div class="course-meta">
-                            <div class="course-price">299,000 so'm</div>
-                            <div class="course-rating">
-                                <span>⭐</span>
-                                <span>4.8</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    `}
+    ` : ''}
 
     <!-- Personal Features Section -->
     <section class="personal-features">
@@ -17993,14 +17989,18 @@ async function loadTeacherLandingPage(teacherId) {
     `;
 
     // Get teacher profile by ID
+    console.log('📡 Fetching teacher profile from API...');
     const teacherResult = await apiService.getTeacherProfile(teacherId);
+    console.log('📡 API Response:', teacherResult);
 
     if (teacherResult.success && teacherResult.teacher) {
       const teacher = teacherResult.teacher;
       
       // Debug: Check teacher data and theme color
       console.log('🎨 Teacher data:', teacher);
+      console.log('🎨 Teacher courses:', teacher.courses);
       console.log('🎨 Landing page settings:', teacher.landingPageSettings);
+      console.log('🎨 Featured courses from settings:', teacher.landingPageSettings?.featuredCourses);
       console.log('🎨 Theme color:', teacher.landingPageSettings?.themeColor);
 
       // Generate and display the landing page

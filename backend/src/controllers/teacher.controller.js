@@ -91,8 +91,26 @@ const findAll = catchAsync(async (req, res) => {
 const findOne = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const teacher = await validateAndFindById(Teacher, id, "Teacher");
-  const teacherData = handleValidationResult(teacher);
+  const teacher = await Teacher.findById(id)
+    .populate({
+      path: 'landingPageSettings.featuredCourses',
+      select: 'title description thumbnail courseType price discountPrice category totalLessons rating enrollmentCount'
+    })
+    .select('-password');
+
+  if (!teacher) {
+    throw new Error("Teacher not found");
+  }
+
+  const teacherData = teacher.toObject();
+
+  // Debug: Log raw teacher data before processing
+  logger.info("🔍 Raw teacher data from database", {
+    teacherId: id,
+    hasLandingPageSettings: !!teacherData.landingPageSettings,
+    landingPageSettings: JSON.stringify(teacherData.landingPageSettings),
+    featuredCoursesRaw: teacherData.landingPageSettings?.featuredCourses
+  });
 
   // Also get landing settings if they exist
   const Landing = (await import("../models/landing.model.js")).default;
@@ -102,6 +120,37 @@ const findOne = catchAsync(async (req, res) => {
   if (landingSettings) {
     teacherData.primaryColor = landingSettings.primaryColor;
     teacherData.landingSettings = landingSettings;
+  }
+
+  // Add featured courses to teacher data for backward compatibility
+  if (teacherData.landingPageSettings?.featuredCourses && teacherData.landingPageSettings.featuredCourses.length > 0) {
+    // Use featured courses if they are selected
+    teacherData.courses = teacherData.landingPageSettings.featuredCourses;
+    logger.info("🎓 Featured courses added to teacher data", {
+      teacherId: id,
+      coursesCount: teacherData.courses.length,
+      courses: teacherData.courses
+    });
+  } else {
+    // If no featured courses, get all active courses from this teacher
+    logger.info("⚠️ No featured courses found, loading all active courses", {
+      teacherId: id,
+      landingPageSettings: JSON.stringify(teacherData.landingPageSettings),
+      featuredCoursesLength: teacherData.landingPageSettings?.featuredCourses?.length || 0
+    });
+    
+    const Course = (await import("../models/course.model.js")).default;
+    const allCourses = await Course.find({ 
+      teacher: id, 
+      status: 'active' 
+    }).select('title description thumbnail courseType price discountPrice category totalLessons rating enrollmentCount');
+    
+    teacherData.courses = allCourses;
+    
+    logger.info("✅ All active courses loaded", {
+      teacherId: id,
+      coursesCount: allCourses.length
+    });
   }
 
   res.status(200).json({
@@ -125,6 +174,8 @@ const update = catchAsync(async (req, res) => {
     bioValue: updates.bio,
     certificatesReceived: updates.certificates ? JSON.stringify(updates.certificates) : 'undefined',
     certificatesLength: updates.certificates ? updates.certificates.length : 0,
+    landingPageSettings: updates.landingPageSettings ? JSON.stringify(updates.landingPageSettings) : 'undefined',
+    featuredCoursesCount: updates.landingPageSettings?.featuredCourses?.length || 0,
     timestamp: new Date().toISOString()
   });
 
@@ -244,6 +295,16 @@ const update = catchAsync(async (req, res) => {
     updates.paymentMethods = sanitized;
   }
 
+  // Process landingPageSettings
+  if (updates.landingPageSettings !== undefined) {
+    logger.info("🎨 Processing landingPageSettings", {
+      teacherId: id,
+      landingPageSettings: JSON.stringify(updates.landingPageSettings),
+      featuredCoursesCount: updates.landingPageSettings.featuredCourses?.length || 0,
+      featuredCourses: updates.landingPageSettings.featuredCourses
+    });
+  }
+
   const updatedTeacher = await Teacher.findByIdAndUpdate(
     id,
     { $set: updates },
@@ -260,6 +321,8 @@ const update = catchAsync(async (req, res) => {
     newBioValue: updatedTeacher?.bio,
     savedCertificates: updatedTeacher?.certificates ? JSON.stringify(updatedTeacher.certificates) : 'undefined',
     savedCertificatesLength: updatedTeacher?.certificates ? updatedTeacher.certificates.length : 0,
+    savedLandingPageSettings: updatedTeacher?.landingPageSettings ? JSON.stringify(updatedTeacher.landingPageSettings) : 'undefined',
+    savedFeaturedCoursesCount: updatedTeacher?.landingPageSettings?.featuredCourses?.length || 0,
     updateResult: !!updatedTeacher,
     timestamp: new Date().toISOString()
   });
