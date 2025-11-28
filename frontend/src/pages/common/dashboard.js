@@ -1111,12 +1111,13 @@ window.openLandingSettings = async function() {
 function getLandingSettingsHTML(user, landingData = null) {
   const theme = getTheme();
   const landingURL = `${window.location.origin}/teacher/${user._id}`;
-  
+
   // Default values or from landingData
   const settings = landingData || {
     title: `${user.firstName} ${user.lastName}'s Courses`,
     subtitle: user.specialization || 'Expert Instructor',
     description: 'Discover amazing courses and start your learning journey today.',
+    heroTitle: user.heroTitle || 'DASTURLASH',
     primaryColor: '#7ea2d4',
     backgroundColor: '#1a1a1a',
     textColor: '#ffffff',
@@ -1600,6 +1601,15 @@ function getLandingSettingsHTML(user, landingData = null) {
           <div class="form-field">
             <label class="field-label">Professional Title / Specialty</label>
             <input type="text" class="form-input" name="specialty" value="${user.specialization || ''}" placeholder="Web Development & UI/UX Design">
+          </div>
+
+          <!-- Hero Title -->
+          <div class="form-field">
+            <label class="field-label">Hero Section - Main Title</label>
+            <input type="text" class="form-input" name="heroTitle" value="${settings.heroTitle || user.heroTitle || 'DASTURLASH'}" placeholder="DASTURLASH">
+            <small style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin-top: 4px; display: block;">
+              Bu matn landing page da "_____ NI PROFESSIONAL O'QITUVCHI BILAN O'RGANING" deb ko'rinadi
+            </small>
           </div>
 
           <!-- Bio -->
@@ -3852,7 +3862,7 @@ function generateLandingPageHTML(teacher) {
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <h1>DASTURLASH NI<br><span class="highlight">PROFESSIONAL</span><br>O'QITUVCHI BILAN O'RGANING</h1>
+                    <h1>${teacher.heroTitle || 'DASTURLASH'} NI<br><span class="highlight">PROFESSIONAL</span><br>O'QITUVCHI BILAN O'RGANING</h1>
 
                     <a href="#courses" class="cta-button">Kurslarni ko'rish</a>
                 </div>
@@ -18001,6 +18011,7 @@ window.saveLandingSettings = async function(event) {
       title: formData.get('title'),
       subtitle: formData.get('subtitle'),
       description: formData.get('description'),
+      heroTitle: formData.get('heroTitle'),
       primaryColor: formData.get('primaryColor'),
       backgroundColor: formData.get('backgroundColor'),
       textColor: formData.get('textColor'),
