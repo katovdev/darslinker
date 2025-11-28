@@ -6,6 +6,7 @@ import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.j
 import { getTheme, saveTheme, initTheme, presetColors } from '../../utils/theme.js';
 import { showSuccessToast, showErrorToast } from '../../utils/toast.js';
 import { config } from '../../utils/config.js';
+import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
 export function initDashboard() {
   console.log('=== Dashboard initializing ===');
@@ -3277,7 +3278,7 @@ function generateLandingPageHTML(teacher) {
         /* Hero Section */
         .hero {
             background: white;
-            padding: 200px 0;
+            padding: 180px 0;
             text-align: center;
         }
 
@@ -4095,7 +4096,7 @@ function generateLandingPageHTML(teacher) {
                 </div>
                 
                 <div class="hero-image" style="position: relative;">
-                    <img src="/src/assets/images/undraw_online-stats_d57c.png" alt="Learning" />
+                    <img src="${heroImage}" alt="Learning" />
                     <div class="stats-badge">
                         <div class="stats-number">500+</div>
                         <div class="stats-label">O'quvchi</div>
