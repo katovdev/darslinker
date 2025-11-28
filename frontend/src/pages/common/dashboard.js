@@ -8,7 +8,7 @@ import { showSuccessToast, showErrorToast } from '../../utils/toast.js';
 import { config } from '../../utils/config.js';
 import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
-export function initDashboard() {
+export async function initDashboard() {
   console.log('=== Dashboard initializing ===');
 
   // Initialize i18n and theme
@@ -90,7 +90,7 @@ export function initDashboard() {
     lastName: userData.lastName,
     fullData: userData
   });
-  renderTeacherDashboard(userData);
+  await renderTeacherDashboard(userData);
 
   // Original logic (commented out for testing):
   // if (userData.role === 'teacher') {
@@ -116,12 +116,35 @@ function cleanupPageStyles() {
   });
 }
 
-function renderTeacherDashboard(user) {
+async function renderTeacherDashboard(user) {
   console.log('=== renderTeacherDashboard user data ===', user);
   console.log('specialization:', user.specialization);
   console.log('city:', user.city);
   console.log('country:', user.country);
   console.log('ratingAverage:', user.ratingAverage);
+  
+  // Fetch dashboard data first to get real stats
+  let dashboardStats = {
+    activeCourses: 0,
+    totalStudents: 0,
+    totalRevenue: 0,
+    avgRating: 0
+  };
+  
+  try {
+    const dashboardData = await apiService.getTeacherDashboard(user._id);
+    if (dashboardData.success) {
+      const { overview, teacher } = dashboardData.data;
+      dashboardStats = {
+        activeCourses: overview.activeCourses || 0,
+        totalStudents: overview.totalStudents || 0,
+        totalRevenue: overview.totalRevenue || 0,
+        avgRating: teacher.ratingAverage || 0
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching dashboard stats:', error);
+  }
   
   document.querySelector('#app').innerHTML = `
     <div class="figma-dashboard">
@@ -272,22 +295,22 @@ function renderTeacherDashboard(user) {
             <!-- My Statistics Card -->
             <div class="figma-stats-card">
               <h3 class="figma-stats-title">${t('stats.myStatistics')}</h3>
-              <div class="figma-stats-list">
+              <div class="figma-stats-list" id="stats-loading">
                 <div class="figma-stat-row">
                   <span class="figma-stat-label">${t('stats.activeCourses')}</span>
-                  <span class="figma-stat-value">8</span>
+                  <span class="figma-stat-value">${dashboardStats.activeCourses}</span>
                 </div>
                 <div class="figma-stat-row">
                   <span class="figma-stat-label">${t('stats.totalStudents')}</span>
-                  <span class="figma-stat-value">1111</span>
+                  <span class="figma-stat-value">${dashboardStats.totalStudents}</span>
                 </div>
                 <div class="figma-stat-row">
                   <span class="figma-stat-label">${t('stats.totalRevenue')}</span>
-                  <span class="figma-stat-value">$12,460</span>
+                  <span class="figma-stat-value">$${dashboardStats.totalRevenue.toLocaleString()}</span>
                 </div>
                 <div class="figma-stat-row">
                   <span class="figma-stat-label">${t('stats.avgRating')}</span>
-                  <span class="figma-stat-value">4.9/5</span>
+                  <span class="figma-stat-value">${dashboardStats.avgRating > 0 ? dashboardStats.avgRating.toFixed(1) : '0'}/5</span>
                 </div>
               </div>
             </div>
@@ -9742,6 +9765,29 @@ window.loadMainDashboard = async function() {
 
     if (dashboardData.success) {
       const { overview, growth, teacher } = dashboardData.data;
+      
+      // Update stats in the initial render
+      const statsLoading = document.getElementById('stats-loading');
+      if (statsLoading) {
+        statsLoading.innerHTML = `
+          <div class="figma-stat-row">
+            <span class="figma-stat-label">${t('stats.activeCourses')}</span>
+            <span class="figma-stat-value">${overview.activeCourses || 0}</span>
+          </div>
+          <div class="figma-stat-row">
+            <span class="figma-stat-label">${t('stats.totalStudents')}</span>
+            <span class="figma-stat-value">${overview.totalStudents || 0}</span>
+          </div>
+          <div class="figma-stat-row">
+            <span class="figma-stat-label">${t('stats.totalRevenue')}</span>
+            <span class="figma-stat-value">$${overview.totalRevenue ? overview.totalRevenue.toLocaleString() : '0'}</span>
+          </div>
+          <div class="figma-stat-row">
+            <span class="figma-stat-label">${t('stats.avgRating')}</span>
+            <span class="figma-stat-value">${teacher.ratingAverage ? teacher.ratingAverage.toFixed(1) : '0'}/5</span>
+          </div>
+        `;
+      }
 
       // Generate star rating HTML
       const generateStars = (rating) => {
