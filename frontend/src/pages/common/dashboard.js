@@ -544,11 +544,25 @@ async function handleCreateCourse(e) {
     return;
   }
 
-  // Check course limit (max 2 courses)
-  const currentCourses = window.myCoursesData || [];
-  if (currentCourses.length >= 2) {
-    showErrorToast('You have already created 2 courses. Upgrade your plan to create more courses.');
-    return;
+  // Check course limit by fetching from backend
+  try {
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/courses?teacher=${user._id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    
+    const result = await response.json();
+    const currentCourses = result.courses || [];
+    
+    if (currentCourses.length >= 2) {
+      showErrorToast('You have already created 2 courses. Upgrade your plan to create more courses.');
+      return;
+    }
+  } catch (error) {
+    console.error('Error checking course limit:', error);
+    // If API fails, allow course creation (fallback)
   }
 
   // Determine which button was clicked
@@ -990,7 +1004,7 @@ window.openEditProfile = function() {
 };
 
 // Open Landing Page Settings
-window.openLandingSettings = function() {
+window.openLandingSettings = async function() {
   // Get fresh user data from state
   const user = store.getState().user;
 
@@ -1001,17 +1015,35 @@ window.openLandingSettings = function() {
 
   console.log('🔍 Opening landing settings with user data:', user);
 
+  // Load landing settings from backend
+  let landingData = null;
+  try {
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/landing/${user._id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    
+    const result = await response.json();
+    if (result.success) {
+      landingData = result.landing;
+    }
+  } catch (error) {
+    console.error('Error loading landing settings:', error);
+  }
+
   // Check if dashboard structure exists
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
     // Just update content area, keep sidebar
     updatePageTitle('Landing Page Settings');
-    contentArea.innerHTML = getLandingSettingsHTML(user);
+    contentArea.innerHTML = getLandingSettingsHTML(user, landingData);
     updateActiveMenuItem('Landing');
 
     // Initialize landing settings
-    initializeLandingSettings();
+    initializeLandingSettings(landingData);
 
     return;
   }
@@ -1076,9 +1108,28 @@ window.openLandingSettings = function() {
 };
 
 // Helper function to get landing settings HTML
-function getLandingSettingsHTML(user) {
+function getLandingSettingsHTML(user, landingData = null) {
   const theme = getTheme();
-  const landingURL = `https://darslinker.uz/teacher/${user.firstName?.toLowerCase()}-${user.lastName?.toLowerCase()}`;
+  const landingURL = `${window.location.origin}/teacher/${user._id}`;
+  
+  // Default values or from landingData
+  const settings = landingData || {
+    title: `${user.firstName} ${user.lastName}'s Courses`,
+    subtitle: user.specialization || 'Expert Instructor',
+    description: 'Discover amazing courses and start your learning journey today.',
+    primaryColor: '#7ea2d4',
+    backgroundColor: '#1a1a1a',
+    textColor: '#ffffff',
+    showCourses: true,
+    showAbout: true,
+    aboutText: user.bio || '',
+    socialLinks: {
+      telegram: user.telegramUsername || '',
+      instagram: '',
+      youtube: '',
+      linkedin: ''
+    }
+  };
 
   return `
     <div class="landing-settings-page">
@@ -1596,15 +1647,46 @@ function getLandingSettingsHTML(user) {
         </div>
 
         <!-- Featured Testimonials -->
-        <div class="landing-section">
-          <div class="landing-section-title">Featured Testimonials</div>
-          <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 16px; font-size: 14px;">
+        <div class="landing-section testimonials-locked" style="position: relative; opacity: 0.6;">
+          <div class="lock-overlay" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; pointer-events: none;">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div class="landing-section-title" style="position: relative;">
+            Featured Testimonials
+            <span class="coming-soon-badge" style="position: absolute; top: -5px; right: -10px; background: var(--primary-color); color: white; font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 500;">Soon</span>
+          </div>
+          <p style="color: rgba(255, 255, 255, 0.4); margin-bottom: 16px; font-size: 14px;">
             Select best reviews to showcase (up to 5)
           </p>
-          <div id="featuredTestimonialsList">
-            <!-- Featured testimonials will be loaded here -->
+          <div id="featuredTestimonialsList" style="filter: blur(2px); pointer-events: none;">
+            <div style="padding: 40px; text-align: center; color: rgba(255,255,255,0.3);">
+              <div style="margin-bottom: 12px;">📝 Testimonials coming soon...</div>
+              <div style="font-size: 12px;">This feature will be available in the next update</div>
+            </div>
+          </div>
+          <div class="hover-tooltip" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0); transition: background 0.3s; cursor: not-allowed; opacity: 0;">
+            <div style="background: rgba(0,0,0,0.8); padding: 8px 16px; border-radius: 6px; color: white; font-size: 14px; font-weight: 500;">
+              Coming Soon
+            </div>
           </div>
         </div>
+
+        <style>
+          .testimonials-locked:hover .hover-tooltip {
+            opacity: 1;
+            background: rgba(0,0,0,0.1);
+          }
+          .testimonials-locked .coming-soon-badge {
+            animation: pulse 2s infinite;
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+          }
+        </style>
 
         <!-- Theme & Colors -->
         <div class="landing-section">
@@ -1648,6 +1730,7 @@ function getLandingSettingsHTML(user) {
         <!-- Form Actions -->
         <div class="form-actions">
           <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
+
           <button type="submit" class="btn-save">Save and publish</button>
         </div>
       </form>
@@ -1659,7 +1742,7 @@ function getLandingSettingsHTML(user) {
 function initializeLandingSettings() {
   // Load courses, testimonials, and certificates
   loadFeaturedCourses();
-  loadFeaturedTestimonials();
+  // loadFeaturedTestimonials(); // Disabled - feature coming soon
   loadCertificates();
 
   // Add form submission handler
@@ -2925,6 +3008,319 @@ async function handleLandingSettingsSave(event) {
 window.customizeUI = function() {
   openCustomizeUI();
 };
+
+// Open Landing Page Preview
+window.openLandingPreview = async function() {
+  try {
+    const user = store.getState().user;
+    if (!user) {
+      showErrorToast('User data not found');
+      return;
+    }
+
+    // Get the latest teacher profile data
+    const teacherResult = await apiService.getTeacherProfile(user._id);
+    if (!teacherResult.success) {
+      showErrorToast('Failed to load teacher data');
+      return;
+    }
+
+    const teacher = teacherResult.teacher;
+    const landingPageHTML = generateLandingPageHTML(teacher);
+
+    // Open preview in new window
+    const previewWindow = window.open('', '_blank');
+    previewWindow.document.write(landingPageHTML);
+    previewWindow.document.close();
+
+  } catch (error) {
+    console.error('Preview error:', error);
+    showErrorToast('Failed to open preview');
+  }
+};
+
+// Generate Landing Page HTML
+function generateLandingPageHTML(teacher) {
+  const themeColor = teacher.landingPageSettings?.themeColor || '#7ea2d4';
+  const fullName = `${teacher.firstName || ''} ${teacher.lastName || ''}`.trim();
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${fullName} - Teacher Landing Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d30 100%);
+            color: #ffffff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .hero-section {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 80px 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .profile-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, ${themeColor}, #9bb8e0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            font-weight: bold;
+            color: white;
+            border: 4px solid rgba(255,255,255,0.2);
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, ${themeColor}, #9bb8e0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 20px;
+        }
+
+        .hero-bio {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.7);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .social-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: ${themeColor};
+            transform: translateY(-2px);
+        }
+
+        .courses-section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 40px;
+            color: ${themeColor};
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .course-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+            border-color: ${themeColor};
+        }
+
+        .course-title {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            color: ${themeColor};
+        }
+
+        .course-description {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 16px;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .course-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: ${themeColor};
+        }
+
+        .certificates-section {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .certificate-item {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .social-links {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="profile-photo">
+                ${fullName.charAt(0) || 'T'}
+            </div>
+            <h1 class="hero-title">${fullName || 'Teacher Name'}</h1>
+            <h2 class="hero-subtitle">${teacher.specialization || 'Professional Educator'}</h2>
+            <p class="hero-bio">${teacher.bio || 'Passionate educator committed to helping students achieve their goals through quality online education.'}</p>
+
+            ${teacher.socialLinks ? `
+            <div class="social-links">
+                ${teacher.socialLinks.linkedin ? `<a href="${teacher.socialLinks.linkedin}" class="social-link" target="_blank">🔗 LinkedIn</a>` : ''}
+                ${teacher.socialLinks.github ? `<a href="${teacher.socialLinks.github}" class="social-link" target="_blank">🐙 GitHub</a>` : ''}
+                ${teacher.socialLinks.website ? `<a href="${teacher.socialLinks.website}" class="social-link" target="_blank">🌐 Website</a>` : ''}
+                ${teacher.socialLinks.telegram ? `<a href="${teacher.socialLinks.telegram}" class="social-link" target="_blank">💬 Telegram</a>` : ''}
+            </div>
+            ` : ''}
+        </section>
+
+        <!-- Courses Section -->
+        <section class="courses-section">
+            <h2 class="section-title">Featured Courses</h2>
+            <div class="courses-grid">
+                ${teacher.courses && teacher.courses.length > 0
+                    ? teacher.courses.slice(0, 6).map(course => `
+                        <div class="course-card">
+                            <h3 class="course-title">${course.title}</h3>
+                            <p class="course-description">${course.description}</p>
+                            <div class="course-meta">
+                                <span class="course-price">${course.courseType === 'free' ? 'Free' : course.price ? '$' + course.price : 'Contact'}</span>
+                                <span style="color: rgba(255,255,255,0.6);">${course.totalStudents || 0} students</span>
+                            </div>
+                        </div>
+                    `).join('')
+                    : `
+                        <div class="course-card">
+                            <h3 class="course-title">Sample Course</h3>
+                            <p class="course-description">This is a sample course. Add your real courses in the dashboard.</p>
+                            <div class="course-meta">
+                                <span class="course-price">$99</span>
+                                <span style="color: rgba(255,255,255,0.6);">0 students</span>
+                            </div>
+                        </div>
+                    `
+                }
+            </div>
+        </section>
+
+        <!-- Certificates Section -->
+        ${teacher.certificates && teacher.certificates.length > 0 ? `
+        <section class="certificates-section">
+            <h2 class="section-title">Certifications</h2>
+            <div class="certificates-grid">
+                ${teacher.certificates.map(cert => `
+                    <div class="certificate-item">
+                        <h4 style="color: ${themeColor}; margin-bottom: 8px;">${cert.title}</h4>
+                        <p style="color: rgba(255,255,255,0.7);">${cert.issuedBy}</p>
+                        <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">${cert.issueDate}</p>
+                    </div>
+                `).join('')}
+            </div>
+        </section>
+        ` : ''}
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>© 2024 ${fullName}. Powered by DarsLinker Platform.</p>
+        </footer>
+    </div>
+</body>
+</html>
+  `;
+}
 
 // Helper function to update page title
 function updatePageTitle(title) {
@@ -14394,13 +14790,33 @@ window.submitPayout = function() {
 };
 
 // Open Create Course Page
-window.openCreateCourse = function() {
+window.openCreateCourse = async function() {
   const userData = store.getState().user;
 
-  // Check course limit (max 2 courses)
-  const currentCourses = window.myCoursesData || [];
-  if (currentCourses.length >= 2) {
-    showErrorToast('You have already created 2 courses. Upgrade your plan to create more courses.');
+  // Show loading toast while checking
+  const loadingToast = showSuccessToast('Checking course limit...');
+
+  // Check course limit by fetching from backend
+  try {
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/courses?teacher=${userData._id}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+    });
+    
+    const result = await response.json();
+    const currentCourses = result.courses || [];
+    
+    console.log(`📊 Current courses: ${currentCourses.length}/2`);
+    
+    if (currentCourses.length >= 2) {
+      showErrorToast('You have already created 2 courses. Upgrade your plan to create more courses.');
+      return;
+    }
+  } catch (error) {
+    console.error('Error checking course limit:', error);
+    showErrorToast('Failed to check course limit. Please try again.');
     return;
   }
 
@@ -16318,4 +16734,359 @@ window.closeQuizModal = function() {
   if (modal) {
     modal.remove();
   }
+};
+
+// Check if current URL is a teacher landing page and serve it
+window.checkAndServeLandingPage = function() {
+  const currentPath = window.location.pathname;
+
+  // Check if URL matches teacher landing page pattern: /teacher/teacherId
+  const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9]+)$/;
+  const match = currentPath.match(teacherPagePattern);
+
+  if (match) {
+    const teacherId = match[1];
+    console.log('📄 Loading teacher landing page for ID:', teacherId);
+
+    // Load and display teacher landing page
+    loadTeacherLandingPage(teacherId);
+    return true;
+  }
+
+  return false;
+};
+
+// Load teacher landing page by ID
+async function loadTeacherLandingPage(teacherId) {
+  try {
+    // Show loading state
+    document.body.innerHTML = `
+      <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d30 100%); color: white;">
+        <div style="text-align: center;">
+          <div style="width: 50px; height: 50px; border: 3px solid rgba(126, 162, 212, 0.3); border-top: 3px solid #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+          <p style="font-size: 18px; color: rgba(255,255,255,0.8);">Loading teacher's page...</p>
+        </div>
+      </div>
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    `;
+
+    // Get teacher profile by ID
+    const teacherResult = await apiService.getTeacherProfile(teacherId);
+
+    if (teacherResult.success && teacherResult.teacher) {
+      const teacher = teacherResult.teacher;
+
+      // Generate and display the landing page
+      const landingHTML = generateLandingPageHTML(teacher);
+      document.open();
+      document.write(landingHTML);
+      document.close();
+      return;
+    }
+
+    // Teacher not found - show 404 page
+    document.body.innerHTML = generateTeacherNotFoundHTML(teacherId);
+
+  } catch (error) {
+    console.error('❌ Error loading teacher landing page:', error);
+    document.body.innerHTML = generateErrorHTML();
+  }
+}
+
+// Generate 404 page for teacher not found
+function generateTeacherNotFoundHTML(teacherId) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Teacher Not Found</title>
+    </head>
+    <body style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d30 100%); color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+      <div style="text-align: center; max-width: 600px; padding: 40px;">
+        <div style="font-size: 120px; margin-bottom: 20px; opacity: 0.3;">🔍</div>
+        <h1 style="font-size: 3rem; margin-bottom: 16px; color: #7ea2d4;">Teacher Not Found</h1>
+        <p style="font-size: 1.2rem; color: rgba(255,255,255,0.7); margin-bottom: 30px;">
+          We couldn't find a teacher with this ID.
+        </p>
+        <p style="color: rgba(255,255,255,0.5); margin-bottom: 30px;">
+          The teacher might not have set up their landing page yet, or the URL might be incorrect.
+        </p>
+        <a href="/" style="display: inline-block; padding: 16px 32px; background: #7ea2d4; color: white; text-decoration: none; border-radius: 12px; font-weight: 600; transition: all 0.3s ease;">
+          Go to DarsLinker
+        </a>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// Generate error page
+function generateErrorHTML() {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <body style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d30 100%); color: white; min-height: 100vh; display: flex; align-items: center; justify-content: center;">
+      <div style="text-align: center; max-width: 600px; padding: 40px;">
+        <div style="font-size: 120px; margin-bottom: 20px; opacity: 0.3;">⚠️</div>
+        <h1 style="font-size: 2.5rem; margin-bottom: 16px; color: #ef4444;">Something went wrong</h1>
+        <p style="font-size: 1.1rem; color: rgba(255,255,255,0.7); margin-bottom: 30px;">
+          We encountered an error while loading this page. Please try again later.
+        </p>
+        <a href="/" style="display: inline-block; padding: 16px 32px; background: #7ea2d4; color: white; text-decoration: none; border-radius: 12px; font-weight: 600;">
+          Go to DarsLinker
+        </a>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+// Auto-check for landing page on load
+document.addEventListener('DOMContentLoaded', function() {
+  // Only check if we're not already in the dashboard
+  if (!document.querySelector('.figma-dashboard')) {
+    checkAndServeLandingPage();
+  }
+});
+
+// New Landing Settings HTML
+function getNewLandingSettingsHTML(user, landingData = null) {
+  const landingURL = `${window.location.origin}/teacher/${user._id}`;
+  
+  // Default values or from landingData
+  const settings = landingData || {
+    title: `${user.firstName} ${user.lastName}'s Courses`,
+    subtitle: user.specialization || 'Expert Instructor',
+    description: 'Discover amazing courses and start your learning journey today.',
+    primaryColor: '#7ea2d4',
+    backgroundColor: '#1a1a1a',
+    textColor: '#ffffff',
+    showCourses: true,
+    showAbout: true,
+    aboutText: user.bio || '',
+    socialLinks: {
+      telegram: user.telegramUsername || '',
+      instagram: '',
+      youtube: '',
+      linkedin: ''
+    }
+  };
+
+  return `
+    <form class="create-course-form" id="landingSettingsForm" onsubmit="saveLandingSettings(event)">
+      
+      <!-- Landing URL Section -->
+      <div class="course-section">
+        <h3 class="course-section-title">🔗 Your Landing Page URL</h3>
+        
+        <div class="form-field">
+          <label class="field-label">Public Landing Page Link</label>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <input type="text" class="form-input" value="${landingURL}" readonly style="flex: 1;" />
+            <button type="button" class="btn-secondary" onclick="copyLandingURL('${landingURL}')" style="white-space: nowrap;">Copy Link</button>
+          </div>
+          <small class="field-note">Share this link with your students to showcase your courses</small>
+        </div>
+      </div>
+
+      <!-- Hero Section -->
+      <div class="course-section">
+        <h3 class="course-section-title">🎯 Hero Section</h3>
+        
+        <div class="form-field">
+          <label class="field-label">Main Title</label>
+          <input type="text" class="form-input" name="title" value="${settings.title}" placeholder="Welcome to My Courses" required />
+        </div>
+        
+        <div class="form-field">
+          <label class="field-label">Subtitle</label>
+          <input type="text" class="form-input" name="subtitle" value="${settings.subtitle}" placeholder="Learn from expert instructor" />
+        </div>
+        
+        <div class="form-field">
+          <label class="field-label">Description</label>
+          <textarea class="form-textarea" name="description" rows="3" placeholder="Describe what students will learn">${settings.description}</textarea>
+        </div>
+      </div>
+
+      <!-- Design & Colors -->
+      <div class="course-section">
+        <h3 class="course-section-title">🎨 Design & Colors</h3>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label">Primary Color</label>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <input type="color" name="primaryColor" value="${settings.primaryColor}" style="width: 60px; height: 40px; border: none; border-radius: 8px; cursor: pointer;" />
+              <input type="text" class="form-input" value="${settings.primaryColor}" readonly style="flex: 1;" />
+            </div>
+          </div>
+          
+          <div class="form-field">
+            <label class="field-label">Background Color</label>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              <input type="color" name="backgroundColor" value="${settings.backgroundColor}" style="width: 60px; height: 40px; border: none; border-radius: 8px; cursor: pointer;" />
+              <input type="text" class="form-input" value="${settings.backgroundColor}" readonly style="flex: 1;" />
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-field">
+          <label class="field-label">Text Color</label>
+          <div style="display: flex; gap: 12px; align-items: center;">
+            <input type="color" name="textColor" value="${settings.textColor}" style="width: 60px; height: 40px; border: none; border-radius: 8px; cursor: pointer;" />
+            <input type="text" class="form-input" value="${settings.textColor}" readonly style="flex: 1;" />
+          </div>
+        </div>
+      </div>
+
+      <!-- About Section -->
+      <div class="course-section">
+        <h3 class="course-section-title">👨‍🏫 About Section</h3>
+        
+        <div class="form-field">
+          <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+            <label class="toggle-switch">
+              <input type="checkbox" name="showAbout" ${settings.showAbout ? 'checked' : ''} />
+              <span class="toggle-slider"></span>
+            </label>
+            <label class="field-label" style="margin: 0;">Show About Section</label>
+          </div>
+        </div>
+        
+        <div class="form-field">
+          <label class="field-label">About Text</label>
+          <textarea class="form-textarea" name="aboutText" rows="4" placeholder="Tell students about yourself, your experience, and teaching style">${settings.aboutText}</textarea>
+        </div>
+      </div>
+
+      <!-- Social Links -->
+      <div class="course-section">
+        <h3 class="course-section-title">📱 Social Links</h3>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label">Telegram</label>
+            <input type="text" class="form-input" name="telegram" value="${settings.socialLinks?.telegram || ''}" placeholder="@username" />
+          </div>
+          
+          <div class="form-field">
+            <label class="field-label">Instagram</label>
+            <input type="text" class="form-input" name="instagram" value="${settings.socialLinks?.instagram || ''}" placeholder="@username" />
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label">YouTube</label>
+            <input type="text" class="form-input" name="youtube" value="${settings.socialLinks?.youtube || ''}" placeholder="Channel URL" />
+          </div>
+          
+          <div class="form-field">
+            <label class="field-label">LinkedIn</label>
+            <input type="text" class="form-input" name="linkedin" value="${settings.socialLinks?.linkedin || ''}" placeholder="Profile URL" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Display Options -->
+      <div class="course-section">
+        <h3 class="course-section-title">⚙️ Display Options</h3>
+        
+        <div class="form-field">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <label class="toggle-switch">
+              <input type="checkbox" name="showCourses" ${settings.showCourses ? 'checked' : ''} />
+              <span class="toggle-slider"></span>
+            </label>
+            <label class="field-label" style="margin: 0;">Show Courses Section</label>
+          </div>
+          <small class="field-note">Display your active courses on the landing page</small>
+        </div>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions course-actions">
+        <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
+        <button type="submit" class="btn-save">Save Landing Page</button>
+      </div>
+      
+    </form>
+  `;
+}
+
+// Save Landing Settings
+window.saveLandingSettings = async function(event) {
+  event.preventDefault();
+  
+  const user = store.getState().user;
+  const form = event.target;
+  const formData = new FormData(form);
+  
+  // Show loading
+  const submitBtn = form.querySelector('button[type="submit"]');
+  const originalText = submitBtn.textContent;
+  submitBtn.textContent = 'Saving...';
+  submitBtn.disabled = true;
+  
+  try {
+    const landingData = {
+      title: formData.get('title'),
+      subtitle: formData.get('subtitle'),
+      description: formData.get('description'),
+      primaryColor: formData.get('primaryColor'),
+      backgroundColor: formData.get('backgroundColor'),
+      textColor: formData.get('textColor'),
+      showAbout: formData.has('showAbout'),
+      aboutText: formData.get('aboutText'),
+      showCourses: formData.has('showCourses'),
+      socialLinks: {
+        telegram: formData.get('telegram'),
+        instagram: formData.get('instagram'),
+        youtube: formData.get('youtube'),
+        linkedin: formData.get('linkedin')
+      }
+    };
+    
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/landing/${user._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+      },
+      body: JSON.stringify(landingData),
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      showSuccessToast('Landing page settings saved successfully!');
+    } else {
+      throw new Error(result.message || 'Failed to save settings');
+    }
+    
+  } catch (error) {
+    console.error('Error saving landing settings:', error);
+    showErrorToast(error.message || 'Failed to save landing page settings');
+  } finally {
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  }
+};
+
+// Copy Landing URL
+window.copyLandingURL = function(url) {
+  navigator.clipboard.writeText(url).then(() => {
+    showSuccessToast('Landing page URL copied to clipboard!');
+  }).catch(() => {
+    showErrorToast('Failed to copy URL');
+  });
 };

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Landing Page</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            background: var(--bg-color, #1a1a1a);
+            color: var(--text-color, #ffffff);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        .header {
+            padding: 20px 0;
+            background: rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color, #7ea2d4);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-link {
+            color: var(--text-color, #ffffff);
+            text-decoration: none;
+            padding: 8px 16px;
+            border: 1px solid var(--primary-color, #7ea2d4);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: var(--primary-color, #7ea2d4);
+            color: white;
+        }
+
+        /* Hero Section */
+        .hero {
+            padding: 120px 0;
+            text-align: center;
+            background: 
+                radial-gradient(circle at 20% 80%, var(--primary-color, #7ea2d4)15, transparent 50%),
+                radial-gradient(circle at 80% 20%, var(--primary-color, #7ea2d4)15, transparent 50%),
+                linear-gradient(135deg, rgba(126, 162, 212, 0.1) 0%, transparent 70%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(126, 162, 212, 0.05) 50%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(126, 162, 212, 0.05) 50%, transparent 70%);
+            animation: shimmer 8s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--primary-color, #7ea2d4), #ffffff, var(--primary-color, #7ea2d4));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 4s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .hero h2 {
+            font-size: 1.5rem;
+            color: var(--primary-color, #7ea2d4);
+            margin-bottom: 16px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color, #7ea2d4), #4a90e2);
+            color: white;
+            padding: 18px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 8px 25px rgba(126, 162, 212, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 
+                0 15px 40px rgba(126, 162, 212, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        /* About Section */
+        .about {
+            padding: 100px 0;
+            background: 
+                linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 70% 30%, rgba(126, 162, 212, 0.08) 0%, transparent 60%);
+            position: relative;
+        }
+
+        .about::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.02)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.02)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.01)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .about-image {
+            text-align: center;
+        }
+
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color, #7ea2d4);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .profile-placeholder {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: var(--primary-color, #7ea2d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            margin: 0 auto;
+        }
+
+        .about-text h3 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-color, #7ea2d4);
+        }
+
+        .about-text p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color, #7ea2d4);
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        /* Courses Section */
+        .courses {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 60px;
+            color: var(--primary-color, #7ea2d4);
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .course-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(126, 162, 212, 0.1) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(126, 162, 212, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .course-card:hover::before {
+            opacity: 1;
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .course-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-color, #7ea2d4), #4a90e2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+        }
+
+        .course-content {
+            padding: 24px;
+        }
+
+        .course-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .course-description {
+            opacity: 0.8;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .course-price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color, #7ea2d4);
+        }
+
+        .course-lessons {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .course-button {
+            width: 100%;
+            background: var(--primary-color, #7ea2d4);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .course-button:hover {
+            background: var(--primary-color-dark, #6b8bb8);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px 0;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 80px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .stats {
+                justify-content: center;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Loading */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-size: 1.2rem;
+            background: 
+                radial-gradient(circle at 30% 70%, rgba(126, 162, 212, 0.1) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(126, 162, 212, 0.05) 0%, transparent 70%);
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(126, 162, 212, 0.2);
+            border-top: 3px solid var(--primary-color, #7ea2d4);
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .spinner::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            right: 5px;
+            bottom: 5px;
+            border: 2px solid transparent;
+            border-top: 2px solid rgba(126, 162, 212, 0.6);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        Loading...
+    </div>
+
+    <div id="content" style="display: none;">
+        <!-- Content will be loaded here -->
+    </div>
+
+    <script>
+        // Get teacher ID from URL
+        const pathParts = window.location.pathname.split('/');
+        const teacherId = pathParts[pathParts.length - 1];
+
+        // Load landing page data
+        async function loadLandingPage() {
+            try {
+                // Try different API URLs for development and production
+                const apiUrls = [
+                    'http://localhost:8001/api',
+                    'https://your-backend-url.com/api' // Replace with your actual backend URL
+                ];
+                
+                let data = null;
+                for (const apiBaseUrl of apiUrls) {
+                    try {
+                        const response = await fetch(`${apiBaseUrl}/landing/public/${teacherId}`);
+                        data = await response.json();
+                        if (data.success) break;
+                    } catch (err) {
+                        console.log(`Failed to connect to ${apiBaseUrl}`);
+                    }
+                }
+
+                if (data && data.success) {
+                    renderLandingPage(data);
+                } else {
+                    showError('Teacher not found');
+                }
+            } catch (error) {
+                console.error('Error loading landing page:', error);
+                showError('Failed to load landing page');
+            }
+        }
+
+        function renderLandingPage(data) {
+            const { landing, teacher, courses } = data;
+
+            // Apply custom colors
+            document.documentElement.style.setProperty('--primary-color', landing.primaryColor);
+            document.documentElement.style.setProperty('--bg-color', landing.backgroundColor);
+            document.documentElement.style.setProperty('--text-color', landing.textColor);
+
+            // Update page title
+            document.title = landing.title;
+
+            // Render content
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <!-- Header -->
+                <header class="header">
+                    <div class="container">
+                        <div class="header-content">
+                            <div class="logo">DarsLinker</div>
+                            <div class="social-links">
+                                ${landing.socialLinks?.telegram ? `<a href="https://t.me/${landing.socialLinks.telegram}" class="social-link" target="_blank">Telegram</a>` : ''}
+                                ${landing.socialLinks?.instagram ? `<a href="https://instagram.com/${landing.socialLinks.instagram}" class="social-link" target="_blank">Instagram</a>` : ''}
+                                ${landing.socialLinks?.youtube ? `<a href="${landing.socialLinks.youtube}" class="social-link" target="_blank">YouTube</a>` : ''}
+                                ${landing.socialLinks?.linkedin ? `<a href="${landing.socialLinks.linkedin}" class="social-link" target="_blank">LinkedIn</a>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Hero Section -->
+                <section class="hero">
+                    <div class="container">
+                        <h1>${landing.title}</h1>
+                        <h2>${landing.subtitle}</h2>
+                        <p>${landing.description}</p>
+                        <a href="#courses" class="cta-button">Explore Courses</a>
+                    </div>
+                </section>
+
+                ${landing.showAbout ? `
+                <!-- About Section -->
+                <section class="about">
+                    <div class="container">
+                        <div class="about-content">
+                            <div class="about-image">
+                                ${teacher.profileImage 
+                                    ? `<img src="${teacher.profileImage}" alt="${teacher.firstName}" class="profile-image">`
+                                    : `<div class="profile-placeholder">${teacher.firstName.charAt(0)}${teacher.lastName.charAt(0)}</div>`
+                                }
+                            </div>
+                            <div class="about-text">
+                                <h3>About ${teacher.firstName} ${teacher.lastName}</h3>
+                                <p>${landing.aboutText || teacher.bio || 'Experienced instructor passionate about teaching and helping students achieve their goals.'}</p>
+                                <div class="stats">
+                                    <div class="stat">
+                                        <div class="stat-number">${courses.length}</div>
+                                        <div class="stat-label">Courses</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-number">${teacher.ratingAverage || 0}</div>
+                                        <div class="stat-label">Rating</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-number">${teacher.reviewsCount || 0}</div>
+                                        <div class="stat-label">Reviews</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                ` : ''}
+
+                ${landing.showCourses && courses.length > 0 ? `
+                <!-- Courses Section -->
+                <section class="courses" id="courses">
+                    <div class="container">
+                        <h2 class="section-title">Available Courses</h2>
+                        <div class="courses-grid">
+                            ${courses.map(course => `
+                                <div class="course-card">
+                                    ${course.thumbnail 
+                                        ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-image">`
+                                        : `<div class="course-placeholder">📚</div>`
+                                    }
+                                    <div class="course-content">
+                                        <h3 class="course-title">${course.title}</h3>
+                                        <p class="course-description">${course.description}</p>
+                                        <div class="course-meta">
+                                            <div class="course-price">
+                                                ${course.courseType === 'free' ? 'Free' : `$${course.discountPrice || course.price}`}
+                                            </div>
+                                            <div class="course-lessons">${course.totalLessons || 0} lessons</div>
+                                        </div>
+                                        <button class="course-button" onclick="contactTeacher()">
+                                            ${course.courseType === 'free' ? 'Enroll Now' : 'Get Course'}
+                                        </button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </section>
+                ` : ''}
+
+                <!-- Footer -->
+                <footer class="footer">
+                    <div class="container">
+                        <p>&copy; 2024 ${teacher.firstName} ${teacher.lastName}. Powered by DarsLinker.</p>
+                    </div>
+                </footer>
+            `;
+
+            // Show content and hide loading
+            document.getElementById('loading').style.display = 'none';
+            content.style.display = 'block';
+        }
+
+        function showError(message) {
+            document.getElementById('loading').innerHTML = `
+                <div style="text-align: center;">
+                    <h2 style="color: #ff6b6b; margin-bottom: 16px;">Error</h2>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        function contactTeacher() {
+            alert('Contact functionality will be implemented soon!');
+        }
+
+        // Load landing page on page load
+        loadLandingPage();
+    </script>
+</body>
+</html>

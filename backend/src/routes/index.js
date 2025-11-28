@@ -8,6 +8,7 @@ import moduleRouter from "./module.routes.js";
 import lessonRouter from "./lesson.routes.js";
 import assignmentRouter from "./assignment.routes.js";
 import uploadRouter from "./upload.routes.js";
+import landingRouter from "./landing.routes.js";
 
 const mainRouter = Router();
 
@@ -19,5 +20,6 @@ mainRouter.use("/modules", moduleRouter);
 mainRouter.use("/lessons", lessonRouter);
 mainRouter.use("/assignments", assignmentRouter);
 mainRouter.use("/upload", uploadRouter);
+mainRouter.use("/landing", landingRouter);
 
 export default mainRouter;
