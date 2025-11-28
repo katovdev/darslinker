@@ -5104,15 +5104,20 @@ function generateLandingPageHTML(teacher) {
                 
                 if (data.success) {
                     // DON'T save to localStorage - landing registration should not affect main dashboard
-                    // Just show success message with credentials
+                    // Save to temporary sessionStorage only for coming soon page
+                    sessionStorage.setItem('landingUser', JSON.stringify({
+                        phone: data.user.phone,
+                        firstName: data.user.firstName,
+                        lastName: data.user.lastName
+                    }));
                     
-                    showToast('success', \`Muvaffaqiyatli ro'yxatdan o'tdingiz!\\n\\nTelefon: \${data.user.phone}\\nParol: \${data.defaultPassword}\\n\\nIltimos, asosiy saytda login qiling.\`);
+                    showToast('success', 'Muvaffaqiyatli ro\\'yxatdan o\\'tdingiz!');
                     closeRegistrationModal();
                     
-                    // Show login instructions
+                    // Redirect to student dashboard (coming soon page)
                     setTimeout(() => {
-                        alert(\`Ro'yxatdan o'tish muvaffaqiyatli!\\n\\nTelefon: \${data.user.phone}\\nParol: \${data.defaultPassword}\\n\\nEndi asosiy saytda (darslinker.uz) login qilishingiz mumkin.\`);
-                    }, 1000);
+                        window.location.href = '/student-dashboard';
+                    }, 1500);
                 } else {
                     codeError.textContent = data.message || 'Noto\\'g\\'ri kod';
                     codeError.classList.add('show');

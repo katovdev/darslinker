@@ -4,40 +4,60 @@ import { router } from '../../utils/router.js';
 export function initStudentDashboard() {
   console.log('=== Student Dashboard initializing ===');
 
-  // Check if user is logged in
-  const token = localStorage.getItem('accessToken');
-  if (!token) {
-    router.navigate('/login');
-    return;
-  }
-
-  // Get user data
-  let userData = localStorage.getItem('currentUser');
-  if (!userData) {
-    userData = sessionStorage.getItem('currentUser');
-  }
-
-  let user = null;
-  if (userData) {
+  // Check if user came from landing page registration
+  const landingUser = sessionStorage.getItem('landingUser');
+  
+  if (landingUser) {
+    // Landing user - show coming soon without authentication
+    console.log('Landing user detected - showing coming soon page');
+    let user = null;
     try {
-      user = JSON.parse(userData);
+      user = JSON.parse(landingUser);
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      console.error('Error parsing landing user:', error);
+    }
+    
+    // Update store with landing user (no authentication)
+    store.setState({
+      user: user || { firstName: 'Guest', lastName: '' },
+      isAuthenticated: false
+    });
+  } else {
+    // Regular user - check authentication
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
       router.navigate('/login');
       return;
     }
-  }
 
-  if (!user) {
-    router.navigate('/login');
-    return;
-  }
+    // Get user data
+    let userData = localStorage.getItem('currentUser');
+    if (!userData) {
+      userData = sessionStorage.getItem('currentUser');
+    }
 
-  // Update store
-  store.setState({
-    user: user,
-    isAuthenticated: true
-  });
+    let user = null;
+    if (userData) {
+      try {
+        user = JSON.parse(userData);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+        router.navigate('/login');
+        return;
+      }
+    }
+
+    if (!user) {
+      router.navigate('/login');
+      return;
+    }
+
+    // Update store
+    store.setState({
+      user: user,
+      isAuthenticated: true
+    });
+  }
 
   // Render student dashboard
   document.querySelector('#app').innerHTML = `
