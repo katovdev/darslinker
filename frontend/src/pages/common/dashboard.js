@@ -3064,7 +3064,7 @@ function generateLandingPageHTML(teacher) {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             background: #232323;
-            color: #333;
+            color: #7EA2D4;
             overflow-x: hidden;
         }
 
@@ -3076,9 +3076,10 @@ function generateLandingPageHTML(teacher) {
 
         /* Header */
         .header {
-            background: white;
+            background: #232323;
             padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(126, 162, 212, 0.1);
+            border-bottom: 1px solid rgba(126, 162, 212, 0.2);
         }
 
         .header-content {
@@ -3090,22 +3091,17 @@ function generateLandingPageHTML(teacher) {
         .logo {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 20px;
-            font-weight: bold;
-            color: ${themeColor};
+            font-family: 'League Spartan', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
         }
 
-        .logo-icon {
-            width: 32px;
-            height: 32px;
-            background: ${themeColor};
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
+        .logo-text {
+            color: #ffffff;
+        }
+
+        .logo-text-colored {
+            color: ${themeColor};
         }
 
         .auth-button {
@@ -3127,7 +3123,7 @@ function generateLandingPageHTML(teacher) {
         /* Hero Section */
         .hero {
             background: white;
-            padding: 80px 0;
+            padding: 120px 0;
             text-align: center;
         }
 
@@ -3159,7 +3155,7 @@ function generateLandingPageHTML(teacher) {
             display: flex;
             gap: 30px;
             margin: 30px 0;
-            color: #666;
+            color: #333;
         }
 
         .feature {
@@ -3220,27 +3216,29 @@ function generateLandingPageHTML(teacher) {
 
         /* About Section */
         .about {
-            background: #f8f9fa;
+            background: #232323;
             padding: 80px 0;
+            text-align: center;
         }
 
         .about h2 {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 20px;
-            color: #333;
+            color: #ffffff;
         }
 
         .about p {
             font-size: 1.1rem;
-            color: #666;
+            color: #ffffff;
             line-height: 1.8;
             max-width: 800px;
+            margin: 0 auto;
         }
 
         /* Certificates Section */
         .certificates {
-            background: white;
+            background: #232323;
             padding: 80px 0;
         }
 
@@ -3248,7 +3246,7 @@ function generateLandingPageHTML(teacher) {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 50px;
-            color: #333;
+            color: #ffffff;
             text-align: center;
         }
 
@@ -3295,7 +3293,7 @@ function generateLandingPageHTML(teacher) {
 
         /* Courses Section */
         .courses {
-            background: #f8f9fa;
+            background: #232323;
             padding: 80px 0;
         }
 
@@ -3303,12 +3301,13 @@ function generateLandingPageHTML(teacher) {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 50px;
-            color: #333;
+            color: #ffffff;
             text-align: center;
         }
 
         .course-card {
-            background: white;
+            background: rgba(58, 56, 56, 0.3);
+            border: 1px solid rgba(126, 162, 212, 0.2);
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -3334,7 +3333,7 @@ function generateLandingPageHTML(teacher) {
             font-size: 1.2rem;
             font-weight: 600;
             margin-bottom: 10px;
-            color: #333;
+            color: #ffffff;
         }
 
         .course-meta {
@@ -3359,14 +3358,14 @@ function generateLandingPageHTML(teacher) {
 
         /* Profile Section */
         .profile {
-            background: white;
+            background: #232323 !important;
             padding: 80px 0;
             text-align: center;
         }
 
         .profile-image {
-            width: 120px;
-            height: 120px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             margin: 0 auto 20px;
             object-fit: cover;
@@ -3374,15 +3373,15 @@ function generateLandingPageHTML(teacher) {
         }
 
         .profile-placeholder {
-            width: 120px;
-            height: 120px;
+            width: 180px;
+            height: 180px;
             border-radius: 50%;
             background: ${themeColor};
             margin: 0 auto 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
+            font-size: 60px;
             color: white;
             font-weight: bold;
         }
@@ -3391,11 +3390,11 @@ function generateLandingPageHTML(teacher) {
             font-size: 2rem;
             font-weight: 700;
             margin-bottom: 10px;
-            color: #333;
+            color: #ffffff;
         }
 
         .profile .specialization {
-            color: #666;
+            color: #ffffff;
             font-size: 1.1rem;
             margin-bottom: 20px;
         }
@@ -3425,36 +3424,40 @@ function generateLandingPageHTML(teacher) {
             transform: translateY(-2px);
         }
 
-        .stats-section {
+        .social-media-section {
             display: flex;
             justify-content: center;
-            gap: 60px;
-            margin-top: 40px;
-            padding: 40px 0;
-            background: #f8f9fa;
-            border-radius: 12px;
+            gap: 20px;
+            margin-top: 10px;
+            padding: 10px 0;
         }
 
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
+        .social-media-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(126, 162, 212, 0.1);
+            border: 2px solid ${themeColor};
+            border-radius: 50%;
             color: ${themeColor};
-            display: block;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
 
-        .stat-label {
-            color: #666;
-            font-size: 14px;
-            margin-top: 5px;
+        .social-media-link:hover {
+            background: ${themeColor};
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(126, 162, 212, 0.4);
         }
+
+
 
         /* Contact Section */
         .contact {
-            background: #f8f9fa;
+            background: #232323;
             padding: 80px 0;
             text-align: center;
         }
@@ -3463,11 +3466,11 @@ function generateLandingPageHTML(teacher) {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 20px;
-            color: #333;
+            color: #ffffff;
         }
 
         .contact p {
-            color: #666;
+            color: #ffffff;
             margin-bottom: 30px;
         }
 
@@ -3499,10 +3502,11 @@ function generateLandingPageHTML(teacher) {
 
         /* Footer */
         .footer {
-            background: #5A5A5A;
+            background: #1a1a1a;
             color: white;
             padding: 40px 0;
             text-align: center;
+            border-top: 2px solid rgba(126, 162, 212, 0.3);
         }
 
         /* Responsive */
@@ -3539,8 +3543,7 @@ function generateLandingPageHTML(teacher) {
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <div class="logo-icon">D</div>
-                    DarsLinker
+                    <span class="logo-text">Dars</span><span class="logo-text-colored">linker</span>
                 </div>
                 <a href="#" class="auth-button">Ro'yxatdan o'tish</a>
             </div>
@@ -3598,19 +3601,34 @@ function generateLandingPageHTML(teacher) {
                 ${teacher.socialLinks?.youtube ? `<a href="${teacher.socialLinks.youtube}" class="social-link" target="_blank">📺</a>` : ''}
             </div>
 
-            <div class="stats-section">
-                <div class="stat-item">
-                    <span class="stat-number">500+</span>
-                    <div class="stat-label">O'quvchi</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">${teacher.courses?.length || 12}</span>
-                    <div class="stat-label">Kurs</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">7</span>
-                    <div class="stat-label">Yil</div>
-                </div>
+            <div class="social-media-section">
+                <!-- Instagram -->
+                <a href="${teacher.socialLinks?.instagram ? `https://instagram.com/${teacher.socialLinks.instagram}` : '#'}" class="social-media-link" target="_blank">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </a>
+                
+                <!-- Telegram -->
+                <a href="${teacher.socialLinks?.telegram ? `https://t.me/${teacher.socialLinks.telegram}` : '#'}" class="social-media-link" target="_blank">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                    </svg>
+                </a>
+                
+                <!-- LinkedIn -->
+                <a href="${teacher.socialLinks?.linkedin || '#'}" class="social-media-link" target="_blank">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                </a>
+                
+                <!-- YouTube -->
+                <a href="${teacher.socialLinks?.youtube || '#'}" class="social-media-link" target="_blank">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </section>
@@ -3730,12 +3748,34 @@ function generateLandingPageHTML(teacher) {
             <h2>Savollaringiz bormi?</h2>
             <p>Men bilan bog'lanishingiz mumkin. Barcha savollaringizga javob beraman!</p>
             
-            <div class="contact-buttons">
-                ${teacher.socialLinks?.telegram ? `<a href="https://t.me/${teacher.socialLinks.telegram}" class="contact-button" target="_blank">📱 Telegram</a>` : ''}
-                ${teacher.socialLinks?.instagram ? `<a href="https://instagram.com/${teacher.socialLinks.instagram}" class="contact-button" target="_blank">📷 Instagram</a>` : ''}
-                ${teacher.socialLinks?.linkedin ? `<a href="${teacher.socialLinks.linkedin}" class="contact-button" target="_blank">💼 LinkedIn</a>` : ''}
-                ${teacher.socialLinks?.youtube ? `<a href="${teacher.socialLinks.youtube}" class="contact-button" target="_blank">📺 YouTube</a>` : ''}
-                <a href="#" class="contact-button">✈️ Telegram</a>
+            <div class="social-media-section">
+                <!-- Instagram -->
+                <a href="${teacher.socialLinks?.instagram ? `https://instagram.com/${teacher.socialLinks.instagram}` : '#'}" class="social-media-link" target="_blank">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                </a>
+                
+                <!-- Telegram -->
+                <a href="${teacher.socialLinks?.telegram ? `https://t.me/${teacher.socialLinks.telegram}` : '#'}" class="social-media-link" target="_blank">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                    </svg>
+                </a>
+                
+                <!-- LinkedIn -->
+                <a href="${teacher.socialLinks?.linkedin || '#'}" class="social-media-link" target="_blank">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                </a>
+                
+                <!-- YouTube -->
+                <a href="${teacher.socialLinks?.youtube || '#'}" class="social-media-link" target="_blank">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                </a>
             </div>
         </div>
     </section>
@@ -3743,7 +3783,7 @@ function generateLandingPageHTML(teacher) {
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 ${fullName}. DarsLinker platformasi orqali yaratilgan.</p>
+            <p>&copy; 2025 ${fullName}. DarsLinker platformasi orqali yaratilgan.</p>
         </div>
     </footer>
 </body>
