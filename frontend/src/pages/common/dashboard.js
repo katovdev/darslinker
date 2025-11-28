@@ -3043,7 +3043,7 @@ window.openLandingPreview = async function() {
 
 // Generate Landing Page HTML
 function generateLandingPageHTML(teacher) {
-  const themeColor = teacher.landingPageSettings?.themeColor || '#7EA2D4';
+  const themeColor = '#7EA2D4'; // Force to blue color
   const fullName = `${teacher.firstName || ''} ${teacher.lastName || ''}`.trim();
 
   return `
@@ -3123,7 +3123,7 @@ function generateLandingPageHTML(teacher) {
         /* Hero Section */
         .hero {
             background: white;
-            padding: 120px 0;
+            padding: 180px 0;
             text-align: center;
         }
 
@@ -3151,18 +3151,6 @@ function generateLandingPageHTML(teacher) {
             color: ${themeColor};
         }
 
-        .hero-features {
-            display: flex;
-            gap: 30px;
-            margin: 30px 0;
-            color: #333;
-        }
-
-        .feature {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
 
         .cta-button {
             background: ${themeColor};
@@ -3556,19 +3544,7 @@ function generateLandingPageHTML(teacher) {
             <div class="hero-content">
                 <div class="hero-text">
                     <h1>DASTURLASH NI<br><span class="highlight">PROFESSIONAL</span><br>O'QITUVCHI BILAN O'RGANING</h1>
-                    
-                    <div class="hero-features">
-                        <div class="feature">
-                            <span>📹</span> Video darslar
-                        </div>
-                        <div class="feature">
-                            <span>📄</span> Topshiriqlar
-                        </div>
-                        <div class="feature">
-                            <span>🏆</span> Sertifikat
-                        </div>
-                    </div>
-                    
+
                     <a href="#courses" class="cta-button">Kurslarni ko'rish</a>
                 </div>
                 
