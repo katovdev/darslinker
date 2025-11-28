@@ -94,6 +94,16 @@ const findOne = catchAsync(async (req, res) => {
   const teacher = await validateAndFindById(Teacher, id, "Teacher");
   const teacherData = handleValidationResult(teacher);
 
+  // Also get landing settings if they exist
+  const Landing = (await import("../models/landing.model.js")).default;
+  const landingSettings = await Landing.findOne({ teacher: id });
+  
+  // Add landing settings to teacher data
+  if (landingSettings) {
+    teacherData.primaryColor = landingSettings.primaryColor;
+    teacherData.landingSettings = landingSettings;
+  }
+
   res.status(200).json({
     success: true,
     teacher: teacherData,

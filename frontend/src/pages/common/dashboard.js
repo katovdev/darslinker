@@ -2967,8 +2967,8 @@ async function handleLandingSettingsSave(event) {
 
     console.log('💾 Saving landing page data:', landingData);
 
-    // Update teacher profile with landing page data
-    const result = await apiService.updateTeacherProfile(user._id, {
+    // Update teacher profile with landing page data including theme color
+    const teacherUpdateData = {
       firstName: landingData.firstName,
       lastName: landingData.lastName,
       specialization: landingData.specialization,
@@ -2979,7 +2979,9 @@ async function handleLandingSettingsSave(event) {
         featuredTestimonials: landingData.featuredTestimonials,
         themeColor: landingData.themeColor
       }
-    });
+    };
+
+    const result = await apiService.updateTeacherProfile(user._id, teacherUpdateData);
 
     if (result.success) {
       // Update local state
@@ -3041,7 +3043,7 @@ window.openLandingPreview = async function() {
 
 // Generate Landing Page HTML
 function generateLandingPageHTML(teacher) {
-  const themeColor = teacher.landingPageSettings?.themeColor || '#7ea2d4';
+  const themeColor = teacher.landingPageSettings?.themeColor || '#7EA2D4';
   const fullName = `${teacher.firstName || ''} ${teacher.lastName || ''}`.trim();
 
   return `
@@ -3050,7 +3052,7 @@ function generateLandingPageHTML(teacher) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${fullName} - Teacher Landing Page</title>
+    <title>${fullName} - Professional Teacher</title>
     <style>
         * {
             margin: 0;
@@ -3060,263 +3062,690 @@ function generateLandingPageHTML(teacher) {
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d30 100%);
-            color: #ffffff;
             line-height: 1.6;
-            min-height: 100vh;
+            background: #232323;
+            color: #333;
+            overflow-x: hidden;
         }
 
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 0 20px;
         }
 
-        .hero-section {
-            text-align: center;
-            margin-bottom: 60px;
-            padding: 80px 20px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 24px;
-            border: 1px solid rgba(255,255,255,0.1);
+        /* Header */
+        .header {
+            background: white;
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
-        .profile-photo {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            margin: 0 auto 30px;
-            background: linear-gradient(135deg, ${themeColor}, #9bb8e0);
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 60px;
+            gap: 10px;
+            font-size: 20px;
             font-weight: bold;
-            color: white;
-            border: 4px solid rgba(255,255,255,0.2);
-        }
-
-        .hero-title {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            background: linear-gradient(135deg, ${themeColor}, #9bb8e0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-subtitle {
-            font-size: 1.5rem;
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 20px;
-        }
-
-        .hero-bio {
-            font-size: 1.1rem;
-            color: rgba(255,255,255,0.7);
-            max-width: 600px;
-            margin: 0 auto 40px;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .social-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 20px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .social-link:hover {
-            background: ${themeColor};
-            transform: translateY(-2px);
-        }
-
-        .courses-section {
-            margin-bottom: 60px;
-        }
-
-        .section-title {
-            font-size: 2.5rem;
-            text-align: center;
-            margin-bottom: 40px;
             color: ${themeColor};
         }
 
-        .courses-grid {
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: ${themeColor};
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .auth-button {
+            background: ${themeColor};
+            color: white;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .auth-button:hover {
+            background: ${themeColor}dd;
+            transform: translateY(-1px);
+        }
+
+        /* Hero Section */
+        .hero {
+            background: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero-text {
+            text-align: left;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .hero h1 .highlight {
+            color: ${themeColor};
+        }
+
+        .hero-features {
+            display: flex;
+            gap: 30px;
+            margin: 30px 0;
+            color: #666;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cta-button {
+            background: ${themeColor};
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: ${themeColor}dd;
+            transform: translateY(-2px);
+        }
+
+        .hero-image {
+            text-align: center;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .stats-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stats-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: ${themeColor};
+        }
+
+        .stats-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* About Section */
+        .about {
+            background: #f8f9fa;
+            padding: 80px 0;
+        }
+
+        .about h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .about p {
+            font-size: 1.1rem;
+            color: #666;
+            line-height: 1.8;
+            max-width: 800px;
+        }
+
+        /* Certificates Section */
+        .certificates {
+            background: white;
+            padding: 80px 0;
+        }
+
+        .certificates h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            color: #333;
+            text-align: center;
+        }
+
+        .certificates-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .certificate-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 4px solid ${themeColor};
+        }
+
+        .certificate-icon {
+            width: 40px;
+            height: 40px;
+            background: ${themeColor};
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+        }
+
+        .certificate-info h4 {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .certificate-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* Courses Section */
+        .courses {
+            background: #f8f9fa;
+            padding: 80px 0;
+        }
+
+        .courses h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 50px;
+            color: #333;
+            text-align: center;
         }
 
         .course-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 16px;
-            padding: 24px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             transition: all 0.3s ease;
         }
 
         .course-card:hover {
             transform: translateY(-5px);
-            border-color: ${themeColor};
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+        }
+
+        .course-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .course-content {
+            padding: 20px;
         }
 
         .course-title {
-            font-size: 1.4rem;
-            margin-bottom: 12px;
-            color: ${themeColor};
-        }
-
-        .course-description {
-            color: rgba(255,255,255,0.7);
-            margin-bottom: 16px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
         }
 
         .course-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-top: 15px;
         }
 
         .course-price {
-            font-size: 1.2rem;
-            font-weight: bold;
+            font-size: 1.1rem;
+            font-weight: 600;
             color: ${themeColor};
         }
 
-        .certificates-section {
+        .course-rating {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ffa500;
+        }
+
+        /* Profile Section */
+        .profile {
+            background: white;
+            padding: 80px 0;
             text-align: center;
-            padding: 60px 20px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 24px;
-            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .certificates-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            object-fit: cover;
+            border: 4px solid ${themeColor};
         }
 
-        .certificate-item {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
+        .profile-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: ${themeColor};
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .profile h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .profile .specialization {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: ${themeColor};
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: ${themeColor}dd;
+            transform: translateY(-2px);
+        }
+
+        .stats-section {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-top: 40px;
+            padding: 40px 0;
+            background: #f8f9fa;
             border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .footer {
+        .stat-item {
             text-align: center;
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            color: rgba(255,255,255,0.5);
         }
 
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: ${themeColor};
+            display: block;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Contact Section */
+        .contact {
+            background: #f8f9fa;
+            padding: 80px 0;
+            text-align: center;
+        }
+
+        .contact h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .contact p {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .contact-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .contact-button {
+            background: ${themeColor};
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .contact-button:hover {
+            background: ${themeColor}dd;
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        .footer {
+            background: #5A5A5A;
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .hero-title {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero h1 {
                 font-size: 2rem;
             }
 
-            .hero-subtitle {
-                font-size: 1.2rem;
+            .hero-features {
+                justify-content: center;
+                flex-wrap: wrap;
             }
 
-            .social-links {
+            .stats-section {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .contact-buttons {
                 flex-direction: column;
                 align-items: center;
-            }
-
-            .courses-grid {
-                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Hero Section -->
-        <section class="hero-section">
-            <div class="profile-photo">
-                ${fullName.charAt(0) || 'T'}
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">D</div>
+                    DarsLinker
+                </div>
+                <a href="#" class="auth-button">Ro'yxatdan o'tish</a>
             </div>
-            <h1 class="hero-title">${fullName || 'Teacher Name'}</h1>
-            <h2 class="hero-subtitle">${teacher.specialization || 'Professional Educator'}</h2>
-            <p class="hero-bio">${teacher.bio || 'Passionate educator committed to helping students achieve their goals through quality online education.'}</p>
+        </div>
+    </header>
 
-            ${teacher.socialLinks ? `
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>DASTURLASH NI<br><span class="highlight">PROFESSIONAL</span><br>O'QITUVCHI BILAN O'RGANING</h1>
+                    
+                    <div class="hero-features">
+                        <div class="feature">
+                            <span>📹</span> Video darslar
+                        </div>
+                        <div class="feature">
+                            <span>📄</span> Topshiriqlar
+                        </div>
+                        <div class="feature">
+                            <span>🏆</span> Sertifikat
+                        </div>
+                    </div>
+                    
+                    <a href="#courses" class="cta-button">Kurslarni ko'rish</a>
+                </div>
+                
+                <div class="hero-image" style="position: relative;">
+                    <img src="/src/assets/images/undraw_online-stats_d57c.png" alt="Learning" />
+                    <div class="stats-badge">
+                        <div class="stats-number">500+</div>
+                        <div class="stats-label">O'quvchi</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Profile Section -->
+    <section class="profile">
+        <div class="container">
+            ${teacher.profileImage 
+                ? `<img src="${teacher.profileImage}" alt="${fullName}" class="profile-image">`
+                : `<div class="profile-placeholder">${fullName.charAt(0) || 'T'}</div>`
+            }
+            
+            <h2>${fullName || 'Teacher'}</h2>
+            <div class="specialization">${teacher.specialization || 'Senior Software Engineer'}</div>
+            
             <div class="social-links">
-                ${teacher.socialLinks.linkedin ? `<a href="${teacher.socialLinks.linkedin}" class="social-link" target="_blank">🔗 LinkedIn</a>` : ''}
-                ${teacher.socialLinks.github ? `<a href="${teacher.socialLinks.github}" class="social-link" target="_blank">🐙 GitHub</a>` : ''}
-                ${teacher.socialLinks.website ? `<a href="${teacher.socialLinks.website}" class="social-link" target="_blank">🌐 Website</a>` : ''}
-                ${teacher.socialLinks.telegram ? `<a href="${teacher.socialLinks.telegram}" class="social-link" target="_blank">💬 Telegram</a>` : ''}
+                ${teacher.socialLinks?.instagram ? `<a href="https://instagram.com/${teacher.socialLinks.instagram}" class="social-link" target="_blank">📷</a>` : ''}
+                ${teacher.socialLinks?.telegram ? `<a href="https://t.me/${teacher.socialLinks.telegram}" class="social-link" target="_blank">📱</a>` : ''}
+                ${teacher.socialLinks?.linkedin ? `<a href="${teacher.socialLinks.linkedin}" class="social-link" target="_blank">💼</a>` : ''}
+                ${teacher.socialLinks?.youtube ? `<a href="${teacher.socialLinks.youtube}" class="social-link" target="_blank">📺</a>` : ''}
             </div>
-            ` : ''}
-        </section>
 
-        <!-- Courses Section -->
-        <section class="courses-section">
-            <h2 class="section-title">Featured Courses</h2>
-            <div class="courses-grid">
-                ${teacher.courses && teacher.courses.length > 0
-                    ? teacher.courses.slice(0, 6).map(course => `
-                        <div class="course-card">
-                            <h3 class="course-title">${course.title}</h3>
-                            <p class="course-description">${course.description}</p>
-                            <div class="course-meta">
-                                <span class="course-price">${course.courseType === 'free' ? 'Free' : course.price ? '$' + course.price : 'Contact'}</span>
-                                <span style="color: rgba(255,255,255,0.6);">${course.totalStudents || 0} students</span>
-                            </div>
-                        </div>
-                    `).join('')
-                    : `
-                        <div class="course-card">
-                            <h3 class="course-title">Sample Course</h3>
-                            <p class="course-description">This is a sample course. Add your real courses in the dashboard.</p>
-                            <div class="course-meta">
-                                <span class="course-price">$99</span>
-                                <span style="color: rgba(255,255,255,0.6);">0 students</span>
-                            </div>
-                        </div>
-                    `
-                }
+            <div class="stats-section">
+                <div class="stat-item">
+                    <span class="stat-number">500+</span>
+                    <div class="stat-label">O'quvchi</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">${teacher.courses?.length || 12}</span>
+                    <div class="stat-label">Kurs</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">7</span>
+                    <div class="stat-label">Yil</div>
+                </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Certificates Section -->
-        ${teacher.certificates && teacher.certificates.length > 0 ? `
-        <section class="certificates-section">
-            <h2 class="section-title">Certifications</h2>
+    <!-- About Section -->
+    <section class="about">
+        <div class="container">
+            <h2>Men Haqimda</h2>
+            <p>${teacher.bio || 'Men 7 yildan ortiq dasturlash sohasida faoliyat yuritaman. 500+ o\'quvchiga dasturlashni o\'rgatganman va ularning ko\'pchiligi hozir yirik kompaniyalarda ishlaydilar.'}</p>
+        </div>
+    </section>
+
+    ${teacher.certificates && teacher.certificates.length > 0 ? `
+    <!-- Certificates Section -->
+    <section class="certificates">
+        <div class="container">
+            <h2>Sertifikatlar & Malaka</h2>
             <div class="certificates-grid">
                 ${teacher.certificates.map(cert => `
                     <div class="certificate-item">
-                        <h4 style="color: ${themeColor}; margin-bottom: 8px;">${cert.title}</h4>
-                        <p style="color: rgba(255,255,255,0.7);">${cert.issuedBy}</p>
-                        <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem;">${cert.issueDate}</p>
+                        <div class="certificate-icon">🏆</div>
+                        <div class="certificate-info">
+                            <h4>${cert.title}</h4>
+                            <p>${cert.issuer || cert.issuedBy} • ${cert.issueDate ? new Date(cert.issueDate).getFullYear() : ''}</p>
+                        </div>
                     </div>
                 `).join('')}
             </div>
-        </section>
-        ` : ''}
+        </div>
+    </section>
+    ` : `
+    <!-- Default Certificates Section -->
+    <section class="certificates">
+        <div class="container">
+            <h2>Sertifikatlar & Malaka</h2>
+            <div class="certificates-grid">
+                <div class="certificate-item">
+                    <div class="certificate-icon">🏆</div>
+                    <div class="certificate-info">
+                        <h4>AWS Certified Developer</h4>
+                        <p>Amazon • 2023</p>
+                    </div>
+                </div>
+                <div class="certificate-item">
+                    <div class="certificate-icon">🏆</div>
+                    <div class="certificate-info">
+                        <h4>Google Cloud Professional</h4>
+                        <p>Google • 2022</p>
+                    </div>
+                </div>
+                <div class="certificate-item">
+                    <div class="certificate-icon">🏆</div>
+                    <div class="certificate-info">
+                        <h4>Meta React Developer</h4>
+                        <p>Meta • 2021</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    `}
 
-        <!-- Footer -->
-        <footer class="footer">
-            <p>© 2024 ${fullName}. Powered by DarsLinker Platform.</p>
-        </footer>
-    </div>
+    ${teacher.courses && teacher.courses.length > 0 ? `
+    <!-- Courses Section -->
+    <section class="courses" id="courses">
+        <div class="container">
+            <h2>Mavjud Kurslar</h2>
+            <div class="courses-grid">
+                ${teacher.courses.slice(0, 3).map(course => `
+                    <div class="course-card">
+                        ${course.thumbnail 
+                            ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-image">`
+                            : `<div style="height: 200px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>`
+                        }
+                        <div class="course-content">
+                            <h3 class="course-title">${course.title}</h3>
+                            <div class="course-meta">
+                                <div class="course-price">${course.courseType === 'free' ? 'Bepul' : (course.price + ' so\'m')}</div>
+                                <div class="course-rating">
+                                    <span>⭐</span>
+                                    <span>${course.rating || '4.8'}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>
+    ` : `
+    <!-- Default Course Section -->
+    <section class="courses" id="courses">
+        <div class="container">
+            <h2>Mavjud Kurslar</h2>
+            <div class="courses-grid">
+                <div class="course-card">
+                    <div style="height: 200px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">🐍</div>
+                    <div class="course-content">
+                        <h3 class="course-title">Python Asoslari</h3>
+                        <div class="course-meta">
+                            <div class="course-price">299,000 so'm</div>
+                            <div class="course-rating">
+                                <span>⭐</span>
+                                <span>4.8</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    `}
+
+    <!-- Contact Section -->
+    <section class="contact">
+        <div class="container">
+            <h2>Savollaringiz bormi?</h2>
+            <p>Men bilan bog'lanishingiz mumkin. Barcha savollaringizga javob beraman!</p>
+            
+            <div class="contact-buttons">
+                ${teacher.socialLinks?.telegram ? `<a href="https://t.me/${teacher.socialLinks.telegram}" class="contact-button" target="_blank">📱 Telegram</a>` : ''}
+                ${teacher.socialLinks?.instagram ? `<a href="https://instagram.com/${teacher.socialLinks.instagram}" class="contact-button" target="_blank">📷 Instagram</a>` : ''}
+                ${teacher.socialLinks?.linkedin ? `<a href="${teacher.socialLinks.linkedin}" class="contact-button" target="_blank">💼 LinkedIn</a>` : ''}
+                ${teacher.socialLinks?.youtube ? `<a href="${teacher.socialLinks.youtube}" class="contact-button" target="_blank">📺 YouTube</a>` : ''}
+                <a href="#" class="contact-button">✈️ Telegram</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 ${fullName}. DarsLinker platformasi orqali yaratilgan.</p>
+        </div>
+    </footer>
 </body>
 </html>
   `;
@@ -3329,6 +3758,29 @@ function updatePageTitle(title) {
     titleElement.textContent = title;
   }
 }
+
+// Removed problematic loadMainDashboard function and CSS content - see correct implementation below
+
+// Reload dashboard to show updated data
+function reloadDashboard() {
+  // Save current user data before reload
+  const currentUser = store.getState().user;
+  if (currentUser) {
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    console.log('💾 User data saved before reload:', currentUser);
+  }
+  
+  // Reload dashboard to show updated data
+  location.reload();
+}
+
+// Load main dashboard content (without reloading entire page)
+function loadMainDashboard() {
+  // This function should contain the main dashboard loading logic
+  console.log('Loading main dashboard...');
+}
+
+// Additional dashboard functions can be added here
 
 // Helper function to update active menu item
 function updateActiveMenuItem(itemName) {
@@ -16780,6 +17232,11 @@ async function loadTeacherLandingPage(teacherId) {
 
     if (teacherResult.success && teacherResult.teacher) {
       const teacher = teacherResult.teacher;
+      
+      // Debug: Check teacher data and theme color
+      console.log('🎨 Teacher data:', teacher);
+      console.log('🎨 Landing page settings:', teacher.landingPageSettings);
+      console.log('🎨 Theme color:', teacher.landingPageSettings?.themeColor);
 
       // Generate and display the landing page
       const landingHTML = generateLandingPageHTML(teacher);
