@@ -5103,23 +5103,16 @@ function generateLandingPageHTML(teacher) {
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Save tokens and user data
-                    localStorage.setItem('accessToken', data.accessToken);
-                    localStorage.setItem('refreshToken', data.refreshToken);
-                    localStorage.setItem('currentUser', JSON.stringify(data.user));
-                    localStorage.setItem('isAuthenticated', 'true');
+                    // DON'T save to localStorage - landing registration should not affect main dashboard
+                    // Just show success message with credentials
                     
-                    sessionStorage.setItem('currentUser', JSON.stringify(data.user));
-                    sessionStorage.setItem('accessToken', data.accessToken);
-                    sessionStorage.setItem('isAuthenticated', 'true');
-                    
-                    showToast('success', \`Xush kelibsiz! Parolingiz: \${data.defaultPassword}\`);
+                    showToast('success', \`Muvaffaqiyatli ro'yxatdan o'tdingiz!\\n\\nTelefon: \${data.user.phone}\\nParol: \${data.defaultPassword}\\n\\nIltimos, asosiy saytda login qiling.\`);
                     closeRegistrationModal();
                     
-                    // Redirect to student dashboard
+                    // Show login instructions
                     setTimeout(() => {
-                        window.location.href = '/student-dashboard';
-                    }, 2000);
+                        alert(\`Ro'yxatdan o'tish muvaffaqiyatli!\\n\\nTelefon: \${data.user.phone}\\nParol: \${data.defaultPassword}\\n\\nEndi asosiy saytda (darslinker.uz) login qilishingiz mumkin.\`);
+                    }, 1000);
                 } else {
                     codeError.textContent = data.message || 'Noto\\'g\\'ri kod';
                     codeError.classList.add('show');
