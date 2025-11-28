@@ -1282,22 +1282,85 @@ function getLandingSettingsHTML(user, landingData = null) {
           border: 1px solid rgba(255, 255, 255, 0.1);
           border-radius: 12px;
           overflow: hidden;
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .certificate-card:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+          min-height: 400px;
+          display: flex;
+          flex-direction: column;
         }
 
         .certificate-image {
           width: 100%;
-          height: 200px;
+          height: 250px;
           overflow: hidden;
+          cursor: pointer;
+        }
+
+        .certificate-image img {
+          transition: transform 0.3s ease;
+        }
+
+        .certificate-image:hover img {
+          transform: scale(1.05);
         }
 
         .certificate-content {
-          padding: 16px;
+          padding: 20px;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .certificate-modal {
+          display: none;
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.9);
+          z-index: 10000;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+        }
+
+        .certificate-modal.active {
+          display: flex;
+        }
+
+        .certificate-modal-content {
+          max-width: 90%;
+          max-height: 90%;
+          position: relative;
+        }
+
+        .certificate-modal-content img {
+          max-width: 100%;
+          max-height: 90vh;
+          object-fit: contain;
+          border-radius: 8px;
+        }
+
+        .certificate-modal-close {
+          position: absolute;
+          top: -40px;
+          right: 0;
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          color: white;
+          font-size: 32px;
+          cursor: pointer;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: background 0.2s;
+        }
+
+        .certificate-modal-close:hover {
+          background: rgba(255, 255, 255, 0.3);
         }
 
         .certificate-remove-btn:hover {
@@ -2635,13 +2698,22 @@ async function loadCertificates() {
       if (latestTeacher.certificates && latestTeacher.certificates.length > 0) {
       certificatesList.innerHTML = latestTeacher.certificates.map((cert, index) => `
         <div class="certificate-card" data-certificate-index="${index}">
-          <div class="certificate-image">
-            <img src="${cert.url}" alt="${cert.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px 8px 0 0;">
+          <div class="certificate-image" onclick="openCertificateModal('${cert.url}', '${cert.title}')">
+            <img src="${cert.url}" alt="${cert.title}" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
           <div class="certificate-content">
-            <h4 style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 600;">${cert.title}</h4>
-            <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.7); font-size: 14px;">${cert.issuer}</p>
-            <p style="margin: 0; color: rgba(255,255,255,0.5); font-size: 13px;">${cert.issueDate || cert.year || '2023'}</p>
+            <div style="margin-bottom: 8px;">
+              <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 500;">Certificate title:</p>
+              <h4 style="margin: 0; color: #ffffff; font-size: 16px; font-weight: 600;">${cert.title}</h4>
+            </div>
+            <div style="margin-bottom: 8px;">
+              <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 500;">Issued organization:</p>
+              <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 14px;">${cert.issuer}</p>
+            </div>
+            <div>
+              <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 500;">Issue year:</p>
+              <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 14px;">${cert.year || (cert.issueDate ? new Date(cert.issueDate).getFullYear() : new Date().getFullYear())}</p>
+            </div>
           </div>
           <button type="button" class="certificate-remove-btn" onclick="removeCertificate(${index})" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -2650,6 +2722,23 @@ async function loadCertificates() {
           </button>
         </div>
       `).join('');
+      
+      // Add modal to page if not exists
+      if (!document.getElementById('certificateModal')) {
+        const modal = document.createElement('div');
+        modal.id = 'certificateModal';
+        modal.className = 'certificate-modal';
+        modal.innerHTML = `
+          <div class="certificate-modal-content">
+            <button class="certificate-modal-close" onclick="closeCertificateModal()">×</button>
+            <img id="certificateModalImage" src="" alt="">
+          </div>
+        `;
+        modal.onclick = (e) => {
+          if (e.target === modal) closeCertificateModal();
+        };
+        document.body.appendChild(modal);
+      }
     } else {
       // Show empty state when no certificates exist
       certificatesList.innerHTML = `
@@ -2671,13 +2760,22 @@ async function loadCertificates() {
       if (localCertificates.length > 0) {
         certificatesList.innerHTML = localCertificates.map((cert, index) => `
           <div class="certificate-card" data-certificate-index="${index}">
-            <div class="certificate-image">
-              <img src="${cert.url}" alt="${cert.title}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px 8px 0 0;">
+            <div class="certificate-image" onclick="openCertificateModal('${cert.url}', '${cert.title}')">
+              <img src="${cert.url}" alt="${cert.title}" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
             <div class="certificate-content">
-              <h4 style="margin: 0 0 8px 0; color: #ffffff; font-size: 16px; font-weight: 600;">${cert.title}</h4>
-              <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.7); font-size: 14px;">${cert.issuer}</p>
-              <p style="margin: 0; color: rgba(255,255,255,0.5); font-size: 13px;">${cert.issueDate || cert.year || '2023'}</p>
+              <div style="margin-bottom: 8px;">
+                <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 500;">Certificate title:</p>
+                <h4 style="margin: 0; color: #ffffff; font-size: 16px; font-weight: 600;">${cert.title}</h4>
+              </div>
+              <div style="margin-bottom: 8px;">
+                <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 500;">Issued organization:</p>
+                <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 14px;">${cert.issuer}</p>
+              </div>
+              <div>
+                <p style="margin: 0 0 4px 0; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 500;">Issue year:</p>
+                <p style="margin: 0; color: rgba(255,255,255,0.7); font-size: 14px;">${cert.year || (cert.issueDate ? new Date(cert.issueDate).getFullYear() : new Date().getFullYear())}</p>
+              </div>
             </div>
             <button type="button" class="certificate-remove-btn" onclick="removeCertificate(${index})" style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.7); border: none; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: white;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -2686,6 +2784,23 @@ async function loadCertificates() {
             </button>
           </div>
         `).join('');
+        
+        // Add modal to page if not exists
+        if (!document.getElementById('certificateModal')) {
+          const modal = document.createElement('div');
+          modal.id = 'certificateModal';
+          modal.className = 'certificate-modal';
+          modal.innerHTML = `
+            <div class="certificate-modal-content">
+              <button class="certificate-modal-close" onclick="closeCertificateModal()">×</button>
+              <img id="certificateModalImage" src="" alt="">
+            </div>
+          `;
+          modal.onclick = (e) => {
+            if (e.target === modal) closeCertificateModal();
+          };
+          document.body.appendChild(modal);
+        }
       } else {
         certificatesList.innerHTML = `
           <div class="empty-state">
@@ -2836,7 +2951,8 @@ window.addNewCertificate = async function() {
       const newCertificate = {
         title,
         issuer,
-        issueDate: year,
+        year: year,
+        issueDate: new Date(year, 0, 1).toISOString(),
         url: uploadData.url
       };
       certificates.push(newCertificate);
@@ -3249,43 +3365,133 @@ function generateLandingPageHTML(teacher) {
 
         .certificates-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 30px;
-            max-width: 900px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         .certificate-item {
+            background: rgba(58, 56, 56, 0.6);
+            border: 1px solid rgba(126, 162, 212, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .certificate-image-wrapper {
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            background: rgba(126, 162, 212, 0.1);
             display: flex;
             align-items: center;
-            gap: 15px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 12px;
-            border-left: 4px solid ${themeColor};
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .certificate-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .certificate-image-wrapper:hover img {
+            transform: scale(1.05);
         }
 
         .certificate-icon {
-            width: 40px;
-            height: 40px;
+            width: 80px;
+            height: 80px;
             background: ${themeColor};
-            border-radius: 8px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 18px;
+            font-size: 40px;
         }
 
-        .certificate-info h4 {
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
+        .certificate-info {
+            padding: 20px;
+            background: rgba(40, 40, 40, 0.8);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
-        .certificate-info p {
-            color: #666;
+        .certificate-info-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .certificate-info-label {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            font-weight: 500;
+            min-width: 140px;
+        }
+
+        .certificate-info-value {
+            color: #ffffff;
             font-size: 14px;
+            font-weight: 600;
+        }
+
+        /* Certificate Modal */
+        .certificate-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            padding: 20px;
+        }
+
+        .certificate-modal-content {
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+
+        .certificate-modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .certificate-modal-close {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .certificate-modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
         }
 
         /* Courses Section */
@@ -3938,12 +4144,28 @@ function generateLandingPageHTML(teacher) {
         <div class="container">
             <h2>Sertifikatlar & Malaka</h2>
             <div class="certificates-grid">
-                ${teacher.certificates.map(cert => `
+                ${teacher.certificates.map((cert, index) => `
                     <div class="certificate-item">
-                        <div class="certificate-icon">🏆</div>
+                        <div class="certificate-image-wrapper" onclick="openCertificateModal('${cert.url}', '${cert.title}')">
+                            ${cert.url ? `
+                                <img src="${cert.url}" alt="${cert.title}" />
+                            ` : `
+                                <div class="certificate-icon">🏆</div>
+                            `}
+                        </div>
                         <div class="certificate-info">
-                            <h4>${cert.title}</h4>
-                            <p>${cert.issuer || cert.issuedBy} • ${cert.issueDate ? new Date(cert.issueDate).getFullYear() : ''}</p>
+                            <div class="certificate-info-row">
+                                <span class="certificate-info-label">Certificate Title:</span>
+                                <span class="certificate-info-value">${cert.title}</span>
+                            </div>
+                            <div class="certificate-info-row">
+                                <span class="certificate-info-label">Issued Organization:</span>
+                                <span class="certificate-info-value">${cert.issuer || cert.issuedBy || 'Certificate'}</span>
+                            </div>
+                            <div class="certificate-info-row">
+                                <span class="certificate-info-label">Issue Year:</span>
+                                <span class="certificate-info-value">${cert.year || (cert.issueDate ? new Date(cert.issueDate).getFullYear() : new Date().getFullYear())}</span>
+                            </div>
                         </div>
                     </div>
                 `).join('')}
@@ -17699,6 +17921,36 @@ window.closeQuizModal = function() {
   if (modal) {
     modal.remove();
   }
+};
+
+// Open certificate modal to view full image
+window.openCertificateModal = function(imageUrl, title) {
+  const modal = document.createElement('div');
+  modal.className = 'certificate-modal-overlay';
+  modal.innerHTML = `
+    <div class="certificate-modal-content">
+      <button class="certificate-modal-close" onclick="this.closest('.certificate-modal-overlay').remove()">×</button>
+      <img src="${imageUrl}" alt="${title}" />
+    </div>
+  `;
+  
+  // Close modal when clicking outside the image
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+      modal.remove();
+    }
+  });
+  
+  // Close modal with Escape key
+  const handleEscape = function(e) {
+    if (e.key === 'Escape') {
+      modal.remove();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+  
+  document.body.appendChild(modal);
 };
 
 // Check if current URL is a teacher landing page and serve it

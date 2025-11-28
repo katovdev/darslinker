@@ -22,6 +22,7 @@ const teacherSchema = new mongoose.Schema(
         title: String,
         issuer: String,
         issueDate: Date,
+        year: String,
         url: String,
       },
     ],

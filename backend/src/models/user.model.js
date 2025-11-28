@@ -40,6 +40,71 @@ const userSchema = new mongoose.Schema(
       default: "student",
       required: true,
     },
+    // Teacher-specific fields
+    specialization: {
+      type: String,
+      trim: true,
+    },
+    bio: {
+      type: String,
+      trim: true,
+    },
+    profileImage: {
+      type: String,
+    },
+    city: {
+      type: String,
+      trim: true,
+    },
+    country: {
+      type: String,
+      trim: true,
+    },
+    ratingAverage: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 5,
+    },
+    reviewsCount: {
+      type: Number,
+      default: 0,
+    },
+    certificates: [{
+      title: {
+        type: String,
+        required: true,
+      },
+      issuer: {
+        type: String,
+        required: true,
+      },
+      year: {
+        type: String,
+      },
+      issueDate: {
+        type: Date,
+      },
+      url: {
+        type: String,
+        required: true,
+      },
+    }],
+    socialLinks: {
+      telegram: String,
+      instagram: String,
+      youtube: String,
+      linkedin: String,
+    },
+    landingPageSettings: {
+      themeColor: {
+        type: String,
+        default: '#7ea2d4',
+      },
+      heroTitle: String,
+      featuredCourses: [String],
+      featuredTestimonials: [String],
+    },
   },
   {
     timestamps: true,
