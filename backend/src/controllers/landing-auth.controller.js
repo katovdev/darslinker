@@ -62,7 +62,8 @@ const sendVerificationCode = catchAsync(async (req, res) => {
     firstName,
     lastName,
     expiresAt,
-    codeSent: false
+    codeSent: false,
+    attempts: 0
   });
 
   logger.info("✅ Verification code created", {
@@ -273,9 +274,12 @@ const resendVerificationCode = catchAsync(async (req, res) => {
   const verification = await Verification.create({
     phone: normalizedPhone,
     code: hashedCode,
+    codeText: code, // Store unhashed for Telegram sending
     firstName: lastVerification.firstName,
     lastName: lastVerification.lastName,
-    expiresAt
+    expiresAt,
+    codeSent: false,
+    attempts: 0
   });
 
   logger.info("✅ New verification code created", {

@@ -4,99 +4,76 @@ import Verification from '../models/verification.model.js';
 
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_API_URL = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}`;
-
-let isPolling = false;
-let lastUpdateId = 0;
-
-// Store user chat IDs temporarily (in production, use database)
-const userChatIds = new Map(); // phone -> chatId
+const BACKEND_URL = process.env.BACKEND_URL || 'https://darslinker-backend.onrender.com';
 
 /**
- * Start Telegram bot polling
+ * Set webhook for Telegram bot
  */
-export async function startTelegramBot() {
-  if (isPolling) {
-    logger.info('Telegram bot is already running');
-    return;
-  }
-
+export async function setWebhook() {
   try {
-    // Get bot info
-    const botInfo = await axios.get(`${TELEGRAM_API_URL}/getMe`);
-    logger.info('🤖 Telegram bot started:', {
-      username: botInfo.data.result.username,
-      firstName: botInfo.data.result.first_name
+    const webhookUrl = `${BACKEND_URL}/api/telegram/webhook`;
+    
+    const response = await axios.post(`${TELEGRAM_API_URL}/setWebhook`, {
+      url: webhookUrl,
+      allowed_updates: ['message']
     });
 
-    isPolling = true;
-    pollUpdates();
-  } catch (error) {
-    logger.error('❌ Failed to start Telegram bot:', error.message);
-  }
-}
-
-/**
- * Stop Telegram bot polling
- */
-export function stopTelegramBot() {
-  isPolling = false;
-  logger.info('🛑 Telegram bot stopped');
-}
-
-/**
- * Poll for updates from Telegram
- */
-async function pollUpdates() {
-  while (isPolling) {
-    try {
-      const response = await axios.get(`${TELEGRAM_API_URL}/getUpdates`, {
-        params: {
-          offset: lastUpdateId + 1,
-          timeout: 30
-        }
-      });
-
-      const updates = response.data.result;
-
-      for (const update of updates) {
-        lastUpdateId = update.update_id;
-        await handleUpdate(update);
-      }
-    } catch (error) {
-      // Ignore timeout and conflict errors (they're normal for long polling)
-      const errorMessage = error.message || String(error);
-      const statusCode = error.response?.status;
-      
-      if (
-        error.code !== 'ETIMEDOUT' && 
-        error.code !== 'ECONNABORTED' && 
-        statusCode !== 409 && // Conflict - another instance is polling
-        !errorMessage.includes('409')
-      ) {
-        logger.error('❌ Error polling updates:', errorMessage);
-      }
-      
-      // Wait longer on conflict errors
-      const waitTime = statusCode === 409 ? 5000 : 1000;
-      await new Promise(resolve => setTimeout(resolve, waitTime));
+    if (response.data.ok) {
+      logger.info('✅ Telegram webhook set successfully:', { webhookUrl });
+      return true;
+    } else {
+      logger.error('❌ Failed to set webhook:', response.data);
+      return false;
     }
+  } catch (error) {
+    logger.error('❌ Error setting webhook:', error.message);
+    return false;
   }
 }
 
 /**
- * Handle incoming update from Telegram
+ * Delete webhook
  */
-async function handleUpdate(update) {
+export async function deleteWebhook() {
+  try {
+    const response = await axios.post(`${TELEGRAM_API_URL}/deleteWebhook`);
+    
+    if (response.data.ok) {
+      logger.info('✅ Telegram webhook deleted');
+      return true;
+    }
+    return false;
+  } catch (error) {
+    logger.error('❌ Error deleting webhook:', error.message);
+    return false;
+  }
+}
+
+/**
+ * Get webhook info
+ */
+export async function getWebhookInfo() {
+  try {
+    const response = await axios.get(`${TELEGRAM_API_URL}/getWebhookInfo`);
+    return response.data.result;
+  } catch (error) {
+    logger.error('❌ Error getting webhook info:', error.message);
+    return null;
+  }
+}
+
+/**
+ * Handle webhook update
+ */
+export async function handleWebhookUpdate(update) {
   try {
     if (update.message) {
       const message = update.message;
       const chatId = message.chat.id;
       const text = message.text;
-      const userId = message.from.id;
 
-      logger.info('📨 Received message:', {
+      logger.info('📨 Webhook message received:', {
         chatId,
-        userId,
         text,
         from: message.from.first_name
       });
@@ -106,7 +83,7 @@ async function handleUpdate(update) {
         const phoneNumber = message.contact.phone_number;
         const firstName = message.contact.first_name || message.from.first_name;
         
-        logger.info('📱 Contact received:', {
+        logger.info('📱 Contact received via webhook:', {
           chatId,
           phoneNumber,
           firstName
@@ -126,17 +103,12 @@ async function handleUpdate(update) {
         }).sort({ createdAt: -1 });
 
         if (verification) {
-          // Store chat ID for this phone
-          userChatIds.set(normalizedPhone, chatId);
-          
-          // Send verification code immediately
           const code = verification.codeText;
           const firstName = verification.firstName || message.from.first_name;
           
-          logger.info('📋 Verification found:', { 
+          logger.info('📋 Verification found via webhook:', { 
             phone: normalizedPhone, 
             hasCode: !!code,
-            codeText: code,
             codeSent: verification.codeSent 
           });
           
@@ -165,7 +137,7 @@ _DarsLinker jamoasi_ 📚
             verification.codeSent = true;
             await verification.save();
             
-            logger.info('✅ Verification code sent via contact:', { phone: normalizedPhone, chatId, code });
+            logger.info('✅ Verification code sent via webhook:', { phone: normalizedPhone, chatId });
           } else {
             logger.error('❌ No codeText in verification:', { 
               phone: normalizedPhone,
@@ -207,31 +179,39 @@ Ro'yxatdan o'tish uchun tasdiqlash kodini olish uchun quyidagi tugmani bosing.
       if (text && text.startsWith('+998')) {
         const phone = text.trim();
         
-        // Find verification code for this phone
         const verification = await Verification.findOne({
           phone,
           verified: false,
           expiresAt: { $gt: new Date() }
         }).sort({ createdAt: -1 });
 
-        if (verification) {
-          // Store chat ID for this phone
-          userChatIds.set(phone, chatId);
+        if (verification && verification.codeText) {
+          const code = verification.codeText;
+          const firstName = verification.firstName || message.from.first_name;
           
-          await sendMessage(chatId, `
-✅ *Telefon raqam topildi!*
+          const codeMessage = `
+🔐 *Tasdiqlash kodi*
 
-Sizning tasdiqlash kodingiz keyingi xabarda yuboriladi.
+Salom ${firstName}! 👋
 
-Agar kod kelmasa, iltimos, ro'yxatdan o'tish jarayonini qaytadan boshlang.
-          `.trim());
+Sizning tasdiqlash kodingiz: *${code}*
+
+Bu kod 30 daqiqa davomida amal qiladi.
+
+_DarsLinker jamoasi_ 📚
+          `.trim();
+
+          await sendMessage(chatId, codeMessage);
           
-          logger.info('📱 Phone number registered:', { phone, chatId });
+          verification.codeSent = true;
+          await verification.save();
+          
+          logger.info('✅ Code sent via phone text:', { phone, chatId });
         } else {
           await sendMessage(chatId, `
 ❌ *Telefon raqam topilmadi*
 
-Iltimos, avval veb-saytda ro'yxatdan o'tishni boshlang, keyin bu yerga telefon raqamingizni yuboring.
+Iltimos, avval veb-saytda ro'yxatdan o'tishni boshlang.
           `.trim());
         }
         return;
@@ -243,14 +223,14 @@ Iltimos, avval veb-saytda ro'yxatdan o'tishni boshlang, keyin bu yerga telefon r
 
 Ro'yxatdan o'tish uchun:
 1. Veb-saytda ro'yxatdan o'tishni boshlang
-2. Bu botga telefon raqamingizni yuboring (+998 bilan)
+2. Bu botga telefon raqamingizni yuboring yoki kontaktni ulashing
 3. Tasdiqlash kodini oling
 
 Savol bo'lsa: @darslinker_support
       `.trim());
     }
   } catch (error) {
-    logger.error('❌ Error handling update:', error);
+    logger.error('❌ Error handling webhook update:', error);
   }
 }
 
@@ -307,48 +287,9 @@ async function sendMessageWithButton(chatId, text) {
   }
 }
 
-/**
- * Send verification code to user
- */
-export async function sendVerificationCode(phone, code, firstName) {
-  try {
-    const chatId = userChatIds.get(phone);
-    
-    if (!chatId) {
-      logger.warn('⚠️ Chat ID not found for phone:', { phone });
-      return false;
-    }
-
-    const message = `
-🔐 *Tasdiqlash kodi*
-
-Salom ${firstName}! 👋
-
-Sizning tasdiqlash kodingiz: *${code}*
-
-Bu kod 30 daqiqa davomida amal qiladi.
-
-Agar siz bu kodni so'ramagan bo'lsangiz, bu xabarni e'tiborsiz qoldiring.
-
-_DarsLinker jamoasi_ 📚
-    `.trim();
-
-    await sendMessage(chatId, message, {
-      reply_markup: {
-        remove_keyboard: true
-      }
-    });
-    
-    logger.info('✅ Verification code sent:', { phone, chatId });
-    return true;
-  } catch (error) {
-    logger.error('❌ Error sending verification code:', error);
-    return false;
-  }
-}
-
 export default {
-  startTelegramBot,
-  stopTelegramBot,
-  sendVerificationCode
+  setWebhook,
+  deleteWebhook,
+  getWebhookInfo,
+  handleWebhookUpdate
 };

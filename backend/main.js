@@ -11,13 +11,31 @@ import {
 } from "./src/middlewares/error.middleware.js";
 
 import logger from "./config/logger.js";
-import { startTelegramBot } from "./src/services/telegram-bot.service.js";
+import { setWebhook, getWebhookInfo } from "./src/services/telegram-webhook.service.js";
 
 connectToDB();
 
-// Start Telegram bot
+// Setup Telegram webhook (for production) or polling (for development)
 if (process.env.TELEGRAM_BOT_TOKEN) {
-  startTelegramBot();
+  if (NODE_ENV === 'production') {
+    // Use webhook in production
+    setTimeout(async () => {
+      const webhookInfo = await getWebhookInfo();
+      logger.info('📡 Current webhook info:', webhookInfo);
+      
+      const success = await setWebhook();
+      if (success) {
+        logger.info('✅ Telegram webhook configured for production');
+      } else {
+        logger.error('❌ Failed to configure Telegram webhook');
+      }
+    }, 3000); // Wait 3 seconds for server to start
+  } else {
+    // Use polling in development
+    const { startTelegramBot } = await import("./src/services/telegram-bot.service.js");
+    startTelegramBot();
+    logger.info('🤖 Telegram bot polling started for development');
+  }
 } else {
   logger.warn('⚠️ Telegram bot token not found. Bot will not start.');
 }
