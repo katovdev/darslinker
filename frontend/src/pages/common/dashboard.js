@@ -1110,7 +1110,8 @@ window.openLandingSettings = async function() {
 // Helper function to get landing settings HTML
 function getLandingSettingsHTML(user, landingData = null) {
   const theme = getTheme();
-  const landingURL = `${window.location.origin}/teacher/${user._id}`;
+  const productionURL = 'https://bucolic-fairy-0e50d6.netlify.app';
+  const landingURL = `${productionURL}/teacher/${user._id}`;
 
   // Default values or from landingData
   const settings = landingData || {
@@ -4078,7 +4079,7 @@ function generateLandingPageHTML(teacher) {
                 <div class="logo">
                     <span class="logo-text">Dars</span><span class="logo-text-colored">linker</span>
                 </div>
-                <a href="#" class="auth-button">Ro'yxatdan o'tish</a>
+                <a href="#" class="auth-button" onclick="openRegistrationModal(event)">Ro'yxatdan o'tish</a>
             </div>
         </div>
     </header>
@@ -4476,6 +4477,754 @@ function generateLandingPageHTML(teacher) {
         // Initialize slider
         showSlide(0);
         startAutoSlide();
+
+        // Registration Modal Functions
+        let currentStep = 1;
+        let registrationData = {
+            firstName: '',
+            lastName: '',
+            phone: '',
+            verificationCode: ''
+        };
+
+        function openRegistrationModal(e) {
+            e.preventDefault();
+            currentStep = 1;
+            registrationData = { firstName: '', lastName: '', phone: '', verificationCode: '' };
+            
+            const modal = document.createElement('div');
+            modal.id = 'registrationModal';
+            modal.innerHTML = \`
+                <div class="modal-overlay" onclick="closeRegistrationModal()">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <button class="modal-close" onclick="closeRegistrationModal()">&times;</button>
+                        <div id="modalBody"></div>
+                    </div>
+                </div>
+                <style>
+                    .modal-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0, 0, 0, 0.8);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10000;
+                        animation: fadeIn 0.3s ease;
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    .modal-content {
+                        background: rgba(58, 56, 56, 0.95);
+                        backdrop-filter: blur(20px);
+                        border: 1px solid rgba(126, 162, 212, 0.3);
+                        border-radius: 20px;
+                        padding: 40px;
+                        max-width: 500px;
+                        width: 90%;
+                        position: relative;
+                        animation: slideUp 0.3s ease;
+                    }
+                    @keyframes slideUp {
+                        from { transform: translateY(50px); opacity: 0; }
+                        to { transform: translateY(0); opacity: 1; }
+                    }
+                    .modal-close {
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                        background: none;
+                        border: none;
+                        color: rgba(255, 255, 255, 0.6);
+                        font-size: 32px;
+                        cursor: pointer;
+                        width: 40px;
+                        height: 40px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: color 0.3s ease;
+                    }
+                    .modal-close:hover {
+                        color: #ffffff;
+                    }
+                    .modal-title {
+                        color: #ffffff;
+                        font-size: 24px;
+                        font-weight: 700;
+                        margin-bottom: 10px;
+                        text-align: center;
+                    }
+                    .modal-subtitle {
+                        color: rgba(255, 255, 255, 0.7);
+                        font-size: 14px;
+                        margin-bottom: 30px;
+                        text-align: center;
+                    }
+                    .step-indicator {
+                        display: flex;
+                        justify-content: center;
+                        gap: 10px;
+                        margin-bottom: 30px;
+                    }
+                    .step-dot {
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 50%;
+                        background: rgba(126, 162, 212, 0.3);
+                        transition: all 0.3s ease;
+                    }
+                    .step-dot.active {
+                        background: #7EA2D4;
+                        transform: scale(1.3);
+                    }
+                    .form-group {
+                        margin-bottom: 20px;
+                    }
+                    .form-label {
+                        display: block;
+                        color: #ffffff;
+                        font-size: 14px;
+                        font-weight: 500;
+                        margin-bottom: 8px;
+                    }
+                    .form-input {
+                        width: 100%;
+                        padding: 12px 16px;
+                        background: rgba(40, 40, 40, 0.8);
+                        border: 1px solid rgba(126, 162, 212, 0.3);
+                        border-radius: 10px;
+                        color: #ffffff;
+                        font-size: 16px;
+                        outline: none;
+                        transition: all 0.3s ease;
+                        box-sizing: border-box;
+                    }
+                    .form-input:focus {
+                        border-color: #7EA2D4;
+                        box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+                    }
+                    .form-input::placeholder {
+                        color: rgba(255, 255, 255, 0.4);
+                    }
+                    .phone-input-wrapper {
+                        display: flex;
+                        gap: 10px;
+                        align-items: center;
+                    }
+                    .phone-prefix {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 12px 16px;
+                        background: rgba(40, 40, 40, 0.8);
+                        border: 1px solid rgba(126, 162, 212, 0.3);
+                        border-radius: 10px;
+                        color: #ffffff;
+                        font-size: 16px;
+                        white-space: nowrap;
+                    }
+                    .flag-icon {
+                        width: 24px;
+                        height: 18px;
+                        border-radius: 3px;
+                    }
+                    .phone-input {
+                        flex: 1;
+                    }
+                    .error-message {
+                        color: #ff6b6b;
+                        font-size: 13px;
+                        margin-top: 5px;
+                        display: none;
+                    }
+                    .error-message.show {
+                        display: block;
+                    }
+                    .modal-button {
+                        width: 100%;
+                        padding: 14px;
+                        background: linear-gradient(135deg, #7EA2D4, #5A85C7);
+                        border: none;
+                        border-radius: 10px;
+                        color: #ffffff;
+                        font-size: 16px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        margin-top: 10px;
+                    }
+                    .modal-button:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 20px rgba(126, 162, 212, 0.4);
+                    }
+                    .modal-button:disabled {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                        transform: none;
+                    }
+                    .back-button {
+                        background: transparent;
+                        border: 1px solid rgba(126, 162, 212, 0.3);
+                        margin-top: 10px;
+                    }
+                    .back-button:hover {
+                        background: rgba(126, 162, 212, 0.1);
+                    }
+                    .verification-info {
+                        background: rgba(126, 162, 212, 0.1);
+                        border: 1px solid rgba(126, 162, 212, 0.3);
+                        border-radius: 10px;
+                        padding: 15px;
+                        margin-bottom: 20px;
+                        color: rgba(255, 255, 255, 0.9);
+                        font-size: 14px;
+                        text-align: center;
+                    }
+                    .resend-link {
+                        color: #7EA2D4;
+                        text-decoration: none;
+                        font-weight: 500;
+                        cursor: pointer;
+                        transition: color 0.3s ease;
+                    }
+                    .resend-link:hover {
+                        color: #5A85C7;
+                        text-decoration: underline;
+                    }
+                </style>
+            \`;
+            document.body.appendChild(modal);
+            renderStep(1);
+        }
+
+        function closeRegistrationModal() {
+            const modal = document.getElementById('registrationModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function renderStep(step) {
+            currentStep = step;
+            const modalBody = document.getElementById('modalBody');
+            
+            if (step === 1) {
+                modalBody.innerHTML = \`
+                    <h2 class="modal-title">Ro'yxatdan o'tish</h2>
+                    <p class="modal-subtitle">Ism va familiyangizni kiriting</p>
+                    <div class="step-indicator">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Ism</label>
+                        <input type="text" id="firstName" class="form-input" placeholder="Ismingiz" value="\${registrationData.firstName}" />
+                        <div class="error-message" id="firstNameError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Familiya</label>
+                        <input type="text" id="lastName" class="form-input" placeholder="Familiyangiz" value="\${registrationData.lastName}" />
+                        <div class="error-message" id="lastNameError"></div>
+                    </div>
+                    <button class="modal-button" onclick="validateStep1()">Keyingisi</button>
+                \`;
+                
+                // Add input validation - only letters
+                const firstNameInput = document.getElementById('firstName');
+                const lastNameInput = document.getElementById('lastName');
+                
+                firstNameInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/[^a-zA-Zа-яА-ЯўғҳқўҒҲҚЎ\\s]/g, '');
+                });
+                
+                lastNameInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/[^a-zA-Zа-яА-ЯўғҳқўҒҲҚЎ\\s]/g, '');
+                });
+                
+            } else if (step === 2) {
+                modalBody.innerHTML = \`
+                    <h2 class="modal-title">Telefon raqamingiz</h2>
+                    <p class="modal-subtitle">O'zbekiston raqamingizni kiriting</p>
+                    <div class="step-indicator">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telefon raqam</label>
+                        <div class="phone-input-wrapper">
+                            <div class="phone-prefix">
+                                <img src="/images/uz-flag.jpg" alt="UZ" class="flag-icon" />
+                                <span>+998</span>
+                            </div>
+                            <input type="tel" id="phone" class="form-input phone-input" placeholder="90 123 45 67" value="\${registrationData.phone}" maxlength="12" />
+                        </div>
+                        <div class="error-message" id="phoneError"></div>
+                    </div>
+                    <button class="modal-button" onclick="validateStep2()">Kod yuborish</button>
+                    <button class="modal-button back-button" onclick="renderStep(1)">Orqaga</button>
+                \`;
+                
+                // Format phone number input
+                const phoneInput = document.getElementById('phone');
+                phoneInput.addEventListener('input', (e) => {
+                    let value = e.target.value.replace(/\\D/g, '');
+                    if (value.length > 0) {
+                        if (value.length <= 2) {
+                            value = value;
+                        } else if (value.length <= 5) {
+                            value = value.slice(0, 2) + ' ' + value.slice(2);
+                        } else if (value.length <= 7) {
+                            value = value.slice(0, 2) + ' ' + value.slice(2, 5) + ' ' + value.slice(5);
+                        } else {
+                            value = value.slice(0, 2) + ' ' + value.slice(2, 5) + ' ' + value.slice(5, 7) + ' ' + value.slice(7, 9);
+                        }
+                    }
+                    e.target.value = value;
+                });
+                
+            } else if (step === 3) {
+                modalBody.innerHTML = \`
+                    <h2 class="modal-title">Tasdiqlash kodi</h2>
+                    <p class="modal-subtitle">Telegram botdan kelgan kodni kiriting</p>
+                    <div class="step-indicator">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                    </div>
+                    <div class="verification-info">
+                        📱 Telegram botimizga +998\${registrationData.phone} raqamiga tasdiqlash kodi yuborildi
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tasdiqlash kodi</label>
+                        <input type="text" id="verificationCode" class="form-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 8px;" />
+                        <div class="error-message" id="codeError"></div>
+                    </div>
+                    <p style="text-align: center; margin-top: 15px; color: rgba(255, 255, 255, 0.7); font-size: 14px;">
+                        Kod kelmadimi? <a class="resend-link" onclick="resendCode()">Qayta yuborish</a>
+                    </p>
+                    <button class="modal-button" onclick="validateStep3()">Tasdiqlash</button>
+                    <button class="modal-button back-button" onclick="renderStep(2)">Orqaga</button>
+                \`;
+                
+                // Only numbers for verification code
+                const codeInput = document.getElementById('verificationCode');
+                codeInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(/\\D/g, '');
+                });
+                codeInput.focus();
+            }
+        }
+
+        function showBotInfoModal(botUsername, code) {
+            const infoModal = document.createElement('div');
+            infoModal.className = 'bot-info-overlay';
+            infoModal.innerHTML = \`
+                <div class="bot-info-modal">
+                    <div class="bot-info-header">
+                        <div class="bot-info-icon">📱</div>
+                        <h3>Telegram Botga O'ting</h3>
+                    </div>
+                    <div class="bot-info-content">
+                        <p class="bot-info-text">Tasdiqlash kodi <strong>@\${botUsername}</strong> botga yuborildi</p>
+                        <div class="bot-info-steps">
+                            <div class="bot-step">
+                                <span class="step-number">1</span>
+                                <span class="step-text">Botga /start bosing</span>
+                            </div>
+                            <div class="bot-step">
+                                <span class="step-number">2</span>
+                                <span class="step-text">Telefon raqamingizni yuboring</span>
+                            </div>
+                            <div class="bot-step">
+                                <span class="step-number">3</span>
+                                <span class="step-text">Tasdiqlash kodini oling</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="bot-info-close" onclick="closeBotInfoModal()">Tushunarli</button>
+                </div>
+                <style>
+                    .bot-info-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0, 0, 0, 0.85);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 20000;
+                        animation: fadeIn 0.3s ease;
+                    }
+                    .bot-info-modal {
+                        background: linear-gradient(135deg, rgba(58, 56, 56, 0.98), rgba(40, 40, 40, 0.98));
+                        border: 2px solid #7EA2D4;
+                        border-radius: 20px;
+                        padding: 35px;
+                        max-width: 450px;
+                        width: 90%;
+                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                        animation: slideUp 0.4s ease;
+                    }
+                    .bot-info-header {
+                        text-align: center;
+                        margin-bottom: 25px;
+                    }
+                    .bot-info-icon {
+                        font-size: 48px;
+                        margin-bottom: 15px;
+                        animation: bounce 1s ease infinite;
+                    }
+                    @keyframes bounce {
+                        0%, 100% { transform: translateY(0); }
+                        50% { transform: translateY(-10px); }
+                    }
+                    .bot-info-header h3 {
+                        color: #ffffff;
+                        font-size: 22px;
+                        font-weight: 700;
+                        margin: 0;
+                    }
+                    .bot-info-content {
+                        margin-bottom: 25px;
+                    }
+                    .bot-info-text {
+                        color: rgba(255, 255, 255, 0.9);
+                        font-size: 15px;
+                        text-align: center;
+                        margin-bottom: 25px;
+                        line-height: 1.6;
+                    }
+                    .bot-info-text strong {
+                        color: #7EA2D4;
+                        font-weight: 600;
+                    }
+                    .bot-info-steps {
+                        background: rgba(126, 162, 212, 0.1);
+                        border: 1px solid rgba(126, 162, 212, 0.3);
+                        border-radius: 12px;
+                        padding: 20px;
+                    }
+                    .bot-step {
+                        display: flex;
+                        align-items: center;
+                        gap: 15px;
+                        margin-bottom: 15px;
+                        color: #ffffff;
+                    }
+                    .bot-step:last-child {
+                        margin-bottom: 0;
+                    }
+                    .step-number {
+                        width: 32px;
+                        height: 32px;
+                        background: linear-gradient(135deg, #7EA2D4, #5A85C7);
+                        border-radius: 50%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-weight: 700;
+                        font-size: 14px;
+                        flex-shrink: 0;
+                    }
+                    .step-text {
+                        font-size: 14px;
+                        font-weight: 500;
+                    }
+                    .bot-info-close {
+                        width: 100%;
+                        padding: 14px;
+                        background: linear-gradient(135deg, #7EA2D4, #5A85C7);
+                        border: none;
+                        border-radius: 12px;
+                        color: #ffffff;
+                        font-size: 16px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    }
+                    .bot-info-close:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 8px 20px rgba(126, 162, 212, 0.4);
+                    }
+                </style>
+            \`;
+            document.body.appendChild(infoModal);
+        }
+
+        function closeBotInfoModal() {
+            const modal = document.querySelector('.bot-info-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function validateStep1() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+            const firstNameError = document.getElementById('firstNameError');
+            const lastNameError = document.getElementById('lastNameError');
+            
+            let isValid = true;
+            
+            if (!firstName || firstName.length < 2) {
+                firstNameError.textContent = 'Ism kamida 2 ta harfdan iborat bo\\'lishi kerak';
+                firstNameError.classList.add('show');
+                isValid = false;
+            } else {
+                firstNameError.classList.remove('show');
+            }
+            
+            if (!lastName || lastName.length < 2) {
+                lastNameError.textContent = 'Familiya kamida 2 ta harfdan iborat bo\\'lishi kerak';
+                lastNameError.classList.add('show');
+                isValid = false;
+            } else {
+                lastNameError.classList.remove('show');
+            }
+            
+            if (isValid) {
+                registrationData.firstName = firstName;
+                registrationData.lastName = lastName;
+                renderStep(2);
+            }
+        }
+
+        function validateStep2() {
+            const phone = document.getElementById('phone').value.replace(/\\s/g, '');
+            const phoneError = document.getElementById('phoneError');
+            
+            if (!phone || phone.length !== 9) {
+                phoneError.textContent = 'To\\'g\\'ri telefon raqam kiriting (9 ta raqam)';
+                phoneError.classList.add('show');
+                return;
+            }
+            
+            phoneError.classList.remove('show');
+            registrationData.phone = phone;
+            
+            // Send verification code via Telegram bot
+            sendVerificationCode();
+        }
+
+        async function sendVerificationCode() {
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Yuborilmoqda...';
+            
+            try {
+                const apiBaseUrl = 'http://localhost:8001/api';
+                const response = await fetch(\`\${apiBaseUrl}/landing-auth/send-verification\`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: '+998' + registrationData.phone,
+                        firstName: registrationData.firstName,
+                        lastName: registrationData.lastName
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const botUsername = data.data.telegramBot;
+                    const code = data.data.code; // Only in development
+                    
+                    // Show beautiful info modal
+                    showBotInfoModal(botUsername, code);
+                    
+                    // Open Telegram bot in new tab after 8 seconds (give time to read modal)
+                    setTimeout(() => {
+                        window.open(\`https://t.me/\${botUsername}\`, '_blank');
+                    }, 8000);
+                    
+                    renderStep(3);
+                } else {
+                    showToast('error', data.message || 'Kod yuborishda xatolik');
+                    button.disabled = false;
+                    button.textContent = 'Kod yuborish';
+                }
+            } catch (error) {
+                console.error('Error sending verification code:', error);
+                showToast('error', 'Kod yuborishda xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
+                button.disabled = false;
+                button.textContent = 'Kod yuborish';
+            }
+        }
+
+        async function resendCode() {
+            await sendVerificationCode();
+        }
+
+        async function validateStep3() {
+            const code = document.getElementById('verificationCode').value.trim();
+            const codeError = document.getElementById('codeError');
+            
+            if (!code || code.length !== 6) {
+                codeError.textContent = '6 raqamli kodni kiriting';
+                codeError.classList.add('show');
+                return;
+            }
+            
+            codeError.classList.remove('show');
+            registrationData.verificationCode = code;
+            
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Tekshirilmoqda...';
+            
+            try {
+                const apiBaseUrl = 'http://localhost:8001/api';
+                const response = await fetch(\`\${apiBaseUrl}/landing-auth/verify-and-register\`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: '+998' + registrationData.phone,
+                        firstName: registrationData.firstName,
+                        lastName: registrationData.lastName,
+                        verificationCode: code
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Save tokens and user data
+                    localStorage.setItem('accessToken', data.accessToken);
+                    localStorage.setItem('refreshToken', data.refreshToken);
+                    localStorage.setItem('currentUser', JSON.stringify(data.user));
+                    localStorage.setItem('isAuthenticated', 'true');
+                    
+                    sessionStorage.setItem('currentUser', JSON.stringify(data.user));
+                    sessionStorage.setItem('accessToken', data.accessToken);
+                    sessionStorage.setItem('isAuthenticated', 'true');
+                    
+                    showToast('success', \`Xush kelibsiz! Parolingiz: \${data.defaultPassword}\`);
+                    closeRegistrationModal();
+                    
+                    // Redirect to student dashboard
+                    setTimeout(() => {
+                        window.location.href = '/student-dashboard';
+                    }, 2000);
+                } else {
+                    codeError.textContent = data.message || 'Noto\\'g\\'ri kod';
+                    codeError.classList.add('show');
+                    button.disabled = false;
+                    button.textContent = 'Tasdiqlash';
+                }
+            } catch (error) {
+                console.error('Error verifying code:', error);
+                showToast('error', 'Tasdiqlashda xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
+                button.disabled = false;
+                button.textContent = 'Tasdiqlash';
+            }
+        }
+
+        // Toast notification function
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = \`landing-toast landing-toast-\${type}\`;
+            toast.innerHTML = \`
+                <div class="toast-icon">\${type === 'success' ? '✓' : '✕'}</div>
+                <div class="toast-message">\${message}</div>
+            \`;
+            
+            const style = document.createElement('style');
+            style.textContent = \`
+                .landing-toast {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 16px 20px;
+                    border-radius: 12px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    z-index: 30000;
+                    animation: slideInRight 0.3s ease;
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+                    max-width: 400px;
+                }
+                .landing-toast-success {
+                    background: linear-gradient(135deg, #10b981, #059669);
+                    color: white;
+                }
+                .landing-toast-error {
+                    background: linear-gradient(135deg, #ef4444, #dc2626);
+                    color: white;
+                }
+                .toast-icon {
+                    width: 24px;
+                    height: 24px;
+                    background: rgba(255, 255, 255, 0.2);
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: bold;
+                    flex-shrink: 0;
+                }
+                .toast-message {
+                    font-size: 14px;
+                    line-height: 1.5;
+                }
+                @keyframes slideInRight {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+                @keyframes slideOutRight {
+                    from {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                    to {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                }
+            \`;
+            
+            document.head.appendChild(style);
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                    if (style.parentNode) {
+                        style.parentNode.removeChild(style);
+                    }
+                }, 300);
+            }, 5000);
+        }
+
+        // Make functions globally available
+        window.openRegistrationModal = openRegistrationModal;
+        window.closeRegistrationModal = closeRegistrationModal;
+        window.closeBotInfoModal = closeBotInfoModal;
+        window.renderStep = renderStep;
+        window.validateStep1 = validateStep1;
+        window.validateStep2 = validateStep2;
+        window.validateStep3 = validateStep3;
+        window.resendCode = resendCode;
+        window.showToast = showToast;
     </script>
 </body>
 </html>
@@ -17988,9 +18737,11 @@ async function loadTeacherLandingPage(teacherId) {
       </style>
     `;
 
-    // Get teacher profile by ID
+    // Get teacher profile by ID (public endpoint, no token needed)
     console.log('📡 Fetching teacher profile from API...');
-    const teacherResult = await apiService.getTeacherProfile(teacherId);
+    const apiBaseUrl = 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/teachers/${teacherId}`);
+    const teacherResult = await response.json();
     console.log('📡 API Response:', teacherResult);
 
     if (teacherResult.success && teacherResult.teacher) {
@@ -18080,7 +18831,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // New Landing Settings HTML
 function getNewLandingSettingsHTML(user, landingData = null) {
-  const landingURL = `${window.location.origin}/teacher/${user._id}`;
+  const productionURL = 'https://bucolic-fairy-0e50d6.netlify.app';
+  const landingURL = `${productionURL}/teacher/${user._id}`;
   
   // Default values or from landingData
   const settings = landingData || {

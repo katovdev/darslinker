@@ -11,8 +11,16 @@ import {
 } from "./src/middlewares/error.middleware.js";
 
 import logger from "./config/logger.js";
+import { startTelegramBot } from "./src/services/telegram-bot.service.js";
 
 connectToDB();
+
+// Start Telegram bot
+if (process.env.TELEGRAM_BOT_TOKEN) {
+  startTelegramBot();
+} else {
+  logger.warn('⚠️ Telegram bot token not found. Bot will not start.');
+}
 
 const app = express();
 

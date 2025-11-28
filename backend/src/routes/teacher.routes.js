@@ -364,7 +364,6 @@ teacherRouter.get("/", authenticate, findAll);
 teacherRouter.get(
   "/:id",
   validate(teacherIdSchema, "params"),
-  authenticate,
   findOne
 );
 

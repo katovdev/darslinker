@@ -9,6 +9,7 @@ import lessonRouter from "./lesson.routes.js";
 import assignmentRouter from "./assignment.routes.js";
 import uploadRouter from "./upload.routes.js";
 import landingRouter from "./landing.routes.js";
+import landingAuthRouter from "./landing-auth.routes.js";
 
 const mainRouter = Router();
 
@@ -21,5 +22,6 @@ mainRouter.use("/lessons", lessonRouter);
 mainRouter.use("/assignments", assignmentRouter);
 mainRouter.use("/upload", uploadRouter);
 mainRouter.use("/landing", landingRouter);
+mainRouter.use("/landing-auth", landingAuthRouter);
 
 export default mainRouter;
