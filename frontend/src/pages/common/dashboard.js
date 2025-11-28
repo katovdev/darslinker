@@ -10123,10 +10123,8 @@ window.addNewModule = function() {
         </div>
       </div>
       <div class="lessons-list" style="display: none;">
-        <!-- Lessons will be added here -->
-      </div>
-      <div class="add-lesson-dropdown">
-        <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add Lesson</button>
+        <div class="add-lesson-dropdown">
+          <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add</button>
         <div class="dropdown-menu">
           <a href="#" onclick="addLesson('video', this, event)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -10160,6 +10158,9 @@ window.addNewModule = function() {
             </svg>
             File
           </a>
+        </div>
+      </div>
+    </div>
         </div>
       </div>
     </div>
@@ -10313,15 +10314,26 @@ window.confirmDeleteModule = function() {
 
 // Toggle Lesson Dropdown
 window.toggleLessonDropdown = function(button, event) {
+  console.log('🎯 toggleLessonDropdown called!', button, event);
+  
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
   
   const dropdown = button.nextElementSibling;
+  
+  if (!dropdown) {
+    console.error('❌ Dropdown menu not found!');
+    console.error('❌ Button:', button);
+    console.error('❌ Button parent:', button.parentElement);
+    console.error('❌ Button siblings:', button.parentElement.children);
+    return;
+  }
+  
   const isVisible = dropdown.classList.contains('show');
 
-  console.log('Toggle dropdown clicked', { isVisible, dropdown });
+  console.log('🎯 Toggle dropdown clicked', { isVisible, dropdown });
 
   // Close all other dropdowns first
   document.querySelectorAll('.dropdown-menu').forEach(menu => {
