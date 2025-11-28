@@ -5022,7 +5022,9 @@ function generateLandingPageHTML(teacher) {
             button.textContent = 'Yuborilmoqda...';
             
             try {
-                const apiBaseUrl = 'http://localhost:8001/api';
+                const apiBaseUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:8001/api' 
+                    : 'https://darslinker-backend.onrender.com/api';
                 const response = await fetch(\`\${apiBaseUrl}/landing-auth/send-verification\`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -5083,7 +5085,9 @@ function generateLandingPageHTML(teacher) {
             button.textContent = 'Tekshirilmoqda...';
             
             try {
-                const apiBaseUrl = 'http://localhost:8001/api';
+                const apiBaseUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:8001/api' 
+                    : 'https://darslinker-backend.onrender.com/api';
                 const response = await fetch(\`\${apiBaseUrl}/landing-auth/verify-and-register\`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -18739,7 +18743,9 @@ async function loadTeacherLandingPage(teacherId) {
 
     // Get teacher profile by ID (public endpoint, no token needed)
     console.log('📡 Fetching teacher profile from API...');
-    const apiBaseUrl = 'http://localhost:8001/api';
+    const apiBaseUrl = window.location.hostname === 'localhost' 
+      ? 'http://localhost:8001/api' 
+      : 'https://darslinker-backend.onrender.com/api';
     const response = await fetch(`${apiBaseUrl}/teachers/${teacherId}`);
     const teacherResult = await response.json();
     console.log('📡 API Response:', teacherResult);
