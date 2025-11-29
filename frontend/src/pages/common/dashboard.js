@@ -5060,7 +5060,7 @@ async function generateLandingPageHTML(teacher) {
                 const apiBaseUrl = window.location.hostname === 'localhost' 
                     ? 'http://localhost:8001/api' 
                     : 'https://darslinker-backend.onrender.com/api';
-                const response = await fetch(\`\${apiBaseUrl}/landing-auth/forgot-password\`, {
+                const response = await fetch(\`\${apiBaseUrl}/landing-auth/send-reset-code\`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -5071,9 +5071,19 @@ async function generateLandingPageHTML(teacher) {
                 const data = await response.json();
                 
                 if (data.success) {
-                    showToast('success', 'Telegram botga /login buyrug\\'ini yuboring');
-                    button.disabled = false;
-                    button.textContent = 'Parolni unutdingizmi?';
+                    if (data.needsContact) {
+                        showToast('success', 'Telegram botga /start yozing va kontaktingizni yuboring', 5000);
+                        
+                        // Show bot info modal
+                        const botUsername = 'darslinkerrr_bot';
+                        showBotInfoModal(botUsername, null);
+                    } else {
+                        showToast('success', 'Telegram botga kod yuborildi');
+                    }
+                    
+                    // Close login modal and open reset password modal
+                    closeLoginModal();
+                    showResetPasswordModal(phone);
                 } else {
                     showToast('error', data.message || 'Xatolik yuz berdi');
                     button.disabled = false;
@@ -5084,6 +5094,347 @@ async function generateLandingPageHTML(teacher) {
                 showToast('error', 'Xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
                 button.disabled = false;
                 button.textContent = 'Parolni unutdingizmi?';
+            }
+        }
+
+        function showResetPasswordModal(phone) {
+            const modal = document.createElement('div');
+            modal.id = 'resetPasswordModal';
+            modal.innerHTML = \`
+                <div class="modal-overlay" onclick="closeResetPasswordModal()">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <button class="modal-close" onclick="closeResetPasswordModal()">&times;</button>
+                        <div id="resetPasswordBody">
+                            <h2 class="modal-title">Parolni tiklash</h2>
+                            <p class="modal-subtitle">Telegram botdan kelgan kodni kiriting</p>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Tasdiqlash kodi</label>
+                                <input type="text" id="resetCode" class="form-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 8px;" />
+                                <div class="error-message" id="resetCodeError"></div>
+                            </div>
+                            
+                            <button class="modal-button" onclick="verifyResetCode('\${phone}')">Tasdiqlash</button>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .modal-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(35, 35, 35, 0.95);
+                        backdrop-filter: blur(10px);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10000;
+                        animation: fadeIn 0.3s ease;
+                    }
+                    .modal-content {
+                        background: rgba(90, 90, 90, 0.1);
+                        backdrop-filter: blur(50px);
+                        -webkit-backdrop-filter: blur(50px);
+                        border: 1px solid ${themeColor};
+                        border-radius: 24px;
+                        padding: 40px;
+                        max-width: 500px;
+                        width: 90%;
+                        position: relative;
+                        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+                        animation: slideUp 0.3s ease;
+                    }
+                    .modal-close {
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                        background: none;
+                        border: none;
+                        color: rgba(255, 255, 255, 0.6);
+                        font-size: 32px;
+                        cursor: pointer;
+                        width: 40px;
+                        height: 40px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: color 0.3s ease;
+                    }
+                    .modal-close:hover {
+                        color: #ffffff;
+                    }
+                    .modal-title {
+                        color: #ffffff;
+                        font-size: 24px;
+                        font-weight: 700;
+                        margin-bottom: 10px;
+                        text-align: center;
+                    }
+                    .modal-subtitle {
+                        color: rgba(255, 255, 255, 0.7);
+                        font-size: 14px;
+                        margin-bottom: 30px;
+                        text-align: center;
+                    }
+                    .form-group {
+                        margin-bottom: 20px;
+                    }
+                    .form-label {
+                        display: block;
+                        color: #ffffff;
+                        font-size: 14px;
+                        font-weight: 500;
+                        margin-bottom: 8px;
+                    }
+                    .form-input {
+                        width: 100%;
+                        padding: 12px 16px;
+                        background: rgba(60, 60, 80, 0.5);
+                        border: 1px solid ${themeColor};
+                        border-radius: 25px;
+                        color: #ffffff;
+                        font-size: 16px;
+                        outline: none;
+                        transition: all 0.3s ease;
+                        box-sizing: border-box;
+                    }
+                    .form-input:focus {
+                        border-color: ${themeColor};
+                        box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+                    }
+                    .password-input-wrapper {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                    }
+                    .password-input-field {
+                        padding-right: 50px !important;
+                    }
+                    .password-toggle-btn {
+                        position: absolute;
+                        right: 14px;
+                        background: none;
+                        border: none;
+                        color: rgba(255, 255, 255, 0.6);
+                        cursor: pointer;
+                        padding: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: color 0.3s ease;
+                        z-index: 1;
+                        width: 24px;
+                        height: 24px;
+                    }
+                    .password-toggle-btn:hover {
+                        color: rgba(255, 255, 255, 0.9);
+                    }
+                    .error-message {
+                        color: #ff6b6b;
+                        font-size: 13px;
+                        margin-top: 5px;
+                        display: none;
+                    }
+                    .error-message.show {
+                        display: block;
+                    }
+                    .modal-button {
+                        width: 100%;
+                        padding: 14px;
+                        background: ${themeColor};
+                        border: none;
+                        border-radius: 25px;
+                        color: #ffffff;
+                        font-size: 16px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        margin-top: 10px;
+                        box-shadow: 0 4px 12px ${themeColor}50;
+                    }
+                    .modal-button:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px ${themeColor}66;
+                    }
+                    .modal-button:disabled {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                        transform: none;
+                    }
+                </style>
+            \`;
+            document.body.appendChild(modal);
+            
+            // Only numbers for reset code
+            const codeInput = document.getElementById('resetCode');
+            codeInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\\D/g, '');
+            });
+            codeInput.focus();
+        }
+
+        function closeResetPasswordModal() {
+            const modal = document.getElementById('resetPasswordModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        async function verifyResetCode(phone) {
+            const code = document.getElementById('resetCode').value.trim();
+            const codeError = document.getElementById('resetCodeError');
+            
+            if (!code || code.length !== 6) {
+                codeError.textContent = '6 raqamli kodni kiriting';
+                codeError.classList.add('show');
+                return;
+            }
+            
+            codeError.classList.remove('show');
+            
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Tekshirilmoqda...';
+            
+            try {
+                const apiBaseUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:8001/api' 
+                    : 'https://darslinker-backend.onrender.com/api';
+                const response = await fetch(\`\${apiBaseUrl}/landing-auth/verify-reset-code\`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: '+998' + phone,
+                        code: code
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Show new password form
+                    showNewPasswordForm(phone, code);
+                } else {
+                    showToast('error', data.message || 'Noto\\'g\\'ri kod');
+                    button.disabled = false;
+                    button.textContent = 'Tasdiqlash';
+                }
+            } catch (error) {
+                console.error('Verify reset code error:', error);
+                showToast('error', 'Xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
+                button.disabled = false;
+                button.textContent = 'Tasdiqlash';
+            }
+        }
+
+        function showNewPasswordForm(phone, code) {
+            const resetPasswordBody = document.getElementById('resetPasswordBody');
+            resetPasswordBody.innerHTML = \`
+                <h2 class="modal-title">Yangi parol</h2>
+                <p class="modal-subtitle">Yangi parolingizni kiriting</p>
+                
+                <div class="form-group">
+                    <label class="form-label">Yangi parol</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="newPassword" class="form-input password-input-field" placeholder="Kamida 6 ta belgi" />
+                        <button type="button" class="password-toggle-btn" onclick="togglePassword('newPassword', 'newPasswordToggle')">
+                            <svg id="newPasswordToggle" class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="error-message" id="newPasswordError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Yangi parolni tasdiqlang</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="confirmNewPassword" class="form-input password-input-field" placeholder="Parolni qayta kiriting" />
+                        <button type="button" class="password-toggle-btn" onclick="togglePassword('confirmNewPassword', 'confirmNewPasswordToggle')">
+                            <svg id="confirmNewPasswordToggle" class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="error-message" id="confirmNewPasswordError"></div>
+                </div>
+                
+                <button class="modal-button" onclick="resetPassword('\${phone}', '\${code}')">Parolni o'zgartirish</button>
+            \`;
+        }
+
+        async function resetPassword(phone, code) {
+            const newPassword = document.getElementById('newPassword').value.trim();
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value.trim();
+            const newPasswordError = document.getElementById('newPasswordError');
+            const confirmNewPasswordError = document.getElementById('confirmNewPasswordError');
+            
+            let isValid = true;
+            
+            if (!newPassword || newPassword.length < 6) {
+                newPasswordError.textContent = 'Parol kamida 6 ta belgidan iborat bo\\'lishi kerak';
+                newPasswordError.classList.add('show');
+                isValid = false;
+            } else {
+                newPasswordError.classList.remove('show');
+            }
+            
+            if (!confirmNewPassword) {
+                confirmNewPasswordError.textContent = 'Parolni tasdiqlang';
+                confirmNewPasswordError.classList.add('show');
+                isValid = false;
+            } else if (newPassword !== confirmNewPassword) {
+                confirmNewPasswordError.textContent = 'Parollar mos kelmaydi';
+                confirmNewPasswordError.classList.add('show');
+                isValid = false;
+            } else {
+                confirmNewPasswordError.classList.remove('show');
+            }
+            
+            if (!isValid) return;
+            
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'O\\'zgartrilmoqda...';
+            
+            try {
+                const apiBaseUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:8001/api' 
+                    : 'https://darslinker-backend.onrender.com/api';
+                const response = await fetch(\`\${apiBaseUrl}/landing-auth/reset-password\`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: '+998' + phone,
+                        code: code,
+                        newPassword: newPassword
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('success', 'Parol muvaffaqiyatli o\\'zgartirildi!');
+                    closeResetPasswordModal();
+                    
+                    // Open login modal after 1 second
+                    setTimeout(() => {
+                        openLoginModal({ preventDefault: () => {} });
+                    }, 1000);
+                } else {
+                    showToast('error', data.message || 'Xatolik yuz berdi');
+                    button.disabled = false;
+                    button.textContent = 'Parolni o\\'zgartirish';
+                }
+            } catch (error) {
+                console.error('Reset password error:', error);
+                showToast('error', 'Xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
+                button.disabled = false;
+                button.textContent = 'Parolni o\\'zgartirish';
             }
         }
 
@@ -5770,6 +6121,10 @@ async function generateLandingPageHTML(teacher) {
         window.closeLoginModal = closeLoginModal;
         window.handleLogin = handleLogin;
         window.handleForgotPassword = handleForgotPassword;
+        window.showResetPasswordModal = showResetPasswordModal;
+        window.closeResetPasswordModal = closeResetPasswordModal;
+        window.verifyResetCode = verifyResetCode;
+        window.resetPassword = resetPassword;
         window.closeBotInfoModal = closeBotInfoModal;
         window.renderStep = renderStep;
         window.validateStep1 = validateStep1;

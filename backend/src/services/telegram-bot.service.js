@@ -118,6 +118,16 @@ async function handleUpdate(update) {
           normalizedPhone = '+' + normalizedPhone;
         }
 
+        // Import User and Student models
+        const User = (await import('../models/user.model.js')).default;
+        const Student = (await import('../models/student.model.js')).default;
+
+        // Check if user already exists
+        let existingUser = await User.findOne({ phone: normalizedPhone });
+        if (!existingUser) {
+          existingUser = await Student.findOne({ phone: normalizedPhone });
+        }
+
         // Find verification code for this phone
         const verification = await Verification.findOne({
           phone: normalizedPhone,
@@ -125,13 +135,36 @@ async function handleUpdate(update) {
           expiresAt: { $gt: new Date() }
         }).sort({ createdAt: -1 });
 
+        if (existingUser && !verification) {
+          // User already registered and no pending verification
+          await sendMessage(chatId, `
+✅ *Siz allaqachon ro'yxatdan o'tgansiz!*
+
+Salom ${existingUser.firstName}! 👋
+
+Sizning hisobingiz faol.
+
+Kirish uchun veb-saytga o'ting:
+👉 https://darslinker.uz
+
+_DarsLinker jamoasi_ 📚
+          `.trim(), {
+            reply_markup: {
+              remove_keyboard: true
+            }
+          });
+          
+          logger.info('✅ User already registered:', { phone: normalizedPhone, userId: existingUser._id });
+          return;
+        }
+
         if (verification) {
           // Store chat ID for this phone (both in memory and database)
           userChatIds.set(normalizedPhone, chatId);
           verification.chatId = chatId.toString();
           await verification.save();
           
-          // Send verification code immediately
+          // Send verification code
           const code = verification.codeText;
           const firstName = verification.firstName || message.from.first_name;
           
@@ -139,12 +172,32 @@ async function handleUpdate(update) {
             phone: normalizedPhone, 
             hasCode: !!code,
             codeText: code,
-            codeSent: verification.codeSent 
+            codeSent: verification.codeSent,
+            hasExistingUser: !!existingUser
           });
           
           if (code) {
-            const codeMessage = `
-🔐 *Tasdiqlash kodi*
+            let codeMessage;
+            
+            if (existingUser) {
+              // Password reset code
+              codeMessage = `
+🔑 *Parol tiklash kodi*
+
+Salom ${firstName}! 👋
+
+Parolni tiklash uchun kod: *${code}*
+
+Bu kod 30 daqiqa davomida amal qiladi.
+
+Agar siz bu kodni so'ramagan bo'lsangiz, bu xabarni e'tiborsiz qoldiring.
+
+_DarsLinker jamoasi_ 📚
+              `.trim();
+            } else {
+              // Registration code
+              codeMessage = `
+🔐 *Ro'yxatdan o'tish kodi*
 
 Salom ${firstName}! 👋
 
@@ -155,7 +208,8 @@ Bu kod 30 daqiqa davomida amal qiladi.
 Agar siz bu kodni so'ramagan bo'lsangiz, bu xabarni e'tiborsiz qoldiring.
 
 _DarsLinker jamoasi_ 📚
-            `.trim();
+              `.trim();
+            }
 
             await sendMessage(chatId, codeMessage, {
               reply_markup: {
@@ -167,7 +221,12 @@ _DarsLinker jamoasi_ 📚
             verification.codeSent = true;
             await verification.save();
             
-            logger.info('✅ Verification code sent via contact:', { phone: normalizedPhone, chatId, code });
+            logger.info('✅ Verification code sent via contact:', { 
+              phone: normalizedPhone, 
+              chatId, 
+              code,
+              isPasswordReset: !!existingUser
+            });
           } else {
             logger.error('❌ No codeText in verification:', { 
               phone: normalizedPhone,
@@ -177,7 +236,7 @@ _DarsLinker jamoasi_ 📚
             await sendMessage(chatId, `
 ❌ *Xatolik yuz berdi*
 
-Iltimos, veb-saytda qaytadan ro'yxatdan o'tishni boshlang.
+Iltimos, veb-saytda qaytadan urinib ko'ring.
             `.trim());
           }
           
@@ -186,7 +245,7 @@ Iltimos, veb-saytda qaytadan ro'yxatdan o'tishni boshlang.
           await sendMessage(chatId, `
 ❌ *Telefon raqam topilmadi*
 
-Iltimos, avval veb-saytda ro'yxatdan o'tishni boshlang:
+Iltimos, avval veb-saytda ro'yxatdan o'tishni boshlang yoki parolni tiklashni boshlang:
 👉 https://darslinker.uz
 
 Keyin bu botga qaytib keling.
@@ -198,9 +257,19 @@ Keyin bu botga qaytib keling.
       // Handle /start command
       if (text === '/start') {
         await sendMessageWithButton(chatId, `
-🎓 *@darslinker.uz ning rasmiy botiga xush kelibsiz!*
+🎓 *@darslinker ning rasmiy botiga xush kelibsiz!*
 
-Ro'yxatdan o'tish uchun tasdiqlash kodini olish uchun quyidagi tugmani bosing.
+Ro'yxatdan o'tish uchun kontaktingizni yuboring.
+        `.trim());
+        return;
+      }
+
+      // Handle /login command
+      if (text === '/login') {
+        await sendMessageWithButton(chatId, `
+🔐 *Tizimga kirish*
+
+Kirish uchun telefon raqamingizni yuboring.
         `.trim());
         return;
       }

@@ -4,7 +4,10 @@ import {
   verifyAndRegister,
   resendVerificationCode,
   login,
-  forgotPassword
+  forgotPassword,
+  sendResetCode,
+  verifyResetCode,
+  resetPassword
 } from '../controllers/landing-auth.controller.js';
 
 const router = express.Router();
@@ -43,5 +46,26 @@ router.post('/login', login);
  * @access Public
  */
 router.post('/forgot-password', forgotPassword);
+
+/**
+ * @route POST /api/landing-auth/send-reset-code
+ * @desc Send reset password code via Telegram
+ * @access Public
+ */
+router.post('/send-reset-code', sendResetCode);
+
+/**
+ * @route POST /api/landing-auth/verify-reset-code
+ * @desc Verify reset password code
+ * @access Public
+ */
+router.post('/verify-reset-code', verifyResetCode);
+
+/**
+ * @route POST /api/landing-auth/reset-password
+ * @desc Reset password with verified code
+ * @access Public
+ */
+router.post('/reset-password', resetPassword);
 
 export default router;

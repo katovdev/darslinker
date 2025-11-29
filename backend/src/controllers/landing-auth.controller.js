@@ -398,10 +398,211 @@ const forgotPassword = catchAsync(async (req, res) => {
   });
 });
 
+/**
+ * Send reset password code via Telegram
+ * @route POST /landing-auth/send-reset-code
+ * @access Public
+ */
+const sendResetCode = catchAsync(async (req, res) => {
+  const { phone } = req.body;
+
+  if (!phone) {
+    throw new BadRequestError("Phone is required");
+  }
+
+  // Normalize phone number
+  const normalizedPhone = normalizePhone(phone);
+
+  logger.info("🔑 Reset password code request", { phone: normalizedPhone });
+
+  // Import Student model
+  const Student = (await import("../models/student.model.js")).default;
+
+  // Find user
+  let user = await User.findOne({ phone: normalizedPhone });
+  if (!user) {
+    user = await Student.findOne({ phone: normalizedPhone });
+  }
+  
+  if (!user) {
+    throw new BadRequestError("Bu telefon raqam ro'yxatdan o'tmagan");
+  }
+
+  // Generate 6-digit reset code
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Set expiration time (30 minutes)
+  const expiresAt = new Date(Date.now() + 30 * 60 * 1000);
+
+  // Hash the code
+  const hashedCode = await bcrypt.hash(code, parseInt(BCRYPT_SALT_ROUNDS));
+
+  // Try to find existing chatId from previous verifications
+  const oldVerification = await Verification.findOne({
+    phone: normalizedPhone,
+    chatId: { $exists: true, $ne: null }
+  }).sort({ createdAt: -1 });
+
+  const chatId = oldVerification?.chatId;
+
+  // Save verification record
+  const newVerification = await Verification.create({
+    phone: normalizedPhone,
+    code: hashedCode,
+    codeText: code,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    chatId: chatId || null,
+    expiresAt
+  });
+
+  // Send code via Telegram if chatId exists
+  let sent = false;
+  if (chatId) {
+    sent = await sendVerificationCodeViaTelegram(normalizedPhone, code, user.firstName);
+  }
+
+  logger.info("✅ Reset code created", { phone: normalizedPhone, hasChatId: !!chatId, sent });
+
+  res.json({
+    success: true,
+    message: chatId 
+      ? "Tasdiqlash kodi Telegram botga yuborildi" 
+      : "Telegram botga /login buyrug'ini yuboring va kontaktingizni yuboring",
+    needsContact: !chatId
+  });
+});
+
+/**
+ * Verify reset code
+ * @route POST /landing-auth/verify-reset-code
+ * @access Public
+ */
+const verifyResetCode = catchAsync(async (req, res) => {
+  const { phone, code } = req.body;
+
+  if (!phone || !code) {
+    throw new BadRequestError("Phone and code are required");
+  }
+
+  // Normalize phone number
+  const normalizedPhone = normalizePhone(phone);
+
+  logger.info("🔐 Verify reset code attempt", { phone: normalizedPhone });
+
+  // Find verification record
+  const verification = await Verification.findOne({
+    phone: normalizedPhone,
+    verified: false,
+    expiresAt: { $gt: new Date() }
+  }).sort({ createdAt: -1 });
+
+  if (!verification) {
+    throw new UnauthorizedError("Tasdiqlash kodi topilmadi yoki muddati tugagan");
+  }
+
+  // Check max attempts
+  if (verification.attempts >= 5) {
+    throw new UnauthorizedError("Maksimal urinishlar soni oshib ketdi");
+  }
+
+  // Increment attempts
+  verification.attempts += 1;
+  await verification.save();
+
+  // Verify code
+  const isValidCode = await bcrypt.compare(code, verification.code);
+
+  if (!isValidCode) {
+    logger.warn("❌ Invalid reset code", { phone: normalizedPhone });
+    throw new UnauthorizedError("Noto'g'ri tasdiqlash kodi");
+  }
+
+  logger.info("✅ Reset code verified", { phone: normalizedPhone });
+
+  res.json({
+    success: true,
+    message: "Kod tasdiqlandi"
+  });
+});
+
+/**
+ * Reset password with verified code
+ * @route POST /landing-auth/reset-password
+ * @access Public
+ */
+const resetPassword = catchAsync(async (req, res) => {
+  const { phone, code, newPassword } = req.body;
+
+  if (!phone || !code || !newPassword) {
+    throw new BadRequestError("Phone, code, and newPassword are required");
+  }
+
+  if (newPassword.length < 6) {
+    throw new BadRequestError("Parol kamida 6 ta belgidan iborat bo'lishi kerak");
+  }
+
+  // Normalize phone number
+  const normalizedPhone = normalizePhone(phone);
+
+  logger.info("🔑 Reset password attempt", { phone: normalizedPhone });
+
+  // Find and verify code again
+  const verification = await Verification.findOne({
+    phone: normalizedPhone,
+    verified: false,
+    expiresAt: { $gt: new Date() }
+  }).sort({ createdAt: -1 });
+
+  if (!verification) {
+    throw new UnauthorizedError("Tasdiqlash kodi topilmadi yoki muddati tugagan");
+  }
+
+  // Verify code
+  const isValidCode = await bcrypt.compare(code, verification.code);
+  if (!isValidCode) {
+    throw new UnauthorizedError("Noto'g'ri tasdiqlash kodi");
+  }
+
+  // Import Student model
+  const Student = (await import("../models/student.model.js")).default;
+
+  // Find user
+  let user = await User.findOne({ phone: normalizedPhone });
+  if (!user) {
+    user = await Student.findOne({ phone: normalizedPhone });
+  }
+  
+  if (!user) {
+    throw new BadRequestError("Foydalanuvchi topilmadi");
+  }
+
+  // Hash new password
+  const hashedPassword = await bcrypt.hash(newPassword, parseInt(BCRYPT_SALT_ROUNDS));
+
+  // Update password
+  user.password = hashedPassword;
+  await user.save();
+
+  // Mark verification as verified
+  verification.verified = true;
+  await verification.save();
+
+  logger.info("✅ Password reset successful", { userId: user._id });
+
+  res.json({
+    success: true,
+    message: "Parol muvaffaqiyatli o'zgartirildi"
+  });
+});
+
 export {
   sendVerificationCode,
   verifyAndRegister,
   resendVerificationCode,
   login,
-  forgotPassword
+  forgotPassword,
+  sendResetCode,
+  verifyResetCode,
+  resetPassword
 };
