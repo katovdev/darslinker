@@ -134,6 +134,7 @@ const findAll = catchAsync(async (req, res) => {
   const totalCount = await Course.countDocuments(filter);
 
   const courses = await Course.find(filter)
+    .populate('teacher', 'firstName lastName email profileImage')
     .sort(sort)
     .skip(skip)
     .limit(limitNumber)

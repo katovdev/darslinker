@@ -6,17 +6,30 @@ export function initLandingStudentDashboard() {
   document.body.style.overflow = 'hidden';
   
   renderLandingStudentDashboard();
+  
+  // Load teacher's courses after rendering
+  loadTeacherCourses();
 }
 
 export function renderLandingStudentDashboard() {
   // Render directly to body
   const container = document.body;
 
-  // Get user data from localStorage or sessionStorage
-  const userData = JSON.parse(localStorage.getItem("user") || sessionStorage.getItem("landingUser") || "{}");
-  const userName = userData.name || "John Derting";
-  const userLevel = userData.level || 5;
-  const userPoints = userData.points || 1240;
+  // Get user data from sessionStorage (saved during login/register)
+  const landingUser = sessionStorage.getItem("landingUser");
+  const userData = landingUser ? JSON.parse(landingUser) : {};
+  
+  // Build full name from firstName and lastName
+  const firstName = userData.firstName || "Student";
+  const lastName = userData.lastName || "";
+  const fullName = `${firstName} ${lastName}`.trim();
+  const phone = userData.phone || "";
+  
+  // Default values for level and points (new user starts with 0)
+  const userLevel = userData.level || 1;
+  const userPoints = userData.points || 0;
+  
+  console.log('👤 Landing User Data:', { firstName, lastName, fullName, phone });
 
   container.innerHTML = `
     <style>
@@ -512,6 +525,12 @@ export function renderLandingStudentDashboard() {
         border-color: #7EA2D4;
       }
 
+      /* Loading Animation */
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+
       /* Responsive Design */
       @media (max-width: 1200px) {
         .landing-courses-grid {
@@ -552,7 +571,7 @@ export function renderLandingStudentDashboard() {
             </svg>
           </div>
           <div class="landing-profile-info">
-            <div class="landing-profile-name">${userName}</div>
+            <div class="landing-profile-name">${fullName}</div>
             <div class="landing-profile-level">Level ${userLevel} • ${userPoints} pts</div>
           </div>
         </div>
@@ -638,22 +657,22 @@ export function renderLandingStudentDashboard() {
         <div class="landing-dashboard-content">
           <!-- Welcome Section -->
           <div class="landing-welcome-card">
-            <h1 class="landing-welcome-title">Welcome back, ${userName.split(' ')[0]} !</h1>
+            <h1 class="landing-welcome-title">Welcome back, ${firstName} !</h1>
             <p class="landing-welcome-subtitle">Continue your learning journey and achieve your goals</p>
           </div>
 
           <!-- Stats Cards -->
           <div class="landing-stats-grid">
             <div class="landing-stat-card">
-              <div class="landing-stat-value">3</div>
+              <div class="landing-stat-value">0</div>
               <div class="landing-stat-label">Active Courses</div>
             </div>
             <div class="landing-stat-card">
-              <div class="landing-stat-value">${userPoints.toLocaleString()}</div>
+              <div class="landing-stat-value">0</div>
               <div class="landing-stat-label">Total Points</div>
             </div>
             <div class="landing-stat-card">
-              <div class="landing-stat-value">2</div>
+              <div class="landing-stat-value">0</div>
               <div class="landing-stat-label">Certificates</div>
             </div>
           </div>
@@ -662,7 +681,11 @@ export function renderLandingStudentDashboard() {
           <div class="landing-learning-section">
             <h2 class="landing-section-title">Continue Learning</h2>
             <div class="landing-courses-grid">
-              ${generateCourseCards()}
+              <!-- Loading spinner will be shown here -->
+              <div class="landing-courses-loading" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid rgba(126, 162, 212, 0.2); border-top: 4px solid #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <p style="color: #9CA3AF; margin-top: 20px; font-size: 14px;">Loading courses...</p>
+              </div>
             </div>
           </div>
         </div>
@@ -671,61 +694,6 @@ export function renderLandingStudentDashboard() {
   `;
 
   attachEventListeners();
-}
-
-function generateCourseCards() {
-  const courses = [
-    {
-      id: 1,
-      title: "React Masterclass 2025",
-      instructor: "John Derting",
-      progress: 65,
-      lessons: "21/47 lessons",
-      duration: "3.2 hrs left"
-    },
-    {
-      id: 2,
-      title: "React Masterclass 2025",
-      instructor: "John Derting",
-      progress: 65,
-      lessons: "20/47 lessons",
-      duration: "3.2 hrs left"
-    },
-    {
-      id: 3,
-      title: "React Masterclass 2025",
-      instructor: "John Derting",
-      progress: 65,
-      lessons: "20/47 lessons",
-      duration: "3.2 hrs left"
-    }
-  ];
-
-  return courses.map(course => `
-    <div class="landing-course-card">
-      <div class="landing-course-thumbnail">
-        <svg width="80" height="60" viewBox="0 0 80 60" fill="none">
-          <rect width="80" height="60" rx="8" fill="#374151"/>
-          <rect x="20" y="15" width="40" height="30" rx="4" fill="#E5E7EB"/>
-        </svg>
-      </div>
-      <div class="landing-course-progress-bar">
-        <div class="landing-course-progress-label">
-          <span>Progress</span>
-          <span>${course.progress}%</span>
-        </div>
-        <div class="landing-progress-track">
-          <div class="landing-progress-fill" style="width: ${course.progress}%"></div>
-        </div>
-      </div>
-      <div class="landing-course-info">
-        <h3 class="landing-course-title">${course.title}</h3>
-        <p class="landing-course-instructor">${course.instructor}</p>
-        <p class="landing-course-meta">${course.lessons} • ${course.duration}</p>
-      </div>
-      <button class="landing-continue-btn">Continue learning</button>
-    </div>
-  `).join('');
 }
 
 // Toggle menu function
@@ -775,3 +743,136 @@ function handleNavigation(page) {
   console.log('Navigate to:', page);
   // Add your navigation logic here
 }
+
+// Load teacher's courses from backend
+async function loadTeacherCourses() {
+  try {
+    // Get teacher ID from sessionStorage
+    const teacherId = sessionStorage.getItem('currentTeacherId');
+    
+    if (!teacherId) {
+      console.error('❌ Teacher ID not found in sessionStorage');
+      return;
+    }
+    
+    console.log('📚 Loading courses for teacher:', teacherId);
+    
+    // Get API base URL from env
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    
+    // Fetch teacher's courses
+    const response = await fetch(`${apiBaseUrl}/courses?teacher=${teacherId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const result = await response.json();
+    
+    if (result.success && result.courses) {
+      console.log('✅ Courses loaded:', result.courses);
+      
+      // Update the courses grid with real data
+      updateCoursesGrid(result.courses);
+      
+      // Update stats
+      updateStats(result.courses);
+    } else {
+      console.error('❌ Failed to load courses:', result.message || 'No courses found');
+    }
+  } catch (error) {
+    console.error('❌ Error loading courses:', error);
+  }
+}
+
+// Update courses grid with real data
+function updateCoursesGrid(courses) {
+  const coursesGrid = document.querySelector('.landing-courses-grid');
+  
+  if (!coursesGrid) {
+    console.error('❌ Courses grid not found');
+    return;
+  }
+  
+  if (!courses || courses.length === 0) {
+    coursesGrid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #9CA3AF;">
+        <p>No courses available yet</p>
+      </div>
+    `;
+    return;
+  }
+  
+  console.log('📝 Rendering courses:', courses);
+  
+  // Generate course cards from real data
+  coursesGrid.innerHTML = courses.map(course => {
+    // Progress is 0 for all courses (user just registered)
+    const progress = 0;
+    
+    // Get teacher name
+    const teacherName = course.teacher 
+      ? `${course.teacher.firstName || ''} ${course.teacher.lastName || ''}`.trim() || 'Instructor'
+      : 'Instructor';
+    
+    // Get course image (field name is 'thumbnail' in database)
+    const courseImage = course.thumbnail || course.courseImage || '';
+    
+    console.log('Course:', {
+      title: course.title,
+      image: courseImage,
+      teacher: teacherName,
+      duration: course.duration,
+      rawCourse: course
+    });
+    
+    return `
+      <div class="landing-course-card">
+        <div class="landing-course-thumbnail">
+          ${courseImage 
+            ? `<img src="${courseImage}" alt="${course.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />`
+            : `<svg width="80" height="60" viewBox="0 0 80 60" fill="none">
+                <rect width="80" height="60" rx="8" fill="#374151"/>
+                <rect x="20" y="15" width="40" height="30" rx="4" fill="#E5E7EB"/>
+              </svg>`
+          }
+        </div>
+        <div class="landing-course-progress-bar">
+          <div class="landing-course-progress-label">
+            <span>Progress</span>
+            <span>${progress}%</span>
+          </div>
+          <div class="landing-progress-track">
+            <div class="landing-progress-fill" style="width: ${progress}%"></div>
+          </div>
+        </div>
+        <div class="landing-course-info">
+          <h3 class="landing-course-title">${course.title || 'Untitled Course'}</h3>
+          <p class="landing-course-instructor">${teacherName}</p>
+          <p class="landing-course-meta">${course.duration || 'Self-paced'} • ${course.level || 'All levels'}</p>
+        </div>
+        <button class="landing-continue-btn" onclick="openCourse('${course._id}')">Start learning</button>
+      </div>
+    `;
+  }).join('');
+}
+
+// Update stats with real data
+function updateStats(courses) {
+  // Count active courses
+  const activeCourses = courses.filter(c => c.status === 'active' || !c.status).length;
+  
+  // Update stat cards
+  const statCards = document.querySelectorAll('.landing-stat-card');
+  if (statCards[0]) {
+    statCards[0].querySelector('.landing-stat-value').textContent = activeCourses;
+  }
+}
+
+// Open course (to be implemented)
+window.openCourse = function(courseId) {
+  console.log('Opening course:', courseId);
+  // TODO: Navigate to course page or open course modal
+  alert(`Course ${courseId} - Coming soon!`);
+};
