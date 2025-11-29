@@ -451,55 +451,31 @@ const sendResetCode = catchAsync(async (req, res) => {
       codeAge: Date.now() - existingVerification.createdAt.getTime() 
     });
 
-    const chatId = existingVerification.chatId;
-    let sent = false;
-    if (chatId) {
-      sent = await sendVerificationCodeViaTelegram(normalizedPhone, existingVerification.codeText, user.firstName);
-    }
-
     return res.json({
       success: true,
-      message: chatId 
-        ? "Avvalgi kod hali amal qilmoqda va qayta yuborildi" 
-        : "Avvalgi kod hali amal qilmoqda. Telegram botga /login yuboring va kontaktingizni yuboring",
-      needsContact: !chatId,
-      codeResent: true
+      message: "Avvalgi kod hali amal qilmoqda. Telegram botga /login yuboring va kontaktingizni yuboring",
+      needsContact: true,
+      codeResent: false
     });
   }
 
-  // Try to find existing chatId from previous verifications
-  const oldVerification = await Verification.findOne({
-    phone: normalizedPhone,
-    chatId: { $exists: true, $ne: null }
-  }).sort({ createdAt: -1 });
-
-  const chatId = oldVerification?.chatId;
-
-  // Save verification record
+  // Save verification record (don't send automatically)
   const newVerification = await Verification.create({
     phone: normalizedPhone,
     code: hashedCode,
     codeText: code,
     firstName: user.firstName,
     lastName: user.lastName,
-    chatId: chatId || null,
+    chatId: null, // Don't store chatId yet
     expiresAt
   });
 
-  // Send code via Telegram if chatId exists
-  let sent = false;
-  if (chatId) {
-    sent = await sendVerificationCodeViaTelegram(normalizedPhone, code, user.firstName);
-  }
-
-  logger.info("✅ Reset code created", { phone: normalizedPhone, hasChatId: !!chatId, sent });
+  logger.info("✅ Reset code created", { phone: normalizedPhone });
 
   res.json({
     success: true,
-    message: chatId 
-      ? "Tasdiqlash kodi Telegram botga yuborildi" 
-      : "Telegram botga /login buyrug'ini yuboring va kontaktingizni yuboring",
-    needsContact: !chatId
+    message: "Telegram botga /login yuboring va kontaktingizni yuboring",
+    needsContact: true
   });
 });
 

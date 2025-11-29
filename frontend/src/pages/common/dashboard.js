@@ -5071,15 +5071,12 @@ async function generateLandingPageHTML(teacher) {
                 const data = await response.json();
                 
                 if (data.success) {
-                    if (data.needsContact) {
-                        showToast('success', 'Telegram botga /start yozing va kontaktingizni yuboring', 5000);
-                        
-                        // Show bot info modal
-                        const botUsername = 'darslinkerrr_bot';
-                        showBotInfoModal(botUsername, null);
-                    } else {
-                        showToast('success', 'Telegram botga kod yuborildi');
-                    }
+                    // Always show toast with instructions
+                    showToast('success', 'Telegram botga /login yozing va kontaktingizni yuboring', 8000);
+                    
+                    // Show bot info modal
+                    const botUsername = 'darslinkerrr_bot';
+                    showBotInfoModal(botUsername, null);
                     
                     // Close login modal and open reset password modal
                     closeLoginModal();
@@ -5964,7 +5961,7 @@ async function generateLandingPageHTML(teacher) {
         }
 
         // Toast notification function
-        function showToast(type, message) {
+        function showToast(type, message, duration = 5000) {
             const toast = document.createElement('div');
             toast.className = \`landing-toast landing-toast-\${type}\`;
             toast.innerHTML = \`
@@ -6046,7 +6043,7 @@ async function generateLandingPageHTML(teacher) {
                         style.parentNode.removeChild(style);
                     }
                 }, 300);
-            }, 5000);
+            }, duration);
         }
 
         // Smooth scroll to section and update active nav link
