@@ -4208,21 +4208,21 @@ async function generateLandingPageHTML(teacher) {
                     <!-- Language Selector -->
                     <div class="language-selector" onclick="toggleLangDropdown(event)">
                         <div class="lang-current">
-                            <img src="/src/assets/images/uz-flag.jpg" alt="UZ" id="currentLangFlag">
+                            <img src="/images/uz-flag.jpg" alt="UZ" id="currentLangFlag">
                             <span id="currentLangText">UZ</span>
                             <span class="lang-arrow">▼</span>
                         </div>
                         <div class="lang-dropdown">
-                            <div class="lang-option active" onclick="changeLandingLanguage(event, 'uz', '/src/assets/images/uz-flag.jpg', 'UZ')">
-                                <img src="/src/assets/images/uz-flag.jpg" alt="UZ">
+                            <div class="lang-option active" onclick="changeLandingLanguage(event, 'uz', '/images/uz-flag.jpg', 'UZ')">
+                                <img src="/images/uz-flag.jpg" alt="UZ">
                                 <span>UZ</span>
                             </div>
-                            <div class="lang-option" onclick="changeLandingLanguage(event, 'en', '/src/assets/images/us-flag.png', 'EN')">
-                                <img src="/src/assets/images/us-flag.png" alt="EN">
+                            <div class="lang-option" onclick="changeLandingLanguage(event, 'en', '/images/us-flag.png', 'EN')">
+                                <img src="/images/us-flag.png" alt="EN">
                                 <span>EN</span>
                             </div>
-                            <div class="lang-option" onclick="changeLandingLanguage(event, 'ru', '/src/assets/images/ru-flag.jpg', 'RU')">
-                                <img src="/src/assets/images/ru-flag.jpg" alt="RU">
+                            <div class="lang-option" onclick="changeLandingLanguage(event, 'ru', '/images/ru-flag.jpg', 'RU')">
+                                <img src="/images/ru-flag.jpg" alt="RU">
                                 <span>RU</span>
                             </div>
                         </div>
