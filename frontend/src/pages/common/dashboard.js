@@ -1,4 +1,3 @@
-
 import { store } from '../../utils/store.js';
 import { apiService } from '../../utils/api.js';
 import { router } from '../../utils/router.js';
@@ -3418,6 +3417,9 @@ async function generateLandingPageHTML(teacher) {
             padding: 25px 0;
             box-shadow: 0 2px 10px rgba(126, 162, 212, 0.1);
             border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .header-content {
@@ -3442,6 +3444,138 @@ async function generateLandingPageHTML(teacher) {
             color: ${themeColor};
         }
 
+        .nav-menu {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            color: ${themeColor};
+        }
+
+        .nav-link.active {
+            color: ${themeColor};
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .language-selector {
+            position: relative;
+        }
+
+        .lang-current {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid ${themeColor};
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 42px;
+            box-sizing: border-box;
+        }
+
+        .lang-current:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: ${themeColor};
+        }
+
+        .lang-current img {
+            width: 22px;
+            height: 16px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .lang-current span {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .lang-arrow {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 8px;
+            transition: transform 0.3s ease;
+            margin-left: 2px;
+        }
+
+        .language-selector.open .lang-arrow {
+            transform: rotate(180deg);
+        }
+
+        .lang-dropdown {
+            position: absolute;
+            top: calc(100% + 8px);
+            right: 0;
+            background: #2a2a2a;
+            border: 1px solid ${themeColor};
+            border-radius: 6px;
+            padding: 6px;
+            min-width: 100px;
+            display: none;
+            flex-direction: column;
+            gap: 2px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .language-selector.open .lang-dropdown {
+            display: flex;
+        }
+
+        .lang-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lang-option:hover {
+            background: rgba(126, 162, 212, 0.1);
+        }
+
+        .lang-option.active {
+            background: rgba(126, 162, 212, 0.2);
+        }
+
+        .lang-option img {
+            width: 22px;
+            height: 16px;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+
+        .lang-option span {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
         .auth-button {
             background: ${themeColor};
             color: white;
@@ -3457,6 +3591,14 @@ async function generateLandingPageHTML(teacher) {
             background: ${themeColor}dd;
             transform: translateY(-1px);
         }
+
+        .auth-button.secondary {
+            background: transparent;
+            border: 1px solid ${themeColor};
+            color: ${themeColor};
+        }
+
+      
 
         /* Hero Section */
         .hero {
@@ -4054,13 +4196,50 @@ async function generateLandingPageHTML(teacher) {
                 <div class="logo">
                     <span class="logo-text" style="color: ${themeColor};">${logoText}</span>
                 </div>
-                <a href="#" class="auth-button" style="background: ${themeColor};" onclick="openRegistrationModal(event)">Ro'yxatdan o'tish</a>
+                
+                <nav class="nav-menu">
+                    <a href="#hero" class="nav-link active" onclick="scrollToSection(event, 'hero')">Asosiy</a>
+                    <a href="#about" class="nav-link" onclick="scrollToSection(event, 'about')">Haqida</a>
+                    <a href="#certificates" class="nav-link" onclick="scrollToSection(event, 'certificates')">Sertifikatlar</a>
+                    <a href="#courses" class="nav-link" onclick="scrollToSection(event, 'courses')">Kurslar</a>
+                </nav>
+                
+                <div class="header-actions">
+                    <!-- Language Selector -->
+                    <div class="language-selector" onclick="toggleLangDropdown(event)">
+                        <div class="lang-current">
+                            <img src="/src/assets/images/uz-flag.jpg" alt="UZ" id="currentLangFlag">
+                            <span id="currentLangText">UZ</span>
+                            <span class="lang-arrow">▼</span>
+                        </div>
+                        <div class="lang-dropdown">
+                            <div class="lang-option active" onclick="changeLandingLanguage(event, 'uz', '/src/assets/images/uz-flag.jpg', 'UZ')">
+                                <img src="/src/assets/images/uz-flag.jpg" alt="UZ">
+                                <span>UZ</span>
+                            </div>
+                            <div class="lang-option" onclick="changeLandingLanguage(event, 'en', '/src/assets/images/us-flag.png', 'EN')">
+                                <img src="/src/assets/images/us-flag.png" alt="EN">
+                                <span>EN</span>
+                            </div>
+                            <div class="lang-option" onclick="changeLandingLanguage(event, 'ru', '/src/assets/images/ru-flag.jpg', 'RU')">
+                                <img src="/src/assets/images/ru-flag.jpg" alt="RU">
+                                <span>RU</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Auth Buttons -->
+                    <div class="auth-buttons">
+                        <a href="/login.html" class="auth-button secondary" style="border-color: ${themeColor}; color: ${themeColor};">Kirish</a>
+                        <a href="#" class="auth-button" style="background: ${themeColor};" onclick="openRegistrationModal(event)">Ro'yxatdan o'tish</a>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="hero">
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
@@ -4083,7 +4262,7 @@ async function generateLandingPageHTML(teacher) {
     </section>
 
     <!-- Profile Section -->
-    <section class="profile">
+    <section class="profile" id="about">
         <div class="container">
             <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: ${themeColor}; text-align: center;">O'qituvchi haqida</h2>
             <div class="profile-card">
@@ -4146,7 +4325,7 @@ async function generateLandingPageHTML(teacher) {
 
     ${teacher.certificates && teacher.certificates.length > 0 ? `
     <!-- Certificates Section -->
-    <section class="certificates">
+    <section class="certificates" id="certificates">
         <div class="container">
             <h2>Sertifikatlar & Malaka</h2>
             <div class="certificates-grid">
@@ -4180,7 +4359,7 @@ async function generateLandingPageHTML(teacher) {
     </section>
     ` : `
     <!-- Default Certificates Section -->
-    <section class="certificates">
+    <section class="certificates" id="certificates">
         <div class="container">
             <h2>Sertifikatlar & Malaka</h2>
             <div class="certificates-grid">
@@ -4245,131 +4424,6 @@ async function generateLandingPageHTML(teacher) {
     </footer>
 
     <script>
-        // Features Auto Slider
-        let currentSlide = 0;
-        let autoSlideInterval;
-        const slides = document.querySelectorAll('.feature-slide');
-        const dots = document.querySelectorAll('.dot');
-        const totalSlides = slides.length;
-
-        function showSlide(index) {
-            // Move slider to show current slide
-            const slider = document.querySelector('.features-slider');
-            const translateValue = -index * 20; // Each slide is 20% width
-            slider.style.transform = 'translateX(' + translateValue + '%)';
-
-            // Update dots
-            dots.forEach(dot => dot.classList.remove('active'));
-            dots[index].classList.add('active');
-
-            // For infinite carousel, buttons are never disabled
-        }
-
-        function nextSlide() {
-            const slider = document.querySelector('.features-slider');
-
-            if (currentSlide === totalSlides - 1) {
-                // From last slide to first slide with smooth transition
-                currentSlide = 0;
-
-                // Temporarily move to a position beyond the last slide
-                slider.style.transition = 'transform 0.5s ease';
-                slider.style.transform = 'translateX(-100%)';
-
-                // After animation, snap to first slide
-                setTimeout(() => {
-                    slider.style.transition = 'none';
-                    slider.style.transform = 'translateX(0%)';
-
-                    // Update dots only (no button states for infinite loop)
-                    dots.forEach(dot => dot.classList.remove('active'));
-                    dots[0].classList.add('active');
-
-                    // Restore smooth transition for next moves
-                    setTimeout(() => {
-                        slider.style.transition = 'transform 0.5s ease';
-                    }, 50);
-                }, 500);
-            } else {
-                currentSlide++;
-                showSlide(currentSlide);
-            }
-        }
-
-        function startAutoSlide() {
-            autoSlideInterval = setInterval(nextSlide, 7000); // 7 seconds
-        }
-
-        function stopAutoSlide() {
-            clearInterval(autoSlideInterval);
-        }
-
-        function resetAutoSlide() {
-            stopAutoSlide();
-            setTimeout(startAutoSlide, 2000); // Wait 2 seconds before restarting
-        }
-
-        // Manual navigation - dots
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => {
-                currentSlide = index;
-                showSlide(currentSlide);
-                resetAutoSlide();
-            });
-        });
-
-        // Manual navigation - buttons
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-
-        if (prevBtn) {
-            prevBtn.addEventListener('click', () => {
-                const slider = document.querySelector('.features-slider');
-
-                if (currentSlide === 0) {
-                    // From first slide to last slide with smooth transition
-                    currentSlide = totalSlides - 1;
-
-                    // Temporarily move to before first slide
-                    slider.style.transition = 'transform 0.5s ease';
-                    slider.style.transform = 'translateX(20%)';
-
-                    setTimeout(() => {
-                        slider.style.transition = 'none';
-                        slider.style.transform = 'translateX(-80%)';
-                        dots.forEach(dot => dot.classList.remove('active'));
-                        dots[totalSlides - 1].classList.add('active');
-
-                        setTimeout(() => {
-                            slider.style.transition = 'transform 0.5s ease';
-                        }, 50);
-                    }, 500);
-                } else {
-                    currentSlide--;
-                    showSlide(currentSlide);
-                }
-                resetAutoSlide();
-            });
-        }
-
-        if (nextBtn) {
-            nextBtn.addEventListener('click', () => {
-                nextSlide();
-                resetAutoSlide();
-            });
-        }
-
-        // Pause auto-slide on hover
-        const featuresContainer = document.querySelector('.features-slide-container');
-        if (featuresContainer) {
-            featuresContainer.addEventListener('mouseenter', stopAutoSlide);
-            featuresContainer.addEventListener('mouseleave', startAutoSlide);
-        }
-
-        // Initialize slider
-        showSlide(0);
-        startAutoSlide();
-
         // Registration Modal Functions
         let currentStep = 1;
         let registrationData = {
@@ -4472,7 +4526,7 @@ async function generateLandingPageHTML(teacher) {
                         transition: all 0.3s ease;
                     }
                     .step-dot.active {
-                        background: #7EA2D4;
+                        background: ${themeColor};
                         transform: scale(1.3);
                     }
                     .form-group {
@@ -4498,8 +4552,8 @@ async function generateLandingPageHTML(teacher) {
                         box-sizing: border-box;
                     }
                     .form-input:focus {
-                        border-color: #7EA2D4;
-                        box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+                        border-color: ${themeColor};
+                        box-shadow: 0 0 0 3px ${themeColor}20;
                     }
                     .form-input::placeholder {
                         color: rgba(255, 255, 255, 0.4);
@@ -4541,7 +4595,7 @@ async function generateLandingPageHTML(teacher) {
                     .modal-button {
                         width: 100%;
                         padding: 14px;
-                        background: linear-gradient(135deg, #7EA2D4, #5A85C7);
+                        background: ${themeColor};
                         border: none;
                         border-radius: 10px;
                         color: #ffffff;
@@ -4553,7 +4607,7 @@ async function generateLandingPageHTML(teacher) {
                     }
                     .modal-button:hover {
                         transform: translateY(-2px);
-                        box-shadow: 0 8px 20px rgba(126, 162, 212, 0.4);
+                        box-shadow: 0 8px 20px ${themeColor}66;
                     }
                     .modal-button:disabled {
                         opacity: 0.6;
@@ -4579,7 +4633,7 @@ async function generateLandingPageHTML(teacher) {
                         text-align: center;
                     }
                     .resend-link {
-                        color: #7EA2D4;
+                        color: ${themeColor};
                         text-decoration: none;
                         font-weight: 500;
                         cursor: pointer;
@@ -4691,17 +4745,11 @@ async function generateLandingPageHTML(teacher) {
                         <div class="step-dot active"></div>
                         <div class="step-dot active"></div>
                     </div>
-                    <div class="verification-info">
-                        📱 Telegram botimizga +998\${registrationData.phone} raqamiga tasdiqlash kodi yuborildi
-                    </div>
                     <div class="form-group">
                         <label class="form-label">Tasdiqlash kodi</label>
                         <input type="text" id="verificationCode" class="form-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 8px;" />
                         <div class="error-message" id="codeError"></div>
                     </div>
-                    <p style="text-align: center; margin-top: 15px; color: rgba(255, 255, 255, 0.7); font-size: 14px;">
-                        Kod kelmadimi? <a class="resend-link" onclick="resendCode()">Qayta yuborish</a>
-                    </p>
                     <button class="modal-button" onclick="validateStep3()">Tasdiqlash</button>
                     <button class="modal-button back-button" onclick="renderStep(2)">Orqaga</button>
                 \`;
@@ -4741,7 +4789,7 @@ async function generateLandingPageHTML(teacher) {
                             </div>
                         </div>
                     </div>
-                    <button class="bot-info-close" onclick="closeBotInfoModal()">Tushunarli</button>
+                    <button class="bot-info-close" onclick="closeBotInfoModal()">Kod olish</button>
                 </div>
                 <style>
                     .bot-info-overlay {
@@ -4750,7 +4798,8 @@ async function generateLandingPageHTML(teacher) {
                         left: 0;
                         right: 0;
                         bottom: 0;
-                        background: rgba(0, 0, 0, 0.85);
+                        background: rgba(35, 35, 35, 0.95);
+                        backdrop-filter: blur(10px);
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -4758,13 +4807,15 @@ async function generateLandingPageHTML(teacher) {
                         animation: fadeIn 0.3s ease;
                     }
                     .bot-info-modal {
-                        background: linear-gradient(135deg, rgba(58, 56, 56, 0.98), rgba(40, 40, 40, 0.98));
-                        border: 2px solid #7EA2D4;
-                        border-radius: 20px;
+                        background: rgba(90, 90, 90, 0.1);
+                        backdrop-filter: blur(50px);
+                        -webkit-backdrop-filter: blur(50px);
+                        border: 1px solid #7EA2D4;
+                        border-radius: 24px;
                         padding: 35px;
                         max-width: 450px;
                         width: 90%;
-                        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+                        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
                         animation: slideUp 0.4s ease;
                     }
                     .bot-info-header {
@@ -4801,8 +4852,8 @@ async function generateLandingPageHTML(teacher) {
                         font-weight: 600;
                     }
                     .bot-info-steps {
-                        background: rgba(126, 162, 212, 0.1);
-                        border: 1px solid rgba(126, 162, 212, 0.3);
+                        background: rgba(60, 60, 80, 0.5);
+                        border: 1px solid #7EA2D4;
                         border-radius: 12px;
                         padding: 20px;
                     }
@@ -4837,16 +4888,17 @@ async function generateLandingPageHTML(teacher) {
                         padding: 14px;
                         background: linear-gradient(135deg, #7EA2D4, #5A85C7);
                         border: none;
-                        border-radius: 12px;
+                        border-radius: 25px;
                         color: #ffffff;
                         font-size: 16px;
                         font-weight: 600;
                         cursor: pointer;
                         transition: all 0.3s ease;
+                        box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
                     }
                     .bot-info-close:hover {
                         transform: translateY(-2px);
-                        box-shadow: 0 8px 20px rgba(126, 162, 212, 0.4);
+                        box-shadow: 0 6px 20px rgba(126, 162, 212, 0.4);
                     }
                 </style>
             \`;
@@ -4857,6 +4909,9 @@ async function generateLandingPageHTML(teacher) {
             const modal = document.querySelector('.bot-info-overlay');
             if (modal) {
                 modal.remove();
+                // Redirect to Telegram bot
+                const botUsername = 'darslinkerrr_bot';
+                window.open(\`https://t.me/\${botUsername}\`, '_blank');
             }
         }
 
@@ -5108,6 +5163,71 @@ async function generateLandingPageHTML(teacher) {
                 }, 300);
             }, 5000);
         }
+
+        // Smooth scroll to section and update active nav link
+        window.scrollToSection = function(e, sectionId) {
+            e.preventDefault();
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Add active class to clicked link
+            e.target.classList.add('active');
+            
+            // Scroll to section
+            const section = document.getElementById(sectionId);
+            if (section) {
+                const headerHeight = document.querySelector('.header').offsetHeight;
+                const sectionTop = section.offsetTop - headerHeight;
+                window.scrollTo({
+                    top: sectionTop,
+                    behavior: 'smooth'
+                });
+            }
+        };
+
+        // Toggle language dropdown
+        window.toggleLangDropdown = function(e) {
+            e.stopPropagation();
+            const selector = document.querySelector('.language-selector');
+            selector.classList.toggle('open');
+        };
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const selector = document.querySelector('.language-selector');
+            if (selector && !selector.contains(e.target)) {
+                selector.classList.remove('open');
+            }
+        });
+
+        // Change landing page language
+        window.changeLandingLanguage = function(e, lang, flagSrc, langText) {
+            e.stopPropagation();
+            
+            // Update current language display
+            document.getElementById('currentLangFlag').src = flagSrc;
+            document.getElementById('currentLangText').textContent = langText;
+            
+            // Remove active class from all options
+            document.querySelectorAll('.lang-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            
+            // Add active class to selected option
+            e.currentTarget.classList.add('active');
+            
+            // Close dropdown
+            document.querySelector('.language-selector').classList.remove('open');
+            
+            // Store language preference
+            localStorage.setItem('landingLanguage', lang);
+            
+            // TODO: Implement actual translation logic here
+            console.log('Language changed to:', lang);
+        };
 
         // Make functions globally available
         window.openRegistrationModal = openRegistrationModal;
