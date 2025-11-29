@@ -31,7 +31,28 @@ async function fetchCourseData(courseId) {
     
     if (result.success && result.course) {
       console.log('✅ Course data loaded:', result.course);
-      return result.course;
+      
+      // Fetch teacher's landing data for logo and theme
+      const teacherId = result.course.teacher?._id || result.course.teacher;
+      let landingData = null;
+      
+      if (teacherId) {
+        try {
+          const landingResponse = await fetch(`${apiBaseUrl}/landing/public/${teacherId}`);
+          const landingResult = await landingResponse.json();
+          if (landingResult.success) {
+            landingData = landingResult.landing;
+            console.log('✅ Landing data loaded:', landingData);
+          }
+        } catch (error) {
+          console.error('Error fetching landing data:', error);
+        }
+      }
+      
+      return {
+        course: result.course,
+        landingData: landingData
+      };
     } else {
       console.error('❌ Failed to load course:', result.message);
       return null;
@@ -43,9 +64,11 @@ async function fetchCourseData(courseId) {
 }
 
 // Render course detail page
-function renderCourseDetailPage(course) {
+function renderCourseDetailPage(data) {
   const appElement = document.querySelector('#app');
   if (!appElement) return;
+  
+  const { course, landingData } = data;
   
   // Get teacher name
   const teacherName = course.teacher 
@@ -54,6 +77,10 @@ function renderCourseDetailPage(course) {
   
   // Get course image
   const courseImage = course.thumbnail || course.courseImage || '';
+  
+  // Get logo and theme from landing data
+  const logoText = landingData?.logoText || 'DarsLinker';
+  const themeColor = landingData?.primaryColor || '#7EA2D4';
   
   // Calculate total lessons and duration
   let totalLessons = 0;
@@ -78,6 +105,10 @@ function renderCourseDetailPage(course) {
   
   appElement.innerHTML = `
     <style>
+      :root {
+        --theme-color: ${themeColor};
+      }
+
       /* Reset */
       * {
         margin: 0;
@@ -92,29 +123,50 @@ function renderCourseDetailPage(course) {
         overflow-x: hidden;
       }
 
-      /* Header - Simplified */
+      /* Header - Same as Teacher Landing */
       .course-detail-header {
         background: #232323;
+        padding: 25px 0;
+        box-shadow: 0 2px 10px rgba(126, 162, 212, 0.1);
         border-bottom: 1px solid rgba(126, 162, 212, 0.2);
-        padding: 20px 40px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
         position: sticky;
         top: 0;
         z-index: 1000;
-        backdrop-filter: blur(10px);
+      }
+
+      .course-detail-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      .course-detail-header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
       }
 
       .course-detail-logo {
-        font-size: 24px;
-        font-weight: 700;
-        color: #ffffff;
+        display: flex;
+        align-items: center;
+        font-family: 'League Spartan', sans-serif;
+        font-size: 32px;
+        font-weight: 600;
         cursor: pointer;
       }
 
-      .course-detail-logo span {
-        color: #7EA2D4;
+      .course-detail-logo-text {
+        color: #ffffff;
+      }
+
+      .course-detail-logo-colored {
+        color: var(--theme-color);
+      }
+
+      .course-detail-header-actions {
+        display: flex;
+        align-items: center;
+        gap: 20px;
       }
 
       .course-detail-auth-buttons {
@@ -123,45 +175,52 @@ function renderCourseDetailPage(course) {
       }
 
       .course-detail-btn {
-        padding: 10px 24px;
-        border-radius: 8px;
+        padding: 8px 20px;
+        border-radius: 6px;
         font-size: 14px;
         font-weight: 500;
         cursor: pointer;
-        transition: all 0.2s ease;
-        border: none;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
       }
 
       .course-detail-btn-login {
         background: transparent;
-        color: #7EA2D4;
-        border: 1px solid rgba(126, 162, 212, 0.5);
+        color: var(--theme-color);
+        border: 1px solid var(--theme-color);
       }
 
       .course-detail-btn-login:hover {
         background: rgba(126, 162, 212, 0.1);
-        border-color: #7EA2D4;
+        transform: translateY(-1px);
       }
 
       .course-detail-btn-register {
-        background: #7EA2D4;
+        background: var(--theme-color);
         color: #ffffff;
+        border: none;
       }
 
       .course-detail-btn-register:hover {
-        background: #6a8fc4;
+        opacity: 0.9;
+        transform: translateY(-1px);
       }
 
       /* Hero Section */
       .course-detail-hero {
-        padding: 60px 40px;
+        padding: 80px 0;
         background: linear-gradient(135deg, rgba(126, 162, 212, 0.1), rgba(35, 35, 35, 0.8));
-        border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+        border-bottom: 1px solid var(--theme-color);
+        border-bottom-width: 1px;
+        border-bottom-style: solid;
+        border-bottom-color: rgba(126, 162, 212, 0.2);
       }
 
       .course-detail-hero-content {
         max-width: 1200px;
         margin: 0 auto;
+        padding: 0 20px;
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 60px;
@@ -185,7 +244,7 @@ function renderCourseDetailPage(course) {
 
       .course-detail-start-btn {
         padding: 16px 48px;
-        background: #7EA2D4;
+        background: var(--theme-color);
         color: #ffffff;
         border: none;
         border-radius: 12px;
@@ -197,7 +256,7 @@ function renderCourseDetailPage(course) {
       }
 
       .course-detail-start-btn:hover {
-        background: #6a8fc4;
+        opacity: 0.9;
         transform: translateY(-2px);
         box-shadow: 0 6px 16px rgba(126, 162, 212, 0.4);
       }
@@ -236,7 +295,7 @@ function renderCourseDetailPage(course) {
       .course-detail-content {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 60px 40px;
+        padding: 60px 20px;
       }
 
       .course-detail-section-title {
@@ -256,7 +315,7 @@ function renderCourseDetailPage(course) {
 
       .course-detail-info-card {
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid var(--theme-color);
         border-radius: 16px;
         padding: 24px;
         text-align: center;
@@ -286,7 +345,7 @@ function renderCourseDetailPage(course) {
 
       .course-detail-module {
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid var(--theme-color);
         border-radius: 16px;
         margin-bottom: 20px;
         overflow: hidden;
@@ -312,7 +371,7 @@ function renderCourseDetailPage(course) {
       }
 
       .course-detail-module-arrow {
-        color: #7EA2D4;
+        color: var(--theme-color);
         transition: transform 0.3s ease;
       }
 
@@ -352,7 +411,7 @@ function renderCourseDetailPage(course) {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #7EA2D4;
+        color: var(--theme-color);
       }
 
       .course-detail-lesson-title {
@@ -385,16 +444,23 @@ function renderCourseDetailPage(course) {
     <div class="course-detail-page">
       <!-- Header -->
       <header class="course-detail-header">
-        <div class="course-detail-logo" onclick="window.history.back()">
-          dars<span>linker</span>
-        </div>
-        <div class="course-detail-auth-buttons">
-          <button class="course-detail-btn course-detail-btn-login" onclick="openLoginModal()">
-            ${t('header.login') || 'Kirish'}
-          </button>
-          <button class="course-detail-btn course-detail-btn-register" onclick="openRegisterModal()">
-            ${t('header.register') || "Ro'yxatdan o'tish"}
-          </button>
+        <div class="course-detail-container">
+          <div class="course-detail-header-content">
+            <div class="course-detail-logo" onclick="window.history.back()">
+              <span class="course-detail-logo-colored">${logoText}</span>
+            </div>
+            
+            <div class="course-detail-header-actions">
+              <div class="course-detail-auth-buttons">
+                <a href="/login" class="course-detail-btn course-detail-btn-login">
+                  ${t('header.login') || 'Kirish'}
+                </a>
+                <a href="/register" class="course-detail-btn course-detail-btn-register">
+                  ${t('header.register') || "Ro'yxatdan o'tish"}
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
 
