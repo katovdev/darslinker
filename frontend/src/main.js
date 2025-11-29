@@ -10,6 +10,7 @@ import { initRegisterPage } from './pages/auth/register.js';
 import { initDashboard } from './pages/common/dashboard.js';
 import { initStudentDashboard } from './pages/student/student-dashboard.js';
 import { initPricingPage } from './pages/pricing.js';
+import { initCourseDetailPage } from './pages/student/course-detail.js';
 
 class App {
   constructor() {
@@ -36,30 +37,26 @@ class App {
     router.register('/dashboard', initDashboard);
     router.register('/student-dashboard', initStudentDashboard);
     router.register('/pricing', initPricingPage);
+    router.register('/course/:courseId', (params) => initCourseDetailPage(params.courseId));
+
+    router.register('/teacher/:teacherId/student-dashboard', (params) => {
+      const teacherId = params.teacherId;
+      console.log('📚 Loading student dashboard for teacher:', teacherId);
+      
+      // Save teacherId to sessionStorage
+      sessionStorage.setItem('currentTeacherId', teacherId);
+      
+      // Load student dashboard
+      import('./pages/student/landing-student-dashboard.js').then(module => {
+        module.initLandingStudentDashboard();
+      }).catch(err => {
+        console.error('Error loading student dashboard:', err);
+      });
+    });
 
     router.register('*', () => {
-      // Check if it's a teacher landing page or student dashboard
+      // Check if it's a teacher landing page
       const currentPath = window.location.pathname;
-      
-      // Check for student dashboard pattern: /teacher/:teacherId/student-dashboard
-      const studentDashboardPattern = /^\/teacher\/([a-zA-Z0-9]+)\/student-dashboard$/;
-      const studentMatch = currentPath.match(studentDashboardPattern);
-      
-      if (studentMatch) {
-        const teacherId = studentMatch[1];
-        console.log('📚 Loading student dashboard for teacher:', teacherId);
-        
-        // Save teacherId to sessionStorage
-        sessionStorage.setItem('currentTeacherId', teacherId);
-        
-        // Load student dashboard
-        import('./pages/student/landing-student-dashboard.js').then(module => {
-          module.initLandingStudentDashboard();
-        }).catch(err => {
-          console.error('Error loading student dashboard:', err);
-        });
-        return;
-      }
       
       // Check for teacher landing page pattern: /teacher/:teacherId
       const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9]+)$/;
@@ -72,8 +69,17 @@ class App {
         // Save teacherId to sessionStorage
         sessionStorage.setItem('currentTeacherId', teacherId);
         
-        // Load teacher landing page
-        initDashboard();
+        // Check if landing page function exists in dashboard.js
+        if (typeof window.loadTeacherLandingPage === 'function') {
+          window.loadTeacherLandingPage(teacherId);
+        } else {
+          // Load dashboard.js which contains the landing page function
+          import('./pages/common/dashboard.js').then(() => {
+            if (typeof window.loadTeacherLandingPage === 'function') {
+              window.loadTeacherLandingPage(teacherId);
+            }
+          });
+        }
         return;
       }
       

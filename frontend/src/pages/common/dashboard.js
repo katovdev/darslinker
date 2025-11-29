@@ -4514,7 +4514,7 @@ async function generateLandingPageHTML(teacher) {
             <h2 data-i18n="availableCourses">Mavjud Kurslar</h2>
             <div class="courses-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
                 ${teacher.courses.map(course => `
-                    <div class="course-card">
+                    <div class="course-card" onclick="window.location.href='/course/${course._id}'" style="cursor: pointer;">
                         ${course.thumbnail 
                             ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-image">`
                             : `<div style="height: 250px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>`
