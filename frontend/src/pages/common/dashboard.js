@@ -3368,6 +3368,7 @@ async function generateLandingPageHTML(teacher) {
       register: "Ro'yxatdan o'tish",
       startLearning: "O'rganishni boshlash",
       viewCourse: "Kursni ko'rish",
+      viewCourses: "Kurslarni ko'rish",
       enrollNow: "Hozir yozilish",
       // Sections
       myCourses: 'Mening kurslarim',
@@ -3402,6 +3403,7 @@ async function generateLandingPageHTML(teacher) {
       register: 'Регистрация',
       startLearning: 'Начать обучение',
       viewCourse: 'Посмотреть курс',
+      viewCourses: 'Посмотреть курсы',
       enrollNow: 'Записаться сейчас',
       // Sections
       myCourses: 'Мои курсы',
@@ -3436,6 +3438,7 @@ async function generateLandingPageHTML(teacher) {
       register: 'Register',
       startLearning: 'Start Learning',
       viewCourse: 'View Course',
+      viewCourses: 'View Courses',
       enrollNow: 'Enroll Now',
       // Sections
       myCourses: 'My Courses',
@@ -4362,7 +4365,7 @@ async function generateLandingPageHTML(teacher) {
                       i === 1 ? `<span class="highlight">${line}</span>` : line
                     ).join('<br>')}</h1>
 
-                    <a href="#courses" class="cta-button">Kurslarni ko'rish</a>
+                    <a href="#courses" class="cta-button" data-i18n="viewCourses">Kurslarni ko'rish</a>
                 </div>
                 
                 <div class="hero-image" style="position: relative;">
