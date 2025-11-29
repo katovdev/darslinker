@@ -157,12 +157,16 @@ const findAll = catchAsync(async (req, res) => {
 const findOne = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const course = await validateAndFindById(Course, id, "Course");
-  const courseData = handleValidationResult(course);
+  const course = await Course.findById(id)
+    .populate('teacher', 'firstName lastName email profileImage specialization');
+  
+  if (!course) {
+    throw new NotFoundError("Course not found");
+  }
 
   res.status(200).json({
     success: true,
-    course: courseData,
+    course: course,
   });
 });
 

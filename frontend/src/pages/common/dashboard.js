@@ -6295,6 +6295,26 @@ async function generateLandingPageHTML(teacher) {
         window.validateStep3 = validateStep3;
         window.resendCode = resendCode;
         window.showToast = showToast;
+        
+        // Auto-open modal if redirected from course detail page
+        window.addEventListener('load', function() {
+            const openLogin = sessionStorage.getItem('openLoginModal');
+            const openRegister = sessionStorage.getItem('openRegisterModal');
+            
+            if (openLogin === 'true') {
+                sessionStorage.removeItem('openLoginModal');
+                setTimeout(() => {
+                    const loginBtn = document.querySelector('[onclick*="openLoginModal"]');
+                    if (loginBtn) loginBtn.click();
+                }, 500);
+            } else if (openRegister === 'true') {
+                sessionStorage.removeItem('openRegisterModal');
+                setTimeout(() => {
+                    const registerBtn = document.querySelector('[onclick*="openRegistrationModal"]');
+                    if (registerBtn) registerBtn.click();
+                }, 500);
+            }
+        });
     </script>
 </body>
 </html>

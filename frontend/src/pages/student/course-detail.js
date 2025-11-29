@@ -1,5 +1,4 @@
 import { router } from '../../utils/router.js';
-import { t } from '../../utils/i18n.js';
 
 // Initialize course detail page
 export async function initCourseDetailPage(courseId) {
@@ -11,6 +10,11 @@ export async function initCourseDetailPage(courseId) {
   if (!courseData) {
     showErrorPage();
     return;
+  }
+  
+  // Save teacher ID to sessionStorage for modals
+  if (courseData.course.teacher?._id) {
+    sessionStorage.setItem('currentTeacherId', courseData.course.teacher._id);
   }
   
   renderCourseDetailPage(courseData);
@@ -71,9 +75,15 @@ function renderCourseDetailPage(data) {
   const { course, landingData } = data;
   
   // Get teacher name
+  console.log('🎓 Full course data:', course);
+  console.log('🎓 Course teacher data:', course.teacher);
+  console.log('🎓 Teacher firstName:', course.teacher?.firstName);
+  console.log('🎓 Teacher lastName:', course.teacher?.lastName);
+  
   const teacherName = course.teacher 
-    ? `${course.teacher.firstName || ''} ${course.teacher.lastName || ''}`.trim() || 'Instructor'
-    : 'Instructor';
+    ? `${course.teacher.firstName || ''} ${course.teacher.lastName || ''}`.trim() || 'O\'qituvchi'
+    : 'O\'qituvchi';
+  console.log('🎓 Teacher name:', teacherName);
   
   // Get course image
   const courseImage = course.thumbnail || course.courseImage || '';
@@ -82,26 +92,66 @@ function renderCourseDetailPage(data) {
   const logoText = landingData?.logoText || 'DarsLinker';
   const themeColor = landingData?.primaryColor || '#7EA2D4';
   
-  // Calculate total lessons and duration
+  // Calculate total lessons and duration (only videos)
   let totalLessons = 0;
-  let totalDuration = 0;
+  let totalDurationSeconds = 0; // Use seconds for accurate calculation
   
   if (course.modules && course.modules.length > 0) {
     course.modules.forEach(module => {
       if (module.lessons) {
         totalLessons += module.lessons.length;
         module.lessons.forEach(lesson => {
-          // Parse duration (e.g., "10:30" or "10 min")
-          if (lesson.duration) {
-            const match = lesson.duration.match(/(\d+)/);
-            if (match) {
-              totalDuration += parseInt(match[1]);
+          // Only count video lessons for duration
+          if (lesson.type === 'video' && lesson.duration) {
+            const duration = lesson.duration.toString().trim();
+            
+            console.log('📹 Video duration:', duration);
+            
+            // Check for MM:SS format (e.g., "01:39" = 1 minute 39 seconds)
+            if (duration.includes(':')) {
+              const parts = duration.split(':');
+              const minutes = parseInt(parts[0]) || 0;
+              const seconds = parseInt(parts[1]) || 0;
+              
+              // Convert to total seconds
+              const totalSec = (minutes * 60) + seconds;
+              totalDurationSeconds += totalSec;
+              console.log(`  → ${minutes}:${seconds} = ${totalSec} seconds`);
+            } 
+            // Check for "X min" or "X daqiqa"
+            else if (duration.match(/(\d+)\s*(min|daqiqa)/i)) {
+              const match = duration.match(/(\d+)/);
+              if (match) {
+                totalDurationSeconds += parseInt(match[1]) * 60;
+              }
             }
+            // Check for "X hour" or "X soat"
+            else if (duration.match(/(\d+)\s*(hour|soat)/i)) {
+              const match = duration.match(/(\d+)/);
+              if (match) {
+                totalDurationSeconds += parseInt(match[1]) * 3600;
+              }
+            }
+            // Just a number - assume minutes
+            else {
+              const match = duration.match(/(\d+)/);
+              if (match) {
+                totalDurationSeconds += parseInt(match[1]) * 60;
+              }
+            }
+          } else if (lesson.duration) {
+            console.log('⏭️ Skipping non-video:', lesson.type, lesson.duration);
           }
         });
       }
     });
   }
+  
+  // Convert seconds to minutes and seconds for display
+  const totalMinutes = Math.floor(totalDurationSeconds / 60);
+  const remainingSeconds = totalDurationSeconds % 60;
+  
+  console.log(`⏱️ Total duration: ${totalDurationSeconds} seconds = ${totalMinutes} min ${remainingSeconds} sec`);
   
   appElement.innerHTML = `
     <style>
@@ -121,6 +171,12 @@ function renderCourseDetailPage(data) {
         color: #ffffff;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         overflow-x: hidden;
+        padding-top: 0 !important;
+      }
+
+      /* Hide global header from style.css */
+      body > .header {
+        display: none !important;
       }
 
       /* Header - Same as Teacher Landing */
@@ -412,16 +468,46 @@ function renderCourseDetailPage(data) {
         align-items: center;
         justify-content: center;
         color: var(--theme-color);
+        flex-shrink: 0;
+      }
+      
+      .course-detail-lesson-icon svg {
+        display: block;
       }
 
       .course-detail-lesson-title {
         font-size: 15px;
         color: #ffffff;
       }
+      
+      .course-detail-lesson-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      
+      .course-detail-view-btn {
+        padding: 6px 16px;
+        background: var(--theme-color);
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+      }
+      
+      .course-detail-view-btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+      }
 
       .course-detail-lesson-duration {
         font-size: 13px;
         color: #9CA3AF;
+        white-space: nowrap;
       }
 
       /* Responsive */
@@ -452,11 +538,11 @@ function renderCourseDetailPage(data) {
             
             <div class="course-detail-header-actions">
               <div class="course-detail-auth-buttons">
-                <a href="/login" class="course-detail-btn course-detail-btn-login">
-                  ${t('header.login') || 'Kirish'}
+                <a href="#" class="course-detail-btn course-detail-btn-login" onclick="openLoginModal(event)">
+                  Kirish
                 </a>
-                <a href="/register" class="course-detail-btn course-detail-btn-register">
-                  ${t('header.register') || "Ro'yxatdan o'tish"}
+                <a href="#" class="course-detail-btn course-detail-btn-register" onclick="openRegistrationModal(event)">
+                  Ro'yxatdan o'tish
                 </a>
               </div>
             </div>
@@ -469,9 +555,9 @@ function renderCourseDetailPage(data) {
         <div class="course-detail-hero-content">
           <div class="course-detail-hero-left">
             <h1>${course.title || 'Course Title'}</h1>
-            <p>${course.description || 'Course description goes here...'}</p>
+            <p>${course.description || 'Kurs haqida ma\'lumot...'}</p>
             <button class="course-detail-start-btn" onclick="openLoginModal()">
-              ${t('course.startLearning') || 'Boshlash'}
+              Boshlash
             </button>
           </div>
           <div class="course-detail-hero-right">
@@ -495,25 +581,46 @@ function renderCourseDetailPage(data) {
         <!-- Info Cards -->
         <div class="course-detail-info-grid">
           <div class="course-detail-info-card">
-            <div class="course-detail-info-icon">📚</div>
+            <div class="course-detail-info-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>
+            </div>
             <div class="course-detail-info-value">${totalLessons}</div>
-            <div class="course-detail-info-label">${t('course.lessons') || 'ta dars'}</div>
+            <div class="course-detail-info-label">Darslar soni</div>
           </div>
           <div class="course-detail-info-card">
-            <div class="course-detail-info-icon">⏱️</div>
-            <div class="course-detail-info-value">${totalDuration > 60 ? Math.floor(totalDuration / 60) + ' soat' : totalDuration + ' daqiqa'}</div>
-            <div class="course-detail-info-label">${t('course.duration') || 'Kurs davomiyligi'}</div>
+            <div class="course-detail-info-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <div class="course-detail-info-value">${
+              totalMinutes >= 60 
+                ? `${Math.floor(totalMinutes / 60)} soat ${totalMinutes % 60 > 0 ? (totalMinutes % 60) + ' daqiqa' : ''}`
+                : totalMinutes > 0 
+                  ? `${totalMinutes} daqiqa${remainingSeconds > 0 ? ' ' + remainingSeconds + ' soniya' : ''}`
+                  : remainingSeconds + ' soniya'
+            }</div>
+            <div class="course-detail-info-label">Kurs davomiyligi</div>
           </div>
           <div class="course-detail-info-card">
-            <div class="course-detail-info-icon">👨‍🏫</div>
+            <div class="course-detail-info-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </div>
             <div class="course-detail-info-value">${teacherName}</div>
-            <div class="course-detail-info-label">${t('course.instructor') || "O'qituvchi"}</div>
+            <div class="course-detail-info-label">O'qituvchi</div>
           </div>
         </div>
 
         <!-- Modules -->
         <div class="course-detail-modules">
-          <h2 class="course-detail-section-title">${t('course.curriculum') || 'Kurs tarkibi'}</h2>
+          <h2 class="course-detail-section-title">Kurs tarkibi</h2>
           ${course.modules && course.modules.length > 0 
             ? course.modules.map((module, index) => `
                 <div class="course-detail-module">
@@ -533,7 +640,13 @@ function renderCourseDetailPage(data) {
                               </div>
                               <div class="course-detail-lesson-title">${lesson.title || 'Lesson'}</div>
                             </div>
-                            <div class="course-detail-lesson-duration">${lesson.duration || ''}</div>
+                            <div class="course-detail-lesson-right">
+                              ${lesson.type === 'video' 
+                                ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}')">Ko'rish</button>`
+                                : ''
+                              }
+                              <div class="course-detail-lesson-duration">${lesson.duration || ''}</div>
+                            </div>
                           </div>
                         `).join('')
                       : '<div class="course-detail-lesson">No lessons yet</div>'
@@ -546,22 +659,56 @@ function renderCourseDetailPage(data) {
         </div>
       </section>
     </div>
+    
+    <script>
+      // Modal variables
+      let currentStep = 1;
+      let registrationData = {
+        firstName: '',
+        lastName: '',
+        phone: '',
+        verificationCode: ''
+      };
+      
+      // Get teacher ID for registration
+      const teacherId = sessionStorage.getItem('currentTeacherId');
+    </script>
   `;
   
   // Attach event listeners
   attachEventListeners();
+  
+  // Add modal functions to window
+  setupModalFunctions();
 }
 
-// Get lesson icon based on type
+// Get lesson icon based on type (SVG)
 function getLessonIcon(type) {
   const icons = {
-    video: '▶️',
-    quiz: '📝',
-    assignment: '📋',
-    file: '📄',
-    reading: '📖'
+    video: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>`,
+    quiz: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="M9 11l3 3L22 4"></path>
+             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+           </svg>`,
+    assignment: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                   <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                   <polyline points="14 2 14 8 20 8"></polyline>
+                   <line x1="16" y1="13" x2="8" y2="13"></line>
+                   <line x1="16" y1="17" x2="8" y2="17"></line>
+                   <polyline points="10 9 9 9 8 9"></polyline>
+                 </svg>`,
+    file: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+             <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+             <polyline points="13 2 13 9 20 9"></polyline>
+           </svg>`,
+    reading: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+              </svg>`
   };
-  return icons[type] || '📄';
+  return icons[type] || icons.file;
 }
 
 // Toggle module expansion
@@ -575,19 +722,50 @@ window.toggleModule = function(index) {
   }
 };
 
-// Open login modal
-window.openLoginModal = function() {
-  // TODO: Implement login modal
-  // For now, navigate to login page
-  router.navigate('/login');
+// View lesson - requires login
+window.viewLesson = function(lessonId) {
+  console.log('View lesson:', lessonId);
+  // Open login modal
+  if (typeof window.openLoginModal === 'function') {
+    window.openLoginModal(new Event('click'));
+  }
 };
 
-// Open register modal
-window.openRegisterModal = function() {
-  // TODO: Implement register modal
-  // For now, navigate to register page
-  router.navigate('/register');
-};
+// Setup modal functions
+function setupModalFunctions() {
+  const teacherId = sessionStorage.getItem('currentTeacherId');
+  
+  // Redirect to teacher landing page where modal will open
+  window.openLoginModal = function(e) {
+    if (e) e.preventDefault();
+    
+    if (teacherId) {
+      // Save return URL to come back after login
+      sessionStorage.setItem('returnUrl', window.location.pathname);
+      sessionStorage.setItem('openLoginModal', 'true');
+      
+      // Redirect to teacher landing page
+      window.location.href = `/teacher/${teacherId}`;
+    } else {
+      router.navigate('/login');
+    }
+  };
+
+  window.openRegistrationModal = function(e) {
+    if (e) e.preventDefault();
+    
+    if (teacherId) {
+      // Save return URL to come back after registration
+      sessionStorage.setItem('returnUrl', window.location.pathname);
+      sessionStorage.setItem('openRegisterModal', 'true');
+      
+      // Redirect to teacher landing page
+      window.location.href = `/teacher/${teacherId}`;
+    } else {
+      router.navigate('/register');
+    }
+  };
+}
 
 // Show error page
 function showErrorPage() {
