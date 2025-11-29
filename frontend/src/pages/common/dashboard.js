@@ -1694,6 +1694,15 @@ function getLandingSettingsHTML(user, landingData = null) {
             <input type="text" class="form-input" name="specialty" value="${user.specialization || ''}" placeholder="Web Development & UI/UX Design">
           </div>
 
+          <!-- Logo Text -->
+          <div class="form-field">
+            <label class="field-label">Logo Text</label>
+            <input type="text" class="form-input" name="logoText" value="${settings.logoText || 'DarsLinker'}" placeholder="DarsLinker">
+            <small style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin-top: 4px; display: block;">
+              Landing page tepasida ko'rsatiladigan logo text
+            </small>
+          </div>
+
           <!-- Hero Text -->
           <div class="form-field">
             <label class="field-label">Hero Section - Main Text</label>
@@ -1740,16 +1749,20 @@ function getLandingSettingsHTML(user, landingData = null) {
           <h4 style="color: #ffffff; margin: 24px 0 16px 0; font-size: 14px;">Social media links</h4>
           <div class="social-links-grid">
             <div class="form-field">
-              <input type="url" class="form-input" name="linkedin" placeholder="https://linkedin.com/in/john">
+              <label class="field-label">LinkedIn</label>
+              <input type="url" class="form-input" name="linkedin" value="${settings.socialLinks?.linkedin || ''}" placeholder="https://linkedin.com/in/johndoe">
             </div>
             <div class="form-field">
-              <input type="url" class="form-input" name="github" placeholder="https://github.com/john">
+              <label class="field-label">Instagram</label>
+              <input type="text" class="form-input" name="instagram" value="${settings.socialLinks?.instagram || ''}" placeholder="johndoe (@ siz)">
             </div>
             <div class="form-field">
-              <input type="url" class="form-input" name="website" placeholder="https://john.dev">
+              <label class="field-label">Telegram</label>
+              <input type="text" class="form-input" name="telegram" value="${settings.socialLinks?.telegram || ''}" placeholder="johndoe (@ siz)">
             </div>
             <div class="form-field">
-              <input type="text" class="form-input" name="telegram" placeholder="@john@darslinker.uz">
+              <label class="field-label">YouTube</label>
+              <input type="url" class="form-input" name="youtube" value="${settings.socialLinks?.youtube || ''}" placeholder="https://youtube.com/@johndoe">
             </div>
           </div>
         </div>
@@ -3212,12 +3225,13 @@ async function handleLandingSettingsSave(event) {
       lastName: formData.get('lastName'),
       specialization: formData.get('specialty'),
       bio: formData.get('bio'),
+      logoText: formData.get('logoText'),
       heroText: formData.get('heroText'),
       socialLinks: {
         linkedin: formData.get('linkedin'),
-        github: formData.get('github'),
-        website: formData.get('website'),
-        telegram: formData.get('telegram')
+        instagram: formData.get('instagram'),
+        telegram: formData.get('telegram'),
+        youtube: formData.get('youtube')
       },
       featuredCourses: formData.getAll('featuredCourses'),
       featuredTestimonials: formData.getAll('featuredTestimonials'),
@@ -3240,6 +3254,7 @@ async function handleLandingSettingsSave(event) {
         title: `${landingData.firstName} ${landingData.lastName}'s Courses`,
         subtitle: landingData.specialization,
         description: 'Discover amazing courses and start your learning journey today.',
+        logoText: landingData.logoText,
         heroText: landingData.heroText,
         heroImage: user.heroImage || '',
         aboutText: landingData.bio,
@@ -3326,13 +3341,21 @@ async function generateLandingPageHTML(teacher) {
   }
   
   const themeColor = landingData?.primaryColor || '#7EA2D4';
+  const logoText = landingData?.logoText || 'DarsLinker';
   const fullName = `${teacher.firstName || ''} ${teacher.lastName || ''}`.trim();
   const heroText = landingData?.heroText || 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING';
   const heroImage = landingData?.heroImage || '';
   
+  // Merge teacher data with landing data
+  const teacherWithLanding = {
+    ...teacher,
+    socialLinks: landingData?.socialLinks || teacher.socialLinks || {}
+  };
+  
   console.log('🎓 Landing data:', landingData);
   console.log('🎓 Hero text:', heroText);
   console.log('🎓 Hero image:', heroImage);
+  console.log('🎓 Social links:', teacherWithLanding.socialLinks);
 
   return `
 <!DOCTYPE html>
@@ -3342,6 +3365,10 @@ async function generateLandingPageHTML(teacher) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${fullName} - Professional Teacher</title>
     <style>
+        :root {
+            --theme-color: ${themeColor};
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -3352,7 +3379,7 @@ async function generateLandingPageHTML(teacher) {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
             background: #232323;
-            color: #7EA2D4;
+            color: var(--theme-color);
             overflow-x: hidden;
         }
 
@@ -3415,7 +3442,7 @@ async function generateLandingPageHTML(teacher) {
         /* Hero Section */
         .hero {
             background: white;
-            padding: 180px 0;
+            padding: 130px 0;
             text-align: center;
         }
 
@@ -3528,8 +3555,8 @@ async function generateLandingPageHTML(teacher) {
         .certificates h2 {
             font-size: 2.5rem;
             font-weight: 700;
+            color: var(--theme-color);
             margin-bottom: 50px;
-            color: #ffffff;
             text-align: center;
         }
 
@@ -3543,7 +3570,7 @@ async function generateLandingPageHTML(teacher) {
 
         .certificate-item {
             background: rgba(58, 56, 56, 0.6);
-            border: 1px solid rgba(126, 162, 212, 0.3);
+            border: 1px solid var(--theme-color);
             border-radius: 16px;
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
@@ -3673,14 +3700,14 @@ async function generateLandingPageHTML(teacher) {
         .courses h2 {
             font-size: 2.5rem;
             font-weight: 700;
+            color: var(--theme-color);
             margin-bottom: 50px;
-            color: #ffffff;
             text-align: center;
         }
 
         .course-card {
             background: rgba(58, 56, 56, 0.3);
-            border: 1px solid rgba(126, 162, 212, 0.2);
+            border: 1px solid var(--theme-color);
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
@@ -4126,7 +4153,7 @@ async function generateLandingPageHTML(teacher) {
             color: white;
             padding: 40px 0;
             text-align: center;
-            border-top: 2px solid rgba(126, 162, 212, 0.3);
+            border-top: 2px solid var(--theme-color);
         }
 
         /* Responsive */
@@ -4219,9 +4246,9 @@ async function generateLandingPageHTML(teacher) {
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <span class="logo-text">Dars</span><span class="logo-text-colored">linker</span>
+                    <span class="logo-text" style="color: ${themeColor};">${logoText}</span>
                 </div>
-                <a href="#" class="auth-button" onclick="openRegistrationModal(event)">Ro'yxatdan o'tish</a>
+                <a href="#" class="auth-button" style="background: ${themeColor};" onclick="openRegistrationModal(event)">Ro'yxatdan o'tish</a>
             </div>
         </div>
     </header>
@@ -4252,7 +4279,7 @@ async function generateLandingPageHTML(teacher) {
     <!-- Profile Section -->
     <section class="profile">
         <div class="container">
-            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: #ffffff; text-align: center;">Men Haqimda</h2>
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: ${themeColor}; text-align: center;">O'qituvchi haqida</h2>
             <div class="profile-card">
                 <!-- Profile Information - Left Side -->
                 <div class="profile-info">
@@ -4262,33 +4289,41 @@ async function generateLandingPageHTML(teacher) {
 
                     <!-- Social Media Links -->
                     <div class="social-media-section">
+                        ${teacherWithLanding.socialLinks?.instagram ? `
                         <!-- Instagram -->
-                        <a href="${teacher.socialLinks?.instagram ? `https://instagram.com/${teacher.socialLinks.instagram}` : '#'}" class="social-media-link" target="_blank">
+                        <a href="https://instagram.com/${teacherWithLanding.socialLinks.instagram.replace('@', '')}" class="social-media-link" target="_blank">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
                             </svg>
                         </a>
+                        ` : ''}
 
+                        ${teacherWithLanding.socialLinks?.telegram ? `
                         <!-- Telegram -->
-                        <a href="${teacher.socialLinks?.telegram ? `https://t.me/${teacher.socialLinks.telegram}` : '#'}" class="social-media-link" target="_blank">
+                        <a href="https://t.me/${teacherWithLanding.socialLinks.telegram.replace('@', '')}" class="social-media-link" target="_blank">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
                             </svg>
                         </a>
+                        ` : ''}
 
+                        ${teacherWithLanding.socialLinks?.linkedin ? `
                         <!-- LinkedIn -->
-                        <a href="${teacher.socialLinks?.linkedin || '#'}" class="social-media-link" target="_blank">
+                        <a href="${teacherWithLanding.socialLinks.linkedin}" class="social-media-link" target="_blank">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                             </svg>
                         </a>
+                        ` : ''}
 
+                        ${teacherWithLanding.socialLinks?.youtube ? `
                         <!-- YouTube -->
-                        <a href="${teacher.socialLinks?.youtube || '#'}" class="social-media-link" target="_blank">
+                        <a href="${teacherWithLanding.socialLinks.youtube}" class="social-media-link" target="_blank">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                                 <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
                             </svg>
                         </a>
+                        ` : ''}
                     </div>
                 </div>
 
@@ -4399,7 +4434,7 @@ async function generateLandingPageHTML(teacher) {
     <!-- Personal Features Section -->
     <section class="personal-features">
         <div class="container">
-            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: #ffffff; text-align: center;">Imkoniyatlar</h2>
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: ${themeColor}; text-align: center;">Imkoniyatlar</h2>
             <div class="features-content">
                 <!-- Left Side - Text Content -->
                 <div class="features-text">

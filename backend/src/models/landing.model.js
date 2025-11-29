@@ -27,6 +27,10 @@ const landingSchema = new mongoose.Schema({
     type: String,
     default: 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING'
   },
+  logoText: {
+    type: String,
+    default: 'DarsLinker'
+  },
   primaryColor: {
     type: String,
     default: '#7ea2d4'
