@@ -1656,45 +1656,7 @@ function getLandingSettingsHTML(user, landingData = null) {
         <div class="landing-section">
           <div class="landing-section-title">Customize Your Landing Page</div>
 
-          <!-- Hero Section - Profile Info -->
-          <h3 style="color: #ffffff; margin-bottom: 16px; font-size: 16px;">Hero Section - Profile Info</h3>
-
-          <!-- Upload Photo -->
-          <input type="file" id="landingProfilePhotoInput" accept="image/*" style="display: none;">
-          <div class="profile-upload-section" onclick="document.getElementById('landingProfilePhotoInput').click()" style="cursor: pointer;">
-            <div class="profile-avatar-placeholder" id="landingProfileAvatar">
-              ${user.profileImage 
-                ? `<img src="${user.profileImage}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`
-                : `<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                  </svg>`
-              }
-            </div>
-            <div>
-              <div class="upload-text">Upload new photo</div>
-              <div class="upload-subtitle">Recommended dimensions: JPG or PNG</div>
-            </div>
-          </div>
-
-          <!-- Name Fields -->
-          <div class="form-row">
-            <div class="form-field">
-              <label class="field-label">First Name</label>
-              <input type="text" class="form-input" name="firstName" value="${user.firstName || ''}" placeholder="John">
-            </div>
-            <div class="form-field">
-              <label class="field-label">Last Name</label>
-              <input type="text" class="form-input" name="lastName" value="${user.lastName || ''}" placeholder="Smith">
-            </div>
-          </div>
-
-          <!-- Professional Title -->
-          <div class="form-field">
-            <label class="field-label">Professional Title / Specialty</label>
-            <input type="text" class="form-input" name="specialty" value="${user.specialization || ''}" placeholder="Web Development & UI/UX Design">
-          </div>
-
-          <!-- Logo Text -->
+          <!-- 1. Logo Text -->
           <div class="form-field">
             <label class="field-label">Logo Text</label>
             <input type="text" class="form-input" name="logoText" value="${settings.logoText || 'DarsLinker'}" placeholder="DarsLinker">
@@ -1703,7 +1665,7 @@ function getLandingSettingsHTML(user, landingData = null) {
             </small>
           </div>
 
-          <!-- Hero Text -->
+          <!-- 2. Hero Text -->
           <div class="form-field">
             <label class="field-label">Hero Section - Main Text</label>
             <textarea class="form-textarea" name="heroText" rows="3" placeholder="DASTURLASH NI PROFESSIONAL O'QITUVCHI BILAN O'RGANING">${settings.heroText || user.heroText || 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING'}</textarea>
@@ -1712,7 +1674,7 @@ function getLandingSettingsHTML(user, landingData = null) {
             </small>
           </div>
 
-          <!-- Hero Image -->
+          <!-- 3. Hero Image -->
           <div class="form-field">
             <label class="field-label">Hero Section - Image</label>
             <div style="display: flex; gap: 12px; align-items: center;">
@@ -1733,19 +1695,76 @@ function getLandingSettingsHTML(user, landingData = null) {
                   ${user.heroImage ? 'Change Image' : 'Upload Image'}
                 </button>
                 <small style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin-top: 4px; display: block;">
-                  Recommended: 800x600px, max 2MB
+                  Bu rasm landing page hero qismining o'ng tomonida ko'rsatiladi. Recommended: 800x600px, max 2MB
                 </small>
               </div>
             </div>
           </div>
 
-          <!-- Bio -->
-          <div class="form-field">
-            <label class="field-label">Bio / About Me</label>
-            <textarea class="form-textarea" name="bio" placeholder="Passionate about helping students achieve their goals!">${user.bio || ''}</textarea>
+          <!-- 4. Avatar / Profile Photo (Read-only) -->
+          <div style="position: relative; background: rgba(126, 162, 212, 0.05); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div class="form-field" style="margin-bottom: 0;">
+              <label class="field-label">Profile Photo (Avatar)</label>
+              <div class="profile-upload-section" style="cursor: not-allowed; opacity: 0.6; pointer-events: none;">
+                <div class="profile-avatar-placeholder" id="landingProfileAvatar">
+                  ${user.profileImage 
+                    ? `<img src="${user.profileImage}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`
+                    : `<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                      </svg>`
+                  }
+                </div>
+                <div>
+                  <div class="upload-text">Profile Photo</div>
+                  <div class="upload-subtitle">Bu rasm "About" qismida profil rasmi sifatida ko'rsatiladi.</div>
+                </div>
+              </div>
+              <small style="color: rgba(126, 162, 212, 0.8); font-size: 12px; display: block; margin-top: 8px;">
+                Update this in your profile settings
+              </small>
+            </div>
           </div>
 
-          <!-- Social Media Links -->
+          <!-- 5. Profile Information (Read-only) -->
+          <div style="position: relative; background: rgba(126, 162, 212, 0.05); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div style="margin-bottom: 12px;">
+              <span style="color: rgba(126, 162, 212, 0.9); font-size: 13px; font-weight: 500;">Profile Information</span>
+            </div>
+            <div class="form-row">
+              <div class="form-field" style="margin-bottom: 0;">
+                <label class="field-label">First Name</label>
+                <input type="text" class="form-input" name="firstName" value="${user.firstName || ''}" disabled readonly autocomplete="off" tabindex="-1" style="background: rgba(255,255,255,0.03); cursor: not-allowed; opacity: 0.6;">
+              </div>
+              <div class="form-field" style="margin-bottom: 0;">
+                <label class="field-label">Last Name</label>
+                <input type="text" class="form-input" name="lastName" value="${user.lastName || ''}" disabled readonly autocomplete="off" tabindex="-1" style="background: rgba(255,255,255,0.03); cursor: not-allowed; opacity: 0.6;">
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Professional Title (Read-only) -->
+          <div style="position: relative; background: rgba(126, 162, 212, 0.05); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div class="form-field" style="margin-bottom: 0;">
+              <label class="field-label">Professional Title / Specialty</label>
+              <input type="text" class="form-input" name="specialty" value="${user.specialization || ''}" disabled readonly autocomplete="off" tabindex="-1" style="background: rgba(255,255,255,0.03); cursor: not-allowed; opacity: 0.6;">
+              <small style="color: rgba(126, 162, 212, 0.8); font-size: 12px; display: block; margin-top: 8px;">
+                 Update this in your profile settings
+              </small>
+            </div>
+          </div>
+
+          <!-- 7. Bio (Read-only) -->
+          <div style="position: relative; background: rgba(126, 162, 212, 0.05); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <div class="form-field" style="margin-bottom: 0;">
+              <label class="field-label">Bio / About Me</label>
+              <textarea class="form-textarea" name="bio" disabled readonly autocomplete="off" tabindex="-1" style="background: rgba(255,255,255,0.03); cursor: not-allowed; opacity: 0.6; resize: none;">${user.bio || 'Not set'}</textarea>
+              <small style="color: rgba(126, 162, 212, 0.8); font-size: 12px; display: block; margin-top: 8px;">
+                 Update this in your profile settings
+              </small>
+            </div>
+          </div>
+
+          <!-- 8. Social Media Links -->
           <h4 style="color: #ffffff; margin: 24px 0 16px 0; font-size: 14px;">Social media links</h4>
           <div class="social-links-grid">
             <div class="form-field">
@@ -3886,219 +3905,6 @@ async function generateLandingPageHTML(teacher) {
 
 
 
-        /* Personal Features Section */
-        .personal-features {
-            background: #232323;
-            padding: 80px 0;
-        }
-
-        .features-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .features-text {
-            color: #ffffff;
-        }
-
-
-        .features-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #ffffff;
-        }
-
-        .features-description {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 30px;
-        }
-
-        .slide-controls {
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 20px;
-            margin-top: 30px;
-            margin-left: 60px;
-        }
-
-        .slide-btn {
-            width: 40px;
-            height: 40px;
-            border: 2px solid rgba(126, 162, 212, 0.3);
-            background: transparent;
-            border-radius: 50%;
-            color: ${themeColor};
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: bold;
-            user-select: none;
-        }
-
-        .slide-btn:hover {
-            background: ${themeColor};
-            color: white;
-            border-color: ${themeColor};
-            transform: translateY(-2px);
-        }
-
-        .slide-dots {
-            display: flex;
-            gap: 10px;
-        }
-
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: rgba(126, 162, 212, 0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .dot.active {
-            background: ${themeColor};
-            transform: scale(1.2);
-        }
-
-        .features-slide-container {
-            position: relative;
-            height: 400px;
-            overflow: hidden;
-            border-radius: 20px;
-        }
-
-        .features-slider {
-            display: flex;
-            height: 100%;
-            transition: transform 0.5s ease;
-            width: 500%;
-        }
-
-        .feature-slide {
-            width: 20%;
-            height: 100%;
-            padding: 20px;
-            flex-shrink: 0;
-        }
-
-        .slide-card {
-            background: rgba(58, 56, 56, 0.8);
-            border: 1px solid rgba(126, 162, 212, 0.3);
-            border-radius: 20px;
-            padding: 40px;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-
-        .slide-card h3 {
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #ffffff;
-        }
-
-        .slide-card p {
-            font-size: 1rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 25px;
-        }
-
-        /* Demo Elements */
-        .progress-demo {
-            margin-top: 20px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: rgba(126, 162, 212, 0.2);
-            border-radius: 4px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, ${themeColor}, ${themeColor}dd);
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            color: ${themeColor};
-            font-weight: 600;
-        }
-
-        .bonus-badge {
-            background: linear-gradient(45deg, #28a745, #20c997);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 600;
-            display: inline-block;
-        }
-
-        .test-demo {
-            margin-top: 20px;
-        }
-
-        .test-score {
-            font-size: 2rem;
-            font-weight: bold;
-            color: ${themeColor};
-            margin-bottom: 5px;
-        }
-
-        .test-result {
-            color: #28a745;
-            font-weight: 600;
-        }
-
-        .promo-code {
-            background: ${themeColor};
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-family: monospace;
-            font-size: 1.1rem;
-            display: inline-block;
-        }
-
-        .cabinet-demo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .mini-avatar {
-            width: 40px;
-            height: 40px;
-            background: ${themeColor};
-            border-radius: 50%;
-        }
-
-        .cabinet-name {
-            color: #ffffff;
             font-weight: 600;
         }
 
@@ -4430,99 +4236,6 @@ async function generateLandingPageHTML(teacher) {
         </div>
     </section>
     ` : ''}
-
-    <!-- Personal Features Section -->
-    <section class="personal-features">
-        <div class="container">
-            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: ${themeColor}; text-align: center;">Imkoniyatlar</h2>
-            <div class="features-content">
-                <!-- Left Side - Text Content -->
-                <div class="features-text">
-                    <h2 class="features-title">DarsLinker platformasi o'quvchilarga beradigan imkoniyatlar</h2>
-
-                    <!-- Navigation Controls -->
-                    <div class="slide-controls">
-                        <button class="slide-btn prev-btn" id="prevBtn">‹</button>
-
-                        <div class="slide-dots">
-                            <span class="dot active" data-slide="0"></span>
-                            <span class="dot" data-slide="1"></span>
-                            <span class="dot" data-slide="2"></span>
-                            <span class="dot" data-slide="3"></span>
-                            <span class="dot" data-slide="4"></span>
-                        </div>
-
-                        <button class="slide-btn next-btn" id="nextBtn">›</button>
-                    </div>
-                </div>
-
-                <!-- Right Side - Sliding Features -->
-                <div class="features-slide-container">
-                    <div class="features-slider" id="featuresSlider">
-                        <!-- Slide 1 - Progress Tracking -->
-                        <div class="feature-slide">
-                            <div class="slide-card">
-                                <h3>Progress Tracking</h3>
-                                <p>O'qish jarayonini real vaqtda kuzatish va batafsil statistikalar ko'rish</p>
-                                <div class="progress-demo">
-                                    <div class="progress-bar">
-                                        <div class="progress-fill" style="width: 75%"></div>
-                                    </div>
-                                    <span class="progress-text">75% tugallandi</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 2 - Referral System -->
-                        <div class="feature-slide">
-                            <div class="slide-card">
-                                <h3>Referal Tizimi</h3>
-                                <p>Do'stlaringizni taklif qilib maxsus chegirmalar va bonuslar oling</p>
-                                <div class="referral-demo">
-                                    <span class="bonus-badge">30% chegirma</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 3 - Tests & Quizzes -->
-                        <div class="feature-slide">
-                            <div class="slide-card">
-                                <h3>Test va Quiz</h3>
-                                <p>Kurs davomida interaktiv testlardan o'tish va darhol natija olish</p>
-                                <div class="test-demo">
-                                    <div class="test-score">9/10</div>
-                                    <span class="test-result">A'lo natija!</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 4 - Promocodes -->
-                        <div class="feature-slide">
-                            <div class="slide-card">
-                                <h3>Promokod Tizimi</h3>
-                                <p>Maxsus promokodlar va chegirmalardan foydalaning</p>
-                                <div class="promo-demo">
-                                    <span class="promo-code">SAVE50</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Slide 5 - Personal Cabinet -->
-                        <div class="feature-slide">
-                            <div class="slide-card">
-                                <h3>Shaxsiy Kabinet</h3>
-                                <p>Barcha ma'lumotlaringiz bir joyda - profil, kurslar, sertifikatlar</p>
-                                <div class="cabinet-demo">
-                                    <div class="mini-avatar"></div>
-                                    <span class="cabinet-name">Shaxsiy profil</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Footer -->
     <footer class="footer">
