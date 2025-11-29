@@ -437,6 +437,36 @@ const sendResetCode = catchAsync(async (req, res) => {
   // Hash the code
   const hashedCode = await bcrypt.hash(code, parseInt(BCRYPT_SALT_ROUNDS));
 
+  // Check if there's already an active verification code
+  const existingVerification = await Verification.findOne({
+    phone: normalizedPhone,
+    verified: false,
+    expiresAt: { $gt: new Date() }
+  }).sort({ createdAt: -1 });
+
+  // If active code exists, return it instead of creating new one
+  if (existingVerification && existingVerification.codeText) {
+    logger.info("⚠️ Active reset code already exists", { 
+      phone: normalizedPhone, 
+      codeAge: Date.now() - existingVerification.createdAt.getTime() 
+    });
+
+    const chatId = existingVerification.chatId;
+    let sent = false;
+    if (chatId) {
+      sent = await sendVerificationCodeViaTelegram(normalizedPhone, existingVerification.codeText, user.firstName);
+    }
+
+    return res.json({
+      success: true,
+      message: chatId 
+        ? "Avvalgi kod hali amal qilmoqda va qayta yuborildi" 
+        : "Avvalgi kod hali amal qilmoqda. Telegram botga /login yuboring va kontaktingizni yuboring",
+      needsContact: !chatId,
+      codeResent: true
+    });
+  }
+
   // Try to find existing chatId from previous verifications
   const oldVerification = await Verification.findOne({
     phone: normalizedPhone,

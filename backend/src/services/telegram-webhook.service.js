@@ -117,12 +117,7 @@ export async function handleWebhookUpdate(update) {
           await sendMessage(chatId, `
 ✅ *Siz allaqachon ro'yxatdan o'tgansiz!*
 
-Salom ${existingUser.firstName}! 👋
-
-Sizning hisobingiz faol.
-
-Kirish uchun veb-saytga o'ting:
-👉 https://darslinker.uz
+Yangi kod olish uchun /login ni bosing.
 
 _DarsLinker jamoasi_ 📚
           `.trim(), {
@@ -138,6 +133,30 @@ _DarsLinker jamoasi_ 📚
         if (verification) {
           // Store chat ID in database
           verification.chatId = chatId.toString();
+          
+          // Check if code was already sent recently (within 1 minute)
+          const oneMinuteAgo = new Date(Date.now() - 60 * 1000);
+          const isRecentlySent = verification.codeSent && verification.updatedAt > oneMinuteAgo;
+          
+          if (isRecentlySent) {
+            await sendMessage(chatId, `
+⚠️ *Kod allaqachon yuborilgan*
+
+Avvalgi kod hali amal qilmoqda. Iltimos, yuborilgan kodni kiriting.
+
+Agar kod kelmagan bo'lsa, 1 daqiqadan keyin qayta urinib ko'ring.
+
+_DarsLinker jamoasi_ 📚
+            `.trim(), {
+              reply_markup: {
+                remove_keyboard: true
+              }
+            });
+            
+            logger.info('⚠️ Code already sent recently (webhook):', { phone: normalizedPhone, chatId });
+            return;
+          }
+          
           await verification.save();
           
           // Send verification code
@@ -157,30 +176,14 @@ _DarsLinker jamoasi_ 📚
             if (existingUser) {
               // Password reset code
               codeMessage = `
-🔑 *Parol tiklash kodi*
-
-Salom ${firstName}! 👋
-
-Parolni tiklash uchun kod: *${code}*
-
-Bu kod 30 daqiqa davomida amal qiladi.
-
-Agar siz bu kodni so'ramagan bo'lsangiz, bu xabarni e'tiborsiz qoldiring.
+${firstName}, parol tiklash kodi: *${code}*
 
 _DarsLinker jamoasi_ 📚
               `.trim();
             } else {
               // Registration code
               codeMessage = `
-🔐 *Ro'yxatdan o'tish kodi*
-
-Salom ${firstName}! 👋
-
-Sizning tasdiqlash kodingiz: *${code}*
-
-Bu kod 30 daqiqa davomida amal qiladi.
-
-Agar siz bu kodni so'ramagan bo'lsangiz, bu xabarni e'tiborsiz qoldiring.
+${firstName}, ro'yxatdan o'tish kodi: *${code}*
 
 _DarsLinker jamoasi_ 📚
               `.trim();
@@ -231,6 +234,8 @@ Keyin bu botga qaytib keling.
 
       // Handle /start command
       if (text === '/start') {
+        // Check if user already registered
+        // We'll check this when they send contact
         await sendMessageWithButton(chatId, `
 🎓 *@darslinker ning rasmiy botiga xush kelibsiz!*
 
@@ -242,9 +247,7 @@ Ro'yxatdan o'tish uchun kontaktingizni yuboring.
       // Handle /login command
       if (text === '/login') {
         await sendMessageWithButton(chatId, `
-🔐 *Tizimga kirish*
-
-Kirish uchun telefon raqamingizni yuboring.
+🔑 *Kod olish uchun kontaktingizni yuboring*
         `.trim());
         return;
       }
