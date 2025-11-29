@@ -19629,6 +19629,24 @@ window.openCertificateModal = function(imageUrl, title) {
 window.checkAndServeLandingPage = function() {
   const currentPath = window.location.pathname;
 
+  // Check if URL matches student dashboard pattern: /teacher/teacherId/student-dashboard
+  const studentDashboardPattern = /^\/teacher\/([a-zA-Z0-9]+)\/student-dashboard$/;
+  const studentMatch = currentPath.match(studentDashboardPattern);
+
+  if (studentMatch) {
+    const teacherId = studentMatch[1];
+    console.log('📚 Loading student dashboard for teacher:', teacherId);
+
+    // Save teacherId to sessionStorage
+    sessionStorage.setItem('currentTeacherId', teacherId);
+
+    // Load student dashboard
+    import('../student/landing-student-dashboard.js').then(module => {
+      module.initLandingStudentDashboard();
+    });
+    return true;
+  }
+
   // Check if URL matches teacher landing page pattern: /teacher/teacherId
   const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9]+)$/;
   const match = currentPath.match(teacherPagePattern);

@@ -38,6 +38,46 @@ class App {
     router.register('/pricing', initPricingPage);
 
     router.register('*', () => {
+      // Check if it's a teacher landing page or student dashboard
+      const currentPath = window.location.pathname;
+      
+      // Check for student dashboard pattern: /teacher/:teacherId/student-dashboard
+      const studentDashboardPattern = /^\/teacher\/([a-zA-Z0-9]+)\/student-dashboard$/;
+      const studentMatch = currentPath.match(studentDashboardPattern);
+      
+      if (studentMatch) {
+        const teacherId = studentMatch[1];
+        console.log('📚 Loading student dashboard for teacher:', teacherId);
+        
+        // Save teacherId to sessionStorage
+        sessionStorage.setItem('currentTeacherId', teacherId);
+        
+        // Load student dashboard
+        import('./pages/student/landing-student-dashboard.js').then(module => {
+          module.initLandingStudentDashboard();
+        }).catch(err => {
+          console.error('Error loading student dashboard:', err);
+        });
+        return;
+      }
+      
+      // Check for teacher landing page pattern: /teacher/:teacherId
+      const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9]+)$/;
+      const teacherMatch = currentPath.match(teacherPagePattern);
+      
+      if (teacherMatch) {
+        const teacherId = teacherMatch[1];
+        console.log('📄 Loading teacher landing page for ID:', teacherId);
+        
+        // Save teacherId to sessionStorage
+        sessionStorage.setItem('currentTeacherId', teacherId);
+        
+        // Load teacher landing page
+        initDashboard();
+        return;
+      }
+      
+      // Default 404 page
       document.querySelector('#app').innerHTML = `
         <div class="error-page">
           <h1>404 - Sahifa topilmadi</h1>
