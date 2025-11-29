@@ -4230,7 +4230,7 @@ async function generateLandingPageHTML(teacher) {
                     
                     <!-- Auth Buttons -->
                     <div class="auth-buttons">
-                        <a href="/login.html" class="auth-button secondary" style="border-color: ${themeColor}; color: ${themeColor};">Kirish</a>
+                        <a href="#" class="auth-button secondary" style="border-color: ${themeColor}; color: ${themeColor};" onclick="openLoginModal(event)">Kirish</a>
                         <a href="#" class="auth-button" style="background: ${themeColor};" onclick="openRegistrationModal(event)">Ro'yxatdan o'tish</a>
                     </div>
                 </div>
@@ -4583,6 +4583,37 @@ async function generateLandingPageHTML(teacher) {
                     .phone-input {
                         flex: 1;
                     }
+                    .password-input-wrapper {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                    }
+                    .password-input-field {
+                        padding-right: 50px !important;
+                    }
+                    .password-toggle-btn {
+                        position: absolute;
+                        right: 14px;
+                        background: none;
+                        border: none;
+                        color: rgba(255, 255, 255, 0.6);
+                        cursor: pointer;
+                        padding: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: color 0.3s ease;
+                        z-index: 1;
+                        width: 24px;
+                        height: 24px;
+                    }
+                    .password-toggle-btn:hover {
+                        color: rgba(255, 255, 255, 0.9);
+                    }
+                    .password-toggle-btn svg {
+                        width: 20px;
+                        height: 20px;
+                    }
                     .error-message {
                         color: #ff6b6b;
                         font-size: 13px;
@@ -4653,6 +4684,409 @@ async function generateLandingPageHTML(teacher) {
             }
         }
 
+        // Login Modal Functions
+        function openLoginModal(e) {
+            e.preventDefault();
+            
+            const modal = document.createElement('div');
+            modal.id = 'loginModal';
+            modal.innerHTML = \`
+                <div class="modal-overlay" onclick="closeLoginModal()">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <button class="modal-close" onclick="closeLoginModal()">&times;</button>
+                        <div id="loginModalBody">
+                            <h2 class="modal-title">Kirish</h2>
+                            <p class="modal-subtitle">Telefon raqam va parolingizni kiriting</p>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Telefon raqam</label>
+                                <div class="phone-input-wrapper">
+                                    <div class="phone-prefix">
+                                        <img src="/images/uz-flag.jpg" alt="UZ" class="flag-icon" />
+                                        <span>+998</span>
+                                    </div>
+                                    <input type="tel" id="loginPhone" class="form-input phone-input" placeholder="90 123 45 67" maxlength="12" autocomplete="off" name="login-phone-new" />
+                                </div>
+                                <div class="error-message" id="loginPhoneError"></div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Parol</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="loginPassword" class="form-input password-input-field" placeholder="Parolingizni kiriting" autocomplete="new-password" name="login-password-new" />
+                                    <button type="button" class="password-toggle-btn" onclick="togglePassword('loginPassword', 'loginPasswordToggle')">
+                                        <svg id="loginPasswordToggle" class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                            <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="error-message" id="loginPasswordError"></div>
+                            </div>
+                            
+                            <button class="modal-button" onclick="handleLogin()">Kirish</button>
+                            <button class="modal-button back-button" onclick="handleForgotPassword()">Parolni unutdingizmi?</button>
+                        </div>
+                    </div>
+                </div>
+                <style>
+                    .modal-overlay {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(35, 35, 35, 0.95);
+                        backdrop-filter: blur(10px);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10000;
+                        animation: fadeIn 0.3s ease;
+                    }
+                    @keyframes fadeIn {
+                        from { opacity: 0; }
+                        to { opacity: 1; }
+                    }
+                    .modal-content {
+                        background: rgba(90, 90, 90, 0.1);
+                        backdrop-filter: blur(50px);
+                        -webkit-backdrop-filter: blur(50px);
+                        border: 1px solid ${themeColor};
+                        border-radius: 24px;
+                        padding: 40px;
+                        max-width: 500px;
+                        width: 90%;
+                        position: relative;
+                        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+                        animation: slideUp 0.3s ease;
+                    }
+                    @keyframes slideUp {
+                        from { transform: translateY(50px); opacity: 0; }
+                        to { transform: translateY(0); opacity: 1; }
+                    }
+                    .modal-close {
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                        background: none;
+                        border: none;
+                        color: rgba(255, 255, 255, 0.6);
+                        font-size: 32px;
+                        cursor: pointer;
+                        width: 40px;
+                        height: 40px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: color 0.3s ease;
+                    }
+                    .modal-close:hover {
+                        color: #ffffff;
+                    }
+                    .modal-title {
+                        color: #ffffff;
+                        font-size: 24px;
+                        font-weight: 700;
+                        margin-bottom: 10px;
+                        text-align: center;
+                    }
+                    .modal-subtitle {
+                        color: rgba(255, 255, 255, 0.7);
+                        font-size: 14px;
+                        margin-bottom: 30px;
+                        text-align: center;
+                    }
+                    .form-group {
+                        margin-bottom: 20px;
+                    }
+                    .form-label {
+                        display: block;
+                        color: #ffffff;
+                        font-size: 14px;
+                        font-weight: 500;
+                        margin-bottom: 8px;
+                    }
+                    .form-input {
+                        width: 100%;
+                        padding: 12px 16px;
+                        background: rgba(60, 60, 80, 0.5);
+                        border: 1px solid ${themeColor};
+                        border-radius: 25px;
+                        color: #ffffff;
+                        font-size: 16px;
+                        outline: none;
+                        transition: all 0.3s ease;
+                        box-sizing: border-box;
+                    }
+                    .form-input:focus {
+                        border-color: ${themeColor};
+                        box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+                    }
+                    .form-input::placeholder {
+                        color: rgba(255, 255, 255, 0.4);
+                    }
+                    .phone-input-wrapper {
+                        display: flex;
+                        gap: 10px;
+                        align-items: center;
+                    }
+                    .phone-prefix {
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        padding: 12px 16px;
+                        background: rgba(70, 70, 90, 0.5);
+                        border: 1px solid ${themeColor};
+                        border-radius: 25px;
+                        color: #ffffff;
+                        font-size: 16px;
+                        white-space: nowrap;
+                    }
+                    .flag-icon {
+                        width: 24px;
+                        height: 18px;
+                        border-radius: 3px;
+                    }
+                    .phone-input {
+                        flex: 1;
+                    }
+                    .password-input-wrapper {
+                        position: relative;
+                        display: flex;
+                        align-items: center;
+                    }
+                    .password-input-field {
+                        padding-right: 50px !important;
+                    }
+                    .password-toggle-btn {
+                        position: absolute;
+                        right: 14px;
+                        background: none;
+                        border: none;
+                        color: rgba(255, 255, 255, 0.6);
+                        cursor: pointer;
+                        padding: 0;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: color 0.3s ease;
+                        z-index: 1;
+                        width: 24px;
+                        height: 24px;
+                    }
+                    .password-toggle-btn:hover {
+                        color: rgba(255, 255, 255, 0.9);
+                    }
+                    .password-toggle-btn svg {
+                        width: 20px;
+                        height: 20px;
+                    }
+                    .error-message {
+                        color: #ff6b6b;
+                        font-size: 13px;
+                        margin-top: 5px;
+                        display: none;
+                    }
+                    .error-message.show {
+                        display: block;
+                    }
+                    .modal-button {
+                        width: 100%;
+                        padding: 14px;
+                        background: ${themeColor};
+                        border: none;
+                        border-radius: 25px;
+                        color: #ffffff;
+                        font-size: 16px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                        margin-top: 10px;
+                        box-shadow: 0 4px 12px ${themeColor}50;
+                    }
+                    .modal-button:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px ${themeColor}66;
+                    }
+                    .modal-button:disabled {
+                        opacity: 0.6;
+                        cursor: not-allowed;
+                        transform: none;
+                    }
+                    .back-button {
+                        background: transparent;
+                        border: 1px solid ${themeColor};
+                        margin-top: 10px;
+                        box-shadow: none;
+                    }
+                    .back-button:hover {
+                        background: rgba(60, 60, 80, 0.5);
+                        transform: none;
+                        box-shadow: none;
+                    }
+                </style>
+            \`;
+            document.body.appendChild(modal);
+            
+            // Clear autofill values
+            setTimeout(() => {
+                const phoneInput = document.getElementById('loginPhone');
+                const passwordInput = document.getElementById('loginPassword');
+                if (phoneInput) phoneInput.value = '';
+                if (passwordInput) passwordInput.value = '';
+            }, 10);
+            
+            // Format phone number input
+            const phoneInput = document.getElementById('loginPhone');
+            phoneInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\\D/g, '');
+                if (value.length > 0) {
+                    if (value.length <= 2) {
+                        value = value;
+                    } else if (value.length <= 5) {
+                        value = value.slice(0, 2) + ' ' + value.slice(2);
+                    } else if (value.length <= 7) {
+                        value = value.slice(0, 2) + ' ' + value.slice(2, 5) + ' ' + value.slice(5);
+                    } else {
+                        value = value.slice(0, 2) + ' ' + value.slice(2, 5) + ' ' + value.slice(5, 7) + ' ' + value.slice(7, 9);
+                    }
+                }
+                e.target.value = value;
+            });
+        }
+
+        function closeLoginModal() {
+            const modal = document.getElementById('loginModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        async function handleLogin() {
+            const phone = document.getElementById('loginPhone').value.replace(/\\s/g, '');
+            const password = document.getElementById('loginPassword').value.trim();
+            const phoneError = document.getElementById('loginPhoneError');
+            const passwordError = document.getElementById('loginPasswordError');
+            
+            let isValid = true;
+            
+            if (!phone || phone.length !== 9) {
+                phoneError.textContent = 'To\\'g\\'ri telefon raqam kiriting (9 ta raqam)';
+                phoneError.classList.add('show');
+                isValid = false;
+            } else {
+                phoneError.classList.remove('show');
+            }
+            
+            if (!password) {
+                passwordError.textContent = 'Parolni kiriting';
+                passwordError.classList.add('show');
+                isValid = false;
+            } else {
+                passwordError.classList.remove('show');
+            }
+            
+            if (!isValid) return;
+            
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Kirilmoqda...';
+            
+            try {
+                const apiBaseUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:8001/api' 
+                    : 'https://darslinker-backend.onrender.com/api';
+                const response = await fetch(\`\${apiBaseUrl}/landing-auth/login\`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: '+998' + phone,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    sessionStorage.setItem('landingUser', JSON.stringify({
+                        phone: data.user.phone,
+                        firstName: data.user.firstName,
+                        lastName: data.user.lastName
+                    }));
+                    
+                    showToast('success', 'Muvaffaqiyatli kirdingiz!');
+                    closeLoginModal();
+                    
+                    // Redirect to student dashboard (coming soon page)
+                    setTimeout(() => {
+                        const teacherId = sessionStorage.getItem('currentTeacherId');
+                        if (teacherId) {
+                            window.location.href = \`/teacher/\${teacherId}/student-dashboard\`;
+                        } else {
+                            window.location.href = '/student-dashboard.html';
+                        }
+                    }, 1500);
+                } else {
+                    showToast('error', data.message || 'Telefon yoki parol noto\\'g\\'ri');
+                    button.disabled = false;
+                    button.textContent = 'Kirish';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showToast('error', 'Kirishda xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
+                button.disabled = false;
+                button.textContent = 'Kirish';
+            }
+        }
+
+        async function handleForgotPassword() {
+            const phone = document.getElementById('loginPhone').value.replace(/\\s/g, '');
+            const phoneError = document.getElementById('loginPhoneError');
+            
+            if (!phone || phone.length !== 9) {
+                phoneError.textContent = 'Avval telefon raqamingizni kiriting';
+                phoneError.classList.add('show');
+                return;
+            }
+            
+            phoneError.classList.remove('show');
+            
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Yuborilmoqda...';
+            
+            try {
+                const apiBaseUrl = window.location.hostname === 'localhost' 
+                    ? 'http://localhost:8001/api' 
+                    : 'https://darslinker-backend.onrender.com/api';
+                const response = await fetch(\`\${apiBaseUrl}/landing-auth/forgot-password\`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phone: '+998' + phone
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('success', 'Telegram botga /login buyrug\\'ini yuboring');
+                    button.disabled = false;
+                    button.textContent = 'Parolni unutdingizmi?';
+                } else {
+                    showToast('error', data.message || 'Xatolik yuz berdi');
+                    button.disabled = false;
+                    button.textContent = 'Parolni unutdingizmi?';
+                }
+            } catch (error) {
+                console.error('Forgot password error:', error);
+                showToast('error', 'Xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
+                button.disabled = false;
+                button.textContent = 'Parolni unutdingizmi?';
+            }
+        }
+
         function renderStep(step) {
             currentStep = step;
             const modalBody = document.getElementById('modalBody');
@@ -4663,6 +5097,7 @@ async function generateLandingPageHTML(teacher) {
                     <p class="modal-subtitle">Ism va familiyangizni kiriting</p>
                     <div class="step-indicator">
                         <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
                         <div class="step-dot"></div>
                         <div class="step-dot"></div>
                     </div>
@@ -4699,6 +5134,7 @@ async function generateLandingPageHTML(teacher) {
                         <div class="step-dot active"></div>
                         <div class="step-dot active"></div>
                         <div class="step-dot"></div>
+                        <div class="step-dot"></div>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Telefon raqam</label>
@@ -4711,7 +5147,7 @@ async function generateLandingPageHTML(teacher) {
                         </div>
                         <div class="error-message" id="phoneError"></div>
                     </div>
-                    <button class="modal-button" onclick="validateStep2()">Kod yuborish</button>
+                    <button class="modal-button" onclick="validateStep2()">Keyingisi</button>
                     <button class="modal-button back-button" onclick="renderStep(1)">Orqaga</button>
                 \`;
                 
@@ -4735,9 +5171,50 @@ async function generateLandingPageHTML(teacher) {
                 
             } else if (step === 3) {
                 modalBody.innerHTML = \`
+                    <h2 class="modal-title">Parol yarating</h2>
+                    <p class="modal-subtitle">Hisobingiz uchun xavfsiz parol yarating</p>
+                    <div class="step-indicator">
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot active"></div>
+                        <div class="step-dot"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Parol</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="password" class="form-input password-input-field" placeholder="Kamida 6 ta belgi" value="\${registrationData.password || ''}" />
+                            <button type="button" class="password-toggle-btn" onclick="togglePassword('password', 'passwordToggle')">
+                                <svg id="passwordToggle" class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Parolni tasdiqlang</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="confirmPassword" class="form-input password-input-field" placeholder="Parolni qayta kiriting" value="\${registrationData.confirmPassword || ''}" />
+                            <button type="button" class="password-toggle-btn" onclick="togglePassword('confirmPassword', 'confirmPasswordToggle')">
+                                <svg id="confirmPasswordToggle" class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="error-message" id="confirmPasswordError"></div>
+                    </div>
+                    <button class="modal-button" onclick="validateStep3()">Kod yuborish</button>
+                    <button class="modal-button back-button" onclick="renderStep(2)">Orqaga</button>
+                \`;
+                
+            } else if (step === 4) {
+                modalBody.innerHTML = \`
                     <h2 class="modal-title">Tasdiqlash kodi</h2>
                     <p class="modal-subtitle">Telegram botdan kelgan kodni kiriting</p>
                     <div class="step-indicator">
+                        <div class="step-dot active"></div>
                         <div class="step-dot active"></div>
                         <div class="step-dot active"></div>
                         <div class="step-dot active"></div>
@@ -4747,8 +5224,8 @@ async function generateLandingPageHTML(teacher) {
                         <input type="text" id="verificationCode" class="form-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 8px;" />
                         <div class="error-message" id="codeError"></div>
                     </div>
-                    <button class="modal-button" onclick="validateStep3()">Tasdiqlash</button>
-                    <button class="modal-button back-button" onclick="renderStep(2)">Orqaga</button>
+                    <button class="modal-button" onclick="validateStep4()">Tasdiqlash</button>
+                    <button class="modal-button back-button" onclick="renderStep(3)">Orqaga</button>
                 \`;
                 
                 // Only numbers for verification code
@@ -4757,6 +5234,27 @@ async function generateLandingPageHTML(teacher) {
                     e.target.value = e.target.value.replace(/\\D/g, '');
                 });
                 codeInput.focus();
+            }
+        }
+        
+        window.togglePassword = function(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.innerHTML = \`
+                    <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <line x1="2" y1="2" x2="22" y2="22" stroke="currentColor" stroke-width="2"/>
+                \`;
+            } else {
+                input.type = 'password';
+                icon.innerHTML = \`
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
+                    <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2" fill="none"/>
+                \`;
             }
         }
 
@@ -4955,9 +5453,7 @@ async function generateLandingPageHTML(teacher) {
             
             phoneError.classList.remove('show');
             registrationData.phone = phone;
-            
-            // Send verification code via Telegram bot
-            sendVerificationCode();
+            renderStep(3);
         }
 
         async function sendVerificationCode() {
@@ -4993,7 +5489,7 @@ async function generateLandingPageHTML(teacher) {
                         window.open(\`https://t.me/\${botUsername}\`, '_blank');
                     }, 8000);
                     
-                    renderStep(3);
+                    renderStep(4);
                 } else {
                     showToast('error', data.message || 'Kod yuborishda xatolik');
                     button.disabled = false;
@@ -5011,7 +5507,42 @@ async function generateLandingPageHTML(teacher) {
             await sendVerificationCode();
         }
 
-        async function validateStep3() {
+        function validateStep3() {
+            const password = document.getElementById('password').value.trim();
+            const confirmPassword = document.getElementById('confirmPassword').value.trim();
+            const passwordError = document.getElementById('passwordError');
+            const confirmPasswordError = document.getElementById('confirmPasswordError');
+            
+            let isValid = true;
+            
+            if (!password || password.length < 6) {
+                passwordError.textContent = 'Parol kamida 6 ta belgidan iborat bo\\'lishi kerak';
+                passwordError.classList.add('show');
+                isValid = false;
+            } else {
+                passwordError.classList.remove('show');
+            }
+            
+            if (!confirmPassword) {
+                confirmPasswordError.textContent = 'Parolni tasdiqlang';
+                confirmPasswordError.classList.add('show');
+                isValid = false;
+            } else if (password !== confirmPassword) {
+                confirmPasswordError.textContent = 'Parollar mos kelmaydi';
+                confirmPasswordError.classList.add('show');
+                isValid = false;
+            } else {
+                confirmPasswordError.classList.remove('show');
+            }
+            
+            if (isValid) {
+                registrationData.password = password;
+                registrationData.confirmPassword = confirmPassword;
+                sendVerificationCode();
+            }
+        }
+
+        async function validateStep4() {
             const code = document.getElementById('verificationCode').value.trim();
             const codeError = document.getElementById('codeError');
             
@@ -5039,6 +5570,7 @@ async function generateLandingPageHTML(teacher) {
                         phone: '+998' + registrationData.phone,
                         firstName: registrationData.firstName,
                         lastName: registrationData.lastName,
+                        password: registrationData.password,
                         verificationCode: code
                     })
                 });
@@ -5059,7 +5591,12 @@ async function generateLandingPageHTML(teacher) {
                     
                     // Redirect to student dashboard (coming soon page)
                     setTimeout(() => {
-                        window.location.href = '/student-dashboard';
+                        const teacherId = sessionStorage.getItem('currentTeacherId');
+                        if (teacherId) {
+                            window.location.href = \`/teacher/\${teacherId}/student-dashboard\`;
+                        } else {
+                            window.location.href = '/student-dashboard';
+                        }
                     }, 1500);
                 } else {
                     codeError.textContent = data.message || 'Noto\\'g\\'ri kod';
@@ -5229,6 +5766,10 @@ async function generateLandingPageHTML(teacher) {
         // Make functions globally available
         window.openRegistrationModal = openRegistrationModal;
         window.closeRegistrationModal = closeRegistrationModal;
+        window.openLoginModal = openLoginModal;
+        window.closeLoginModal = closeLoginModal;
+        window.handleLogin = handleLogin;
+        window.handleForgotPassword = handleForgotPassword;
         window.closeBotInfoModal = closeBotInfoModal;
         window.renderStep = renderStep;
         window.validateStep1 = validateStep1;
@@ -18743,6 +19284,9 @@ window.checkAndServeLandingPage = function() {
   if (match) {
     const teacherId = match[1];
     console.log('📄 Loading teacher landing page for ID:', teacherId);
+
+    // Save teacherId to sessionStorage for later use
+    sessionStorage.setItem('currentTeacherId', teacherId);
 
     // Load and display teacher landing page
     loadTeacherLandingPage(teacherId);

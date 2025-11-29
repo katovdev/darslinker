@@ -126,8 +126,10 @@ async function handleUpdate(update) {
         }).sort({ createdAt: -1 });
 
         if (verification) {
-          // Store chat ID for this phone
+          // Store chat ID for this phone (both in memory and database)
           userChatIds.set(normalizedPhone, chatId);
+          verification.chatId = chatId.toString();
+          await verification.save();
           
           // Send verification code immediately
           const code = verification.codeText;
@@ -312,7 +314,23 @@ async function sendMessageWithButton(chatId, text) {
  */
 export async function sendVerificationCode(phone, code, firstName) {
   try {
-    const chatId = userChatIds.get(phone);
+    // Try to get chatId from memory first
+    let chatId = userChatIds.get(phone);
+    
+    // If not in memory, try to get from database
+    if (!chatId) {
+      const verification = await Verification.findOne({
+        phone,
+        verified: false,
+        expiresAt: { $gt: new Date() }
+      }).sort({ createdAt: -1 });
+      
+      if (verification && verification.chatId) {
+        chatId = verification.chatId;
+        userChatIds.set(phone, chatId); // Cache it
+        logger.info('📋 Chat ID found in database:', { phone, chatId });
+      }
+    }
     
     if (!chatId) {
       logger.warn('⚠️ Chat ID not found for phone:', { phone });

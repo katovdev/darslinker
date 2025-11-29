@@ -15,6 +15,10 @@ const verificationSchema = new mongoose.Schema(
       type: String, // Store unhashed code temporarily for Telegram sending
       required: false
     },
+    chatId: {
+      type: String, // Telegram chat ID
+      required: false
+    },
     firstName: {
       type: String,
       default: ''

@@ -98,9 +98,9 @@ const sendVerificationCode = catchAsync(async (req, res) => {
  * @access Public
  */
 const verifyAndRegister = catchAsync(async (req, res) => {
-  const { phone, firstName, lastName, verificationCode } = req.body;
+  const { phone, firstName, lastName, password, verificationCode } = req.body;
 
-  if (!phone || !firstName || !lastName || !verificationCode) {
+  if (!phone || !firstName || !lastName || !password || !verificationCode) {
     throw new BadRequestError("All fields are required");
   }
 
@@ -150,9 +150,8 @@ const verifyAndRegister = catchAsync(async (req, res) => {
     throw new ConflictError("Bu telefon raqam allaqachon ro'yxatdan o'tgan");
   }
 
-  // Generate default password (phone number last 6 digits)
-  const defaultPassword = normalizedPhone.slice(-6);
-  const hashedPassword = await bcrypt.hash(defaultPassword, parseInt(BCRYPT_SALT_ROUNDS));
+  // Hash the provided password
+  const hashedPassword = await bcrypt.hash(password, parseInt(BCRYPT_SALT_ROUNDS));
 
   // Import Student model
   const Student = (await import("../models/student.model.js")).default;
@@ -225,8 +224,7 @@ const verifyAndRegister = catchAsync(async (req, res) => {
     message: "Ro'yxatdan o'tish muvaffaqiyatli yakunlandi",
     user: userData,
     accessToken,
-    refreshToken,
-    defaultPassword // Send default password so user knows it
+    refreshToken
   });
 });
 
@@ -307,8 +305,103 @@ const resendVerificationCode = catchAsync(async (req, res) => {
   });
 });
 
+/**
+ * Login with phone and password for landing page users
+ * @route POST /landing-auth/login
+ * @access Public
+ */
+const login = catchAsync(async (req, res) => {
+  const { phone, password } = req.body;
+
+  if (!phone || !password) {
+    throw new BadRequestError("Phone and password are required");
+  }
+
+  // Normalize phone number
+  const normalizedPhone = normalizePhone(phone);
+
+  logger.info("🔐 Landing page login attempt", { phone: normalizedPhone });
+
+  // Import Student model
+  const Student = (await import("../models/student.model.js")).default;
+
+  // Find user (try both User and Student models)
+  let user = await User.findOne({ phone: normalizedPhone });
+  
+  if (!user) {
+    // Try Student model
+    user = await Student.findOne({ phone: normalizedPhone });
+  }
+  
+  if (!user) {
+    throw new UnauthorizedError("Telefon yoki parol noto'g'ri");
+  }
+
+  // Check if user status is active
+  if (user.status !== 'active') {
+    throw new UnauthorizedError("Hisobingiz faol emas. Iltimos, administrator bilan bog'laning.");
+  }
+
+  // Check password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    throw new UnauthorizedError("Telefon yoki parol noto'g'ri");
+  }
+
+  logger.info("✅ Landing page login successful", { userId: user._id });
+
+  res.json({
+    success: true,
+    message: "Muvaffaqiyatli kirdingiz",
+    user: {
+      id: user._id,
+      phone: user.phone,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role
+    }
+  });
+});
+
+/**
+ * Forgot password - send message to Telegram bot
+ * @route POST /landing-auth/forgot-password
+ * @access Public
+ */
+const forgotPassword = catchAsync(async (req, res) => {
+  const { phone } = req.body;
+
+  if (!phone) {
+    throw new BadRequestError("Phone is required");
+  }
+
+  // Normalize phone number
+  const normalizedPhone = normalizePhone(phone);
+
+  logger.info("🔑 Forgot password request", { phone: normalizedPhone });
+
+  // Find user
+  const user = await User.findOne({ phone: normalizedPhone });
+  if (!user) {
+    throw new BadRequestError("Bu telefon raqam ro'yxatdan o'tmagan");
+  }
+
+  // In real implementation, you would send a message via Telegram bot
+  // For now, just return success
+  logger.info("📱 Forgot password - user should use /login command in Telegram bot", {
+    userId: user._id
+  });
+
+  res.json({
+    success: true,
+    message: "Telegram botga /login buyrug'ini yuboring"
+  });
+});
+
 export {
   sendVerificationCode,
   verifyAndRegister,
-  resendVerificationCode
+  resendVerificationCode,
+  login,
+  forgotPassword
 };
