@@ -4605,10 +4605,7 @@ async function generateLandingPageHTML(teacher) {
                         transition: all 0.3s ease;
                         margin-top: 10px;
                     }
-                    .modal-button:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 8px 20px ${themeColor}66;
-                    }
+                    
                     .modal-button:disabled {
                         opacity: 0.6;
                         cursor: not-allowed;
@@ -4810,7 +4807,7 @@ async function generateLandingPageHTML(teacher) {
                         background: rgba(90, 90, 90, 0.1);
                         backdrop-filter: blur(50px);
                         -webkit-backdrop-filter: blur(50px);
-                        border: 1px solid #7EA2D4;
+                        border: 1px solid ${themeColor};
                         border-radius: 24px;
                         padding: 35px;
                         max-width: 450px;
@@ -4848,12 +4845,12 @@ async function generateLandingPageHTML(teacher) {
                         line-height: 1.6;
                     }
                     .bot-info-text strong {
-                        color: #7EA2D4;
+                        color: ${themeColor};
                         font-weight: 600;
                     }
                     .bot-info-steps {
                         background: rgba(60, 60, 80, 0.5);
-                        border: 1px solid #7EA2D4;
+                        border: 1px solid ${themeColor};
                         border-radius: 12px;
                         padding: 20px;
                     }
@@ -4870,7 +4867,7 @@ async function generateLandingPageHTML(teacher) {
                     .step-number {
                         width: 32px;
                         height: 32px;
-                        background: linear-gradient(135deg, #7EA2D4, #5A85C7);
+                        background: ${themeColor};
                         border-radius: 50%;
                         display: flex;
                         align-items: center;
@@ -4886,7 +4883,7 @@ async function generateLandingPageHTML(teacher) {
                     .bot-info-close {
                         width: 100%;
                         padding: 14px;
-                        background: linear-gradient(135deg, #7EA2D4, #5A85C7);
+                        background: ${themeColor};
                         border: none;
                         border-radius: 25px;
                         color: #ffffff;
@@ -4894,11 +4891,11 @@ async function generateLandingPageHTML(teacher) {
                         font-weight: 600;
                         cursor: pointer;
                         transition: all 0.3s ease;
-                        box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
+                        box-shadow: 0 4px 12px ${themeColor}50;
                     }
                     .bot-info-close:hover {
                         transform: translateY(-2px);
-                        box-shadow: 0 6px 20px rgba(126, 162, 212, 0.4);
+                        box-shadow: 0 6px 20px ${themeColor}66;
                     }
                 </style>
             \`;
