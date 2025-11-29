@@ -101,7 +101,10 @@ export async function initDashboard() {
   // }
 
   console.log('=== Dashboard initialization complete ===');
-  console.log('Final HTML check:', document.querySelector('#app').innerHTML.substring(0, 200));
+  const finalCheck = document.querySelector('#app');
+  if (finalCheck) {
+    console.log('Final HTML check:', finalCheck.innerHTML.substring(0, 200));
+  }
 }
 
 function cleanupPageStyles() {
@@ -145,7 +148,13 @@ async function renderTeacherDashboard(user) {
     console.error('Error fetching dashboard stats:', error);
   }
   
-  document.querySelector('#app').innerHTML = `
+  const appElement = document.querySelector('#app');
+  if (!appElement) {
+    console.error('❌ App element not found - cannot render dashboard');
+    return;
+  }
+  
+  appElement.innerHTML = `
     <div class="figma-dashboard">
       <!-- Top Header exactly like Figma -->
       <div class="figma-header">
@@ -3344,6 +3353,112 @@ window.openLandingPreview = async function() {
 
 // Generate Landing Page HTML
 async function generateLandingPageHTML(teacher) {
+  // Translation object for landing page
+  const translations = {
+    uz: {
+      // Menu
+      home: 'Asosiy',
+      about: 'Haqida',
+      certificates: 'Sertifikatlar',
+      courses: 'Kurslar',
+      testimonials: 'Sharhlar',
+      contact: 'Aloqa',
+      // Buttons
+      login: 'Kirish',
+      register: "Ro'yxatdan o'tish",
+      startLearning: "O'rganishni boshlash",
+      viewCourse: "Kursni ko'rish",
+      enrollNow: "Hozir yozilish",
+      // Sections
+      myCourses: 'Mening kurslarim',
+      aboutMe: "O'qituvchi haqida",
+      myTestimonials: 'Sharhlar',
+      contactMe: 'Menga murojaat',
+      certificatesSection: 'Sertifikatlar & Malaka',
+      availableCourses: 'Mavjud Kurslar',
+      // Certificate fields
+      certTitle: 'Sertifikat nomi:',
+      certOrg: 'Bergan tashkilot:',
+      certYear: 'Berilgan yili:',
+      // Other
+      students: "O'quvchilar",
+      rating: 'Reyting',
+      experience: 'Tajriba',
+      price: 'Narx',
+      free: 'Bepul',
+      paid: 'Pullik',
+      footer: 'DarsLinker platformasi orqali yaratilgan.'
+    },
+    ru: {
+      // Menu
+      home: 'Главная',
+      about: 'О себе',
+      certificates: 'Сертификаты',
+      courses: 'Курсы',
+      testimonials: 'Отзывы',
+      contact: 'Контакты',
+      // Buttons
+      login: 'Войти',
+      register: 'Регистрация',
+      startLearning: 'Начать обучение',
+      viewCourse: 'Посмотреть курс',
+      enrollNow: 'Записаться сейчас',
+      // Sections
+      myCourses: 'Мои курсы',
+      aboutMe: 'О преподавателе',
+      myTestimonials: 'Отзывы',
+      contactMe: 'Связаться со мной',
+      certificatesSection: 'Сертификаты и квалификация',
+      availableCourses: 'Доступные курсы',
+      // Certificate fields
+      certTitle: 'Название сертификата:',
+      certOrg: 'Организация:',
+      certYear: 'Год выдачи:',
+      // Other
+      students: 'Студенты',
+      rating: 'Рейтинг',
+      experience: 'Опыт',
+      price: 'Цена',
+      free: 'Бесплатно',
+      paid: 'Платно',
+      footer: 'Создано на платформе DarsLinker.'
+    },
+    en: {
+      // Menu
+      home: 'Home',
+      about: 'About',
+      certificates: 'Certificates',
+      courses: 'Courses',
+      testimonials: 'Testimonials',
+      contact: 'Contact',
+      // Buttons
+      login: 'Login',
+      register: 'Register',
+      startLearning: 'Start Learning',
+      viewCourse: 'View Course',
+      enrollNow: 'Enroll Now',
+      // Sections
+      myCourses: 'My Courses',
+      aboutMe: 'About Teacher',
+      myTestimonials: 'Testimonials',
+      contactMe: 'Contact Me',
+      certificatesSection: 'Certificates & Qualifications',
+      availableCourses: 'Available Courses',
+      // Certificate fields
+      certTitle: 'Certificate Title:',
+      certOrg: 'Issued Organization:',
+      certYear: 'Issue Year:',
+      // Other
+      students: 'Students',
+      rating: 'Rating',
+      experience: 'Experience',
+      price: 'Price',
+      free: 'Free',
+      paid: 'Paid',
+      footer: 'Created with DarsLinker platform.'
+    }
+  };
+
   // Fetch landing data from Landing API
   const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
   let landingData = null;
@@ -4198,10 +4313,10 @@ async function generateLandingPageHTML(teacher) {
                 </div>
                 
                 <nav class="nav-menu">
-                    <a href="#hero" class="nav-link active" onclick="scrollToSection(event, 'hero')">Asosiy</a>
-                    <a href="#about" class="nav-link" onclick="scrollToSection(event, 'about')">Haqida</a>
-                    <a href="#certificates" class="nav-link" onclick="scrollToSection(event, 'certificates')">Sertifikatlar</a>
-                    <a href="#courses" class="nav-link" onclick="scrollToSection(event, 'courses')">Kurslar</a>
+                    <a href="#hero" class="nav-link active" onclick="scrollToSection(event, 'hero')" data-i18n="home">Asosiy</a>
+                    <a href="#about" class="nav-link" onclick="scrollToSection(event, 'about')" data-i18n="about">Haqida</a>
+                    <a href="#certificates" class="nav-link" onclick="scrollToSection(event, 'certificates')" data-i18n="certificates">Sertifikatlar</a>
+                    <a href="#courses" class="nav-link" onclick="scrollToSection(event, 'courses')" data-i18n="courses">Kurslar</a>
                 </nav>
                 
                 <div class="header-actions">
@@ -4213,15 +4328,15 @@ async function generateLandingPageHTML(teacher) {
                             <span class="lang-arrow">▼</span>
                         </div>
                         <div class="lang-dropdown">
-                            <div class="lang-option active" onclick="changeLandingLanguage(event, 'uz', '/images/uz-flag.jpg', 'UZ')">
+                            <div class="lang-option active" data-lang="uz" onclick="selectLanguage(event, 'uz')">
                                 <img src="/images/uz-flag.jpg" alt="UZ">
                                 <span>UZ</span>
                             </div>
-                            <div class="lang-option" onclick="changeLandingLanguage(event, 'en', '/images/us-flag.png', 'EN')">
+                            <div class="lang-option" data-lang="en" onclick="selectLanguage(event, 'en')">
                                 <img src="/images/us-flag.png" alt="EN">
                                 <span>EN</span>
                             </div>
-                            <div class="lang-option" onclick="changeLandingLanguage(event, 'ru', '/images/ru-flag.jpg', 'RU')">
+                            <div class="lang-option" data-lang="ru" onclick="selectLanguage(event, 'ru')">
                                 <img src="/images/ru-flag.jpg" alt="RU">
                                 <span>RU</span>
                             </div>
@@ -4230,8 +4345,8 @@ async function generateLandingPageHTML(teacher) {
                     
                     <!-- Auth Buttons -->
                     <div class="auth-buttons">
-                        <a href="#" class="auth-button secondary" style="border-color: ${themeColor}; color: ${themeColor};" onclick="openLoginModal(event)">Kirish</a>
-                        <a href="#" class="auth-button" style="background: ${themeColor};" onclick="openRegistrationModal(event)">Ro'yxatdan o'tish</a>
+                        <a href="#" class="auth-button secondary" style="border-color: ${themeColor}; color: ${themeColor};" onclick="openLoginModal(event)" data-i18n="login">Kirish</a>
+                        <a href="#" class="auth-button" style="background: ${themeColor};" onclick="openRegistrationModal(event)" data-i18n="register">Ro'yxatdan o'tish</a>
                     </div>
                 </div>
             </div>
@@ -4264,7 +4379,7 @@ async function generateLandingPageHTML(teacher) {
     <!-- Profile Section -->
     <section class="profile" id="about">
         <div class="container">
-            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: ${themeColor}; text-align: center;">O'qituvchi haqida</h2>
+            <h2 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 50px; color: ${themeColor}; text-align: center;" data-i18n="aboutMe">O'qituvchi haqida</h2>
             <div class="profile-card">
                 <!-- Profile Information - Left Side -->
                 <div class="profile-info">
@@ -4327,7 +4442,7 @@ async function generateLandingPageHTML(teacher) {
     <!-- Certificates Section -->
     <section class="certificates" id="certificates">
         <div class="container">
-            <h2>Sertifikatlar & Malaka</h2>
+            <h2 data-i18n="certificatesSection">Sertifikatlar & Malaka</h2>
             <div class="certificates-grid">
                 ${teacher.certificates.map((cert, index) => `
                     <div class="certificate-item">
@@ -4340,15 +4455,15 @@ async function generateLandingPageHTML(teacher) {
                         </div>
                         <div class="certificate-info">
                             <div class="certificate-info-row">
-                                <span class="certificate-info-label">Certificate Title:</span>
+                                <span class="certificate-info-label" data-i18n="certTitle">Certificate Title:</span>
                                 <span class="certificate-info-value">${cert.title}</span>
                             </div>
                             <div class="certificate-info-row">
-                                <span class="certificate-info-label">Issued Organization:</span>
+                                <span class="certificate-info-label" data-i18n="certOrg">Issued Organization:</span>
                                 <span class="certificate-info-value">${cert.issuer || cert.issuedBy || 'Certificate'}</span>
                             </div>
                             <div class="certificate-info-row">
-                                <span class="certificate-info-label">Issue Year:</span>
+                                <span class="certificate-info-label" data-i18n="certYear">Issue Year:</span>
                                 <span class="certificate-info-value">${cert.year || (cert.issueDate ? new Date(cert.issueDate).getFullYear() : new Date().getFullYear())}</span>
                             </div>
                         </div>
@@ -4393,7 +4508,7 @@ async function generateLandingPageHTML(teacher) {
     <!-- Courses Section -->
     <section class="courses" id="courses">
         <div class="container">
-            <h2>Mavjud Kurslar</h2>
+            <h2 data-i18n="availableCourses">Mavjud Kurslar</h2>
             <div class="courses-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
                 ${teacher.courses.map(course => `
                     <div class="course-card">
@@ -4405,7 +4520,7 @@ async function generateLandingPageHTML(teacher) {
                             <h3 class="course-title">${course.title}</h3>
                             <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; margin: 10px 0; line-height: 1.5;">${course.description ? (course.description.length > 100 ? course.description.substring(0, 100) + '...' : course.description) : ''}</p>
                             <div class="course-meta">
-                                <div class="course-price">${course.courseType === 'free' ? 'Bepul' : (course.discountPrice ? course.discountPrice.toLocaleString() + ' so\'m' : course.price.toLocaleString() + ' so\'m')}</div>
+                                <div class="course-price"><span data-i18n="${course.courseType === 'free' ? 'free' : 'paid'}">${course.courseType === 'free' ? 'Bepul' : 'Pullik'}</span>${course.courseType !== 'free' ? ': ' + (course.discountPrice ? course.discountPrice.toLocaleString() + ' so\'m' : course.price.toLocaleString() + ' so\'m') : ''}</div>
                             </div>
                             ${course.enrollmentCount ? `<p style="color: rgba(255, 255, 255, 0.5); font-size: 13px; margin-top: 8px;">👥 ${course.enrollmentCount} students enrolled</p>` : ''}
                         </div>
@@ -4419,7 +4534,7 @@ async function generateLandingPageHTML(teacher) {
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 ${fullName}. DarsLinker platformasi orqali yaratilgan.</p>
+            <p>&copy; 2025 ${fullName}. <span data-i18n="footer">DarsLinker platformasi orqali yaratilgan.</span></p>
         </div>
     </footer>
 
@@ -6111,7 +6226,55 @@ async function generateLandingPageHTML(teacher) {
             console.log('Language changed to:', lang);
         };
 
+        // Translation system - SIMPLE VERSION
+        const translations = ${JSON.stringify(translations)};
+        let currentLang = localStorage.getItem('landingPageLang') || 'uz';
+
+        window.selectLanguage = function(event, lang) {
+            event.stopPropagation();
+            
+            console.log('🌐 Selected language:', lang);
+            console.log('📚 Available translations:', Object.keys(translations));
+            
+            currentLang = lang;
+            localStorage.setItem('landingPageLang', lang);
+            
+            // Update texts
+            const elements = document.querySelectorAll('[data-i18n]');
+            console.log('📝 Elements to translate:', elements.length);
+            
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const oldText = el.textContent;
+                if (translations[lang] && translations[lang][key]) {
+                    el.textContent = translations[lang][key];
+                    console.log(\`✅ \${key}: "\${oldText}" -> "\${translations[lang][key]}"\`);
+                } else {
+                    console.log(\`❌ Missing translation for "\${key}" in "\${lang}"\`);
+                }
+            });
+            
+            // Update flag
+            const flags = { uz: '/images/uz-flag.jpg', ru: '/images/ru-flag.jpg', en: '/images/us-flag.png' };
+            const names = { uz: 'UZ', ru: 'RU', en: 'EN' };
+            
+            document.getElementById('currentLangFlag').src = flags[lang];
+            document.getElementById('currentLangText').textContent = names[lang];
+            
+            // Update active
+            document.querySelectorAll('.lang-option').forEach(opt => opt.classList.remove('active'));
+            document.querySelector(\`.lang-option[data-lang="\${lang}"]\`).classList.add('active');
+            
+            // Close dropdown
+            document.querySelector('.language-selector').classList.remove('open');
+        };
+
+        // Init on load
+        setTimeout(() => window.selectLanguage({ stopPropagation: () => {} }, currentLang), 300);
+
         // Make functions globally available
+        window.selectLanguage = selectLanguage;
+        window.changeLandingLanguage = changeLandingLanguage;
         window.openRegistrationModal = openRegistrationModal;
         window.closeRegistrationModal = closeRegistrationModal;
         window.openLoginModal = openLoginModal;
