@@ -80,6 +80,15 @@ export const updateTeacherProfileSchema = Joi.object({
     "string.uri": "Profile image must be a valid URL",
   }),
 
+  heroImage: Joi.string().trim().uri().optional().allow("").messages({
+    "string.uri": "Hero image must be a valid URL",
+  }),
+
+  heroText: Joi.string().trim().min(3).max(500).optional().allow("").messages({
+    "string.min": "Hero text must be at least 3 characters long",
+    "string.max": "Hero text cannot exceed 500 characters",
+  }),
+
   city: Joi.string().trim().min(2).max(100).optional().allow("").messages({
     "string.min": "City must be at least 2 characters long",
     "string.max": "City cannot exceed 100 characters",
@@ -94,6 +103,33 @@ export const updateTeacherProfileSchema = Joi.object({
     enableAIAssistant: Joi.boolean().optional().messages({
       "boolean.base": "AI Assistant setting must be a boolean value",
     }),
+  }).optional(),
+
+  socialLinks: Joi.object({
+    linkedin: Joi.string().trim().uri().optional().allow("").messages({
+      "string.uri": "LinkedIn URL must be valid",
+    }),
+    github: Joi.string().trim().uri().optional().allow("").messages({
+      "string.uri": "GitHub URL must be valid",
+    }),
+    website: Joi.string().trim().uri().optional().allow("").messages({
+      "string.uri": "Website URL must be valid",
+    }),
+    telegram: Joi.string().trim().optional().allow("").messages({
+      "string.base": "Telegram must be a string",
+    }),
+    instagram: Joi.string().trim().optional().allow("").messages({
+      "string.base": "Instagram must be a string",
+    }),
+    youtube: Joi.string().trim().uri().optional().allow("").messages({
+      "string.uri": "YouTube URL must be valid",
+    }),
+  }).optional(),
+
+  landingPageSettings: Joi.object({
+    featuredCourses: Joi.array().items(Joi.string()).optional(),
+    featuredTestimonials: Joi.array().items(Joi.string()).optional(),
+    themeColor: Joi.string().trim().optional().allow(""),
   }).optional(),
 
   certificates: Joi.array()

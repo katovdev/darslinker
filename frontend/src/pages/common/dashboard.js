@@ -360,7 +360,9 @@ async function renderTeacherDashboard(user) {
   `;
 
   // Load dashboard data from API
-  loadMainDashboard();
+  if (typeof window.loadMainDashboard === 'function') {
+    window.loadMainDashboard();
+  }
 
   // Set up event listeners
   setupTeacherEventListeners();
@@ -1134,23 +1136,24 @@ window.openLandingSettings = async function() {
 // Helper function to get landing settings HTML
 function getLandingSettingsHTML(user, landingData = null) {
   const theme = getTheme();
-  const productionURL = 'https://bucolic-fairy-0e50d6.netlify.app';
+  const productionURL = 'http://localhost:5173';
   const landingURL = `${productionURL}/teacher/${user._id}`;
 
   // Default values or from landingData
-  const settings = landingData || {
-    title: `${user.firstName} ${user.lastName}'s Courses`,
-    subtitle: user.specialization || 'Expert Instructor',
-    description: 'Discover amazing courses and start your learning journey today.',
-    heroTitle: user.heroTitle || 'DASTURLASH',
-    primaryColor: '#7ea2d4',
-    backgroundColor: '#1a1a1a',
-    textColor: '#ffffff',
-    showCourses: true,
-    showAbout: true,
-    aboutText: user.bio || '',
+  const settings = {
+    title: landingData?.title || `${user.firstName} ${user.lastName}'s Courses`,
+    subtitle: landingData?.subtitle || user.specialization || 'Expert Instructor',
+    description: landingData?.description || 'Discover amazing courses and start your learning journey today.',
+    heroText: landingData?.heroText || 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING',
+    heroImage: landingData?.heroImage || user.heroImage || '',
+    primaryColor: landingData?.primaryColor || '#7ea2d4',
+    backgroundColor: landingData?.backgroundColor || '#1a1a1a',
+    textColor: landingData?.textColor || '#ffffff',
+    showCourses: landingData?.showCourses !== undefined ? landingData.showCourses : true,
+    showAbout: landingData?.showAbout !== undefined ? landingData.showAbout : true,
+    aboutText: landingData?.aboutText || user.bio || '',
     socialLinks: {
-      telegram: user.telegramUsername || '',
+      telegram: landingData?.socialLinks?.telegram || user.telegramUsername || '',
       instagram: '',
       youtube: '',
       linkedin: ''
@@ -1691,13 +1694,40 @@ function getLandingSettingsHTML(user, landingData = null) {
             <input type="text" class="form-input" name="specialty" value="${user.specialization || ''}" placeholder="Web Development & UI/UX Design">
           </div>
 
-          <!-- Hero Title -->
+          <!-- Hero Text -->
           <div class="form-field">
-            <label class="field-label">Hero Section - Main Title</label>
-            <input type="text" class="form-input" name="heroTitle" value="${settings.heroTitle || user.heroTitle || 'DASTURLASH'}" placeholder="DASTURLASH">
+            <label class="field-label">Hero Section - Main Text</label>
+            <textarea class="form-textarea" name="heroText" rows="3" placeholder="DASTURLASH NI PROFESSIONAL O'QITUVCHI BILAN O'RGANING">${settings.heroText || user.heroText || 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING'}</textarea>
             <small style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin-top: 4px; display: block;">
-              Bu matn landing page da "_____ NI PROFESSIONAL O'QITUVCHI BILAN O'RGANING" deb ko'rinadi
+              Bu matn landing page hero qismida ko'rsatiladi. Har bir qatorni yangi qatordan yozing.
             </small>
+          </div>
+
+          <!-- Hero Image -->
+          <div class="form-field">
+            <label class="field-label">Hero Section - Image</label>
+            <div style="display: flex; gap: 12px; align-items: center;">
+              ${user.heroImage ? `
+                <img src="${user.heroImage}" alt="Hero" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px; border: 2px solid #7ea2d4;">
+              ` : `
+                <div style="width: 100px; height: 100px; background: rgba(126, 162, 212, 0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px dashed #7ea2d4;">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#7ea2d4" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                </div>
+              `}
+              <div style="flex: 1;">
+                <input type="file" id="heroImageInput" accept="image/*" style="display: none;">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('heroImageInput').click()">
+                  ${user.heroImage ? 'Change Image' : 'Upload Image'}
+                </button>
+                <small style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin-top: 4px; display: block;">
+                  Recommended: 800x600px, max 2MB
+                </small>
+              </div>
+            </div>
           </div>
 
           <!-- Bio -->
@@ -1731,17 +1761,6 @@ function getLandingSettingsHTML(user, landingData = null) {
             <!-- Certificates will be loaded here -->
           </div>
           <button type="button" class="add-new-btn" onclick="addNewCertificate()">+ Add new</button>
-        </div>
-
-        <!-- Featured Courses -->
-        <div class="landing-section">
-          <div class="landing-section-title">Featured Courses on Landing Page</div>
-          <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 16px; font-size: 14px;">
-            Select up to 6 courses to display on your landing page
-          </p>
-          <div id="featuredCoursesList">
-            <!-- Featured courses will be loaded here -->
-          </div>
         </div>
 
         <!-- Featured Testimonials -->
@@ -1838,10 +1857,16 @@ function getLandingSettingsHTML(user, landingData = null) {
 
 // Initialize landing settings functionality
 function initializeLandingSettings() {
-  // Load courses, testimonials, and certificates
-  loadFeaturedCourses();
+  // Load testimonials and certificates
+  // loadFeaturedCourses(); // Removed - all courses will be shown automatically
   // loadFeaturedTestimonials(); // Disabled - feature coming soon
   loadCertificates();
+  
+  // Setup hero image upload
+  const heroImageInput = document.getElementById('heroImageInput');
+  if (heroImageInput) {
+    heroImageInput.addEventListener('change', handleHeroImageUpload);
+  }
 
   // Add form submission handler
   const form = document.getElementById('landingSettingsForm');
@@ -1867,6 +1892,76 @@ function initializeLandingSettings() {
   const landingPhotoInput = document.getElementById('landingProfilePhotoInput');
   if (landingPhotoInput) {
     landingPhotoInput.addEventListener('change', handleLandingProfilePhotoUpload);
+  }
+}
+
+// Handle hero image upload
+async function handleHeroImageUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Validate file size (max 2MB)
+  if (file.size > 2 * 1024 * 1024) {
+    showErrorToast('File size too large. Max 2MB');
+    return;
+  }
+
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    showErrorToast('Invalid file type. Only images allowed');
+    return;
+  }
+
+  try {
+    // Upload to Cloudinary
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = localStorage.getItem('accessToken');
+    const response = await fetch(`${config.api.baseUrl}/upload/image`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      // Update Landing API with hero image
+      const user = store.getState().user;
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      
+      const landingResponse = await fetch(`${apiBaseUrl}/landing/${user._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          heroImage: data.url
+        })
+      });
+
+      const landingResult = await landingResponse.json();
+
+      if (landingResult.success) {
+        // Update store
+        store.setState({ user: { ...user, heroImage: data.url } });
+        showSuccessToast('Hero image updated successfully');
+        
+        // Reload landing settings to show new image
+        openLandingSettings();
+      } else {
+        showErrorToast('Failed to update hero image');
+      }
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error('Hero image upload error:', error);
+    showErrorToast('Failed to upload hero image');
   }
 }
 
@@ -3117,6 +3212,7 @@ async function handleLandingSettingsSave(event) {
       lastName: formData.get('lastName'),
       specialization: formData.get('specialty'),
       bio: formData.get('bio'),
+      heroText: formData.get('heroText'),
       socialLinks: {
         linkedin: formData.get('linkedin'),
         github: formData.get('github'),
@@ -3129,28 +3225,31 @@ async function handleLandingSettingsSave(event) {
     };
 
     console.log('💾 Saving landing page data:', landingData);
-    console.log('🎓 Featured courses being saved:', landingData.featuredCourses);
-    console.log('🎓 Featured courses count:', landingData.featuredCourses.length);
 
-    // Update teacher profile with landing page data including theme color
-    const teacherUpdateData = {
-      firstName: landingData.firstName,
-      lastName: landingData.lastName,
-      specialization: landingData.specialization,
-      bio: landingData.bio,
-      socialLinks: landingData.socialLinks,
-      landingPageSettings: {
-        featuredCourses: landingData.featuredCourses,
-        featuredTestimonials: landingData.featuredTestimonials,
-        themeColor: landingData.themeColor
-      }
-    };
+    // Save to Landing API (separate from teacher profile)
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const token = localStorage.getItem('accessToken');
+    
+    const response = await fetch(`${apiBaseUrl}/landing/${user._id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        title: `${landingData.firstName} ${landingData.lastName}'s Courses`,
+        subtitle: landingData.specialization,
+        description: 'Discover amazing courses and start your learning journey today.',
+        heroText: landingData.heroText,
+        heroImage: user.heroImage || '',
+        aboutText: landingData.bio,
+        socialLinks: landingData.socialLinks,
+        primaryColor: landingData.themeColor
+      })
+    });
 
-    console.log('📤 Sending update request to backend:', teacherUpdateData);
-    console.log('📤 teacherUpdateData.landingPageSettings:', teacherUpdateData.landingPageSettings);
-    console.log('📤 teacherUpdateData.landingPageSettings.featuredCourses:', teacherUpdateData.landingPageSettings.featuredCourses);
-    const result = await apiService.updateTeacherProfile(user._id, teacherUpdateData);
-    console.log('📥 Update response from backend:', result);
+    const result = await response.json();
+    console.log('📥 Landing update response:', result);
 
     if (result.success) {
       // Update local state
@@ -3197,7 +3296,7 @@ window.openLandingPreview = async function() {
     }
 
     const teacher = teacherResult.teacher;
-    const landingPageHTML = generateLandingPageHTML(teacher);
+    const landingPageHTML = await generateLandingPageHTML(teacher);
 
     // Open preview in new window
     const previewWindow = window.open('', '_blank');
@@ -3211,14 +3310,29 @@ window.openLandingPreview = async function() {
 };
 
 // Generate Landing Page HTML
-function generateLandingPageHTML(teacher) {
-  const themeColor = '#7EA2D4'; // Force to blue color
-  const fullName = `${teacher.firstName || ''} ${teacher.lastName || ''}`.trim();
+async function generateLandingPageHTML(teacher) {
+  // Fetch landing data from Landing API
+  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+  let landingData = null;
   
-  // Debug: Check courses data
-  console.log('🎓 Teacher courses data:', teacher.courses);
-  console.log('🎓 Courses length:', teacher.courses?.length);
-  console.log('🎓 Landing page settings:', teacher.landingPageSettings);
+  try {
+    const response = await fetch(`${apiBaseUrl}/landing/public/${teacher._id}`);
+    const data = await response.json();
+    if (data.success) {
+      landingData = data.landing;
+    }
+  } catch (error) {
+    console.error('Error fetching landing data:', error);
+  }
+  
+  const themeColor = landingData?.primaryColor || '#7EA2D4';
+  const fullName = `${teacher.firstName || ''} ${teacher.lastName || ''}`.trim();
+  const heroText = landingData?.heroText || 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING';
+  const heroImage = landingData?.heroImage || '';
+  
+  console.log('🎓 Landing data:', landingData);
+  console.log('🎓 Hero text:', heroText);
+  console.log('🎓 Hero image:', heroImage);
 
   return `
 <!DOCTYPE html>
@@ -3354,8 +3468,12 @@ function generateLandingPageHTML(teacher) {
         }
 
         .hero-image img {
-            max-width: 100%;
-            height: auto;
+            max-width: 500px;
+            width: 500px;
+            height: 500px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
         .stats-badge {
@@ -4113,13 +4231,15 @@ function generateLandingPageHTML(teacher) {
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <h1>${teacher.heroTitle || 'DASTURLASH'} NI<br><span class="highlight">PROFESSIONAL</span><br>O'QITUVCHI BILAN O'RGANING</h1>
+                    <h1>${heroText.split('\n').map((line, i) => 
+                      i === 1 ? `<span class="highlight">${line}</span>` : line
+                    ).join('<br>')}</h1>
 
                     <a href="#courses" class="cta-button">Kurslarni ko'rish</a>
                 </div>
                 
                 <div class="hero-image" style="position: relative;">
-                    <img src="${heroImage}" alt="Learning" />
+                    <img src="${heroImage || '/src/assets/images/undraw_online-stats_d57c.png'}" alt="Learning" />
                     <div class="stats-badge">
                         <div class="stats-number">500+</div>
                         <div class="stats-label">O'quvchi</div>
@@ -18806,7 +18926,7 @@ async function loadTeacherLandingPage(teacherId) {
       console.log('🎨 Theme color:', teacher.landingPageSettings?.themeColor);
 
       // Generate and display the landing page
-      const landingHTML = generateLandingPageHTML(teacher);
+      const landingHTML = await generateLandingPageHTML(teacher);
       document.open();
       document.write(landingHTML);
       document.close();
@@ -18882,7 +19002,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // New Landing Settings HTML
 function getNewLandingSettingsHTML(user, landingData = null) {
-  const productionURL = 'https://bucolic-fairy-0e50d6.netlify.app';
+  const productionURL = 'http://localhost:5173';
   const landingURL = `${productionURL}/teacher/${user._id}`;
   
   // Default values or from landingData

@@ -59,9 +59,11 @@ const updateLandingSettings = catchAsync(async (req, res) => {
   const { teacherId } = req.params;
   const updateData = req.body;
 
-  // Check if user is the teacher or admin
-  if (req.user._id.toString() !== teacherId && req.user.role !== 'admin') {
-    throw new BadRequestError('You can only update your own landing page');
+  // Check if user is authenticated and is the teacher or admin
+  if (req.user && req.user._id) {
+    if (req.user._id.toString() !== teacherId && req.user.role !== 'admin') {
+      throw new BadRequestError('You can only update your own landing page');
+    }
   }
 
   // Find or create landing settings

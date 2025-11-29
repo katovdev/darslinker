@@ -23,6 +23,10 @@ const landingSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  heroText: {
+    type: String,
+    default: 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING'
+  },
   primaryColor: {
     type: String,
     default: '#7ea2d4'
