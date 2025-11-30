@@ -510,6 +510,86 @@ function renderCourseDetailPage(data) {
         white-space: nowrap;
       }
 
+      /* Video Modal */
+      .video-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease;
+      }
+      
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      
+      .video-modal-content {
+        background: #232323;
+        border: 1px solid var(--theme-color);
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 900px;
+        width: 90%;
+        position: relative;
+        animation: slideUp 0.3s ease;
+      }
+      
+      @keyframes slideUp {
+        from { transform: translateY(50px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      
+      .video-modal-close {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border: none;
+        color: #ffffff;
+        font-size: 32px;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        z-index: 1;
+      }
+      
+      .video-modal-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      
+      .video-modal-title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 20px;
+        padding-right: 50px;
+      }
+      
+      .video-player-container {
+        background: #000000;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      
+      .video-player {
+        width: 100%;
+        height: auto;
+        max-height: 70vh;
+        display: block;
+      }
+
       /* Responsive */
       @media (max-width: 768px) {
         .course-detail-hero-content {
@@ -523,6 +603,15 @@ function renderCourseDetailPage(data) {
 
         .course-detail-info-grid {
           grid-template-columns: 1fr;
+        }
+        
+        .video-modal-content {
+          width: 95%;
+          padding: 16px;
+        }
+        
+        .video-modal-title {
+          font-size: 18px;
         }
       }
     </style>
@@ -675,6 +764,9 @@ function renderCourseDetailPage(data) {
     </script>
   `;
   
+  // Save course data globally for video modal
+  window.currentCourseData = data;
+  
   // Attach event listeners
   attachEventListeners();
   
@@ -722,12 +814,79 @@ window.toggleModule = function(index) {
   }
 };
 
-// View lesson - requires login
+// View lesson - open video modal
 window.viewLesson = function(lessonId) {
-  console.log('View lesson:', lessonId);
-  // Open login modal
-  if (typeof window.openLoginModal === 'function') {
-    window.openLoginModal(new Event('click'));
+  console.log('🎬 View lesson ID:', lessonId);
+  
+  // Find lesson data
+  const courseData = window.currentCourseData;
+  if (!courseData) {
+    console.error('❌ Course data not found');
+    return;
+  }
+  
+  console.log('📚 Full course data:', courseData);
+  
+  let lessonData = null;
+  courseData.course.modules.forEach(module => {
+    console.log('📖 Module:', module.title, 'Lessons:', module.lessons);
+    module.lessons.forEach(lesson => {
+      console.log('  📝 Lesson:', lesson._id, lesson.title, 'All fields:', Object.keys(lesson));
+      if (lesson._id === lessonId) {
+        lessonData = lesson;
+        console.log('✅ Found lesson:', lessonData);
+      }
+    });
+  });
+  
+  if (!lessonData) {
+    console.error('❌ Lesson not found with ID:', lessonId);
+    return;
+  }
+  
+  // Open video modal
+  openVideoModal(lessonData);
+};
+
+// Open video modal
+function openVideoModal(lesson) {
+  console.log('📹 Opening video modal for lesson:', lesson);
+  
+  // Get video URL - try different field names
+  const videoUrl = lesson.videoUrl || lesson.fileUrl || lesson.url;
+  console.log('📹 Video URL:', videoUrl);
+  
+  const modal = document.createElement('div');
+  modal.className = 'video-modal-overlay';
+  modal.innerHTML = `
+    <div class="video-modal-content">
+      <button class="video-modal-close" onclick="closeVideoModal()">&times;</button>
+      <h2 class="video-modal-title">${lesson.title}</h2>
+      <div class="video-player-container">
+        ${videoUrl 
+          ? `<video controls autoplay class="video-player">
+               <source src="${videoUrl}" type="video/mp4">
+               Your browser does not support the video tag.
+             </video>`
+          : `<div style="color: #9CA3AF; text-align: center; padding: 40px;">
+               <p>Video not available</p>
+               <p style="font-size: 12px; margin-top: 10px;">No video URL found</p>
+             </div>`
+        }
+      </div>
+    </div>
+  `;
+  
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+}
+
+// Close video modal
+window.closeVideoModal = function() {
+  const modal = document.querySelector('.video-modal-overlay');
+  if (modal) {
+    modal.remove();
+    document.body.style.overflow = '';
   }
 };
 
