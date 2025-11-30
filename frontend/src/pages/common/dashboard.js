@@ -12766,44 +12766,108 @@ window.viewVideo = function(button, event) {
     return;
   }
 
-  // Create video modal
-  const modalHTML = `
-    <div class="video-modal" onclick="closeVideoModal()">
-      <div class="video-modal-content" onclick="event.stopPropagation()">
-        <div class="video-modal-header">
-          <h3>${lessonTitle}</h3>
-          <button class="close-modal-btn" onclick="closeVideoModal()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        <div class="video-container">
-          <video controls autoplay style="width: 100%; height: auto;">
-            <source src="${videoUrl}" type="video/mp4">
-            Your browser does not support the video tag.
-          </video>
-        </div>
+  // Remove any existing modal first
+  const existingModal = document.getElementById('videoPreviewModal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  // Create video modal with inline event handlers
+  const modal = document.createElement('div');
+  modal.className = 'video-modal';
+  modal.id = 'videoPreviewModal';
+  modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(4px);';
+  
+  modal.innerHTML = `
+    <div class="video-modal-content" style="background: var(--bg-primary); border-radius: 12px; overflow: hidden; max-width: 90vw; max-height: 90vh; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color);">
+      <div class="video-modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-color); background: var(--bg-secondary);">
+        <h3 style="margin: 0; color: var(--text-primary); font-size: 18px; font-weight: 600;">${lessonTitle}</h3>
+        <button class="close-modal-btn" type="button" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; padding: 6px; border-radius: 6px; transition: all 0.2s ease;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="video-container" style="padding: 24px; background: var(--bg-primary);">
+        <video controls autoplay style="width: 100%; height: auto; border-radius: 8px; max-width: 800px; min-width: 400px;">
+          <source src="${videoUrl}" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
       </div>
     </div>
   `;
 
   // Add modal to body
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-
-  // Disable body scroll
+  document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
+
+  // Add event listeners
+  const closeBtn = modal.querySelector('.close-modal-btn');
+  const modalContent = modal.querySelector('.video-modal-content');
+  
+  if (closeBtn) {
+    console.log('✅ Close button found, adding click handler');
+    closeBtn.onclick = function(e) {
+      console.log('🔴 X button clicked!');
+      console.log('🔴 window.closeVideoModal exists?', typeof window.closeVideoModal);
+      e.stopPropagation();
+      e.preventDefault();
+      
+      // Close modal directly here
+      const modalToClose = document.getElementById('videoPreviewModal');
+      console.log('🔴 Modal to close:', modalToClose);
+      if (modalToClose) {
+        const video = modalToClose.querySelector('video');
+        if (video) {
+          video.pause();
+          video.src = '';
+        }
+        modalToClose.remove();
+        document.body.style.overflow = '';
+        console.log('✅ Modal closed successfully!');
+      } else {
+        console.error('❌ Modal not found!');
+      }
+    };
+  } else {
+    console.error('❌ Close button NOT found!');
+  }
+  
+  if (modalContent) {
+    modalContent.onclick = function(e) {
+      e.stopPropagation();
+    };
+  }
+  
+  modal.onclick = function(e) {
+    if (e.target === modal) {
+      console.log('🔴 Background clicked!');
+      window.closeVideoModal();
+    }
+  };
 };
 
 // Close Video Modal Function
 window.closeVideoModal = function() {
-  const modal = document.querySelector('.video-modal');
+  console.log('🟢 closeVideoModal function called');
+  const modal = document.getElementById('videoPreviewModal');
+  console.log('🟢 Modal element:', modal);
   if (modal) {
+    console.log('🟢 Modal found, removing...');
+    const video = modal.querySelector('video');
+    if (video) {
+      video.pause();
+      video.src = '';
+      console.log('🟢 Video stopped');
+    }
     modal.remove();
+    console.log('🟢 Modal removed from DOM');
+  } else {
+    console.error('❌ Modal NOT found with ID: videoPreviewModal');
   }
-  // Re-enable body scroll
   document.body.style.overflow = '';
+  console.log('🟢 Body overflow reset');
 };
 
 // Edit Lesson Function
@@ -13553,7 +13617,7 @@ window.addNewModule = function() {
 
   const newModuleHTML = `
     <div class="module-item">
-      <div class="module-header" onclick="toggleModule(this)">
+      <div class="module-header expanded" onclick="toggleModule(this)">
         <div class="module-info">
           <h4>Module ${newModuleNumber}: New Module</h4>
           <p>0 lessons • 0 hours</p>
@@ -13563,7 +13627,7 @@ window.addNewModule = function() {
           <button type="button" class="action-btn delete" onclick="deleteModule(this, event)">Delete</button>
         </div>
       </div>
-      <div class="lessons-list" style="display: none;">
+      <div class="lessons-list" style="display: block;">
         <div class="add-lesson-dropdown">
           <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add</button>
         <div class="dropdown-menu">
@@ -13615,7 +13679,11 @@ window.addNewModule = function() {
 // Toggle Module Expand/Collapse
 window.toggleModule = function(moduleHeader) {
   const lessonsList = moduleHeader.nextElementSibling;
-  const isVisible = lessonsList.style.display !== 'none';
+  
+  // Check if lessons list is currently visible
+  // Use getComputedStyle to check actual display value (including CSS)
+  const computedStyle = window.getComputedStyle(lessonsList);
+  const isVisible = computedStyle.display !== 'none';
 
   if (isVisible) {
     lessonsList.style.display = 'none';

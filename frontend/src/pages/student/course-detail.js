@@ -589,6 +589,123 @@ function renderCourseDetailPage(data) {
         max-height: 70vh;
         display: block;
       }
+      
+      /* Quiz Modal */
+      .quiz-modal-content {
+        max-width: 700px;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+      
+      .quiz-container {
+        margin-top: 20px;
+      }
+      
+      .quiz-question {
+        background: rgba(40, 40, 40, 0.5);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      
+      .quiz-question-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #ffffff;
+        margin-bottom: 16px;
+      }
+      
+      .quiz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      
+      .quiz-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        background: rgba(60, 60, 60, 0.5);
+        border: 2px solid rgba(126, 162, 212, 0.2);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      
+      .quiz-option:hover {
+        background: rgba(126, 162, 212, 0.1);
+        border-color: var(--theme-color);
+      }
+      
+      .quiz-option.correct {
+        background: rgba(34, 197, 94, 0.2);
+        border-color: #22c55e;
+      }
+      
+      .quiz-option.incorrect {
+        background: rgba(239, 68, 68, 0.2);
+        border-color: #ef4444;
+      }
+      
+      .quiz-radio {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+      
+      .quiz-option-text {
+        flex: 1;
+        color: #ffffff;
+        font-size: 15px;
+      }
+      
+      .quiz-submit-btn {
+        width: 100%;
+        padding: 14px;
+        background: var(--theme-color);
+        color: #ffffff;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 20px;
+      }
+      
+      .quiz-submit-btn:hover:not(:disabled) {
+        opacity: 0.9;
+        transform: translateY(-2px);
+      }
+      
+      .quiz-result {
+        margin-top: 24px;
+        padding: 24px;
+        background: rgba(126, 162, 212, 0.1);
+        border: 1px solid var(--theme-color);
+        border-radius: 12px;
+        text-align: center;
+      }
+      
+      .quiz-result h3 {
+        font-size: 20px;
+        color: #ffffff;
+        margin-bottom: 12px;
+      }
+      
+      .quiz-score {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--theme-color);
+        margin-bottom: 12px;
+      }
+      
+      .quiz-message {
+        font-size: 16px;
+        color: #ffffff;
+      }
 
       /* Responsive */
       @media (max-width: 768px) {
@@ -730,8 +847,10 @@ function renderCourseDetailPage(data) {
                               <div class="course-detail-lesson-title">${lesson.title || 'Lesson'}</div>
                             </div>
                             <div class="course-detail-lesson-right">
-                              ${lesson.type === 'video' 
-                                ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}')">Ko'rish</button>`
+                              ${lesson.type === 'video'
+                                ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">Ko'rish</button>`
+                                : lesson.type === 'quiz'
+                                ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">Boshlash</button>`
                                 : ''
                               }
                               <div class="course-detail-lesson-duration">${lesson.duration || ''}</div>
@@ -814,9 +933,9 @@ window.toggleModule = function(index) {
   }
 };
 
-// View lesson - open video modal
-window.viewLesson = function(lessonId) {
-  console.log('🎬 View lesson ID:', lessonId);
+// View lesson - open video or quiz modal
+window.viewLesson = function(lessonId, lessonType) {
+  console.log('🎬 View lesson ID:', lessonId, 'Type:', lessonType);
   
   // Find lesson data
   const courseData = window.currentCourseData;
@@ -825,13 +944,9 @@ window.viewLesson = function(lessonId) {
     return;
   }
   
-  console.log('📚 Full course data:', courseData);
-  
   let lessonData = null;
   courseData.course.modules.forEach(module => {
-    console.log('📖 Module:', module.title, 'Lessons:', module.lessons);
     module.lessons.forEach(lesson => {
-      console.log('  📝 Lesson:', lesson._id, lesson.title, 'All fields:', Object.keys(lesson));
       if (lesson._id === lessonId) {
         lessonData = lesson;
         console.log('✅ Found lesson:', lessonData);
@@ -844,8 +959,12 @@ window.viewLesson = function(lessonId) {
     return;
   }
   
-  // Open video modal
-  openVideoModal(lessonData);
+  // Open appropriate modal based on lesson type
+  if (lessonData.type === 'video') {
+    openVideoModal(lessonData);
+  } else if (lessonData.type === 'quiz') {
+    openQuizModal(lessonData);
+  }
 };
 
 // Open video modal
@@ -883,6 +1002,152 @@ function openVideoModal(lesson) {
 
 // Close video modal
 window.closeVideoModal = function() {
+  const modal = document.querySelector('.video-modal-overlay');
+  if (modal) {
+    modal.remove();
+    document.body.style.overflow = '';
+  }
+};
+
+// Open quiz modal
+function openQuizModal(lesson) {
+  console.log('📝 Opening quiz modal for lesson:', lesson);
+  console.log('📝 All lesson fields:', Object.keys(lesson));
+  console.log('📝 Full lesson data:', JSON.stringify(lesson, null, 2));
+  
+  // Try different field names for questions
+  // If quiz is an object (populated), get questions from it
+  let questions = [];
+  if (lesson.quiz && typeof lesson.quiz === 'object' && lesson.quiz.questions) {
+    questions = lesson.quiz.questions;
+  } else if (lesson.questions) {
+    questions = lesson.questions;
+  } else if (lesson.quizQuestions) {
+    questions = lesson.quizQuestions;
+  }
+  
+  console.log('📝 Quiz object:', lesson.quiz);
+  console.log('📝 Quiz questions:', questions);
+  
+  const modal = document.createElement('div');
+  modal.className = 'video-modal-overlay'; // Reuse same overlay style
+  modal.innerHTML = `
+    <div class="video-modal-content quiz-modal-content">
+      <button class="video-modal-close" onclick="closeQuizModal()">&times;</button>
+      <h2 class="video-modal-title">${lesson.title}</h2>
+      <div class="quiz-container">
+        ${questions && questions.length > 0
+          ? renderQuizQuestions(questions)
+          : `<div style="color: #9CA3AF; text-align: center; padding: 40px;">
+               <p>No questions available</p>
+               <p style="font-size: 12px; margin-top: 10px;">Available fields: ${Object.keys(lesson).join(', ')}</p>
+             </div>`
+        }
+        ${questions && questions.length > 0
+          ? '<button class="quiz-submit-btn" onclick="submitQuiz()">Javoblarni tekshirish</button>'
+          : ''
+        }
+      </div>
+      <div class="quiz-result" id="quizResult" style="display: none;"></div>
+    </div>
+  `;
+  
+  // Save questions globally for submit function
+  window.currentQuizQuestions = questions;
+  
+  document.body.appendChild(modal);
+  document.body.style.overflow = 'hidden';
+}
+
+// Render quiz questions
+function renderQuizQuestions(questions) {
+  return questions.map((q, index) => {
+    // Support both formats:
+    // 1. {question, options: [], correctAnswer: number}
+    // 2. {question, answers: [{text, isCorrect}]}
+    let options = [];
+    if (q.options) {
+      options = q.options;
+    } else if (q.answers) {
+      options = q.answers.map(a => a.text);
+    }
+    
+    return `
+      <div class="quiz-question" data-question-index="${index}">
+        <h3 class="quiz-question-title">${index + 1}. ${q.question}</h3>
+        <div class="quiz-options">
+          ${options.map((option, optIndex) => `
+            <label class="quiz-option">
+              <input type="radio" name="question-${index}" value="${optIndex}" class="quiz-radio">
+              <span class="quiz-option-text">${option}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// Submit quiz
+window.submitQuiz = function() {
+  const questionElements = document.querySelectorAll('.quiz-question');
+  const quizQuestions = window.currentQuizQuestions || [];
+  let correctCount = 0;
+  let totalQuestions = questionElements.length;
+  
+  questionElements.forEach((questionEl, index) => {
+    const selectedOption = questionEl.querySelector('input[type="radio"]:checked');
+    const questionData = quizQuestions[index];
+    
+    if (selectedOption && questionData) {
+      const selectedAnswer = parseInt(selectedOption.value);
+      
+      // Find correct answer - support both formats
+      let correctAnswer = -1;
+      if (typeof questionData.correctAnswer === 'number') {
+        correctAnswer = questionData.correctAnswer;
+      } else if (questionData.answers) {
+        correctAnswer = questionData.answers.findIndex(a => a.isCorrect);
+      }
+      
+      // Mark as correct or incorrect
+      const optionLabels = questionEl.querySelectorAll('.quiz-option');
+      optionLabels.forEach((label, optIndex) => {
+        if (optIndex === correctAnswer) {
+          label.classList.add('correct');
+        }
+        if (optIndex === selectedAnswer && selectedAnswer !== correctAnswer) {
+          label.classList.add('incorrect');
+        }
+      });
+      
+      if (selectedAnswer === correctAnswer) {
+        correctCount++;
+      }
+    }
+  });
+  
+  // Show result
+  const resultDiv = document.getElementById('quizResult');
+  const percentage = Math.round((correctCount / totalQuestions) * 100);
+  resultDiv.innerHTML = `
+    <h3>Natija</h3>
+    <p class="quiz-score">${correctCount} / ${totalQuestions} to'g'ri javob (${percentage}%)</p>
+    <p class="quiz-message">${percentage >= 70 ? '🎉 Ajoyib! Siz testdan o\'tdingiz!' : '📚 Yana bir bor urinib ko\'ring!'}</p>
+  `;
+  resultDiv.style.display = 'block';
+  
+  // Disable submit button
+  const submitBtn = document.querySelector('.quiz-submit-btn');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Tekshirildi';
+    submitBtn.style.opacity = '0.5';
+  }
+};
+
+// Close quiz modal
+window.closeQuizModal = function() {
   const modal = document.querySelector('.video-modal-overlay');
   if (modal) {
     modal.remove();

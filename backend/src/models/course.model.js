@@ -70,14 +70,15 @@ const courseSchema = new mongoose.Schema(
         videoUrl: String,
         fileUrl: String,
         duration: String,
-        quiz: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Quiz",
-        },
-        assignment: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Assignment",
-        },
+        // Quiz data stored inline
+        questions: [{
+          question: String,
+          options: [String],
+          correctAnswer: Number,
+        }],
+        // Assignment data
+        instructions: String,
+        dueDate: Date,
       }],
     }],
     totalStudents: {
