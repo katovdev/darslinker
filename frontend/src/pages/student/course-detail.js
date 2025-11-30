@@ -1061,27 +1061,38 @@ function openQuizModal(lesson) {
 
 // Render quiz questions
 function renderQuizQuestions(questions) {
+  console.log('🎯 renderQuizQuestions called with:', questions);
   return questions.map((q, index) => {
+    console.log(`🎯 Question ${index}:`, q);
     // Support both formats:
     // 1. {question, options: [], correctAnswer: number}
     // 2. {question, answers: [{text, isCorrect}]}
     let options = [];
-    if (q.options) {
+    
+    // Check answers first (new format), then options (old format)
+    if (q.answers && Array.isArray(q.answers) && q.answers.length > 0) {
+      console.log(`🎯 Using answers format:`, q.answers);
+      options = q.answers.map(a => a.text || a);
+    } else if (q.options && Array.isArray(q.options) && q.options.length > 0) {
+      console.log(`🎯 Using options format:`, q.options);
       options = q.options;
-    } else if (q.answers) {
-      options = q.answers.map(a => a.text);
     }
+    
+    console.log(`🎯 Final options for question ${index}:`, options);
     
     return `
       <div class="quiz-question" data-question-index="${index}">
         <h3 class="quiz-question-title">${index + 1}. ${q.question}</h3>
         <div class="quiz-options">
-          ${options.map((option, optIndex) => `
-            <label class="quiz-option">
-              <input type="radio" name="question-${index}" value="${optIndex}" class="quiz-radio">
-              <span class="quiz-option-text">${option}</span>
-            </label>
-          `).join('')}
+          ${options.length > 0 
+            ? options.map((option, optIndex) => `
+                <label class="quiz-option">
+                  <input type="radio" name="question-${index}" value="${optIndex}" class="quiz-radio">
+                  <span class="quiz-option-text">${option}</span>
+                </label>
+              `).join('')
+            : '<p style="color: #9CA3AF;">No options available</p>'
+          }
         </div>
       </div>
     `;

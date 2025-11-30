@@ -70,12 +70,19 @@ const courseSchema = new mongoose.Schema(
         videoUrl: String,
         fileUrl: String,
         duration: String,
-        // Quiz data stored inline
+        // Quiz data stored inline - support both old and new formats
         questions: [{
           question: String,
+          // Old format (optional)
           options: [String],
           correctAnswer: Number,
+          // New format (optional)
+          answers: [{
+            text: String,
+            isCorrect: Boolean
+          }]
         }],
+        timeLimit: String,
         // Assignment data
         instructions: String,
         dueDate: Date,

@@ -34,6 +34,15 @@ const create = catchAsync(async (req, res) => {
     teacher,
   } = req.body;
 
+  // Debug: Log received modules data
+  console.log('🔵 BACKEND: Received modules:', JSON.stringify(modules, null, 2));
+  if (modules && modules[0] && modules[0].lessons) {
+    console.log('🔵 BACKEND: First lesson:', JSON.stringify(modules[0].lessons[0], null, 2));
+    if (modules[0].lessons[0].questions) {
+      console.log('🔵 BACKEND: First question:', JSON.stringify(modules[0].lessons[0].questions[0], null, 2));
+    }
+  }
+
   const existingCourse = await Course.findOne({ title: title.trim() });
   if (existingCourse) {
     throw new ConflictError("A course with this title already exists");
@@ -62,6 +71,15 @@ const create = catchAsync(async (req, res) => {
     totalLessons,
     status: status || "draft", // Use provided status or default to draft
   });
+
+  // Debug: Log saved course data
+  console.log('🟢 BACKEND: Course saved to DB');
+  if (course.modules && course.modules[0] && course.modules[0].lessons) {
+    console.log('🟢 BACKEND: First lesson after save:', JSON.stringify(course.modules[0].lessons[0], null, 2));
+    if (course.modules[0].lessons[0].questions) {
+      console.log('🟢 BACKEND: First question after save:', JSON.stringify(course.modules[0].lessons[0].questions[0], null, 2));
+    }
+  }
 
   logger.info("Course created successfully", {
     courseId: course._id,

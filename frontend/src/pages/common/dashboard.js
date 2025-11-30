@@ -664,6 +664,9 @@ async function handleCreateCourse(e) {
         // Get full lesson data from stored data
         const lessonData = lessonItem.lessonData || {};
         
+        console.log('📚 lessonItem.lessonData:', lessonData);
+        console.log('📚 lessonData.questions:', lessonData.questions);
+        
         const lesson = {
           type,
           title: lessonTitle,
@@ -672,7 +675,8 @@ async function handleCreateCourse(e) {
           ...lessonData // Include all lesson data (fileName, fileUrl, instructions, etc.)
         };
         
-        console.log('📚 Lesson data being saved:', lesson);
+        console.log('📚 Final lesson object being saved:', lesson);
+        console.log('📚 lesson.questions:', lesson.questions);
         lessons.push(lesson);
       });
       
@@ -12634,9 +12638,12 @@ window.saveLesson = async function(button, type) {
     });
 
     console.log('🎯 SAVE: Total questions saved:', questions);
+    console.log('🎯 SAVE: Questions structure:', JSON.stringify(questions, null, 2));
 
     lessonData.questions = questions;
     lessonData.timeLimit = lessonForm.querySelector('.quiz-time-input')?.value || '';
+    
+    console.log('🎯 SAVE: Final lessonData for quiz:', JSON.stringify(lessonData, null, 2));
   } else if (type === 'assignment') {
     const instructionsInput = lessonForm.querySelector('.assignment-instructions');
 
@@ -12739,6 +12746,9 @@ window.saveLesson = async function(button, type) {
   // Get the newly created lesson item and store lesson data
   const newLessonItem = lessonForm.previousElementSibling;
   newLessonItem.lessonData = lessonData;
+  
+  console.log('🎯 SAVE: Storing lessonData on element:', lessonData);
+  console.log('🎯 SAVE: lessonData.questions:', lessonData.questions);
   
   // Also update the data-lesson attribute for edit functionality
   newLessonItem.setAttribute('data-lesson', JSON.stringify(lessonData).replace(/'/g, "&apos;"));
