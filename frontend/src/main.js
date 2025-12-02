@@ -11,7 +11,10 @@ import { initDashboard } from './pages/common/dashboard.js';
 import { initStudentDashboard } from './pages/student/student-dashboard.js';
 import { initPricingPage } from './pages/pricing.js';
 import { initCourseDetailPage } from './pages/student/course-detail.js';
+import { initCourseStartPage } from './pages/student/course-start.js';
+import { initCourseLearningPage } from './pages/student/course-learning.js';
 import { initLessonViewPage } from './pages/student/lesson-view.js';
+import { initLessonPlayerPage } from './pages/student/lesson-player.js';
 
 class App {
   constructor() {
@@ -39,7 +42,10 @@ class App {
     router.register('/student-dashboard', initStudentDashboard);
     router.register('/pricing', initPricingPage);
     router.register('/course/:courseId', (params) => initCourseDetailPage(params.courseId));
+    router.register('/course-start/:courseId', (params) => initCourseStartPage(params.courseId));
+    router.register('/course-learning/:courseId', (params) => initCourseLearningPage(params.courseId));
     router.register('/lesson/:courseId/:lessonId', (params) => initLessonViewPage(params.courseId, params.lessonId));
+    router.register('/lesson-player/:courseId/:lessonId', (params) => initLessonPlayerPage(params.courseId, params.lessonId));
 
     router.register('/teacher/:teacherId/student-dashboard', (params) => {
       const teacherId = params.teacherId;

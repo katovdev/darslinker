@@ -1,4 +1,4 @@
-// Initialize function called from dashboard.js
+// Initialize function called from dashboard.jsana 
 export function initLandingStudentDashboard() {
   // Clear body and set up for dashboard
   document.body.style.padding = '0';
@@ -335,20 +335,75 @@ export function renderLandingStudentDashboard() {
         border-color: #7ea2d4;
       }
 
-      .landing-notification-badge {
-        position: absolute;
-        top: -4px;
-        right: -4px;
-        width: 18px;
-        height: 18px;
-        background: #EF4444;
-        border-radius: 50%;
-        font-size: 10px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+      /* Toast Notification - Bottom Right */
+      .landing-toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #7ea2d4;
         color: #ffffff;
+        padding: 16px 32px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        font-size: 14px;
+        font-weight: 500;
+        z-index: 10000;
+        animation: slideInBottomRight 0.3s ease;
+      }
+
+      @keyframes slideInBottomRight {
+        from {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes slideOutBottomRight {
+        from {
+          transform: translateY(0);
+          opacity: 1;
+        }
+        to {
+          transform: translateY(100px);
+          opacity: 0;
+        }
+      }
+
+      /* Meeting and Notification buttons - lighter color */
+      .landing-meeting-btn,
+      .landing-notification-btn {
+        color: #6B7280 !important;
+      }
+
+      .landing-meeting-btn:hover,
+      .landing-notification-btn:hover {
+        color: #9CA3AF !important;
+      }
+
+      /* Logout button with text and blue border */
+      .landing-logout-btn {
+        width: auto !important;
+        padding: 0 16px !important;
+        gap: 8px;
+        border-color: #7ea2d4 !important;
+        margin-left: 8px;
+        color: #7ea2d4 !important;
+      }
+
+      .landing-logout-btn:hover {
+        background: rgba(126, 162, 212, 0.15) !important;
+        border-color: #7ea2d4 !important;
+        color: #7ea2d4 !important;
+      }
+
+      .landing-logout-text {
+        font-size: 14px;
+        font-weight: 500;
+        color: #7ea2d4;
       }
 
       /* Dashboard Content */
@@ -418,11 +473,35 @@ export function renderLandingStudentDashboard() {
         margin-top: 48px;
       }
 
-      .landing-section-title {
-        font-size: 24px;
-        font-weight: 700;
-        color: #ffffff;
+      /* Course Filter Tabs */
+      .landing-course-filters {
+        display: flex;
+        gap: 12px;
         margin-bottom: 24px;
+      }
+
+      .landing-filter-tab {
+        padding: 10px 20px;
+        background: rgba(58, 56, 56, 0.3);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 8px;
+        color: #9CA3AF;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .landing-filter-tab:hover {
+        background: rgba(126, 162, 212, 0.1);
+        border-color: #7ea2d4;
+        color: #ffffff;
+      }
+
+      .landing-filter-tab.active {
+        background: rgba(126, 162, 212, 0.2);
+        border-color: #7ea2d4;
+        color: #ffffff;
       }
 
       .landing-courses-grid {
@@ -494,6 +573,14 @@ export function renderLandingStudentDashboard() {
         font-weight: 600;
         color: #ffffff;
         margin-bottom: 8px;
+      }
+
+      .landing-course-price {
+        font-size: 14px;
+        font-weight: 600;
+        color: #7ea2d4;
+        white-space: nowrap;
+        margin-left: 12px;
       }
 
       .landing-course-instructor {
@@ -586,9 +673,8 @@ export function renderLandingStudentDashboard() {
             </div>
             <div class="landing-nav-children hidden" id="general-children">
               <a class="landing-nav-item active" data-page="home">Home</a>
-              <a class="landing-nav-item" data-page="courses">My Courses</a>
-              <a class="landing-nav-item" data-page="messages">Messages</a>
               <a class="landing-nav-item" data-page="assignments">Assignments</a>
+              <a class="landing-nav-item" data-page="messages">Messages</a>
             </div>
           </div>
 
@@ -629,7 +715,7 @@ export function renderLandingStudentDashboard() {
             <span class="landing-logo-text">dars<span class="landing-logo-highlight">linker</span></span>
           </div>
           <div class="landing-header-actions">
-            <button class="landing-icon-btn">
+            <button class="landing-icon-btn landing-meeting-btn">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
               </svg>
@@ -638,17 +724,17 @@ export function renderLandingStudentDashboard() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
-              <span class="landing-notification-badge">3</span>
             </button>
-            <button class="landing-icon-btn">
+            <button class="landing-icon-btn" style="margin-right: 8px;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
             </button>
-            <button class="landing-icon-btn landing-menu-btn">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M4 6h16M4 12h16M4 18h16"/>
+            <button class="landing-icon-btn landing-logout-btn" title="Logout">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
               </svg>
+              <span class="landing-logout-text">Log out</span>
             </button>
           </div>
         </header>
@@ -679,7 +765,10 @@ export function renderLandingStudentDashboard() {
 
           <!-- Continue Learning Section -->
           <div class="landing-learning-section">
-            <h2 class="landing-section-title">Continue Learning</h2>
+            <div class="landing-course-filters">
+              <button class="landing-filter-tab" data-filter="my-courses">My Courses</button>
+              <button class="landing-filter-tab active" data-filter="all-courses">All Courses</button>
+            </div>
             <div class="landing-courses-grid">
               <!-- Loading spinner will be shown here -->
               <div class="landing-courses-loading" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
@@ -730,6 +819,30 @@ function attachEventListeners() {
     });
   }
 
+  // Meeting button - show coming soon toast
+  const meetingBtn = document.querySelector('.landing-meeting-btn');
+  if (meetingBtn) {
+    meetingBtn.addEventListener('click', () => {
+      showToast('Coming soon');
+    });
+  }
+
+  // Notification button - show coming soon toast
+  const notificationBtn = document.querySelector('.landing-notification-btn');
+  if (notificationBtn) {
+    notificationBtn.addEventListener('click', () => {
+      showToast('Coming soon');
+    });
+  }
+
+  // Logout button
+  const logoutBtn = document.querySelector('.landing-logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      handleLogout();
+    });
+  }
+
   // Continue learning buttons
   document.querySelectorAll('.landing-continue-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -737,11 +850,98 @@ function attachEventListeners() {
       console.log('Continue learning clicked', card);
     });
   });
+
+  // Course filter tabs
+  document.querySelectorAll('.landing-filter-tab').forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      // Remove active class from all tabs
+      document.querySelectorAll('.landing-filter-tab').forEach(t => t.classList.remove('active'));
+      // Add active class to clicked tab
+      tab.classList.add('active');
+      
+      const filter = tab.dataset.filter;
+      handleCourseFilter(filter);
+    });
+  });
+}
+
+// Show toast notification
+function showToast(message) {
+  // Remove existing toast if any
+  const existingToast = document.querySelector('.landing-toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+
+  // Create new toast
+  const toast = document.createElement('div');
+  toast.className = 'landing-toast';
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  // Remove after 3 seconds
+  setTimeout(() => {
+    toast.style.animation = 'slideOutBottomRight 0.3s ease';
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 3000);
+}
+
+// Handle logout
+function handleLogout() {
+  // Clear session storage
+  sessionStorage.removeItem('landingUser');
+  sessionStorage.removeItem('currentTeacherId');
+  
+  // Show toast
+  showToast('Logging out...');
+  
+  // Redirect to login page after short delay
+  setTimeout(() => {
+    window.location.href = '/';
+  }, 1000);
 }
 
 function handleNavigation(page) {
   console.log('Navigate to:', page);
+  
+  // Show coming soon for messages
+  if (page === 'messages') {
+    showToast('Coming soon');
+  }
   // Add your navigation logic here
+}
+
+// Handle course filter
+let allCoursesData = []; // Store all courses globally
+
+function handleCourseFilter(filter) {
+  console.log('Filter changed to:', filter);
+  
+  const coursesGrid = document.querySelector('.landing-courses-grid');
+  
+  if (filter === 'my-courses') {
+    // Show empty state for My Courses (no enrolled courses yet)
+    coursesGrid.innerHTML = `
+      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+        <p style="color: #9CA3AF; font-size: 16px; margin-bottom: 8px;">No enrolled courses yet</p>
+        <p style="color: #6B7280; font-size: 14px;">Browse all courses and start learning!</p>
+      </div>
+    `;
+  } else {
+    // Show all courses
+    if (allCoursesData.length > 0) {
+      updateCoursesGrid(allCoursesData);
+    } else {
+      coursesGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+          <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid rgba(126, 162, 212, 0.2); border-top: 4px solid #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <p style="color: #9CA3AF; margin-top: 20px; font-size: 14px;">Loading courses...</p>
+        </div>
+      `;
+    }
+  }
 }
 
 // Load teacher's courses from backend
@@ -772,6 +972,9 @@ async function loadTeacherCourses() {
     
     if (result.success && result.courses) {
       console.log('✅ Courses loaded:', result.courses);
+      
+      // Store courses globally
+      allCoursesData = result.courses;
       
       // Update the courses grid with real data
       updateCoursesGrid(result.courses);
@@ -810,6 +1013,7 @@ function updateCoursesGrid(courses) {
   coursesGrid.innerHTML = courses.map(course => {
     // Progress is 0 for all courses (user just registered)
     const progress = 0;
+    const hasStarted = false; // User hasn't started any course yet
     
     // Get teacher name
     const teacherName = course.teacher 
@@ -824,6 +1028,8 @@ function updateCoursesGrid(courses) {
       image: courseImage,
       teacher: teacherName,
       duration: course.duration,
+      courseType: course.courseType,
+      price: course.price,
       rawCourse: course
     });
     
@@ -838,6 +1044,7 @@ function updateCoursesGrid(courses) {
               </svg>`
           }
         </div>
+        ${hasStarted ? `
         <div class="landing-course-progress-bar">
           <div class="landing-course-progress-label">
             <span>Progress</span>
@@ -847,12 +1054,16 @@ function updateCoursesGrid(courses) {
             <div class="landing-progress-fill" style="width: ${progress}%"></div>
           </div>
         </div>
-        <div class="landing-course-info">
-          <h3 class="landing-course-title">${course.title || 'Untitled Course'}</h3>
+        ` : ''}
+        <div class="landing-course-info" style="margin-top: ${hasStarted ? '0' : '16px'};">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
+            <h3 class="landing-course-title" style="margin-bottom: 0; flex: 1;">${course.title || 'Untitled Course'}</h3>
+            <span class="landing-course-price">${course.courseType === 'free' ? 'Bepul' : `${(course.price || 0).toLocaleString('uz-UZ')} so'm`}</span>
+          </div>
           <p class="landing-course-instructor">${teacherName}</p>
           <p class="landing-course-meta">${course.duration || 'Self-paced'} • ${course.level || 'All levels'}</p>
         </div>
-        <button class="landing-continue-btn" onclick="openCourse('${course._id}')">Start learning</button>
+        <button class="landing-continue-btn" onclick="openCourse('${course._id}', '${course.courseType || 'free'}')">Start learning</button>
       </div>
     `;
   }).join('');
@@ -870,9 +1081,16 @@ function updateStats(courses) {
   }
 }
 
-// Open course (to be implemented)
-window.openCourse = function(courseId) {
-  console.log('Opening course:', courseId);
-  // TODO: Navigate to course page or open course modal
-  alert(`Course ${courseId} - Coming soon!`);
+// Open course - Navigate to course start page
+window.openCourse = function(courseId, courseType = 'free') {
+  console.log('Opening course:', courseId, 'courseType:', courseType);
+  
+  // If course is free, navigate to course start page
+  if (courseType === 'free') {
+    window.location.href = `/course-start/${courseId}`;
+  } else {
+    // For paid courses, show coming soon toast
+    showToast('Coming soon');
+  }
 };
+

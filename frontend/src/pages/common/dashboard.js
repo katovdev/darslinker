@@ -10928,9 +10928,9 @@ window.loadMainDashboard = async function() {
 
       // Format currency
       const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-US', {
+        return new Intl.NumberFormat('uz-UZ', {
           style: 'currency',
-          currency: 'USD'
+          currency: 'UZS'
         }).format(amount);
       };
 
