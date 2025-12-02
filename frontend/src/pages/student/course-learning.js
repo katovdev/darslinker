@@ -1,4 +1,6 @@
 // Course learning page - Full course view with modules and lessons
+import { loadQuizPlayer } from './quiz-player.js';
+
 export async function initCourseLearningPage(courseId) {
   console.log('📚 Loading course learning page for:', courseId);
   
@@ -839,8 +841,30 @@ function attachEventListeners(course) {
     }
     
     if (selectedLesson) {
-      // Replace content area with video player
-      loadLessonPlayer(course, selectedLesson);
+      // Check lesson type and load appropriate player
+      if (selectedLesson.type === 'video') {
+        loadLessonPlayer(course, selectedLesson);
+      } else if (selectedLesson.type === 'quiz') {
+        // Build sidebar HTML for quiz player
+        const sidebarHtml = `
+          <div class="lesson-sidebar" id="lessonSidebar">
+            <div class="sidebar-header">
+              <span class="sidebar-course-title">${course.title || 'Course'}</span>
+              <button class="sidebar-close" onclick="togglePlayerSidebar()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <div class="sidebar-modules">
+              ${buildLessonsListHtml(course, selectedLesson)}
+            </div>
+          </div>
+        `;
+        loadQuizPlayer(course, selectedLesson, sidebarHtml);
+      } else {
+        showToast('This lesson type is not supported yet');
+      }
     }
   };
   
@@ -1342,6 +1366,8 @@ function renderSidebarModules(modules, currentLessonId) {
     `;
   }).join('');
 }
+
+
 
 function showErrorPage() {
   document.body.innerHTML = `
