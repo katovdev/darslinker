@@ -134,18 +134,45 @@ async function renderTeacherDashboard(user) {
   };
   
   try {
+    console.log('🔄 Attempting to fetch teacher dashboard data...');
+    console.log('🆔 Teacher ID:', user._id);
+    console.log('🔐 Token in localStorage:', !!localStorage.getItem('accessToken'));
+    console.log('🌐 API Base URL:', config.api.baseUrl || 'undefined');
+
     const dashboardData = await apiService.getTeacherDashboard(user._id);
+    console.log('📡 Dashboard API response:', dashboardData);
+
     if (dashboardData.success) {
       const { overview, teacher } = dashboardData.data;
+      console.log('✅ Dashboard data received successfully:', {
+        overview,
+        teacher: {
+          firstName: teacher.firstName,
+          lastName: teacher.lastName,
+          ratingAverage: teacher.ratingAverage
+        }
+      });
       dashboardStats = {
         activeCourses: overview.activeCourses || 0,
         totalStudents: overview.totalStudents || 0,
         totalRevenue: overview.totalRevenue || 0,
         avgRating: teacher.ratingAverage || 0
       };
+    } else {
+      console.error('❌ Dashboard API returned error:', dashboardData.message || 'Unknown error');
     }
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error);
+    console.error('❌ Error fetching dashboard stats:');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Full error object:', error);
+
+    // Show error to user
+    if (error.message.includes('Failed to fetch')) {
+      console.error('🌐 Network error - backend might not be running or CORS issue');
+    } else if (error.message.includes('401')) {
+      console.error('🔐 Authentication error - token might be invalid or expired');
+    }
   }
   
   const appElement = document.querySelector('#app');
@@ -287,7 +314,7 @@ async function renderTeacherDashboard(user) {
                       </svg>
                     `).join('')}
                   </div>
-                  <span class="figma-rating-text">${user.ratingAverage.toFixed(1)}/5 (${user.reviewsCount || 0} reviews)</span>
+                  <span class="figma-rating-text">${(user.ratingAverage || 0).toFixed(1)}/5 (${user.reviewsCount || 0} reviews)</span>
                 ` : ''}
                 <span class="figma-joined">• Joined ${new Date(user.createdAt).getFullYear()}</span>
               </div>
@@ -314,7 +341,7 @@ async function renderTeacherDashboard(user) {
                 </div>
                 <div class="figma-stat-row">
                   <span class="figma-stat-label">${t('stats.totalRevenue')}</span>
-                  <span class="figma-stat-value">$${dashboardStats.totalRevenue.toLocaleString()}</span>
+                  <span class="figma-stat-value">$${(dashboardStats.totalRevenue || 0).toLocaleString()}</span>
                 </div>
                 <div class="figma-stat-row">
                   <span class="figma-stat-label">${t('stats.avgRating')}</span>
@@ -4527,7 +4554,7 @@ async function generateLandingPageHTML(teacher) {
                             <h3 class="course-title">${course.title}</h3>
                             <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; margin: 10px 0; line-height: 1.5;">${course.description ? (course.description.length > 100 ? course.description.substring(0, 100) + '...' : course.description) : ''}</p>
                             <div class="course-meta">
-                                <div class="course-price"><span data-i18n="${course.courseType === 'free' ? 'free' : 'paid'}">${course.courseType === 'free' ? 'Bepul' : 'Pullik'}</span>${course.courseType !== 'free' ? ': ' + (course.discountPrice ? course.discountPrice.toLocaleString() + ' so\'m' : course.price.toLocaleString() + ' so\'m') : ''}</div>
+                                <div class="course-price"><span data-i18n="${course.courseType === 'free' ? 'free' : 'paid'}">${course.courseType === 'free' ? 'Bepul' : 'Pullik'}</span>${course.courseType !== 'free' ? ': ' + (course.discountPrice ? course.discountPrice.toLocaleString() + ' so\'m' : (course.price || 0).toLocaleString() + ' so\'m') : ''}</div>
                             </div>
                             ${course.enrollmentCount ? `<p style="color: rgba(255, 255, 255, 0.5); font-size: 13px; margin-top: 8px;">👥 ${course.enrollmentCount} students enrolled</p>` : ''}
                         </div>
@@ -10833,6 +10860,18 @@ window.loadMainDashboard = async function() {
 
     if (dashboardData.success) {
       const { overview, growth, teacher } = dashboardData.data;
+
+      // Debug: Log the actual data structure
+      console.log('📊 Dashboard data breakdown:', {
+        overview: overview,
+        growth: growth,
+        teacher: {
+          firstName: teacher.firstName,
+          lastName: teacher.lastName,
+          ratingAverage: teacher.ratingAverage,
+          profileImage: teacher.profileImage
+        }
+      });
       
       // Update stats in the initial render
       const statsLoading = document.getElementById('stats-loading');
@@ -10962,14 +11001,14 @@ window.loadMainDashboard = async function() {
             <div class="figma-stats-list">
               <div class="figma-stat-row">
                 <span class="figma-stat-label">Revenue Growth</span>
-                <span class="figma-stat-value" style="color: ${growth.revenueGrowth >= 0 ? '#4ade80' : '#ef4444'};">
-                  ${growth.revenueGrowth >= 0 ? '+' : ''}${growth.revenueGrowth.toFixed(1)}%
+                <span class="figma-stat-value" style="color: ${(growth.revenueGrowth || 0) >= 0 ? '#4ade80' : '#ef4444'};">
+                  ${(growth.revenueGrowth || 0) >= 0 ? '+' : ''}${(growth.revenueGrowth || 0).toFixed(1)}%
                 </span>
               </div>
               <div class="figma-stat-row">
                 <span class="figma-stat-label">Student Growth</span>
-                <span class="figma-stat-value" style="color: ${growth.enrollmentGrowth >= 0 ? '#4ade80' : '#ef4444'};">
-                  ${growth.enrollmentGrowth >= 0 ? '+' : ''}${growth.enrollmentGrowth.toFixed(1)}%
+                <span class="figma-stat-value" style="color: ${(growth.enrollmentGrowth || 0) >= 0 ? '#4ade80' : '#ef4444'};">
+                  ${(growth.enrollmentGrowth || 0) >= 0 ? '+' : ''}${(growth.enrollmentGrowth || 0).toFixed(1)}%
                 </span>
               </div>
               <div class="figma-stat-row">
@@ -11033,7 +11072,27 @@ window.loadMainDashboard = async function() {
     }
 
   } catch (error) {
-    console.error('Dashboard loading error:', error);
+    console.error('❌ Dashboard loading error in loadMainDashboard:');
+    console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Full error object:', error);
+    console.error('🆔 Teacher ID:', user._id);
+    console.error('🔐 Token exists:', !!localStorage.getItem('accessToken'));
+    console.error('🌐 API Base URL:', config.api.baseUrl);
+
+    // Show specific error types to user
+    if (error.message.includes('Failed to fetch')) {
+      console.error('🌐 Network error - Check if backend is running at:', config.api.baseUrl);
+    } else if (error.message.includes('401') || error.message.includes('Invalid token')) {
+      console.error('🔐 Authentication error - Token might be invalid or expired');
+      // Optionally redirect to login
+      // localStorage.removeItem('accessToken');
+      // window.location.href = '/login';
+    } else if (error.message.includes('403')) {
+      console.error('🚫 Permission denied - User might not have access to this dashboard');
+    }
+
+    console.error('📊 Loading fallback dashboard...');
 
     // Show static dashboard data as fallback
     contentArea.innerHTML = `
@@ -12302,7 +12361,7 @@ window.addLesson = function(type, dropdownLink, event) {
           <div class="form-group assignment-file-content" style="display: none;">
             <label>Assignment File</label>
             <div class="file-upload-area" onclick="this.querySelector('input').click()">
-              <input type="file" class="assignment-file" accept=".pdf,.doc,.docx,.txt,.zip" style="display: none;" onchange="handleAssignmentFileSelect(this)">
+              <input type="file" class="assignment-file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar,.jpg,.jpeg,.png" style="display: none;" onchange="handleAssignmentFileSelect(this)">
               <div class="upload-placeholder">
                 <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -13148,7 +13207,7 @@ function createAssignmentEditForm(lessonData) {
             <div style="color: var(--text-secondary); font-size: 14px;">No file uploaded yet</div>
           </div>
         `}
-        <input type="file" class="assignment-file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" style="display: none;" />
+        <input type="file" class="assignment-file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.zip,.rar,.jpg,.jpeg,.png" style="display: none;" />
       </div>
 
       <div class="form-actions">

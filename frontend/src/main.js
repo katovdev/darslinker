@@ -11,6 +11,7 @@ import { initDashboard } from './pages/common/dashboard.js';
 import { initStudentDashboard } from './pages/student/student-dashboard.js';
 import { initPricingPage } from './pages/pricing.js';
 import { initCourseDetailPage } from './pages/student/course-detail.js';
+import { initLessonViewPage } from './pages/student/lesson-view.js';
 
 class App {
   constructor() {
@@ -38,6 +39,7 @@ class App {
     router.register('/student-dashboard', initStudentDashboard);
     router.register('/pricing', initPricingPage);
     router.register('/course/:courseId', (params) => initCourseDetailPage(params.courseId));
+    router.register('/lesson/:courseId/:lessonId', (params) => initLessonViewPage(params.courseId, params.lessonId));
 
     router.register('/teacher/:teacherId/student-dashboard', (params) => {
       const teacherId = params.teacherId;

@@ -351,7 +351,7 @@ const getDashboardStats = catchAsync(async (req, res) => {
 
   // Get course statistics
   const courseStats = await Course.aggregate([
-    { $match: { teacherId: teacher._id } },
+    { $match: { teacher: teacher._id } },
     {
       $group: {
         _id: null,
@@ -370,7 +370,7 @@ const getDashboardStats = catchAsync(async (req, res) => {
   ]);
 
   // Get recent courses
-  const recentCourses = await Course.find({ teacherId: teacher._id })
+  const recentCourses = await Course.find({ teacher: teacher._id })
     .sort({ createdAt: -1 })
     .limit(5)
     .select("title description price enrollmentCount status createdAt");
@@ -382,7 +382,7 @@ const getDashboardStats = catchAsync(async (req, res) => {
   const monthlyEarnings = await Course.aggregate([
     {
       $match: {
-        teacherId: teacher._id,
+        teacher: teacher._id,
         createdAt: { $gte: sixMonthsAgo }
       }
     },
