@@ -87,6 +87,23 @@ function renderLessonViewPage(courseData, currentLesson) {
   
   // Build lessons list HTML
   let lessonsListHtml = '';
+  
+  // Find first video lesson
+  let firstVideoId = null;
+  if (course.modules) {
+    for (const mod of course.modules) {
+      if (mod.lessons) {
+        for (const les of mod.lessons) {
+          if (les.type === 'video') {
+            firstVideoId = les._id;
+            break;
+          }
+        }
+      }
+      if (firstVideoId) break;
+    }
+  }
+  
   if (course.modules) {
     course.modules.forEach((module, moduleIndex) => {
       lessonsListHtml += `
@@ -98,9 +115,14 @@ function renderLessonViewPage(courseData, currentLesson) {
           </div>
           <div class="lesson-view-module-lessons" id="lesson-lessons-${moduleIndex}">
             ${module.lessons && module.lessons.length > 0 
-              ? module.lessons.map((lesson, lessonIndex) => `
-                  <div class="lesson-view-lesson ${lesson._id === currentLesson._id ? 'active' : ''}" 
-                       onclick="navigateToLesson('${course._id}', '${lesson._id}', '${lesson.type}')">
+              ? module.lessons.map((lesson, lessonIndex) => {
+                  const isFirstVideo = lesson._id === firstVideoId;
+                  const isLocked = !isFirstVideo;
+                  const isActive = lesson._id === currentLesson._id;
+                  
+                  return `
+                  <div class="lesson-view-lesson ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''}" 
+                       onclick="${isLocked ? 'showLessonLockedToast()' : `navigateToLesson('${course._id}', '${lesson._id}', '${lesson.type}')`}">
                     <div class="lesson-view-lesson-icon">
                       ${lesson.type === 'video' 
                         ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -121,15 +143,23 @@ function renderLessonViewPage(courseData, currentLesson) {
                       <div class="lesson-view-lesson-title">${lesson.title || `Lesson ${lessonIndex + 1}`}</div>
                       ${lesson.duration ? `<div class="lesson-view-lesson-duration">${lesson.duration}</div>` : ''}
                     </div>
-                    ${lesson._id === currentLesson._id 
+                    ${isActive 
                       ? `<div class="lesson-view-lesson-playing">
                            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                              <path d="M8 5v14l11-7z"/>
                            </svg>
                          </div>` 
+                      : isLocked
+                      ? `<div class="lesson-view-lesson-lock">
+                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                             <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                           </svg>
+                         </div>`
                       : ''}
                   </div>
-                `).join('')
+                `;
+                }).join('')
               : '<div class="lesson-view-no-lessons">No lessons</div>'
             }
           </div>
@@ -387,6 +417,19 @@ function renderLessonViewPage(courseData, currentLesson) {
         border-left-color: var(--theme-color);
       }
 
+      .lesson-view-lesson.locked {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+
+      .lesson-view-lesson.locked .lesson-view-lesson-icon {
+        color: #9CA3AF;
+      }
+
+      .lesson-view-lesson.locked .lesson-view-lesson-title {
+        color: #9CA3AF;
+      }
+
       .lesson-view-lesson-icon {
         color: var(--theme-color);
         display: flex;
@@ -427,6 +470,47 @@ function renderLessonViewPage(courseData, currentLesson) {
         display: block;
       }
 
+      .lesson-view-lesson-lock {
+        color: #9CA3AF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .lesson-view-lesson-lock svg {
+        display: block;
+      }
+
+      /* Toast Notification */
+      .lesson-toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--theme-color);
+        color: #ffffff;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+        font-weight: 500;
+        z-index: 10001;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      }
+
+      .lesson-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .lesson-toast svg {
+        flex-shrink: 0;
+      }
+
       /* Right Side - Video Player */
       .lesson-view-content {
         background: #1a1a1a;
@@ -447,7 +531,7 @@ function renderLessonViewPage(courseData, currentLesson) {
       }
 
       .lesson-view-main.sidebar-hidden .lesson-view-video-container {
-        padding: 80px 120px;
+        padding: 20px 120px;
       }
 
       .lesson-view-video-wrapper {
@@ -555,6 +639,37 @@ function renderLessonViewPage(courseData, currentLesson) {
     });
   }
 }
+
+// Show toast notification
+function showLessonToast(message) {
+  const existingToast = document.querySelector('.lesson-toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+  
+  const toast = document.createElement('div');
+  toast.className = 'lesson-toast';
+  toast.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+    </svg>
+    <span>${message}</span>
+  `;
+  
+  document.body.appendChild(toast);
+  setTimeout(() => toast.classList.add('show'), 100);
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
+// Show locked lesson toast
+window.showLessonLockedToast = function() {
+  showLessonToast('Ro\'yxatdan o\'ting va kursni to\'liq ko\'ring!');
+};
 
 // Toggle sidebar
 window.toggleSidebar = function() {

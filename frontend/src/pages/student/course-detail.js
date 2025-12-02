@@ -453,6 +453,19 @@ function renderCourseDetailPage(data) {
         align-items: center;
       }
 
+      .course-detail-lesson.locked {
+        opacity: 0.6;
+      }
+
+      .course-detail-lesson.locked .course-detail-lesson-icon {
+        background: rgba(156, 163, 175, 0.2);
+        color: #9CA3AF;
+      }
+
+      .course-detail-lesson.locked .course-detail-lesson-title {
+        color: #9CA3AF;
+      }
+
       .course-detail-lesson-info {
         display: flex;
         align-items: center;
@@ -497,11 +510,24 @@ function renderCourseDetailPage(data) {
         cursor: pointer;
         transition: all 0.2s ease;
         white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 6px;
       }
       
       .course-detail-view-btn:hover {
         opacity: 0.9;
         transform: translateY(-1px);
+      }
+
+      .course-detail-view-btn.locked {
+        background: rgba(156, 163, 175, 0.3);
+        color: #9CA3AF;
+        padding: 6px 12px;
+      }
+
+      .course-detail-view-btn.locked:hover {
+        transform: none;
       }
 
       .course-detail-lesson-duration {
@@ -707,6 +733,36 @@ function renderCourseDetailPage(data) {
         color: #ffffff;
       }
 
+      /* Toast Notification */
+      .custom-toast {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: var(--theme-color);
+        color: #ffffff;
+        padding: 16px 24px;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 15px;
+        font-weight: 500;
+        z-index: 10001;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      }
+
+      .custom-toast.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .custom-toast svg {
+        flex-shrink: 0;
+      }
+
       /* Responsive */
       @media (max-width: 768px) {
         .course-detail-hero-content {
@@ -729,6 +785,13 @@ function renderCourseDetailPage(data) {
         
         .video-modal-title {
           font-size: 18px;
+        }
+
+        .custom-toast {
+          bottom: 20px;
+          right: 20px;
+          left: 20px;
+          font-size: 14px;
         }
       }
 
@@ -933,42 +996,73 @@ function renderCourseDetailPage(data) {
         <div class="course-detail-modules">
           <h2 class="course-detail-section-title">Kurs tarkibi</h2>
           ${course.modules && course.modules.length > 0 
-            ? course.modules.map((module, index) => `
-                <div class="course-detail-module">
-                  <div class="course-detail-module-header" onclick="toggleModule(${index})">
-                    <div class="course-detail-module-title">
-                      ${String(index + 1).padStart(2, '0')} ${module.title || `Module ${index + 1}`}
-                    </div>
-                    <div class="course-detail-module-arrow" id="module-arrow-${index}">▶</div>
-                  </div>
-                  <div class="course-detail-module-lessons" id="module-lessons-${index}">
-                    ${module.lessons && module.lessons.length > 0
-                      ? module.lessons.map(lesson => `
-                          <div class="course-detail-lesson">
-                            <div class="course-detail-lesson-info">
-                              <div class="course-detail-lesson-icon">
-                                ${getLessonIcon(lesson.type)}
-                              </div>
-                              <div class="course-detail-lesson-title">${lesson.title || 'Lesson'}</div>
-                            </div>
-                            <div class="course-detail-lesson-right">
-                              ${lesson.type === 'video'
-                                ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">Ko'rish</button>`
-                                : lesson.type === 'quiz'
-                                ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">Boshlash</button>`
-                                : lesson.type === 'assignment'
-                                ? `<button class="course-detail-view-btn" onclick="viewAssignment('${lesson._id || ''}', '${lesson.assignmentFile || ''}')">Ko'rish</button>`
-                                : ''
-                              }
-                              <div class="course-detail-lesson-duration">${lesson.duration || ''}</div>
-                            </div>
-                          </div>
-                        `).join('')
-                      : '<div class="course-detail-lesson">No lessons yet</div>'
+            ? (() => {
+                // Find first video lesson across all modules
+                let firstVideoFound = false;
+                let firstVideoId = null;
+                
+                for (const mod of course.modules) {
+                  if (mod.lessons) {
+                    for (const les of mod.lessons) {
+                      if (les.type === 'video' && !firstVideoFound) {
+                        firstVideoFound = true;
+                        firstVideoId = les._id;
+                        break;
+                      }
                     }
+                  }
+                  if (firstVideoFound) break;
+                }
+                
+                return course.modules.map((module, index) => `
+                  <div class="course-detail-module">
+                    <div class="course-detail-module-header" onclick="toggleModule(${index})">
+                      <div class="course-detail-module-title">
+                        ${String(index + 1).padStart(2, '0')} ${module.title || `Module ${index + 1}`}
+                      </div>
+                      <div class="course-detail-module-arrow" id="module-arrow-${index}">▶</div>
+                    </div>
+                    <div class="course-detail-module-lessons" id="module-lessons-${index}">
+                      ${module.lessons && module.lessons.length > 0
+                        ? module.lessons.map(lesson => {
+                            const isFirstVideo = lesson._id === firstVideoId;
+                            const isLocked = !isFirstVideo;
+                            
+                            return `
+                              <div class="course-detail-lesson ${isLocked ? 'locked' : ''}">
+                                <div class="course-detail-lesson-info">
+                                  <div class="course-detail-lesson-icon">
+                                    ${getLessonIcon(lesson.type)}
+                                  </div>
+                                  <div class="course-detail-lesson-title">${lesson.title || 'Lesson'}</div>
+                                </div>
+                                <div class="course-detail-lesson-right">
+                                  <div class="course-detail-lesson-duration">${lesson.duration || ''}</div>
+                                  ${isLocked
+                                    ? `<button class="course-detail-view-btn locked" onclick="showRegisterPrompt()">
+                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                           <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                           <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                         </svg>
+                                       </button>`
+                                    : lesson.type === 'video'
+                                    ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">Ko'rish</button>`
+                                    : lesson.type === 'quiz'
+                                    ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">Boshlash</button>`
+                                    : lesson.type === 'assignment'
+                                    ? `<button class="course-detail-view-btn" onclick="viewAssignment('${lesson._id || ''}', '${lesson.assignmentFile || ''}')">Ko'rish</button>`
+                                    : ''
+                                  }
+                                </div>
+                              </div>
+                            `;
+                          }).join('')
+                        : '<div class="course-detail-lesson">No lessons yet</div>'
+                      }
+                    </div>
                   </div>
-                </div>
-              `).join('')
+                `).join('');
+              })()
             : '<p style="color: #9CA3AF; text-align: center;">No modules available</p>'
           }
         </div>
@@ -1038,6 +1132,42 @@ window.toggleModule = function(index) {
     lessons.classList.toggle('expanded');
     arrow.classList.toggle('rotated');
   }
+};
+
+// Show toast notification
+function showToast(message) {
+  // Remove existing toast if any
+  const existingToast = document.querySelector('.custom-toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+  
+  // Create toast
+  const toast = document.createElement('div');
+  toast.className = 'custom-toast';
+  toast.innerHTML = `
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+    </svg>
+    <span>${message}</span>
+  `;
+  
+  document.body.appendChild(toast);
+  
+  // Show toast
+  setTimeout(() => toast.classList.add('show'), 100);
+  
+  // Hide and remove after 5 seconds
+  setTimeout(() => {
+    toast.classList.remove('show');
+    setTimeout(() => toast.remove(), 300);
+  }, 5000);
+}
+
+// Show register prompt for locked lessons
+window.showRegisterPrompt = function() {
+  showToast('Ro\'yxatdan o\'ting va kursni to\'liq ko\'ring!');
 };
 
 // View lesson - navigate to lesson page or open modal
