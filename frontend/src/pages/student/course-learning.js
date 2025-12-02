@@ -883,7 +883,25 @@ function showToast(message) {
   }
 
   const toast = document.createElement('div');
-  toast.className = 'toast-notification';
+  toast.style.cssText = `
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    background: #7ea2d4 !important;
+    color: #ffffff !important;
+    padding: 16px 32px !important;
+    border-radius: 12px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    z-index: 10000 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-width: 400px !important;
+    white-space: nowrap !important;
+    display: inline-block !important;
+  `;
   toast.textContent = message;
   document.body.appendChild(toast);
 

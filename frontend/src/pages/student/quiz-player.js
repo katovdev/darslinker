@@ -233,7 +233,7 @@ function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions) 
           <div class="results-stats">
             <div class="result-stat-card">
               <div class="result-stat-label">Natijangiz</div>
-              <div class="result-stat-value" style="color: ${percentage >= 50 ? '#10B981' : '#EF4444'}">${percentage}%</div>
+              <div class="result-stat-value" style="color: ${percentage >= 75 ? '#10B981' : '#EF4444'}">${percentage}%</div>
             </div>
             <div class="result-stat-card">
               <div class="result-stat-label">To'g'ri javoblar</div>
@@ -889,10 +889,28 @@ window.startQuiz = function() {
 
 // Select answer
 window.selectAnswer = function(questionIndex, answerIndex) {
+  const lesson = window.currentLesson;
+  const question = lesson.questions[questionIndex];
+  
+  // Check if answer is correct
+  let isCorrect = false;
+  if (question) {
+    // Check if correctAnswer is index or the answer object has isCorrect property
+    if (typeof question.correctAnswer === 'number') {
+      isCorrect = answerIndex === question.correctAnswer;
+    } else if (question.answers && question.answers[answerIndex]) {
+      const answer = question.answers[answerIndex];
+      isCorrect = answer.isCorrect === true || answer.correct === true;
+    } else if (question.options && question.options[answerIndex]) {
+      const option = question.options[answerIndex];
+      isCorrect = option.isCorrect === true || option.correct === true;
+    }
+  }
+  
   // Save answer
   quizState.answers[questionIndex] = {
     answerIndex: answerIndex,
-    isCorrect: false // Will be checked on submit
+    isCorrect: isCorrect
   };
   
   // Update UI

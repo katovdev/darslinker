@@ -18390,7 +18390,7 @@ function updateFilterTabs() {
             <div class="stat-label">Lessons</div>
           </div>
           <div class="course-stat">
-            <div class="stat-number">${course.price > 0 ? '$' + course.price : 'Free'}</div>
+            <div class="stat-number">${course.price > 0 ? course.price.toLocaleString('uz-UZ') + ' UZS' : 'Bepul'}</div>
             <div class="stat-label">Price</div>
           </div>
         </div>
@@ -18572,7 +18572,7 @@ window.viewCourseStats = function(id) {
             <p><strong>Category:</strong> ${course.category}</p>
             <p><strong>Created:</strong> ${new Date(course.createdAt).toLocaleDateString()}</p>
             <p><strong>Last Updated:</strong> ${new Date(course.updatedAt).toLocaleDateString()}</p>
-            <p><strong>Price:</strong> ${course.price > 0 ? '$' + course.price : 'Free'}</p>
+            <p><strong>Price:</strong> ${course.price > 0 ? course.price.toLocaleString('uz-UZ') + ' UZS' : 'Bepul'}</p>
           </div>
         </div>
       </div>
@@ -19108,7 +19108,7 @@ function renderMyCoursesCards(courses) {
             <div class="stat-label-modern">Lessons</div>
           </div>
           <div class="stat-item-modern">
-            <div class="stat-value-modern">${course.price > 0 ? '$' + course.price : 'Free'}</div>
+            <div class="stat-value-modern">${course.price > 0 ? course.price.toLocaleString('uz-UZ') + ' UZS' : 'Bepul'}</div>
             <div class="stat-label-modern">Price</div>
           </div>
         </div>
