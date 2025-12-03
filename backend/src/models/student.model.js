@@ -61,9 +61,22 @@ const studentSchema = new mongoose.Schema(
     testResults: [
       {
         quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },
+        lessonId: { type: mongoose.Schema.Types.ObjectId },
+        courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
+        attemptNumber: { type: Number, default: 1 },
         score: Number,
+        totalQuestions: Number,
+        correctAnswers: Number,
         passed: Boolean,
-        date: Date,
+        answers: [
+          {
+            questionId: String,
+            selectedAnswer: String,
+            isCorrect: Boolean
+          }
+        ],
+        timeElapsed: Number, // in seconds
+        date: { type: Date, default: Date.now },
       },
     ],
     assignments: [

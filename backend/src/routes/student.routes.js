@@ -5,6 +5,7 @@ import {
   findOne,
   update,
   remove,
+  saveQuizResult,
 } from "../controllers/student.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validation.middleware.js";
@@ -478,5 +479,49 @@ studentRouter.delete(
   authenticate,
   remove
 );
+
+/**
+ * @swagger
+ * /students/{id}/quiz-result:
+ *   post:
+ *     summary: Save quiz result for student
+ *     tags: [Students]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               lessonId:
+ *                 type: string
+ *               courseId:
+ *                 type: string
+ *               attemptNumber:
+ *                 type: number
+ *               score:
+ *                 type: number
+ *               totalQuestions:
+ *                 type: number
+ *               correctAnswers:
+ *                 type: number
+ *               passed:
+ *                 type: boolean
+ *               answers:
+ *                 type: array
+ *               timeElapsed:
+ *                 type: number
+ *     responses:
+ *       200:
+ *         description: Quiz result saved successfully
+ */
+// Public endpoint - no authentication required for quiz results
+studentRouter.post("/:id/quiz-result", saveQuizResult);
 
 export default studentRouter;

@@ -251,7 +251,6 @@ async function renderTeacherDashboard(user) {
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.studentsAnalytics')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEngagement(); return false;">${t('sidebar.engagement')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
             </div>
           </div>
@@ -9375,172 +9374,6 @@ window.loadMoreProgress = function() {
   btn.textContent = 'Show less';
   btn.dataset.loaded = 'true';
 };
-
-// Open Engagement Page
-window.openEngagement = function() {
-  const contentArea = document.querySelector('.figma-content-area');
-  
-  if (contentArea) {
-    updatePageTitle(t('pages.engagement'));
-    contentArea.innerHTML = getEngagementHTML();
-    updateActiveMenuItem('Engagement');
-    
-    // Apply saved primary color to Engagement page
-    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
-    applyPrimaryColor(savedColor);
-    return;
-  }
-};
-
-// Helper function to get engagement HTML
-function getEngagementHTML() {
-  return `
-    <div class="engagement-page">
-      <style>
-        .engagement-page {
-          padding: 24px;
-          display: flex;
-          flex-direction: column;
-          gap: 24px;
-        }
-        .engagement-stats-grid {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
-        }
-        .engagement-stat-card {
-          background: rgba(58, 56, 56, 0.3);
-          border: 1px solid var(--primary-border);
-          border-radius: 16px;
-          padding: 24px;
-          text-align: center;
-          transition: all 0.3s ease;
-        }
-        .engagement-stat-card:hover {
-          transform: translateY(-5px);
-          border-color: var(--primary-border-hover);
-          background: rgba(58, 56, 56, 0.5);
-        }
-        .engagement-stat-title {
-          color: var(--primary-color);
-          font-size: 14px;
-          font-weight: 500;
-          margin-bottom: 12px;
-        }
-        .engagement-stat-value {
-          color: #ffffff;
-          font-size: 36px;
-          font-weight: 700;
-          margin-bottom: 8px;
-        }
-        .lessons-section {
-          background: rgba(58, 56, 56, 0.3);
-          border: 1px solid var(--primary-border);
-          border-radius: 16px;
-          padding: 24px;
-        }
-        .lessons-title {
-          color: #ffffff;
-          font-size: 20px;
-          font-weight: 600;
-          margin-bottom: 24px;
-        }
-        .lesson-item {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 16px;
-          background: rgba(58, 56, 56, 0.5);
-          border: 1px solid var(--primary-border-light);
-          border-radius: 12px;
-          margin-bottom: 12px;
-          transition: all 0.3s ease;
-        }
-        .lesson-item:hover {
-          border-color: var(--border-color);
-          background: rgba(58, 56, 56, 0.7);
-          transform: translateX(4px);
-        }
-        .lesson-info h4 {
-          color: #ffffff;
-          font-size: 16px;
-          font-weight: 600;
-          margin-bottom: 4px;
-        }
-        .lesson-info p {
-          color: rgba(156, 163, 175, 1);
-          font-size: 12px;
-        }
-        .lesson-completion {
-          color: #10b981;
-          font-size: 14px;
-          font-weight: 600;
-        }
-      </style>
-
-      <!-- Statistics Cards -->
-      <div class="engagement-stats-grid">
-        <div class="engagement-stat-card">
-          <div class="engagement-stat-title">Engagement Rate</div>
-          <div class="engagement-stat-value">71.5%</div>
-        </div>
-        <div class="engagement-stat-card">
-          <div class="engagement-stat-title">Avg. Watch Time</div>
-          <div class="engagement-stat-value">45 min</div>
-        </div>
-        <div class="engagement-stat-card">
-          <div class="engagement-stat-title">Drop-off Rate</div>
-          <div class="engagement-stat-value">15%</div>
-        </div>
-      </div>
-
-      <!-- Most Watched Lessons -->
-      <div class="lessons-section">
-        <h3 class="lessons-title">Most watched lessons</h3>
-        
-        <div class="lesson-item">
-          <div class="lesson-info">
-            <h4>Introduction to Marketing</h4>
-            <p>892 views • 95% avg watch</p>
-          </div>
-          <span class="lesson-completion">88% completion</span>
-        </div>
-
-        <div class="lesson-item">
-          <div class="lesson-info">
-            <h4>React Hooks Deep Dive</h4>
-            <p>745 views • 88% avg watch</p>
-          </div>
-          <span class="lesson-completion">90% completion</span>
-        </div>
-
-        <div class="lesson-item">
-          <div class="lesson-info">
-            <h4>Python Data Structures</h4>
-            <p>623 views • 92% avg watch</p>
-          </div>
-          <span class="lesson-completion">85% completion</span>
-        </div>
-
-        <div class="lesson-item">
-          <div class="lesson-info">
-            <h4>UI/UX Design Principles</h4>
-            <p>581 views • 87% avg watch</p>
-          </div>
-          <span class="lesson-completion">88% completion</span>
-        </div>
-
-        <div class="lesson-item">
-          <div class="lesson-info">
-            <h4>JavaScript ES6 Features</h4>
-            <p>512 views • 91% avg watch</p>
-          </div>
-          <span class="lesson-completion">92% completion</span>
-        </div>
-      </div>
-    </div>
-  `;
-}
 
 // Open Students Analytics Page
 window.openStudentsAnalytics = function() {
@@ -18923,7 +18756,6 @@ function handleLanguageChange() {
       'Quiz Analytics': () => openQuizAnalytics(),
       'Rating Comments': () => openRatingComments(),
       'Students Analytics': () => openStudentsAnalytics(),
-      'Engagement': () => openEngagement(),
       'Progress': () => openProgress(),
     };
     

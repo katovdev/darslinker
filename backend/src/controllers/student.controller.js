@@ -261,4 +261,68 @@ const remove = catchAsync(async (req, res) => {
   });
 });
 
-export { createStudentProfile, findAll, findOne, update, remove };
+/**
+ * Save quiz result for student
+ * @route POST /students/:id/quiz-result
+ * @access Public
+ */
+const saveQuizResult = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const {
+    lessonId,
+    courseId,
+    attemptNumber,
+    score,
+    totalQuestions,
+    correctAnswers,
+    passed,
+    answers,
+    timeElapsed
+  } = req.body;
+
+  // Find student directly
+  const student = await Student.findById(id);
+  
+  if (!student) {
+    throw new ValidationError("Student not found");
+  }
+
+  // Initialize testResults array if it doesn't exist
+  if (!student.testResults) {
+    student.testResults = [];
+  }
+
+  // Create quiz result object
+  const quizResult = {
+    lessonId,
+    courseId,
+    attemptNumber: attemptNumber || 1,
+    score,
+    totalQuestions,
+    correctAnswers,
+    passed,
+    answers,
+    timeElapsed,
+    date: new Date()
+  };
+
+  // Add to testResults array
+  student.testResults.push(quizResult);
+  await student.save();
+
+  logger.info("Quiz result saved", {
+    studentId: id,
+    lessonId,
+    attemptNumber,
+    score,
+    passed
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Quiz result saved successfully",
+    result: quizResult
+  });
+});
+
+export { createStudentProfile, findAll, findOne, update, remove, saveQuizResult };

@@ -12,18 +12,26 @@ let quizState = {
   currentQuestionIndex: 0 // current question being displayed
 };
 
-export function loadQuizPlayer(course, lesson, sidebarHtml) {
+export async function loadQuizPlayer(course, lesson, sidebarHtml) {
   const mainContent = document.querySelector('.course-learning-page');
   if (!mainContent) return;
   
   // Get time limit from lesson (in minutes, convert to seconds)
   const timeLimitMinutes = parseInt(lesson.timeLimit) || 30;
   const timeLimitSeconds = timeLimitMinutes * 60;
+
+  // Load previous attempts from backend
+  // TODO: Fix authentication for GET request
+  // const previousAttempts = await loadPreviousQuizAttempts(lesson._id);
+  // For now, use localStorage to track attempts
+  const attemptCount = getLocalAttemptCount(lesson._id);
   
+  console.log(`📊 Quiz attempt count: ${attemptCount}`);
+
   // Reset quiz state
   quizState = {
     state: 'start',
-    currentAttempt: 1,
+    currentAttempt: attemptCount + 1, // Next attempt number
     maxAttempts: 3,
     score: 0,
     answers: {},
@@ -37,23 +45,106 @@ export function loadQuizPlayer(course, lesson, sidebarHtml) {
   renderQuizPage(course, lesson, sidebarHtml);
 }
 
+// Get attempt count from localStorage
+function getLocalAttemptCount(lessonId) {
+  const key = `quiz_attempts_${lessonId}`;
+  const attempts = localStorage.getItem(key);
+  return attempts ? parseInt(attempts) : 0;
+}
+
+// Increment attempt count in localStorage
+function incrementLocalAttemptCount(lessonId) {
+  const key = `quiz_attempts_${lessonId}`;
+  const currentCount = getLocalAttemptCount(lessonId);
+  localStorage.setItem(key, (currentCount + 1).toString());
+}
+
+// Load previous quiz attempts from backend
+async function loadPreviousQuizAttempts(lessonId) {
+  try {
+    // Get student ID from localStorage or sessionStorage
+    let studentId = null;
+    
+    // Try localStorage first (main dashboard)
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user._id) {
+      studentId = user._id;
+    } else {
+      // Try sessionStorage (landing page users)
+      const landingUser = sessionStorage.getItem('landingUser');
+      if (landingUser) {
+        const userData = JSON.parse(landingUser);
+        studentId = userData._id;
+      }
+    }
+    
+    if (!studentId) {
+      console.log('⚠️ Student ID not found, skipping previous attempts load');
+      return [];
+    }
+    
+    console.log('🔑 Loading quiz attempts for student:', studentId);
+    
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/students/${studentId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
+    
+    const result = await response.json();
+    
+    if (result.success && result.student && result.student.testResults) {
+      // Filter results for this specific lesson
+      const lessonResults = result.student.testResults.filter(
+        r => r.lessonId && r.lessonId.toString() === lessonId.toString()
+      );
+      
+      // Sort by attempt number
+      lessonResults.sort((a, b) => a.attemptNumber - b.attemptNumber);
+      
+      return lessonResults;
+    }
+    
+    return [];
+  } catch (error) {
+    console.error('❌ Error loading previous quiz attempts:', error);
+    return [];
+  }
+}
+
 function renderQuizPage(course, lesson, sidebarHtml) {
   const mainContent = document.querySelector('.course-learning-page');
   if (!mainContent) return;
   
   const questions = lesson.questions || [];
   
+  // Check if layout already exists
+  const existingLayout = mainContent.querySelector('.lesson-player-layout');
+  const shouldUpdateOnly = existingLayout && quizState.state !== 'start';
+  
   if (quizState.state === 'start') {
-    renderQuizStart(mainContent, course, lesson, sidebarHtml);
+    renderQuizStart(mainContent, course, lesson, sidebarHtml, shouldUpdateOnly);
   } else if (quizState.state === 'active') {
-    renderQuizActive(mainContent, course, lesson, sidebarHtml, questions);
+    renderQuizActive(mainContent, course, lesson, sidebarHtml, questions, shouldUpdateOnly);
   } else if (quizState.state === 'results') {
-    renderQuizResults(mainContent, course, lesson, sidebarHtml, questions);
+    renderQuizResults(mainContent, course, lesson, sidebarHtml, questions, shouldUpdateOnly);
   }
 }
 
 // Render quiz start page
-function renderQuizStart(mainContent, course, lesson, sidebarHtml) {
+function renderQuizStart(mainContent, course, lesson, sidebarHtml, shouldUpdateOnly = false) {
+  // Check if we should only update content (not re-render layout)
+  const existingLayout = mainContent.querySelector('.lesson-player-layout');
+  
+  if (shouldUpdateOnly && existingLayout) {
+    // Layout exists, only update quiz content
+    updateQuizStartContent(existingLayout, lesson);
+    return;
+  }
+  
+  // First time render - create full layout
   mainContent.innerHTML = `
     <style>
       ${getSharedStyles()}
@@ -164,8 +255,50 @@ function renderQuizStart(mainContent, course, lesson, sidebarHtml) {
   attachQuizEventListeners(course, lesson, sidebarHtml);
 }
 
+// Helper function to update only quiz start content
+function updateQuizStartContent(layout, lesson) {
+  const playerContainer = layout.querySelector('.lesson-player-container') || 
+                          layout.querySelector('.quiz-start-container');
+  if (!playerContainer) return;
+  
+  playerContainer.innerHTML = `
+    <div class="quiz-start-card">
+      <h1 class="quiz-start-title">${lesson.title}</h1>
+      
+      <div class="quiz-start-meta">
+        <div class="quiz-meta-item">
+          <div class="quiz-meta-label">Savollar soni</div>
+          <div class="quiz-meta-value">${(lesson.questions || []).length}</div>
+        </div>
+        <div class="quiz-meta-item">
+          <div class="quiz-meta-label">Urinishlar</div>
+          <div class="quiz-meta-value">${quizState.currentAttempt}/${quizState.maxAttempts}</div>
+        </div>
+        <div class="quiz-meta-item">
+          <div class="quiz-meta-label">Timer</div>
+          <div class="quiz-meta-value">${lesson.timeLimit || 30} min</div>
+        </div>
+      </div>
+      
+      <button class="quiz-start-btn" onclick="startQuiz()">Boshlash</button>
+    </div>
+  `;
+  
+  console.log('✅ Quiz start content updated without re-rendering layout');
+}
+
 // Render active quiz
-function renderQuizActive(mainContent, course, lesson, sidebarHtml, questions) {
+function renderQuizActive(mainContent, course, lesson, sidebarHtml, questions, shouldUpdateOnly = false) {
+  // Check if we should only update content
+  const existingLayout = mainContent.querySelector('.lesson-player-layout');
+  
+  if (shouldUpdateOnly && existingLayout) {
+    // Layout exists, only update quiz content
+    updateQuizActiveContent(existingLayout, lesson, questions);
+    return;
+  }
+  
+  // First time render - create full layout
   mainContent.innerHTML = `
     <style>
       ${getSharedStyles()}
@@ -210,11 +343,21 @@ function renderQuizActive(mainContent, course, lesson, sidebarHtml, questions) {
 }
 
 // Render quiz results
-function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions) {
+function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions, shouldUpdateOnly = false) {
   const totalQuestions = questions.length;
   const correctAnswers = Object.values(quizState.answers).filter(a => a.isCorrect).length;
   const percentage = Math.round((correctAnswers / totalQuestions) * 100);
   
+  // Check if we should only update content
+  const existingLayout = mainContent.querySelector('.lesson-player-layout');
+  
+  if (shouldUpdateOnly && existingLayout) {
+    // Layout exists, only update quiz results content
+    updateQuizResultsContent(existingLayout, lesson, questions, correctAnswers, totalQuestions, percentage);
+    return;
+  }
+  
+  // First time render - create full layout
   mainContent.innerHTML = `
     <style>
       ${getSharedStyles()}
@@ -989,9 +1132,38 @@ function formatTime(seconds) {
 }
 
 // Finish quiz
-window.finishQuiz = function() {
+window.finishQuiz = async function() {
   if (quizState.timerInterval) {
     clearInterval(quizState.timerInterval);
+  }
+  
+  // Calculate results
+  const questions = window.currentLesson.questions || [];
+  const totalQuestions = questions.length;
+  const correctAnswers = Object.values(quizState.answers).filter(a => a.isCorrect).length;
+  const score = Math.round((correctAnswers / totalQuestions) * 100);
+  const passed = score >= 70; // 70% to pass
+  
+  // Save to backend
+  const saveSuccess = await saveQuizResultToBackend({
+    lessonId: window.currentLesson._id,
+    courseId: window.currentCourse._id,
+    attemptNumber: quizState.currentAttempt,
+    score,
+    totalQuestions,
+    correctAnswers,
+    passed,
+    answers: Object.entries(quizState.answers).map(([questionId, answer]) => ({
+      questionId,
+      selectedAnswer: answer.selectedAnswer,
+      isCorrect: answer.isCorrect
+    })),
+    timeElapsed: quizState.timeElapsed
+  });
+  
+  // If saved successfully, increment local attempt count
+  if (saveSuccess) {
+    incrementLocalAttemptCount(window.currentLesson._id);
   }
   
   quizState.state = 'results';
@@ -1000,6 +1172,56 @@ window.finishQuiz = function() {
   const sidebarHtml = window.currentSidebarHtml;
   renderQuizPage(course, lesson, sidebarHtml);
 };
+
+// Save quiz result to backend
+async function saveQuizResultToBackend(resultData) {
+  try {
+    // Get student ID from localStorage or sessionStorage
+    let studentId = null;
+    
+    // Try localStorage first (main dashboard)
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user._id) {
+      studentId = user._id;
+    } else {
+      // Try sessionStorage (landing page users)
+      const landingUser = sessionStorage.getItem('landingUser');
+      if (landingUser) {
+        const userData = JSON.parse(landingUser);
+        studentId = userData._id;
+      }
+    }
+    
+    if (!studentId) {
+      console.error('❌ Student ID not found');
+      return;
+    }
+    
+    console.log('💾 Saving quiz result for student:', studentId);
+    
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/students/${studentId}/quiz-result`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(resultData)
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log('✅ Quiz result saved to backend:', result);
+      return true;
+    } else {
+      console.error('❌ Failed to save quiz result:', result.message);
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ Error saving quiz result:', error);
+    return false;
+  }
+}
 
 // Retry quiz
 window.retryQuiz = function() {

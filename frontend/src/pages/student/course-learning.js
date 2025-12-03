@@ -1,6 +1,10 @@
 // Course learning page - Full course view with modules and lessons
 import { loadQuizPlayer } from './quiz-player.js';
 
+// Global flag to track if layout is already rendered
+let isLayoutRendered = false;
+let currentCourse = null;
+
 export async function initCourseLearningPage(courseId) {
   console.log('📚 Loading course learning page for:', courseId);
   
@@ -12,7 +16,17 @@ export async function initCourseLearningPage(courseId) {
     return;
   }
   
-  renderCourseLearningPage(courseData);
+  // Store course data globally
+  currentCourse = courseData;
+  
+  // Check if layout already exists
+  if (!isLayoutRendered) {
+    renderCourseLearningPage(courseData);
+    isLayoutRendered = true;
+  } else {
+    // Layout exists, just update content if needed
+    console.log('Layout already rendered, skipping full render');
+  }
 }
 
 // Fetch course data from API
@@ -861,7 +875,7 @@ function attachEventListeners(course) {
             </div>
           </div>
         `;
-        loadQuizPlayer(course, selectedLesson, sidebarHtml);
+        await loadQuizPlayer(course, selectedLesson, sidebarHtml);
       } else {
         showToast('This lesson type is not supported yet');
       }
@@ -931,7 +945,16 @@ function loadLessonPlayer(course, lesson) {
   // Get video URL
   const videoUrl = lesson.videoUrl || '';
   
-  // Replace entire content with sidebar + video player
+  // Check if layout already exists
+  const existingLayout = mainContent.querySelector('.lesson-player-layout');
+  
+  if (existingLayout) {
+    // Layout exists, only update video player content
+    updateVideoPlayerContent(existingLayout, lesson, videoUrl);
+    return;
+  }
+  
+  // First time - create full layout
   mainContent.innerHTML = `
     <style>
       .lesson-player-layout {
@@ -1338,6 +1361,38 @@ function loadLessonPlayer(course, lesson) {
   if (videoUrl) {
     setTimeout(() => initVideoProtection(), 200);
   }
+}
+
+// Helper function to update only video player content (without re-rendering header/sidebar)
+function updateVideoPlayerContent(layout, lesson, videoUrl) {
+  const playerContainer = layout.querySelector('.lesson-player-container');
+  if (!playerContainer) return;
+  
+  // Update only the video player content
+  playerContainer.innerHTML = `
+    <div class="lesson-player-content">
+      <div class="video-wrapper" id="video-wrapper-protected">
+        ${videoUrl 
+          ? `<div class="video-protection-overlay"></div>
+             <div class="video-watermark" id="video-watermark">Loading...</div>
+             <video id="protected-video" controls controlsList="nodownload" disablePictureInPicture>
+               <source src="${videoUrl}" type="video/mp4">
+               Your browser does not support the video tag.
+             </video>`
+          : `<div class="video-placeholder">
+               <p>Video not available</p>
+             </div>`
+        }
+      </div>
+    </div>
+  `;
+  
+  // Re-initialize video protection
+  if (videoUrl) {
+    setTimeout(() => initVideoProtection(), 200);
+  }
+  
+  console.log('✅ Video player content updated without re-rendering layout');
 }
 
 // Video Protection System
