@@ -1170,12 +1170,48 @@ function loadLessonPlayer(course, lesson) {
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        position: relative;
       }
       
       .video-wrapper video {
         width: 100%;
         height: auto;
         display: block;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+      
+      /* Video Watermark */
+      .video-watermark {
+        position: absolute;
+        color: rgba(156, 163, 175, 0.5);
+        font-size: 18px;
+        font-weight: 600;
+        font-family: monospace;
+        pointer-events: none;
+        z-index: 999;
+        transition: opacity 0.8s ease, left 0.8s ease, top 0.8s ease;
+        user-select: none;
+        -webkit-user-select: none;
+        opacity: 1;
+      }
+      
+      .video-watermark.fade-out {
+        opacity: 0;
+      }
+      
+      /* Video Protection Overlay */
+      .video-protection-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        pointer-events: none;
+        z-index: 998;
+        background: transparent;
       }
       
       .video-placeholder {
@@ -1243,9 +1279,11 @@ function loadLessonPlayer(course, lesson) {
         </button>
         
         <div class="lesson-player-content">
-          <div class="video-wrapper">
+          <div class="video-wrapper" id="video-wrapper-protected">
             ${videoUrl 
-              ? `<video controls controlsList="nodownload" disablePictureInPicture>
+              ? `<div class="video-protection-overlay"></div>
+                 <div class="video-watermark" id="video-watermark">ID: Loading...</div>
+                 <video id="protected-video" controls controlsList="nodownload" disablePictureInPicture>
                    <source src="${videoUrl}" type="video/mp4">
                    Your browser does not support the video tag.
                  </video>`
@@ -1277,6 +1315,180 @@ function loadLessonPlayer(course, lesson) {
       }
     });
   }
+  
+  // Initialize video protection if video exists
+  if (videoUrl) {
+    setTimeout(() => initVideoProtection(), 200);
+  }
+}
+
+// Video Protection System
+function initVideoProtection() {
+  const video = document.getElementById('protected-video');
+  const watermark = document.getElementById('video-watermark');
+  const videoWrapper = document.getElementById('video-wrapper-protected');
+  
+  if (!video || !watermark || !videoWrapper) {
+    console.log('⚠️ Video protection elements not found');
+    return;
+  }
+  
+  // Get student ID from localStorage or sessionStorage
+  let studentId = 'GUEST';
+  
+  // Try localStorage first (main dashboard)
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user._id) {
+    studentId = user._id.slice(-5).toUpperCase();
+  } else {
+    // Try sessionStorage (landing page users)
+    const landingUser = sessionStorage.getItem('landingUser');
+    if (landingUser) {
+      try {
+        const userData = JSON.parse(landingUser);
+        if (userData._id) {
+          studentId = userData._id.slice(-5).toUpperCase();
+        }
+      } catch (error) {
+        console.error('Error parsing landing user:', error);
+      }
+    }
+  }
+  
+  console.log('🔑 Student ID for watermark:', studentId);
+  
+  watermark.textContent = studentId;
+  
+  // 1. Disable right-click on video
+  video.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    showToast('Video yuklab olish taqiqlangan!');
+    return false;
+  });
+  
+  videoWrapper.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    return false;
+  });
+  
+  // 2. Disable keyboard shortcuts for screenshot
+  const handleKeyDown = (e) => {
+    // Disable Print Screen, Cmd+Shift+3/4/5 (Mac), Windows+Shift+S
+    if (
+      e.key === 'PrintScreen' ||
+      (e.metaKey && e.shiftKey && ['3', '4', '5'].includes(e.key)) ||
+      (e.key === 's' && e.metaKey && e.shiftKey)
+    ) {
+      e.preventDefault();
+      showToast('Screenshot taqiqlangan!');
+      return false;
+    }
+    
+    // Disable F12, Ctrl+Shift+I, Cmd+Option+I (DevTools)
+    if (
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+      (e.metaKey && e.altKey && e.key === 'I')
+    ) {
+      e.preventDefault();
+      showToast('DevTools taqiqlangan!');
+      return false;
+    }
+  };
+  
+  document.addEventListener('keydown', handleKeyDown);
+  
+  // 3. Random watermark position animation with fade effect
+  function updateWatermarkPosition() {
+    const wrapper = videoWrapper.getBoundingClientRect();
+    const watermarkWidth = 120;
+    const watermarkHeight = 30;
+    
+    // Random position (with padding from edges)
+    const padding = 40;
+    const maxX = wrapper.width - watermarkWidth - padding;
+    const maxY = wrapper.height - watermarkHeight - padding;
+    
+    const randomX = Math.random() * maxX + padding;
+    const randomY = Math.random() * maxY + padding;
+    
+    // Fade out
+    watermark.classList.add('fade-out');
+    
+    // Wait for fade out, then change position and fade in
+    setTimeout(() => {
+      watermark.style.left = `${randomX}px`;
+      watermark.style.top = `${randomY}px`;
+      watermark.classList.remove('fade-out');
+    }, 800); // Match CSS transition duration
+  }
+  
+  // Initial position (no fade on first load)
+  const wrapper = videoWrapper.getBoundingClientRect();
+  const watermarkWidth = 120;
+  const watermarkHeight = 30;
+  const padding = 40;
+  const maxX = wrapper.width - watermarkWidth - padding;
+  const maxY = wrapper.height - watermarkHeight - padding;
+  const initialX = Math.random() * maxX + padding;
+  const initialY = Math.random() * maxY + padding;
+  watermark.style.left = `${initialX}px`;
+  watermark.style.top = `${initialY}px`;
+  
+  // Update position every 10 seconds (8s visible + 2s for fade animation)
+  const positionInterval = setInterval(updateWatermarkPosition, 10000);
+  
+  // Update position when video size changes
+  video.addEventListener('loadedmetadata', updateWatermarkPosition);
+  const resizeHandler = () => updateWatermarkPosition();
+  window.addEventListener('resize', resizeHandler);
+  
+  // 4. Detect DevTools opening
+  let devtoolsOpen = false;
+  const threshold = 160;
+  
+  const devtoolsInterval = setInterval(() => {
+    if (
+      window.outerWidth - window.innerWidth > threshold ||
+      window.outerHeight - window.innerHeight > threshold
+    ) {
+      if (!devtoolsOpen) {
+        devtoolsOpen = true;
+        showToast('⚠️ DevTools aniqlandi! Video to\'xtatildi.');
+        video.pause();
+      }
+    } else {
+      devtoolsOpen = false;
+    }
+  }, 1000);
+  
+  // 5. Blur video when window loses focus (screen recording detection)
+  const visibilityHandler = () => {
+    if (document.hidden) {
+      video.pause();
+    }
+  };
+  document.addEventListener('visibilitychange', visibilityHandler);
+  
+  // 6. Prevent drag and drop
+  video.addEventListener('dragstart', (e) => {
+    e.preventDefault();
+    return false;
+  });
+  
+  // Cleanup function when navigating away
+  const cleanup = () => {
+    clearInterval(positionInterval);
+    clearInterval(devtoolsInterval);
+    document.removeEventListener('keydown', handleKeyDown);
+    document.removeEventListener('visibilitychange', visibilityHandler);
+    window.removeEventListener('resize', resizeHandler);
+  };
+  
+  // Store cleanup function for later use
+  window._videoProtectionCleanup = cleanup;
+  
+  console.log('🔒 Video protection enabled for student:', studentId);
 }
 
 // Build lessons list HTML (like lesson-view.js)
