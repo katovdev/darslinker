@@ -1183,6 +1183,18 @@ function loadLessonPlayer(course, lesson) {
         -ms-user-select: none;
       }
       
+      /* Hide video content during screen capture */
+      @media (prefers-reduced-motion: reduce) {
+        .video-wrapper video {
+          filter: brightness(0);
+        }
+      }
+      
+      /* Detect screen recording via visibility API */
+      .video-wrapper.recording-detected video {
+        filter: brightness(0) !important;
+      }
+      
       /* Video Watermark */
       .video-watermark {
         position: absolute;
@@ -1212,6 +1224,12 @@ function loadLessonPlayer(course, lesson) {
         pointer-events: none;
         z-index: 998;
         background: transparent;
+      }
+      
+      /* Black overlay when screenshot detected */
+      .video-protection-overlay.screenshot-detected {
+        background: #000000;
+        z-index: 1000;
       }
       
       .video-placeholder {
@@ -1371,7 +1389,9 @@ function initVideoProtection() {
     return false;
   });
   
-  // 2. Disable keyboard shortcuts for screenshot
+  // 2. Disable keyboard shortcuts for screenshot and hide video
+  const protectionOverlay = videoWrapper.querySelector('.video-protection-overlay');
+  
   const handleKeyDown = (e) => {
     // Disable Print Screen, Cmd+Shift+3/4/5 (Mac), Windows+Shift+S
     if (
@@ -1380,7 +1400,22 @@ function initVideoProtection() {
       (e.key === 's' && e.metaKey && e.shiftKey)
     ) {
       e.preventDefault();
+      
+      // Show black overlay
+      if (protectionOverlay) {
+        protectionOverlay.classList.add('screenshot-detected');
+        video.pause();
+      }
+      
       showToast('Screenshot taqiqlangan!');
+      
+      // Remove overlay after 2 seconds
+      setTimeout(() => {
+        if (protectionOverlay) {
+          protectionOverlay.classList.remove('screenshot-detected');
+        }
+      }, 2000);
+      
       return false;
     }
     
@@ -1396,7 +1431,19 @@ function initVideoProtection() {
     }
   };
   
+  const handleKeyUp = (e) => {
+    // Remove black overlay when key is released
+    if (e.key === 'PrintScreen') {
+      setTimeout(() => {
+        if (protectionOverlay) {
+          protectionOverlay.classList.remove('screenshot-detected');
+        }
+      }, 1000);
+    }
+  };
+  
   document.addEventListener('keydown', handleKeyDown);
+  document.addEventListener('keyup', handleKeyUp);
   
   // 3. Random watermark position animation with fade effect
   function updateWatermarkPosition() {
@@ -1462,13 +1509,80 @@ function initVideoProtection() {
     }
   }, 1000);
   
-  // 5. Blur video when window loses focus (screen recording detection)
+  // 5. Advanced screen recording detection with blur
+  let isRecording = false;
+  
+  // Detect when page loses focus (screen recording apps often cause this)
   const visibilityHandler = () => {
     if (document.hidden) {
+      // Pause video
       video.pause();
+      
+      // Add blur and black overlay
+      video.style.filter = 'blur(50px) brightness(0)';
+      videoWrapper.classList.add('recording-detected');
+      isRecording = true;
+      
+      console.log('⚠️ Page hidden - video paused and blurred');
+    } else {
+      // Remove blur and overlay after delay
+      setTimeout(() => {
+        video.style.filter = 'none';
+        videoWrapper.classList.remove('recording-detected');
+        isRecording = false;
+        console.log('✅ Page visible - video restored');
+      }, 500);
     }
   };
   document.addEventListener('visibilitychange', visibilityHandler);
+  
+  // Also detect window blur (when user switches to another app)
+  const windowBlurHandler = () => {
+    video.pause();
+    video.style.filter = 'blur(50px) brightness(0)';
+    videoWrapper.classList.add('recording-detected');
+    console.log('⚠️ Window blur - video paused');
+  };
+  
+  const windowFocusHandler = () => {
+    setTimeout(() => {
+      video.style.filter = 'none';
+      videoWrapper.classList.remove('recording-detected');
+      console.log('✅ Window focus - video restored');
+    }, 500);
+  };
+  
+  window.addEventListener('blur', windowBlurHandler);
+  window.addEventListener('focus', windowFocusHandler);
+  
+  // Detect screen capture via getDisplayMedia
+  const detectScreenCapture = () => {
+    // Check if screen is being captured
+    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+      const originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia;
+      
+      navigator.mediaDevices.getDisplayMedia = function(...args) {
+        videoWrapper.classList.add('recording-detected');
+        video.pause();
+        showToast('⚠️ Screen recording aniqlandi!');
+        isRecording = true;
+        
+        return originalGetDisplayMedia.apply(this, args);
+      };
+    }
+  };
+  
+  detectScreenCapture();
+  
+  // Monitor for screen recording apps (check window focus frequently)
+  const recordingCheckInterval = setInterval(() => {
+    // If video is playing but document is not focused, likely recording
+    if (!document.hasFocus() && !video.paused) {
+      videoWrapper.classList.add('recording-detected');
+      video.pause();
+      isRecording = true;
+    }
+  }, 500);
   
   // 6. Prevent drag and drop
   video.addEventListener('dragstart', (e) => {
@@ -1480,8 +1594,12 @@ function initVideoProtection() {
   const cleanup = () => {
     clearInterval(positionInterval);
     clearInterval(devtoolsInterval);
+    clearInterval(recordingCheckInterval);
     document.removeEventListener('keydown', handleKeyDown);
+    document.removeEventListener('keyup', handleKeyUp);
     document.removeEventListener('visibilitychange', visibilityHandler);
+    window.removeEventListener('blur', windowBlurHandler);
+    window.removeEventListener('focus', windowFocusHandler);
     window.removeEventListener('resize', resizeHandler);
   };
   
