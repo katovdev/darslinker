@@ -19,6 +19,26 @@ export function renderLandingStudentDashboard() {
   const landingUser = sessionStorage.getItem("landingUser");
   const userData = landingUser ? JSON.parse(landingUser) : {};
   
+  // Check if _id exists, if not, clear sessionStorage and redirect to login
+  if (!userData._id) {
+    console.error('❌ No _id found in sessionStorage.');
+    console.error('📦 Current sessionStorage:', {
+      landingUser: sessionStorage.getItem('landingUser'),
+      currentTeacherId: sessionStorage.getItem('currentTeacherId')
+    });
+    
+    // Don't clear sessionStorage yet, just redirect to landing page
+    const teacherId = sessionStorage.getItem('currentTeacherId');
+    if (teacherId) {
+      console.log('🔄 Redirecting to landing page:', `/teacher/${teacherId}`);
+      window.location.href = `/teacher/${teacherId}`;
+    } else {
+      console.log('🔄 Redirecting to home page');
+      window.location.href = '/';
+    }
+    return;
+  }
+  
   // Build full name from firstName and lastName
   const firstName = userData.firstName || "Student";
   const lastName = userData.lastName || "";
@@ -29,7 +49,15 @@ export function renderLandingStudentDashboard() {
   const userLevel = userData.level || 1;
   const userPoints = userData.points || 0;
   
-  console.log('👤 Landing User Data:', { firstName, lastName, fullName, phone });
+  console.log('👤 Landing User Data:', { 
+    firstName, 
+    lastName, 
+    fullName, 
+    phone, 
+    _id: userData._id,
+    displayId: userData._id ? userData._id.slice(-5) : 'N/A',
+    fullUserData: userData 
+  });
 
   container.innerHTML = `
     <style>
@@ -659,6 +687,7 @@ export function renderLandingStudentDashboard() {
           </div>
           <div class="landing-profile-info">
             <div class="landing-profile-name">${fullName}</div>
+            <div class="landing-profile-id" style="font-size: 12px; color: #9CA3AF; margin: 4px 0;">ID: ${userData._id ? userData._id.slice(-5) : 'N/A'}</div>
             <div class="landing-profile-level">Level ${userLevel} • ${userPoints} pts</div>
           </div>
         </div>

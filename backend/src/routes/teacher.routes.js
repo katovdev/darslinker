@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage } from "../controllers/teacher.controller.js";
+import { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage, getTeacherStudents } from "../controllers/teacher.controller.js";
 import {
   authenticate,
   isOwnerOrAdmin,
@@ -836,6 +836,84 @@ teacherRouter.post(
   authenticate,
   isOwnerOrAdmin,
   publishLandingPage
+);
+
+/**
+ * @swagger
+ * /teachers/{id}/students:
+ *   get:
+ *     summary: Get students registered through teacher's landing page
+ *     description: Retrieve all students who registered through the specific teacher's landing page
+ *     tags: [User Management - Teachers]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Teacher ID
+ *     responses:
+ *       200:
+ *         description: Students retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Students retrieved successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     teacher:
+ *                       type: object
+ *                       properties:
+ *                         id:
+ *                           type: string
+ *                         name:
+ *                           type: string
+ *                     students:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           uniqueId:
+ *                             type: string
+ *                             description: 5-digit unique identifier
+ *                           firstName:
+ *                             type: string
+ *                           lastName:
+ *                             type: string
+ *                           fullName:
+ *                             type: string
+ *                           phone:
+ *                             type: string
+ *                           registrationDate:
+ *                             type: string
+ *                             format: date-time
+ *                           studentId:
+ *                             type: string
+ *                     totalStudents:
+ *                       type: number
+ *       401:
+ *         description: Unauthorized - Invalid or missing token
+ *       403:
+ *         description: Forbidden - Cannot access other teacher's students
+ *       404:
+ *         description: Teacher not found
+ */
+teacherRouter.get(
+  "/:id/students",
+  validate(teacherIdSchema, "params"),
+  authenticate,
+  isOwnerOrAdmin,
+  getTeacherStudents
 );
 
 export default teacherRouter;

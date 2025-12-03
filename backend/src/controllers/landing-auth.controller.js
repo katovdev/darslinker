@@ -98,7 +98,17 @@ const sendVerificationCode = catchAsync(async (req, res) => {
  * @access Public
  */
 const verifyAndRegister = catchAsync(async (req, res) => {
-  const { phone, firstName, lastName, password, verificationCode } = req.body;
+  const { phone, firstName, lastName, password, verificationCode, teacherId } = req.body;
+
+  // Log received data
+  logger.info("📥 Received registration data", {
+    phone,
+    firstName,
+    lastName,
+    teacherId,
+    teacherIdType: typeof teacherId,
+    hasTeacherId: !!teacherId
+  });
 
   if (!phone || !firstName || !lastName || !password || !verificationCode) {
     throw new BadRequestError("All fields are required");
@@ -107,10 +117,29 @@ const verifyAndRegister = catchAsync(async (req, res) => {
   // Normalize phone number
   const normalizedPhone = normalizePhone(phone);
 
+  // Validate teacher ID if provided
+  let validatedTeacherId = null;
+  if (teacherId) {
+    logger.info("🔍 Validating teacherId", { teacherId });
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      logger.error("❌ Teacher not found", { teacherId });
+      throw new BadRequestError("Invalid teacher ID");
+    }
+    validatedTeacherId = teacherId;
+    logger.info("👨‍🏫 Teacher validated for student registration", {
+      teacherId,
+      teacherName: `${teacher.firstName} ${teacher.lastName}`
+    });
+  } else {
+    logger.warn("⚠️ No teacherId provided in registration");
+  }
+
   logger.info("🔐 Landing page verification attempt", {
     phone: normalizedPhone,
     firstName,
-    lastName
+    lastName,
+    teacherId: validatedTeacherId
   });
 
   // Find verification record
@@ -163,7 +192,8 @@ const verifyAndRegister = catchAsync(async (req, res) => {
     phone: normalizedPhone,
     password: hashedPassword,
     role: 'student',
-    status: 'active'
+    status: 'active',
+    teacherId: validatedTeacherId
   });
 
   // Mark verification as verified
@@ -175,7 +205,9 @@ const verifyAndRegister = catchAsync(async (req, res) => {
     phone: normalizedPhone,
     firstName,
     lastName,
-    role: 'student'
+    role: 'student',
+    teacherId: validatedTeacherId,
+    linkedToTeacher: !!validatedTeacherId
   });
 
   // Get device info
@@ -355,6 +387,7 @@ const login = catchAsync(async (req, res) => {
     message: "Muvaffaqiyatli kirdingiz",
     user: {
       id: user._id,
+      _id: user._id,
       phone: user.phone,
       firstName: user.firstName,
       lastName: user.lastName,

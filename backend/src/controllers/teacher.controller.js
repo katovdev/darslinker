@@ -722,4 +722,65 @@ const publishLandingPage = catchAsync(async (req, res) => {
   });
 });
 
-export { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage };
+/**
+ * Get students registered through teacher's landing page
+ * @route GET /teachers/:teacherId/students
+ * @access Private (Authenticated teachers only)
+ */
+const getTeacherStudents = catchAsync(async (req, res) => {
+  const teacherId = req.params.teacherId || req.user.userId;
+
+  logger.info("📊 Getting students for teacher", { teacherId });
+
+  // Validate teacher existence
+  const teacher = await Teacher.findById(teacherId);
+  if (!teacher) {
+    throw new ValidationError("Teacher not found");
+  }
+
+  // Check if requesting user is the teacher or has proper access
+  if (req.user.userId !== teacherId && req.user.role !== 'admin') {
+    throw new ValidationError("Access denied");
+  }
+
+  // Import Student model dynamically
+  const Student = (await import("../models/student.model.js")).default;
+
+  // Find students linked to this teacher
+  const students = await Student.find({ teacherId })
+    .select('firstName lastName phone createdAt')
+    .sort({ createdAt: -1 });
+
+  // Map students with their _id (first 5 chars will be used as display ID)
+  const studentsWithIds = students.map((student) => {
+    return {
+      firstName: student.firstName,
+      lastName: student.lastName,
+      fullName: `${student.firstName} ${student.lastName}`,
+      phone: student.phone,
+      registrationDate: student.createdAt,
+      studentId: student._id,
+      _id: student._id
+    };
+  });
+
+  logger.info("✅ Students retrieved successfully", {
+    teacherId,
+    studentCount: studentsWithIds.length
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Students retrieved successfully",
+    data: {
+      teacher: {
+        id: teacher._id,
+        name: `${teacher.firstName} ${teacher.lastName}`
+      },
+      students: studentsWithIds,
+      totalStudents: studentsWithIds.length
+    }
+  });
+});
+
+export { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage, getTeacherStudents };

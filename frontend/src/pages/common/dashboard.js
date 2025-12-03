@@ -4380,7 +4380,7 @@ async function generateLandingPageHTML(teacher) {
                     <!-- Auth Buttons -->
                     <div class="auth-buttons">
                         <a href="#" class="auth-button secondary" style="border-color: ${themeColor}; color: ${themeColor};" onclick="openLoginModal(event)" data-i18n="login">Kirish</a>
-                        <a href="#" class="auth-button" style="background: ${themeColor};" onclick="openRegistrationModal(event)" data-i18n="register">Ro'yxatdan o'tish</a>
+                        <a href="#" class="auth-button" style="background: ${themeColor};" onclick="openRegistrationModal(event)" data-i18n="register" data-teacher-id="${teacher._id}">Ro'yxatdan o'tish</a>
                     </div>
                 </div>
             </div>
@@ -4584,8 +4584,14 @@ async function generateLandingPageHTML(teacher) {
 
         function openRegistrationModal(e) {
             e.preventDefault();
+            
+            // Get teacherId from button's data attribute
+            const teacherId = e.target.getAttribute('data-teacher-id');
+            
             currentStep = 1;
-            registrationData = { firstName: '', lastName: '', phone: '', verificationCode: '' };
+            registrationData = { firstName: '', lastName: '', phone: '', verificationCode: '', teacherId: teacherId };
+            console.log('🎯 Opening registration modal with teacherId:', teacherId);
+            console.log('🎯 Registration data:', registrationData);
             
             const modal = document.createElement('div');
             modal.id = 'registrationModal';
@@ -5157,12 +5163,20 @@ async function generateLandingPageHTML(teacher) {
                 
                 const data = await response.json();
                 
+                console.log('🔐 Login response:', data);
+                console.log('👤 User data:', data.user);
+                
                 if (data.success) {
-                    sessionStorage.setItem('landingUser', JSON.stringify({
+                    const userDataToSave = {
+                        _id: data.user.id || data.user._id,
                         phone: data.user.phone,
                         firstName: data.user.firstName,
                         lastName: data.user.lastName
-                    }));
+                    };
+                    
+                    console.log('💾 Saving to sessionStorage:', userDataToSave);
+                    
+                    sessionStorage.setItem('landingUser', JSON.stringify(userDataToSave));
                     
                     showToast('success', 'Muvaffaqiyatli kirdingiz!');
                     closeLoginModal();
@@ -5968,7 +5982,8 @@ async function generateLandingPageHTML(teacher) {
                     body: JSON.stringify({
                         phone: '+998' + registrationData.phone,
                         firstName: registrationData.firstName,
-                        lastName: registrationData.lastName
+                        lastName: registrationData.lastName,
+                        teacherId: registrationData.teacherId
                     })
                 });
                 
@@ -6060,6 +6075,13 @@ async function generateLandingPageHTML(teacher) {
                 const apiBaseUrl = window.location.hostname === 'localhost' 
                     ? 'http://localhost:8001/api' 
                     : 'https://darslinker-backend.onrender.com/api';
+                console.log('🔍 Registration data being sent:', {
+                    phone: '+998' + registrationData.phone,
+                    firstName: registrationData.firstName,
+                    lastName: registrationData.lastName,
+                    teacherId: registrationData.teacherId
+                });
+                
                 const response = await fetch(\`\${apiBaseUrl}/landing-auth/verify-and-register\`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -6068,20 +6090,29 @@ async function generateLandingPageHTML(teacher) {
                         firstName: registrationData.firstName,
                         lastName: registrationData.lastName,
                         password: registrationData.password,
-                        verificationCode: code
+                        verificationCode: code,
+                        teacherId: registrationData.teacherId
                     })
                 });
                 
                 const data = await response.json();
                 
+                console.log('📝 Registration response:', data);
+                console.log('👤 User data:', data.user);
+                
                 if (data.success) {
                     // DON'T save to localStorage - landing registration should not affect main dashboard
                     // Save to temporary sessionStorage only for coming soon page
-                    sessionStorage.setItem('landingUser', JSON.stringify({
+                    const userDataToSave = {
+                        _id: data.user._id,
                         phone: data.user.phone,
                         firstName: data.user.firstName,
                         lastName: data.user.lastName
-                    }));
+                    };
+                    
+                    console.log('💾 Saving to sessionStorage:', userDataToSave);
+                    
+                    sessionStorage.setItem('landingUser', JSON.stringify(userDataToSave));
                     
                     showToast('success', 'Muvaffaqiyatli ro\\'yxatdan o\\'tdingiz!');
                     closeRegistrationModal();
@@ -9529,6 +9560,9 @@ window.openStudentsAnalytics = function() {
 
 // Helper function to get students analytics HTML
 function getStudentsAnalyticsHTML() {
+  // Load students data immediately after rendering
+  setTimeout(() => loadStudentsAnalytics(), 100);
+
   return `
     <div class="students-analytics-page">
       <style>
@@ -9641,38 +9675,53 @@ function getStudentsAnalyticsHTML() {
           color: rgba(156, 163, 175, 1);
           font-size: 12px;
         }
-        .student-progress {
+        .student-meta {
           display: flex;
           align-items: center;
           gap: 16px;
+          text-align: right;
         }
-        .progress-bar-container {
-          width: 200px;
-        }
-        .progress-label {
-          color: rgba(156, 163, 175, 1);
-          font-size: 12px;
-          margin-bottom: 4px;
-        }
-        .progress-bar {
-          width: 100%;
-          height: 8px;
-          background: rgba(58, 56, 56, 0.5);
-          border-radius: 4px;
-          overflow: hidden;
-        }
-        .progress-fill {
-          height: 100%;
-          background: linear-gradient(90deg, #10b981, #059669);
-          border-radius: 4px;
-          transition: width 0.5s ease;
-        }
-        .progress-percent {
-          color: #10b981;
+        .student-id {
+          color: var(--primary-color);
           font-size: 14px;
           font-weight: 600;
           min-width: 60px;
-          text-align: right;
+        }
+        .registration-date {
+          color: rgba(156, 163, 175, 1);
+          font-size: 12px;
+          min-width: 100px;
+        }
+        .loading-spinner {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 40px;
+          color: #9CA3AF;
+        }
+        .spinner {
+          width: 40px;
+          height: 40px;
+          border: 3px solid rgba(126, 162, 212, 0.2);
+          border-top: 3px solid #7ea2d4;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin-right: 16px;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .empty-state {
+          text-align: center;
+          padding: 60px 20px;
+          color: #9CA3AF;
+        }
+        .empty-state svg {
+          width: 80px;
+          height: 80px;
+          margin-bottom: 20px;
+          opacity: 0.5;
         }
         .show-all-students-btn {
           background: transparent;
@@ -9697,107 +9746,220 @@ function getStudentsAnalyticsHTML() {
       <div class="analytics-stats-grid">
         <div class="analytics-stat-card">
           <div class="analytics-stat-title">Total Students</div>
-          <div class="analytics-stat-value">9</div>
+          <div class="analytics-stat-value" id="total-students">-</div>
         </div>
         <div class="analytics-stat-card">
           <div class="analytics-stat-title">Active Students</div>
-          <div class="analytics-stat-value">4</div>
-        </div>
-        <div class="analytics-stat-card">
-          <div class="analytics-stat-title">New This Week</div>
-          <div class="analytics-stat-value">5</div>
+          <div class="analytics-stat-value" id="active-students">-</div>
         </div>
       </div>
 
       <!-- Tabs -->
       <div class="students-tabs">
-        <button class="student-tab active" onclick="switchStudentTab(this, 'all')">All students</button>
-        <button class="student-tab" onclick="switchStudentTab(this, 'active')">Most active students</button>
+        <button class="student-tab active" onclick="switchStudentTab(this, 'all')">All Students</button>
+        <button class="student-tab" onclick="switchStudentTab(this, 'recent')">Recent</button>
       </div>
 
       <!-- Students List -->
       <div class="students-list">
-        <div class="student-item">
-          <div class="student-info">
-            <div class="student-avatar">JS</div>
-            <div class="student-details">
-              <h4>John Smith</h4>
-              <p>5 courses • 45 hours</p>
-            </div>
-          </div>
-          <div class="student-progress">
-            <div class="progress-bar-container">
-              <div class="progress-label">Progress</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 85%"></div>
-              </div>
-            </div>
-            <span class="progress-percent">85% Progress</span>
-          </div>
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+          <span>Loading students...</span>
         </div>
-
-        <div class="student-item">
-          <div class="student-info">
-            <div class="student-avatar">AK</div>
-            <div class="student-details">
-              <h4>Alice Kim</h4>
-              <p>3 courses • 32 hours</p>
-            </div>
-          </div>
-          <div class="student-progress">
-            <div class="progress-bar-container">
-              <div class="progress-label">Progress</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 62%"></div>
-              </div>
-            </div>
-            <span class="progress-percent">62% Progress</span>
-          </div>
-        </div>
-
-        <div class="student-item">
-          <div class="student-info">
-            <div class="student-avatar">TM</div>
-            <div class="student-details">
-              <h4>Tom Martinez</h4>
-              <p>7 courses • 58 hours</p>
-            </div>
-          </div>
-          <div class="student-progress">
-            <div class="progress-bar-container">
-              <div class="progress-label">Progress</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 94%"></div>
-              </div>
-            </div>
-            <span class="progress-percent">94% Progress</span>
-          </div>
-        </div>
-
-        <div class="student-item">
-          <div class="student-info">
-            <div class="student-avatar">RL</div>
-            <div class="student-details">
-              <h4>Rachel Lee</h4>
-              <p>4 courses • 38 hours</p>
-            </div>
-          </div>
-          <div class="student-progress">
-            <div class="progress-bar-container">
-              <div class="progress-label">Progress</div>
-              <div class="progress-bar">
-                <div class="progress-fill" style="width: 47%"></div>
-              </div>
-            </div>
-            <span class="progress-percent">47% Progress</span>
-          </div>
-        </div>
-
-        <button class="show-all-students-btn" onclick="loadMoreStudents()">Show more</button>
       </div>
     </div>
   `;
 }
+
+// Load students analytics data
+window.loadStudentsAnalytics = async function() {
+  try {
+    const user = store.getState().user;
+    if (!user || !user._id) {
+      console.error('No user found in store');
+      return;
+    }
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+      console.error('No access token found');
+      return;
+    }
+
+    console.log('📊 Loading students analytics for teacher:', user._id);
+
+    // Fetch students data from API
+    const response = await fetch(`${config.api.baseUrl}/teachers/${user._id}/students`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const data = await response.json();
+    console.log('📊 Students analytics response:', data);
+
+    if (data.success) {
+      updateStudentsAnalytics(data.data);
+    } else {
+      showStudentsError(data.message || 'Failed to load students');
+    }
+  } catch (error) {
+    console.error('❌ Error loading students analytics:', error);
+    showStudentsError('Failed to load students data');
+  }
+};
+
+// Update students analytics UI
+function updateStudentsAnalytics(data) {
+  const students = data.students || [];
+
+  // Update statistics
+  updateStudentsStats(students);
+
+  // Update students list
+  updateStudentsList(students);
+}
+
+// Update statistics cards
+function updateStudentsStats(students) {
+  const totalElement = document.getElementById('total-students');
+  const newElement = document.getElementById('new-students');
+  const monthElement = document.getElementById('month-students');
+
+  if (totalElement) totalElement.textContent = students.length;
+
+  // Calculate students from this week (last 7 days)
+  const oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  // Calculate active students (status === 'active')
+  const activeStudents = students.filter(student => student.status === 'active').length;
+
+  const activeElement = document.getElementById('active-students');
+  if (activeElement) activeElement.textContent = activeStudents;
+}
+
+// Update students list
+function updateStudentsList(students) {
+  const studentsList = document.querySelector('.students-list');
+  if (!studentsList) return;
+
+  // Store students data globally for tab switching
+  window.allStudentsData = students;
+
+  if (students.length === 0) {
+    studentsList.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v14l3-3 3 3 3-3 3 3Z"/>
+          <path d="M8 7h8"/>
+          <path d="M8 11h8"/>
+          <path d="M8 15h5"/>
+        </svg>
+        <h3>No students yet</h3>
+        <p>Students who register through your landing page will appear here</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Render students
+  renderStudentsList(students);
+}
+
+// Render students list based on current tab
+function renderStudentsList(students) {
+  const studentsList = document.querySelector('.students-list');
+  if (!studentsList) return;
+
+  const studentsHTML = students.map(student => {
+    // Create initials from first name and last name
+    const initials = `${student.firstName.charAt(0)}${student.lastName.charAt(0)}`.toUpperCase();
+
+    // Format registration date
+    const regDate = new Date(student.registrationDate);
+    const formattedDate = regDate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+
+    // Format phone number
+    const formattedPhone = student.phone || 'N/A';
+
+    return `
+      <div class="student-item">
+        <div class="student-info">
+          <div class="student-avatar" style="background: linear-gradient(135deg, #7EA2D4, #5A85C7);">${initials}</div>
+          <div class="student-details">
+            <h4>${student.fullName}</h4>
+            <p>${formattedPhone}</p>
+          </div>
+        </div>
+        <div class="student-meta">
+          <div class="student-id">ID: ${student._id ? student._id.slice(-5) : (student.studentId ? student.studentId.slice(-5) : 'N/A')}</div>
+          <div class="registration-date">${formattedDate}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  studentsList.innerHTML = studentsHTML;
+}
+
+// Show error state
+function showStudentsError(message) {
+  const studentsList = document.querySelector('.students-list');
+  if (!studentsList) return;
+
+  studentsList.innerHTML = `
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <h3>Error loading students</h3>
+      <p>${message}</p>
+    </div>
+  `;
+
+  // Reset stats to 0
+  const totalElement = document.getElementById('total-students');
+  const newElement = document.getElementById('new-students');
+  const monthElement = document.getElementById('month-students');
+
+  if (totalElement) totalElement.textContent = '0';
+  if (newElement) newElement.textContent = '0';
+  if (monthElement) monthElement.textContent = '0';
+}
+
+// Update switch student tab function to work with real data
+window.switchStudentTab = function(button, type) {
+  // Remove active from all tabs
+  document.querySelectorAll('.student-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+
+  // Add active to clicked tab
+  button.classList.add('active');
+
+  const students = window.allStudentsData || [];
+
+  if (type === 'recent') {
+    // Show recent students (last 30 days)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentStudents = students.filter(student =>
+      new Date(student.registrationDate) >= thirtyDaysAgo
+    ).sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate));
+    renderStudentsList(recentStudents);
+  } else {
+    // Show all students
+    renderStudentsList(students);
+  }
+};
 
 // Switch student tab
 window.switchStudentTab = function(button, type) {
