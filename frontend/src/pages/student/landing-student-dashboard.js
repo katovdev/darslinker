@@ -1000,7 +1000,7 @@ async function handleCourseFilter(filter) {
     const enrolledCourses = await getEnrolledCourses(allCoursesData);
     
     if (enrolledCourses.length > 0) {
-      updateCoursesGrid(enrolledCourses);
+      await updateCoursesGrid(enrolledCourses, true); // true = isEnrolledView
     } else {
       coursesGrid.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
@@ -1012,7 +1012,7 @@ async function handleCourseFilter(filter) {
   } else {
     // Show all courses
     if (allCoursesData.length > 0) {
-      updateCoursesGrid(allCoursesData);
+      await updateCoursesGrid(allCoursesData, false); // false = not enrolled view
     } else {
       coursesGrid.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
@@ -1070,7 +1070,7 @@ async function loadTeacherCourses() {
 }
 
 // Update courses grid with real data
-function updateCoursesGrid(courses) {
+async function updateCoursesGrid(courses, isEnrolledView = false) {
   const coursesGrid = document.querySelector('.landing-courses-grid');
   
   if (!coursesGrid) {
@@ -1089,11 +1089,48 @@ function updateCoursesGrid(courses) {
   
   console.log('📝 Rendering courses:', courses);
   
+  // Get student ID
+  let studentId = null;
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user._id) {
+    studentId = user._id;
+  } else {
+    const landingUser = sessionStorage.getItem('landingUser');
+    if (landingUser) {
+      try {
+        const userData = JSON.parse(landingUser);
+        if (userData._id) {
+          studentId = userData._id;
+        }
+      } catch (error) {
+        console.error('Error parsing landing user:', error);
+      }
+    }
+  }
+  
+  // Check enrollment for each course
+  const coursesWithEnrollment = await Promise.all(courses.map(async (course) => {
+    let isEnrolled = false;
+    if (studentId) {
+      try {
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+        const response = await fetch(`${apiBaseUrl}/students/${studentId}/check-enrollment/${course._id}`);
+        const result = await response.json();
+        if (result.success) {
+          isEnrolled = result.isEnrolled;
+        }
+      } catch (error) {
+        console.error('Error checking enrollment:', error);
+      }
+    }
+    return { ...course, isEnrolled };
+  }));
+  
   // Generate course cards from real data
-  coursesGrid.innerHTML = courses.map(course => {
-    // Progress is 0 for all courses (user just registered)
+  coursesGrid.innerHTML = coursesWithEnrollment.map(course => {
+    // Progress is 0 for now (will be calculated from backend later)
     const progress = 0;
-    const hasStarted = false; // User hasn't started any course yet
+    const hasStarted = course.isEnrolled; // Show progress bar if enrolled
     
     // Get teacher name
     const teacherName = course.teacher 
@@ -1135,7 +1172,8 @@ function updateCoursesGrid(courses) {
           </div>
         </div>
         ` : ''}
-        <div class="landing-course-info" style="margin-top: ${hasStarted ? '0' : '16px'};">
+        ${!hasStarted ? `<div style="height: 60px;"></div>` : ''}
+        <div class="landing-course-info">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
             <h3 class="landing-course-title" style="margin-bottom: 0; flex: 1;">${course.title || 'Untitled Course'}</h3>
             <span class="landing-course-price">${course.courseType === 'free' ? 'Bepul' : `${(course.price || 0).toLocaleString('uz-UZ')} so'm`}</span>
@@ -1143,7 +1181,7 @@ function updateCoursesGrid(courses) {
           <p class="landing-course-instructor">${teacherName}</p>
           <p class="landing-course-meta">${course.duration || 'Self-paced'} • ${course.level || 'All levels'} • ${course.totalStudents || 0} o'quvchi</p>
         </div>
-        <button class="landing-continue-btn" onclick="openCourse('${course._id}', '${course.courseType || 'free'}')">Start learning</button>
+        <button class="landing-continue-btn" onclick="openCourse('${course._id}', '${course.courseType || 'free'}')">${course.isEnrolled ? 'Continue learning' : 'Start learning'}</button>
       </div>
     `;
   }).join('');
