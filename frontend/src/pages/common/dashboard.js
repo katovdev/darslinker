@@ -4473,6 +4473,41 @@ async function generateLandingPageHTML(teacher) {
         </div>
     </section>
 
+    ${teacher.courses && teacher.courses.length > 0 ? `
+    <!-- Courses Section -->
+    <section class="courses" id="courses">
+        <div class="container">
+            <h2 data-i18n="availableCourses">Mavjud Kurslar</h2>
+            <div class="courses-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
+                ${teacher.courses.map(course => `
+                    <div class="course-card" onclick="window.location.href='/course/${course._id}'" style="cursor: pointer;">
+                        ${course.thumbnail
+                            ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-image">`
+                            : `<div style="height: 250px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>`
+                        }
+                        <div class="course-content">
+                            <h3 class="course-title">${course.title}</h3>
+                            <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; margin: 10px 0; line-height: 1.5;">${course.description ? (course.description.length > 100 ? course.description.substring(0, 100) + '...' : course.description) : ''}</p>
+                            <div class="course-meta">
+                                <div class="course-price"><span data-i18n="${course.courseType === 'free' ? 'free' : 'paid'}">${course.courseType === 'free' ? 'Bepul' : 'Pullik'}</span>${course.courseType !== 'free' ? ': ' + (course.discountPrice ? course.discountPrice.toLocaleString() + ' so\'m' : (course.price || 0).toLocaleString() + ' so\'m') : ''}</div>
+                            </div>
+                            <p style="color: rgba(255, 255, 255, 0.5); font-size: 13px; margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                                <span>${course.totalStudents || 0} <span data-i18n="students">o'quvchi</span></span>
+                            </p>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    </section>
+    ` : ''}
+
     ${teacher.certificates && teacher.certificates.length > 0 ? `
     <!-- Certificates Section -->
     <section class="certificates" id="certificates">
@@ -4538,41 +4573,6 @@ async function generateLandingPageHTML(teacher) {
         </div>
     </section>
     `}
-
-    ${teacher.courses && teacher.courses.length > 0 ? `
-    <!-- Courses Section -->
-    <section class="courses" id="courses">
-        <div class="container">
-            <h2 data-i18n="availableCourses">Mavjud Kurslar</h2>
-            <div class="courses-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px;">
-                ${teacher.courses.map(course => `
-                    <div class="course-card" onclick="window.location.href='/course/${course._id}'" style="cursor: pointer;">
-                        ${course.thumbnail 
-                            ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-image">`
-                            : `<div style="height: 250px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>`
-                        }
-                        <div class="course-content">
-                            <h3 class="course-title">${course.title}</h3>
-                            <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; margin: 10px 0; line-height: 1.5;">${course.description ? (course.description.length > 100 ? course.description.substring(0, 100) + '...' : course.description) : ''}</p>
-                            <div class="course-meta">
-                                <div class="course-price"><span data-i18n="${course.courseType === 'free' ? 'free' : 'paid'}">${course.courseType === 'free' ? 'Bepul' : 'Pullik'}</span>${course.courseType !== 'free' ? ': ' + (course.discountPrice ? course.discountPrice.toLocaleString() + ' so\'m' : (course.price || 0).toLocaleString() + ' so\'m') : ''}</div>
-                            </div>
-                            <p style="color: rgba(255, 255, 255, 0.5); font-size: 13px; margin-top: 8px; display: flex; align-items: center; gap: 6px;">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="9" cy="7" r="4"></circle>
-                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                                </svg>
-                                <span>${course.totalStudents || 0} <span data-i18n="students">o'quvchi</span></span>
-                            </p>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </div>
-    </section>
-    ` : ''}
 
     <!-- Footer -->
     <footer class="footer">
