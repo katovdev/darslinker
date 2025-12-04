@@ -8,6 +8,8 @@ import {
   saveQuizResult,
   enrollInCourse,
   checkEnrollment,
+  completeLesson,
+  getCourseProgress,
 } from "../controllers/student.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validation.middleware.js";
@@ -571,5 +573,23 @@ studentRouter.post("/:id/enroll/:courseId", enrollInCourse);
  *         description: Enrollment status retrieved
  */
 studentRouter.get("/:id/check-enrollment/:courseId", checkEnrollment);
+
+/**
+ * @swagger
+ * /students/{id}/complete-lesson:
+ *   post:
+ *     summary: Mark lesson as complete
+ *     tags: [Students]
+ */
+studentRouter.post("/:id/complete-lesson", completeLesson);
+
+/**
+ * @swagger
+ * /students/{id}/progress/{courseId}:
+ *   get:
+ *     summary: Get course progress
+ *     tags: [Students]
+ */
+studentRouter.get("/:id/progress/:courseId", getCourseProgress);
 
 export default studentRouter;

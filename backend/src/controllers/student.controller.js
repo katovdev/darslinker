@@ -406,4 +406,111 @@ const checkEnrollment = catchAsync(async (req, res) => {
   });
 });
 
-export { createStudentProfile, findAll, findOne, update, remove, saveQuizResult, enrollInCourse, checkEnrollment };
+/**
+ * Mark lesson as complete and update progress
+ * @route POST /students/:id/complete-lesson
+ * @access Public
+ */
+const completeLesson = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { courseId, lessonId } = req.body;
+
+  const student = await Student.findById(id);
+  if (!student) {
+    throw new ValidationError("Student not found");
+  }
+
+  // Import Course model
+  const Course = (await import('../models/course.model.js')).default;
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ValidationError("Course not found");
+  }
+
+  // Find or create course progress
+  let courseProgress = student.courseProgress.find(cp => cp.courseId.toString() === courseId);
+  
+  if (!courseProgress) {
+    courseProgress = {
+      courseId,
+      completedLessons: [],
+      lastAccessedLesson: lessonId,
+      progressPercentage: 0,
+      startedAt: new Date(),
+      lastAccessedAt: new Date()
+    };
+    student.courseProgress.push(courseProgress);
+  }
+
+  // Add lesson to completed if not already there
+  if (!courseProgress.completedLessons.includes(lessonId)) {
+    courseProgress.completedLessons.push(lessonId);
+  }
+
+  // Update last accessed
+  courseProgress.lastAccessedLesson = lessonId;
+  courseProgress.lastAccessedAt = new Date();
+
+  // Calculate progress percentage
+  let totalLessons = 0;
+  course.modules.forEach(module => {
+    if (module.lessons) {
+      totalLessons += module.lessons.length;
+    }
+  });
+
+  courseProgress.progressPercentage = totalLessons > 0 
+    ? Math.round((courseProgress.completedLessons.length / totalLessons) * 100)
+    : 0;
+
+  await student.save();
+
+  logger.info("Lesson completed", {
+    studentId: id,
+    courseId,
+    lessonId,
+    progress: courseProgress.progressPercentage
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Lesson marked as complete",
+    progress: courseProgress.progressPercentage,
+    completedLessons: courseProgress.completedLessons.length,
+    totalLessons
+  });
+});
+
+/**
+ * Get course progress for student
+ * @route GET /students/:id/progress/:courseId
+ * @access Public
+ */
+const getCourseProgress = catchAsync(async (req, res) => {
+  const { id, courseId } = req.params;
+
+  const student = await Student.findById(id);
+  if (!student) {
+    throw new ValidationError("Student not found");
+  }
+
+  const courseProgress = student.courseProgress.find(cp => cp.courseId.toString() === courseId);
+
+  if (!courseProgress) {
+    return res.status(200).json({
+      success: true,
+      progress: {
+        progressPercentage: 0,
+        completedLessons: [],
+        lastAccessedLesson: null
+      }
+    });
+  }
+
+  res.status(200).json({
+    success: true,
+    progress: courseProgress
+  });
+});
+
+export { createStudentProfile, findAll, findOne, update, remove, saveQuizResult, enrollInCourse, checkEnrollment, completeLesson, getCourseProgress };

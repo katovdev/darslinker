@@ -1108,28 +1108,41 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
     }
   }
   
-  // Check enrollment for each course
+  // Check enrollment and progress for each course
   const coursesWithEnrollment = await Promise.all(courses.map(async (course) => {
     let isEnrolled = false;
+    let progressPercentage = 0;
+    
     if (studentId) {
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-        const response = await fetch(`${apiBaseUrl}/students/${studentId}/check-enrollment/${course._id}`);
-        const result = await response.json();
-        if (result.success) {
-          isEnrolled = result.isEnrolled;
+        
+        // Check enrollment
+        const enrollResponse = await fetch(`${apiBaseUrl}/students/${studentId}/check-enrollment/${course._id}`);
+        const enrollResult = await enrollResponse.json();
+        if (enrollResult.success) {
+          isEnrolled = enrollResult.isEnrolled;
+        }
+        
+        // Get progress if enrolled
+        if (isEnrolled) {
+          const progressResponse = await fetch(`${apiBaseUrl}/students/${studentId}/progress/${course._id}`);
+          const progressResult = await progressResponse.json();
+          if (progressResult.success && progressResult.progress) {
+            progressPercentage = progressResult.progress.progressPercentage || 0;
+          }
         }
       } catch (error) {
-        console.error('Error checking enrollment:', error);
+        console.error('Error checking enrollment/progress:', error);
       }
     }
-    return { ...course, isEnrolled };
+    return { ...course, isEnrolled, progressPercentage };
   }));
   
   // Generate course cards from real data
   coursesGrid.innerHTML = coursesWithEnrollment.map(course => {
-    // Progress is 0 for now (will be calculated from backend later)
-    const progress = 0;
+    // Use real progress from backend
+    const progress = course.progressPercentage || 0;
     const hasStarted = course.isEnrolled; // Show progress bar if enrolled
     
     // Get teacher name

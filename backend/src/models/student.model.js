@@ -58,6 +58,16 @@ const studentSchema = new mongoose.Schema(
         updatedAt: Date,
       },
     ],
+    courseProgress: [
+      {
+        courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course", required: true },
+        completedLessons: [{ type: mongoose.Schema.Types.ObjectId }],
+        lastAccessedLesson: { type: mongoose.Schema.Types.ObjectId },
+        progressPercentage: { type: Number, default: 0 },
+        startedAt: { type: Date, default: Date.now },
+        lastAccessedAt: { type: Date, default: Date.now }
+      }
+    ],
     testResults: [
       {
         quizId: { type: mongoose.Schema.Types.ObjectId, ref: "Quiz" },

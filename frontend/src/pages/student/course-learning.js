@@ -805,7 +805,7 @@ function getLessonIcon(type) {
 }
 
 // Attach event listeners
-function attachEventListeners(course) {
+function attachEventListeners(course, currentLesson = null) {
   // Meeting button
   const meetingBtn = document.querySelector('.meeting-btn');
   if (meetingBtn) {
@@ -887,6 +887,101 @@ function attachEventListeners(course) {
     // Reload the course learning page
     initCourseLearningPage(course._id);
   };
+  
+  // Mark lesson as complete (silent - no toast)
+  window.markLessonComplete = async function(courseId, lessonId) {
+    // Get student ID
+    let studentId = null;
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user._id) {
+      studentId = user._id;
+    } else {
+      const landingUser = sessionStorage.getItem('landingUser');
+      if (landingUser) {
+        try {
+          const userData = JSON.parse(landingUser);
+          if (userData._id) {
+            studentId = userData._id;
+          }
+        } catch (error) {
+          console.error('Error parsing landing user:', error);
+        }
+      }
+    }
+
+    if (!studentId) {
+      console.log('No student ID - skipping progress tracking');
+      return;
+    }
+
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const response = await fetch(`${apiBaseUrl}/students/${studentId}/complete-lesson`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ courseId, lessonId })
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log(`✅ Lesson completed! Progress: ${result.progress}%`);
+      }
+    } catch (error) {
+      console.error('Error marking lesson complete:', error);
+    }
+  };
+  
+  // Go to next lesson (and mark current as complete)
+  window.goToNextLesson = async function(courseId, lessonId) {
+    // First, mark current lesson as complete
+    await window.markLessonComplete(courseId, lessonId);
+    
+    // Find current lesson in course modules
+    let currentModuleIndex = -1;
+    let currentLessonIndex = -1;
+    
+    course.modules.forEach((module, mIdx) => {
+      module.lessons.forEach((lesson, lIdx) => {
+        if (lesson._id === lessonId) {
+          currentModuleIndex = mIdx;
+          currentLessonIndex = lIdx;
+        }
+      });
+    });
+    
+    if (currentModuleIndex === -1) {
+      showToast('Cannot find next lesson');
+      return;
+    }
+    
+    // Try next lesson in same module
+    const currentModule = course.modules[currentModuleIndex];
+    if (currentLessonIndex < currentModule.lessons.length - 1) {
+      const nextLesson = currentModule.lessons[currentLessonIndex + 1];
+      window.openLesson(currentModule._id, nextLesson._id);
+      return;
+    }
+    
+    // Try first lesson of next module
+    if (currentModuleIndex < course.modules.length - 1) {
+      const nextModule = course.modules[currentModuleIndex + 1];
+      if (nextModule.lessons && nextModule.lessons.length > 0) {
+        window.openLesson(nextModule._id, nextModule.lessons[0]._id);
+        return;
+      }
+    }
+    
+    // No more lessons
+    showToast('🎉 You completed all lessons!');
+  };
+  
+  // Store current lesson globally for next lesson function
+  if (currentLesson) {
+    window.currentLesson = currentLesson;
+  }
 }
 
 // Show toast notification
@@ -1138,9 +1233,9 @@ function loadLessonPlayer(course, lesson) {
         overflow-y: auto;
         background: #1a1a1a;
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: center;
-        padding: 60px 80px;
+        padding: 40px 60px;
         position: relative;
       }
       
@@ -1334,13 +1429,25 @@ function loadLessonPlayer(course, lesson) {
                  </div>`
             }
           </div>
+          
+          <!-- Lesson Info and Actions -->
+          <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; background: rgba(58, 56, 56, 0.3); border-radius: 12px; border: 1px solid rgba(126, 162, 212, 0.2);">
+            <div style="flex: 1;">
+              <h2 style="color: #ffffff; font-size: 20px; margin-bottom: 4px;">${lesson.title}</h2>
+              <p style="color: #9CA3AF; font-size: 13px; margin: 0;">${lesson.duration || ''}</p>
+            </div>
+            
+            <button id="nextLessonBtn" onclick="goToNextLesson('${course._id}', '${lesson._id}')" style="padding: 12px 24px; background: #7ea2d4; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-left: 20px;">
+              Next Lesson →
+            </button>
+          </div>
         </div>
       </div>
     </div>
   `;
   
   // Re-attach event listeners for header
-  attachEventListeners(course);
+  attachEventListeners(course, lesson);
   
   // Auto-expand module containing current lesson
   if (course.modules) {
