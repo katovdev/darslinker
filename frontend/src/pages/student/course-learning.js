@@ -1221,20 +1221,21 @@ function loadLessonPlayer(course, lesson) {
       /* Video Watermark */
       .video-watermark {
         position: absolute;
-        color: rgba(156, 163, 175, 0.5);
-        font-size: 18px;
-        font-weight: 600;
+        color: rgba(220, 220, 220, 0.9);
+        font-size: 16px;
+        font-weight: 400;
         font-family: monospace;
         pointer-events: none;
         z-index: 999;
-        transition: opacity 0.8s ease, left 0.8s ease, top 0.8s ease;
         user-select: none;
         -webkit-user-select: none;
-        opacity: 1;
+        opacity: 0.9;
+        display: block;
       }
       
-      .video-watermark.fade-out {
-        opacity: 0;
+      .video-watermark.hidden {
+        opacity: 0 !important;
+        display: none;
       }
       
       /* Video Protection Overlay */
@@ -1500,11 +1501,11 @@ function initVideoProtection() {
   document.addEventListener('keydown', handleKeyDown);
   document.addEventListener('keyup', handleKeyUp);
   
-  // 3. Random watermark position animation with fade effect
+  // 3. Random watermark position animation - disappear completely, then appear at new location
   function updateWatermarkPosition() {
     const wrapper = videoWrapper.getBoundingClientRect();
-    const watermarkWidth = 120;
-    const watermarkHeight = 30;
+    const watermarkWidth = 100;
+    const watermarkHeight = 25;
     
     // Random position (with padding from edges)
     const padding = 40;
@@ -1514,15 +1515,19 @@ function initVideoProtection() {
     const randomX = Math.random() * maxX + padding;
     const randomY = Math.random() * maxY + padding;
     
-    // Fade out
-    watermark.classList.add('fade-out');
+    // Step 1: Hide completely (instant)
+    watermark.style.transition = 'none';
+    watermark.style.display = 'none';
     
-    // Wait for fade out, then change position and fade in
+    // Step 2: Wait, then change position while hidden
     setTimeout(() => {
       watermark.style.left = `${randomX}px`;
       watermark.style.top = `${randomY}px`;
-      watermark.classList.remove('fade-out');
-    }, 800); // Match CSS transition duration
+      
+      // Step 3: Show at new position (instant) - only show ID, no position info
+      watermark.textContent = studentId; // Only student ID, no coordinates
+      watermark.style.display = 'block';
+    }, 500); // Hidden for 500ms
   }
   
   // Initial position (no fade on first load)
@@ -1536,6 +1541,7 @@ function initVideoProtection() {
   const initialY = Math.random() * maxY + padding;
   watermark.style.left = `${initialX}px`;
   watermark.style.top = `${initialY}px`;
+  watermark.textContent = studentId; // Only show student ID
   
   // Update position every 10 seconds (8s visible + 2s for fade animation)
   const positionInterval = setInterval(updateWatermarkPosition, 10000);
