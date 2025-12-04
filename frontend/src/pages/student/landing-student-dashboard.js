@@ -882,14 +882,14 @@ function attachEventListeners() {
 
   // Course filter tabs
   document.querySelectorAll('.landing-filter-tab').forEach(tab => {
-    tab.addEventListener('click', (e) => {
+    tab.addEventListener('click', async (e) => {
       // Remove active class from all tabs
       document.querySelectorAll('.landing-filter-tab').forEach(t => t.classList.remove('active'));
       // Add active class to clicked tab
       tab.classList.add('active');
       
       const filter = tab.dataset.filter;
-      handleCourseFilter(filter);
+      await handleCourseFilter(filter);
     });
   });
 }
@@ -945,19 +945,70 @@ function handleNavigation(page) {
 // Handle course filter
 let allCoursesData = []; // Store all courses globally
 
-function handleCourseFilter(filter) {
+// Get enrolled courses for current student
+async function getEnrolledCourses(courses) {
+  // Get student ID
+  let studentId = null;
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user._id) {
+    studentId = user._id;
+  } else {
+    const landingUser = sessionStorage.getItem('landingUser');
+    if (landingUser) {
+      try {
+        const userData = JSON.parse(landingUser);
+        if (userData._id) {
+          studentId = userData._id;
+        }
+      } catch (error) {
+        console.error('Error parsing landing user:', error);
+      }
+    }
+  }
+
+  if (!studentId) {
+    return [];
+  }
+
+  // Filter courses where student is enrolled
+  const enrolledCourses = [];
+  
+  for (const course of courses) {
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const response = await fetch(`${apiBaseUrl}/students/${studentId}/check-enrollment/${course._id}`);
+      const result = await response.json();
+      
+      if (result.success && result.isEnrolled) {
+        enrolledCourses.push(course);
+      }
+    } catch (error) {
+      console.error('Error checking enrollment:', error);
+    }
+  }
+  
+  return enrolledCourses;
+}
+
+async function handleCourseFilter(filter) {
   console.log('Filter changed to:', filter);
   
   const coursesGrid = document.querySelector('.landing-courses-grid');
   
   if (filter === 'my-courses') {
-    // Show empty state for My Courses (no enrolled courses yet)
-    coursesGrid.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-        <p style="color: #9CA3AF; font-size: 16px; margin-bottom: 8px;">No enrolled courses yet</p>
-        <p style="color: #6B7280; font-size: 14px;">Browse all courses and start learning!</p>
-      </div>
-    `;
+    // Filter enrolled courses
+    const enrolledCourses = await getEnrolledCourses(allCoursesData);
+    
+    if (enrolledCourses.length > 0) {
+      updateCoursesGrid(enrolledCourses);
+    } else {
+      coursesGrid.innerHTML = `
+        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+          <p style="color: #9CA3AF; font-size: 16px; margin-bottom: 8px;">No enrolled courses yet</p>
+          <p style="color: #6B7280; font-size: 14px;">Browse all courses and start learning!</p>
+        </div>
+      `;
+    }
   } else {
     // Show all courses
     if (allCoursesData.length > 0) {
@@ -1090,7 +1141,7 @@ function updateCoursesGrid(courses) {
             <span class="landing-course-price">${course.courseType === 'free' ? 'Bepul' : `${(course.price || 0).toLocaleString('uz-UZ')} so'm`}</span>
           </div>
           <p class="landing-course-instructor">${teacherName}</p>
-          <p class="landing-course-meta">${course.duration || 'Self-paced'} • ${course.level || 'All levels'}</p>
+          <p class="landing-course-meta">${course.duration || 'Self-paced'} • ${course.level || 'All levels'} • ${course.totalStudents || 0} o'quvchi</p>
         </div>
         <button class="landing-continue-btn" onclick="openCourse('${course._id}', '${course.courseType || 'free'}')">Start learning</button>
       </div>
@@ -1110,16 +1161,61 @@ function updateStats(courses) {
   }
 }
 
-// Open course - Navigate to course start page
-window.openCourse = function(courseId, courseType = 'free') {
+// Open course - Check enrollment first, then navigate
+window.openCourse = async function(courseId, courseType = 'free') {
   console.log('Opening course:', courseId, 'courseType:', courseType);
   
-  // If course is free, navigate to course start page
-  if (courseType === 'free') {
-    window.location.href = `/course-start/${courseId}`;
-  } else {
+  if (courseType !== 'free') {
     // For paid courses, show coming soon toast
     showToast('Coming soon');
+    return;
+  }
+
+  // Get student ID
+  let studentId = null;
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user._id) {
+    studentId = user._id;
+  } else {
+    const landingUser = sessionStorage.getItem('landingUser');
+    if (landingUser) {
+      try {
+        const userData = JSON.parse(landingUser);
+        if (userData._id) {
+          studentId = userData._id;
+        }
+      } catch (error) {
+        console.error('Error parsing landing user:', error);
+      }
+    }
+  }
+
+  if (!studentId) {
+    // No student ID, go to course start page
+    window.location.href = `/course-start/${courseId}`;
+    return;
+  }
+
+  // Check if already enrolled
+  try {
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/students/${studentId}/check-enrollment/${courseId}`);
+    const result = await response.json();
+    
+    if (result.success && result.isEnrolled) {
+      // Already enrolled, go directly to course learning
+      console.log('✅ Already enrolled, going to course learning');
+      window.location.href = `/course-learning/${courseId}`;
+    } else {
+      // Not enrolled, go to course start page
+      console.log('📝 Not enrolled, going to course start page');
+      window.location.href = `/course-start/${courseId}`;
+    }
+  } catch (error) {
+    console.error('❌ Error checking enrollment:', error);
+    // On error, go to course start page
+    window.location.href = `/course-start/${courseId}`;
   }
 };
 
+ 

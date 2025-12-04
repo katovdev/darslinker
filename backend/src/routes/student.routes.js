@@ -6,6 +6,8 @@ import {
   update,
   remove,
   saveQuizResult,
+  enrollInCourse,
+  checkEnrollment,
 } from "../controllers/student.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validation.middleware.js";
@@ -523,5 +525,51 @@ studentRouter.delete(
  */
 // Public endpoint - no authentication required for quiz results
 studentRouter.post("/:id/quiz-result", saveQuizResult);
+
+/**
+ * @swagger
+ * /students/{id}/enroll/{courseId}:
+ *   post:
+ *     summary: Enroll student in a course
+ *     tags: [Students]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully enrolled in course
+ */
+studentRouter.post("/:id/enroll/:courseId", enrollInCourse);
+
+/**
+ * @swagger
+ * /students/{id}/check-enrollment/{courseId}:
+ *   get:
+ *     summary: Check if student is enrolled in a course
+ *     tags: [Students]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Enrollment status retrieved
+ */
+studentRouter.get("/:id/check-enrollment/:courseId", checkEnrollment);
 
 export default studentRouter;

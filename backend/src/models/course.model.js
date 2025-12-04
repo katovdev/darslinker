@@ -88,6 +88,10 @@ const courseSchema = new mongoose.Schema(
         dueDate: Date,
       }],
     }],
+    enrolledStudents: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Student'
+    }],
     totalStudents: {
       type: Number,
       default: 0,

@@ -325,4 +325,85 @@ const saveQuizResult = catchAsync(async (req, res) => {
   });
 });
 
-export { createStudentProfile, findAll, findOne, update, remove, saveQuizResult };
+/**
+ * Enroll student in a course
+ * @route POST /students/:id/enroll/:courseId
+ * @access Public
+ */
+const enrollInCourse = catchAsync(async (req, res) => {
+  const { id, courseId } = req.params;
+
+  // Import Course model
+  const Course = (await import('../models/course.model.js')).default;
+
+  // Find student
+  const student = await Student.findById(id);
+  if (!student) {
+    throw new ValidationError("Student not found");
+  }
+
+  // Find course
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ValidationError("Course not found");
+  }
+
+  // Check if already enrolled
+  if (course.enrolledStudents && course.enrolledStudents.includes(id)) {
+    return res.status(200).json({
+      success: true,
+      message: "Student already enrolled in this course",
+      alreadyEnrolled: true
+    });
+  }
+
+  // Add student to course's enrolledStudents array
+  if (!course.enrolledStudents) {
+    course.enrolledStudents = [];
+  }
+  course.enrolledStudents.push(id);
+  course.totalStudents = course.enrolledStudents.length;
+  await course.save();
+
+  logger.info("Student enrolled in course", {
+    studentId: id,
+    courseId,
+    totalStudents: course.totalStudents
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Successfully enrolled in course",
+    alreadyEnrolled: false,
+    totalStudents: course.totalStudents
+  });
+});
+
+/**
+ * Check if student is enrolled in a course
+ * @route GET /students/:id/check-enrollment/:courseId
+ * @access Public
+ */
+const checkEnrollment = catchAsync(async (req, res) => {
+  const { id, courseId } = req.params;
+
+  // Import Course model
+  const Course = (await import('../models/course.model.js')).default;
+
+  // Find course
+  const course = await Course.findById(courseId);
+  if (!course) {
+    throw new ValidationError("Course not found");
+  }
+
+  // Check if enrolled
+  const isEnrolled = course.enrolledStudents && course.enrolledStudents.includes(id);
+
+  res.status(200).json({
+    success: true,
+    isEnrolled,
+    totalStudents: course.enrolledStudents ? course.enrolledStudents.length : 0
+  });
+});
+
+export { createStudentProfile, findAll, findOne, update, remove, saveQuizResult, enrollInCourse, checkEnrollment };

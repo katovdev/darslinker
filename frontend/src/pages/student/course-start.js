@@ -167,9 +167,62 @@ function renderCourseStartPage(course) {
     window.history.back();
   };
 
-  window.startCourse = function() {
-    // Navigate to course learning page
-    window.location.href = `/course-learning/${course._id}`;
+  window.startCourse = async function() {
+    // Get student ID
+    let studentId = null;
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user._id) {
+      studentId = user._id;
+    } else {
+      const landingUser = sessionStorage.getItem('landingUser');
+      if (landingUser) {
+        try {
+          const userData = JSON.parse(landingUser);
+          if (userData._id) {
+            studentId = userData._id;
+          }
+        } catch (error) {
+          console.error('Error parsing landing user:', error);
+        }
+      }
+    }
+
+    if (!studentId) {
+      console.error('No student ID found');
+      window.location.href = `/course-learning/${course._id}`;
+      return;
+    }
+
+    // Enroll student in course
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const enrollUrl = `${apiBaseUrl}/students/${studentId}/enroll/${course._id}`;
+      console.log('🔄 Enrolling student:', enrollUrl);
+      
+      const response = await fetch(enrollUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.json();
+      console.log('📥 Enrollment response:', result);
+      
+      if (result.success) {
+        console.log('✅ Enrolled in course! Total students:', result.totalStudents);
+        // Navigate to course learning page
+        window.location.href = `/course-learning/${course._id}`;
+      } else {
+        console.error('❌ Failed to enroll:', result);
+        // Still navigate even if enrollment fails
+        window.location.href = `/course-learning/${course._id}`;
+      }
+    } catch (error) {
+      console.error('❌ Error enrolling:', error);
+      // Still navigate even if enrollment fails
+      window.location.href = `/course-learning/${course._id}`;
+    }
   };
 }
 

@@ -158,6 +158,13 @@ const findAll = catchAsync(async (req, res) => {
     .limit(limitNumber)
     .lean();
 
+  // Sync totalStudents for each course
+  courses.forEach(course => {
+    if (course.enrolledStudents) {
+      course.totalStudents = course.enrolledStudents.length;
+    }
+  });
+
   res.status(200).json({
     success: true,
     count: totalCount,
@@ -180,6 +187,12 @@ const findOne = catchAsync(async (req, res) => {
   
   if (!course) {
     throw new NotFoundError("Course not found");
+  }
+
+  // Sync totalStudents with enrolledStudents length
+  if (course.enrolledStudents) {
+    course.totalStudents = course.enrolledStudents.length;
+    await course.save();
   }
 
   res.status(200).json({
