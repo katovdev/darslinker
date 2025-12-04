@@ -21,7 +21,7 @@ export async function initCourseLearningPage(courseId) {
   
   // Check if layout already exists
   if (!isLayoutRendered) {
-    renderCourseLearningPage(courseData);
+    await renderCourseLearningPage(courseData);
     isLayoutRendered = true;
   } else {
     // Layout exists, just update content if needed
@@ -55,11 +55,49 @@ async function fetchCourseData(courseId) {
   }
 }
 
+// Helper to get student ID
+async function getStudentId() {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  if (user._id) return user._id;
+  
+  const landingUser = sessionStorage.getItem('landingUser');
+  if (landingUser) {
+    try {
+      const userData = JSON.parse(landingUser);
+      if (userData._id) return userData._id;
+    } catch (error) {
+      console.error('Error parsing landing user:', error);
+    }
+  }
+  return null;
+}
+
 // Render course learning page
-function renderCourseLearningPage(course) {
+async function renderCourseLearningPage(course) {
+  // Fetch student progress
+  let completedLessons = [];
+  let lastAccessedLesson = null;
+  
+  const studentId = await getStudentId();
+  if (studentId) {
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const response = await fetch(`${apiBaseUrl}/students/${studentId}/progress/${course._id}`);
+      const result = await response.json();
+      if (result.success && result.progress) {
+        completedLessons = result.progress.completedLessons || [];
+        lastAccessedLesson = result.progress.lastAccessedLesson;
+      }
+    } catch (error) {
+      console.error('Error fetching progress:', error);
+    }
+  }
+  
+  // Store progress globally for renderLessons
+  window.courseProgress = { completedLessons, lastAccessedLesson };
+  
   // Calculate total lessons and progress
   let totalLessons = 0;
-  let completedLessons = 0;
   
   if (course.modules) {
     course.modules.forEach(module => {
@@ -69,7 +107,7 @@ function renderCourseLearningPage(course) {
     });
   }
   
-  const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const progress = totalLessons > 0 ? Math.round((completedLessons.length / totalLessons) * 100) : 0;
   
   // Calculate total duration from video lessons (same logic as course-detail.js)
   let totalDurationSeconds = 0;
@@ -763,9 +801,12 @@ function renderLessons(lessons, moduleId) {
     return '<p style="color: #9CA3AF; text-align: center; padding: 20px;">No lessons</p>';
   }
 
+  const progress = window.courseProgress || { completedLessons: [], lastAccessedLesson: null };
+
   return lessons.map(lesson => {
     const lessonIcon = getLessonIcon(lesson.type);
-    const isCompleted = false; // Will be based on user progress
+    const isCompleted = progress.completedLessons.includes(lesson._id);
+    const isInProgress = progress.lastAccessedLesson === lesson._id && !isCompleted;
 
     return `
       <div class="lesson-item" onclick="openLesson('${moduleId}', '${lesson._id}')">
@@ -777,11 +818,9 @@ function renderLessons(lessons, moduleId) {
           <div class="lesson-duration">${lesson.duration || 'No duration'}</div>
         </div>
         ${isCompleted ? `
-        <div class="lesson-status completed">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
-            <path d="M5 13l4 4L19 7"/>
-          </svg>
-        </div>
+        <div class="lesson-status completed" style="width: 20px; height: 20px; border-radius: 50%; background: #10B981;"></div>
+        ` : isInProgress ? `
+        <div class="lesson-status in-progress" style="width: 20px; height: 20px; border-radius: 50%; background: #F59E0B;"></div>
         ` : '<div class="lesson-status"></div>'}
       </div>
     `;
@@ -846,6 +885,26 @@ function attachEventListeners(course, currentLesson = null) {
   // Open specific lesson - load in same page
   window.openLesson = async function(moduleId, lessonId) {
     console.log('Opening lesson:', moduleId, lessonId);
+    
+    // Update lastAccessedLesson in progress
+    const studentId = await getStudentId();
+    if (studentId) {
+      try {
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+        await fetch(`${apiBaseUrl}/students/${studentId}/complete-lesson`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ courseId: course._id, lessonId, updateLastAccessed: true })
+        });
+        
+        // Update local progress
+        if (window.courseProgress) {
+          window.courseProgress.lastAccessedLesson = lessonId;
+        }
+      } catch (error) {
+        console.error('Error updating last accessed:', error);
+      }
+    }
     
     // Find the lesson
     let selectedLesson = null;
