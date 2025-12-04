@@ -94,7 +94,7 @@ const findOne = catchAsync(async (req, res) => {
   const teacher = await Teacher.findById(id)
     .populate({
       path: 'landingPageSettings.featuredCourses',
-      select: 'title description thumbnail courseType price discountPrice category totalLessons rating enrollmentCount'
+      select: 'title description thumbnail courseType price discountPrice category totalLessons rating totalStudents enrolledStudents'
     })
     .select('-password');
 
@@ -143,7 +143,7 @@ const findOne = catchAsync(async (req, res) => {
     const allCourses = await Course.find({ 
       teacher: id, 
       status: 'active' 
-    }).select('title description thumbnail courseType price discountPrice category totalLessons rating enrollmentCount');
+    }).select('title description thumbnail courseType price discountPrice category totalLessons rating totalStudents enrolledStudents');
     
     teacherData.courses = allCourses;
     

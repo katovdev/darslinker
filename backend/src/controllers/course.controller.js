@@ -155,22 +155,25 @@ const findAll = catchAsync(async (req, res) => {
     .populate('teacher', 'firstName lastName email profileImage')
     .sort(sort)
     .skip(skip)
-    .limit(limitNumber)
-    .lean();
+    .limit(limitNumber);
 
-  // Sync totalStudents for each course
-  courses.forEach(course => {
+  // Sync totalStudents for each course and save
+  for (const course of courses) {
     if (course.enrolledStudents) {
       course.totalStudents = course.enrolledStudents.length;
+      await course.save();
     }
-  });
+  }
+
+  // Convert to plain objects for response
+  const coursesData = courses.map(c => c.toObject());
 
   res.status(200).json({
     success: true,
     count: totalCount,
     page: pageNumber,
     totalPages: Math.ceil(totalCount / limitNumber),
-    courses,
+    courses: coursesData,
   });
 });
 

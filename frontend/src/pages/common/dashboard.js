@@ -3412,7 +3412,8 @@ async function generateLandingPageHTML(teacher) {
       certOrg: 'Bergan tashkilot:',
       certYear: 'Berilgan yili:',
       // Other
-      students: "O'quvchilar",
+      students: "o'quvchi",
+      studentsPlural: "o'quvchilar",
       rating: 'Reyting',
       experience: 'Tajriba',
       price: 'Narx',
@@ -3447,7 +3448,8 @@ async function generateLandingPageHTML(teacher) {
       certOrg: 'Организация:',
       certYear: 'Год выдачи:',
       // Other
-      students: 'Студенты',
+      students: 'студент',
+      studentsPlural: 'студентов',
       rating: 'Рейтинг',
       experience: 'Опыт',
       price: 'Цена',
@@ -4555,7 +4557,15 @@ async function generateLandingPageHTML(teacher) {
                             <div class="course-meta">
                                 <div class="course-price"><span data-i18n="${course.courseType === 'free' ? 'free' : 'paid'}">${course.courseType === 'free' ? 'Bepul' : 'Pullik'}</span>${course.courseType !== 'free' ? ': ' + (course.discountPrice ? course.discountPrice.toLocaleString() + ' so\'m' : (course.price || 0).toLocaleString() + ' so\'m') : ''}</div>
                             </div>
-                            ${course.enrollmentCount ? `<p style="color: rgba(255, 255, 255, 0.5); font-size: 13px; margin-top: 8px;">👥 ${course.enrollmentCount} students enrolled</p>` : ''}
+                            <p style="color: rgba(255, 255, 255, 0.5); font-size: 13px; margin-top: 8px; display: flex; align-items: center; gap: 6px;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                </svg>
+                                <span>${course.totalStudents || 0} <span data-i18n="students">o'quvchi</span></span>
+                            </p>
                         </div>
                     </div>
                 `).join('')}
@@ -13980,22 +13990,18 @@ window.openMyCourses = async function() {
             <div class="stat-card">
               <div class="stat-card-label">Total courses</div>
               <div class="stat-card-value" id="totalCoursesCount">0</div>
-              <div class="stat-card-change positive">+0 new this month</div>
             </div>
             <div class="stat-card">
               <div class="stat-card-label">Total enrolled</div>
               <div class="stat-card-value" id="totalEnrolledCount">0</div>
-              <div class="stat-card-change positive">+0 new students</div>
             </div>
             <div class="stat-card">
               <div class="stat-card-label">Total revenue</div>
               <div class="stat-card-value" id="totalRevenueAmount">$0</div>
-              <div class="stat-card-change positive">+$0 this month</div>
             </div>
             <div class="stat-card">
               <div class="stat-card-label">Live now</div>
               <div class="stat-card-value" id="liveStudentsCount">0</div>
-              <div class="stat-card-sublabel">Students online</div>
             </div>
           </div>
 
@@ -18255,22 +18261,18 @@ function updateCoursesStatistics() {
     <div class="stat-card-my-courses">
       <h3>Total courses</h3>
       <div class="stat-number">${stats.totalCourses}</div>
-      <div class="stat-change positive">+${stats.newThisMonth} new this month</div>
     </div>
     <div class="stat-card-my-courses">
       <h3>Total enrolled</h3>
       <div class="stat-number">${stats.totalStudents.toLocaleString()}</div>
-      <div class="stat-change positive">+${stats.newStudents} new students</div>
     </div>
     <div class="stat-card-my-courses">
       <h3>Total revenue</h3>
       <div class="stat-number">$${stats.totalRevenue.toLocaleString()}</div>
-      <div class="stat-change positive">+$${stats.monthlyRevenue.toLocaleString()} this month</div>
     </div>
     <div class="stat-card-my-courses">
       <h3>Live now</h3>
       <div class="stat-number">${stats.activeStudents}</div>
-      <div class="stat-change">Students online</div>
     </div>
   `;
 }
@@ -18278,8 +18280,8 @@ function updateCoursesStatistics() {
 // Calculate real statistics from courses data
 function calculateCoursesStatistics() {
   const totalCourses = myCoursesData.length;
-  const totalStudents = myCoursesData.reduce((sum, course) => sum + course.students, 0);
-  const totalRevenue = myCoursesData.reduce((sum, course) => sum + course.revenue, 0);
+  const totalStudents = myCoursesData.reduce((sum, course) => sum + (course.totalStudents || 0), 0);
+  const totalRevenue = myCoursesData.reduce((sum, course) => sum + (course.revenue || 0), 0);
 
   // Calculate new courses this month (November 2024)
   const thisMonth = new Date().toISOString().slice(0, 7); // "2024-11"
@@ -19034,9 +19036,11 @@ async function loadMyCoursesFromBackend() {
     if (result.success && result.courses) {
       window.myCoursesData = result.courses;
       updateCourseStats(result.courses);
+      updateCoursesStatistics(); // Update My Courses page stats
       renderMyCoursesCards(result.courses);
     } else {
       updateCourseStats([]);
+      updateCoursesStatistics(); // Update My Courses page stats
       renderMyCoursesCards([]);
     }
   } catch (error) {
