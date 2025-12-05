@@ -52,15 +52,30 @@ const fileFilter = (req, file, cb) => {
 };
 
 /**
- * File filter for documents (images and PDFs only, no videos)
+ * File filter for documents (images, PDFs, Word, Excel, PowerPoint, text files)
  * @param {Object} req - Express request object
  * @param {Object} file - Uploaded file
  * @param {Function} cb - Callback function
  */
 const documentFileFilter = (req, file, cb) => {
-  // Allowed formats for documents (images and PDF only)
-  const allowedFormats = /jpeg|jpg|png|pdf/;
-  const allowedMimetypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+  // Allowed formats for documents
+  const allowedFormats = /jpeg|jpg|png|pdf|doc|docx|xls|xlsx|ppt|pptx|txt|zip|rar/;
+  const allowedMimetypes = [
+    'image/jpeg', 
+    'image/jpg', 
+    'image/png', 
+    'application/pdf',
+    'application/msword', // .doc
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+    'application/vnd.ms-excel', // .xls
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+    'application/vnd.ms-powerpoint', // .ppt
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+    'text/plain', // .txt
+    'application/zip', // .zip
+    'application/x-rar-compressed', // .rar
+    'application/x-zip-compressed' // .zip alternative
+  ];
 
   const extname = path.extname(file.originalname).toLowerCase();
   const mimetype = file.mimetype;
@@ -72,7 +87,7 @@ const documentFileFilter = (req, file, cb) => {
 
   cb(
     new Error(
-      "Invalid file type. Only images (JPEG, PNG) and PDF documents are allowed"
+      "Invalid file type. Only images (JPEG, PNG), PDF, Word, Excel, PowerPoint, text files, and archives (ZIP, RAR) are allowed"
     )
   );
 };
@@ -89,12 +104,12 @@ const upload = multer({
 });
 
 /**
- * Multer upload middleware for documents (images and PDFs)
+ * Multer upload middleware for documents (images, PDFs, Office files, archives)
  */
 const uploadDocument = multer({
   storage: storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB max file size for documents
+    fileSize: 50 * 1024 * 1024, // 50MB max file size for documents
   },
   fileFilter: documentFileFilter,
 });

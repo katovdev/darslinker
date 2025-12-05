@@ -1,7 +1,8 @@
 import { catchAsync } from "../middlewares/error.middleware.js";
 import { ValidationError } from "../utils/error.utils.js";
 import logger from "../../config/logger.js";
-import cloudinary from "../../config/cloudinary.js";
+import { uploadImageToR2, uploadVideoToR2, uploadFileToR2 } from "../services/r2-upload.service.js";
+import fs from 'fs/promises';
 
 /**
  * Upload image to Cloudinary
@@ -14,26 +15,24 @@ export const uploadImage = catchAsync(async (req, res) => {
   }
 
   try {
-    // Upload to Cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "darslinker/profiles",
-      transformation: [
-        { width: 500, height: 500, crop: "limit" },
-        { quality: "auto" },
-        { fetch_format: "auto" }
-      ]
-    });
+    // Read file buffer
+    const fileBuffer = await fs.readFile(req.file.path);
+    
+    // Upload to R2
+    const url = await uploadImageToR2(fileBuffer, req.file.originalname, req.file.mimetype);
+    
+    // Delete temp file
+    await fs.unlink(req.file.path);
 
-    logger.info("Image uploaded successfully", {
+    logger.info("Image uploaded successfully to R2", {
       userId: req.user?.userId,
-      imageUrl: result.secure_url
+      imageUrl: url
     });
 
     res.status(200).json({
       success: true,
       message: "Image uploaded successfully",
-      url: result.secure_url,
-      publicId: result.public_id
+      url: url
     });
   } catch (error) {
     logger.error("Image upload failed", {
@@ -55,25 +54,24 @@ export const uploadCourseCover = catchAsync(async (req, res) => {
   }
 
   try {
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "darslinker/courses",
-      transformation: [
-        { width: 1200, height: 630, crop: "limit" },
-        { quality: "auto" },
-        { fetch_format: "auto" }
-      ]
-    });
+    // Read file buffer
+    const fileBuffer = await fs.readFile(req.file.path);
+    
+    // Upload to R2
+    const url = await uploadImageToR2(fileBuffer, req.file.originalname, req.file.mimetype);
+    
+    // Delete temp file
+    await fs.unlink(req.file.path);
 
-    logger.info("Course cover uploaded successfully", {
+    logger.info("Course cover uploaded successfully to R2", {
       userId: req.user?.userId,
-      imageUrl: result.secure_url
+      imageUrl: url
     });
 
     res.status(200).json({
       success: true,
       message: "Course cover uploaded successfully",
-      url: result.secure_url,
-      publicId: result.public_id
+      url: url
     });
   } catch (error) {
     logger.error("Course cover upload failed", {
@@ -95,26 +93,24 @@ export const uploadVideo = catchAsync(async (req, res) => {
   }
 
   try {
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "darslinker/videos",
-      resource_type: "video",
-      transformation: [
-        { quality: "auto" },
-        { fetch_format: "auto" }
-      ]
-    });
+    // Read file buffer
+    const fileBuffer = await fs.readFile(req.file.path);
+    
+    // Upload to R2
+    const url = await uploadVideoToR2(fileBuffer, req.file.originalname, req.file.mimetype);
+    
+    // Delete temp file
+    await fs.unlink(req.file.path);
 
-    logger.info("Video uploaded successfully", {
+    logger.info("Video uploaded successfully to R2", {
       userId: req.user?.userId,
-      videoUrl: result.secure_url
+      videoUrl: url
     });
 
     res.status(200).json({
       success: true,
       message: "Video uploaded successfully",
-      url: result.secure_url,
-      publicId: result.public_id,
-      duration: result.duration
+      url: url
     });
   } catch (error) {
     logger.error("Video upload failed", {
@@ -150,32 +146,32 @@ export const uploadDocument = catchAsync(async (req, res) => {
   }
 
   try {
-    logger.info("🚀 Starting Cloudinary upload for document", {
+    logger.info("🚀 Starting R2 upload for document", {
       userId: req.user?.userId,
       fileName: req.file.originalname,
       filePath: req.file.path
     });
 
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      folder: "darslinker/documents",
-      resource_type: "raw"
-    });
+    // Read file buffer
+    const fileBuffer = await fs.readFile(req.file.path);
+    
+    // Upload to R2
+    const url = await uploadFileToR2(fileBuffer, req.file.originalname, req.file.mimetype);
+    
+    // Delete temp file
+    await fs.unlink(req.file.path);
 
-    logger.info("✅ Document uploaded successfully to Cloudinary", {
+    logger.info("✅ Document uploaded successfully to R2", {
       userId: req.user?.userId,
-      documentUrl: result.secure_url,
-      publicId: result.public_id,
-      format: result.format,
-      size: result.bytes
+      documentUrl: url,
+      size: req.file.size
     });
 
     res.status(200).json({
       success: true,
       message: "Document uploaded successfully",
-      url: result.secure_url,
-      publicId: result.public_id,
-      format: result.format,
-      size: result.bytes
+      url: url,
+      size: req.file.size
     });
   } catch (error) {
     logger.error("❌ Document upload failed", {

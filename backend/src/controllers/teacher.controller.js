@@ -350,13 +350,32 @@ const getDashboardStats = catchAsync(async (req, res) => {
   const Student = (await import("../models/student.model.js")).default;
 
   // Get course statistics
+  console.log('🔍 Searching courses for teacher ID:', teacher._id);
+  console.log('🔍 Teacher ID type:', typeof teacher._id);
+  
+  // First, let's see all courses for this teacher
+  const allCourses = await Course.find({ teacher: teacher._id });
+  console.log('📚 Found courses:', allCourses.length);
+  if (allCourses.length > 0) {
+    console.log('📚 First course:', {
+      title: allCourses[0].title,
+      teacher: allCourses[0].teacher,
+      enrolledStudents: allCourses[0].enrolledStudents?.length || 0
+    });
+  }
+  
   const courseStats = await Course.aggregate([
     { $match: { teacher: teacher._id } },
+    {
+      $addFields: {
+        enrolledCount: { $size: { $ifNull: ["$enrolledStudents", []] } }
+      }
+    },
     {
       $group: {
         _id: null,
         totalCourses: { $sum: 1 },
-        totalEnrollments: { $sum: "$enrollmentCount" },
+        totalEnrollments: { $sum: "$enrolledCount" },
         totalRevenue: { $sum: "$revenue" },
         averagePrice: { $avg: "$price" },
         activeCourses: {

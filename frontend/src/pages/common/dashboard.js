@@ -10972,62 +10972,35 @@ window.loadMainDashboard = async function() {
         </div>
 
         <!-- Stats Cards Grid -->
-        <div class="figma-stats-grid">
+        <div class="figma-stats-grid" style="grid-template-columns: repeat(2, 1fr);">
           <!-- My Statistics Card -->
           <div class="figma-stats-card">
             <h3 class="figma-stats-title">${t('stats.myStatistics')}</h3>
             <div class="figma-stats-list">
               <div class="figma-stat-row">
                 <span class="figma-stat-label">${t('stats.activeCourses')}</span>
-                <span class="figma-stat-value">${overview.activeCourses}</span>
+                <span class="figma-stat-value">${overview.activeCourses || 0}</span>
               </div>
               <div class="figma-stat-row">
                 <span class="figma-stat-label">${t('stats.totalStudents')}</span>
-                <span class="figma-stat-value">${overview.totalStudents}</span>
+                <span class="figma-stat-value">${overview.totalStudents || 0}</span>
               </div>
               <div class="figma-stat-row">
                 <span class="figma-stat-label">${t('stats.totalRevenue')}</span>
-                <span class="figma-stat-value">${formatCurrency(overview.totalRevenue)}</span>
+                <span class="figma-stat-value">${formatCurrency(overview.totalRevenue || 0)}</span>
               </div>
               <div class="figma-stat-row">
                 <span class="figma-stat-label">${t('stats.avgRating')}</span>
-                <span class="figma-stat-value">${overview.averageRating.toFixed(1)}/5</span>
+                <span class="figma-stat-value">${(overview.averageRating || 0).toFixed(1)}/5</span>
               </div>
               <div class="figma-stat-row">
                 <span class="figma-stat-label">Current Balance</span>
-                <span class="figma-stat-value" style="color: #4ade80;">${formatCurrency(overview.currentBalance)}</span>
+                <span class="figma-stat-value" style="color: #4ade80;">${formatCurrency(overview.currentBalance || 0)}</span>
               </div>
             </div>
           </div>
 
-          <!-- Growth & Performance Card -->
-          <div class="figma-stats-card">
-            <h3 class="figma-stats-title">Growth & Performance</h3>
-            <div class="figma-stats-list">
-              <div class="figma-stat-row">
-                <span class="figma-stat-label">Revenue Growth</span>
-                <span class="figma-stat-value" style="color: ${(growth.revenueGrowth || 0) >= 0 ? '#4ade80' : '#ef4444'};">
-                  ${(growth.revenueGrowth || 0) >= 0 ? '+' : ''}${(growth.revenueGrowth || 0).toFixed(1)}%
-                </span>
-              </div>
-              <div class="figma-stat-row">
-                <span class="figma-stat-label">Student Growth</span>
-                <span class="figma-stat-value" style="color: ${(growth.enrollmentGrowth || 0) >= 0 ? '#4ade80' : '#ef4444'};">
-                  ${(growth.enrollmentGrowth || 0) >= 0 ? '+' : ''}${(growth.enrollmentGrowth || 0).toFixed(1)}%
-                </span>
-              </div>
-              <div class="figma-stat-row">
-                <span class="figma-stat-label">Total Courses</span>
-                <span class="figma-stat-value">${overview.totalCourses}</span>
-              </div>
-              <div class="figma-stat-row">
-                <span class="figma-stat-label">Draft Courses</span>
-                <span class="figma-stat-value" style="color: #fbbf24;">${overview.draftCourses}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Bio & Specialties Card -->
+          <!-- Bio & About Me Card -->
           <div class="figma-stats-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
               <h3 class="figma-stats-title">Bio & About Me</h3>
@@ -12766,9 +12739,41 @@ window.saveLesson = async function(button, type) {
     const fileInput = lessonForm.querySelector('input[type="file"]');
 
     lessonData.description = descriptionInput?.value || '';
+    
     if (fileInput && fileInput.files && fileInput.files[0]) {
-      lessonData.fileName = fileInput.files[0].name;
+      const file = fileInput.files[0];
+      lessonData.fileName = file.name;
+      
+      // Upload file to server
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+        const uploadUrl = `${apiBaseUrl}/upload/document`;
+        console.log('📤 Uploading file lesson to:', uploadUrl);
+        
+        const response = await fetch(uploadUrl, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+          body: formData,
+        });
+        
+        const result = await response.json();
+        if (result.success && result.url) {
+          lessonData.fileUrl = result.url;
+          console.log('✅ File lesson uploaded:', result.url);
+        }
+      } catch (error) {
+        console.error('❌ File upload failed:', error);
+        showErrorToast('File upload failed. Please try again.');
+        return; // Don't save lesson if file upload fails
+      }
     }
+    
+    console.log('🎯 SAVE File Lesson - Final lessonData:', lessonData);
   }
 
   // Create lesson item HTML with edit and delete buttons
@@ -18796,19 +18801,19 @@ window.handleAssignmentFileSelect = function(input) {
   const file = input.files[0];
   if (!file) return;
   
-  // Check file size (10MB max)
-  const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+  // Check file size (50MB max)
+  const maxSize = 50 * 1024 * 1024; // 50MB in bytes
   if (file.size > maxSize) {
-    showErrorToast('File size exceeds 10MB limit');
+    showErrorToast('File size exceeds 50MB limit');
     input.value = '';
     return;
   }
   
-  // Check file type
-  const allowedTypes = ['.pdf', '.doc', '.docx', '.txt', '.zip'];
+  // Check file type - expanded to support more formats
+  const allowedTypes = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.zip', '.rar', '.jpg', '.jpeg', '.png'];
   const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
   if (!allowedTypes.includes(fileExtension)) {
-    showErrorToast('Invalid file type. Only PDF, DOC, DOCX, TXT, ZIP files are allowed');
+    showErrorToast('Invalid file type. Allowed: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, TXT, ZIP, RAR, JPG, PNG');
     input.value = '';
     return;
   }
@@ -19121,7 +19126,7 @@ function renderMyCoursesCards(courses) {
         <div class="course-actions-modern">
           <button class="course-btn-modern" onclick="editCourse('${course._id}')">Edit</button>
           <button class="course-btn-modern" onclick="viewCourseStats('${course._id}')">Stats</button>
-          <button class="course-btn-modern course-btn-delete-modern" onclick="deleteCourseConfirm('${course._id}', '${course.title}')">Delete</button>
+          <button class="course-btn-modern course-btn-delete-modern" onclick="deleteCourseConfirm('${course._id}', \`${course.title.replace(/`/g, '')}\`)">Delete</button>
         </div>
       </div>
     </div>
@@ -19253,7 +19258,7 @@ window.deleteCourseConfirm = function(courseId, courseTitle) {
         </div>
         <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 20px;">
           <button class="btn-secondary" onclick="closeDeleteCourseModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Cancel</button>
-          <button onclick="deleteCourse('${courseId}')" style="background: #ff3b30; color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Delete Course</button>
+          <button onclick="confirmDeleteCourse('${courseId}')" style="background: #ff3b30; color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Delete Course</button>
         </div>
       </div>
     </div>
@@ -19267,7 +19272,7 @@ window.closeDeleteCourseModal = function() {
   if (modal) modal.remove();
 };
 
-window.deleteCourse = async function(courseId) {
+window.confirmDeleteCourse = async function(courseId) {
   try {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const response = await fetch(`${apiBaseUrl}/courses/${courseId}`, {

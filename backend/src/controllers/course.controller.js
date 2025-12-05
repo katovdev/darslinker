@@ -1,19 +1,13 @@
 import Course from "../models/course.model.js";
 import logger from "../../config/logger.js";
-import {
-  uploadToCloudinary,
-  uploadVideoToCloudinary,
-} from "../../config/cloudinary.js";
-import fs from "fs";
-import { promisify } from "util";
+import { uploadImageToR2, uploadVideoToR2 } from "../services/r2-upload.service.js";
+import fs from "fs/promises";
 import {
   handleValidationResult,
   validateAndFindById,
 } from "../utils/model.utils.js";
 import { catchAsync } from "../middlewares/error.middleware.js";
 import { BadRequestError, ConflictError } from "../utils/error.utils.js";
-
-const unlinkAsync = promisify(fs.unlink);
 
 /**
  * Create a new course
@@ -270,7 +264,7 @@ const remove = catchAsync(async (req, res) => {
 });
 
 /**
- * Upload course image to Cloudinary
+ * Upload course image to R2
  * @route POST /courses/upload-image
  * @access Private (Teacher/Admin)
  */
@@ -279,31 +273,37 @@ const uploadImage = catchAsync(async (req, res) => {
     throw new BadRequestError("No image file provided");
   }
 
-  const uploadResult = await uploadToCloudinary(req.file.path, "courses");
+  try {
+    // Read file buffer
+    const fileBuffer = await fs.readFile(req.file.path);
+    
+    // Upload to R2
+    const url = await uploadImageToR2(fileBuffer, req.file.originalname, req.file.mimetype);
+    
+    // Delete temp file
+    await fs.unlink(req.file.path);
 
-  await unlinkAsync(req.file.path);
+    logger.info("Course image uploaded to R2", {
+      url: url,
+    });
 
-  if (!uploadResult.success) {
-    throw new BadRequestError("Failed to upload image to Cloudinary");
+    res.status(200).json({
+      success: true,
+      message: "Image uploaded successfully",
+      data: {
+        url: url,
+      },
+    });
+  } catch (error) {
+    logger.error("Course image upload failed", {
+      error: error.message,
+    });
+    throw new BadRequestError("Failed to upload image to R2");
   }
-
-  logger.info("Course image uploaded to Cloudinary", {
-    publicId: uploadResult.public_id,
-    url: uploadResult.url,
-  });
-
-  res.status(200).json({
-    success: true,
-    message: "Image uploaded successfully",
-    data: {
-      url: uploadResult.url,
-      public_id: uploadResult.public_id,
-    },
-  });
 });
 
 /**
- * Upload course video to Cloudinary
+ * Upload course video to R2
  * @route POST /courses/upload-video
  * @access Private (Teacher/Admin)
  */
@@ -312,30 +312,33 @@ const uploadVideo = catchAsync(async (req, res) => {
     throw new BadRequestError("No video file provided");
   }
 
-  const uploadResult = await uploadVideoToCloudinary(
-    req.file.path,
-    "course-videos"
-  );
+  try {
+    // Read file buffer
+    const fileBuffer = await fs.readFile(req.file.path);
+    
+    // Upload to R2
+    const url = await uploadVideoToR2(fileBuffer, req.file.originalname, req.file.mimetype);
+    
+    // Delete temp file
+    await fs.unlink(req.file.path);
 
-  await unlinkAsync(req.file.path);
+    logger.info("Course video uploaded to R2", {
+      url: url,
+    });
 
-  if (!uploadResult.success) {
-    throw new BadRequestError("Failed to upload video to Cloudinary");
+    res.status(200).json({
+      success: true,
+      message: "Video uploaded successfully",
+      data: {
+        url: url,
+      },
+    });
+  } catch (error) {
+    logger.error("Course video upload failed", {
+      error: error.message,
+    });
+    throw new BadRequestError("Failed to upload video to R2");
   }
-
-  logger.info("Course video uploaded to Cloudinary", {
-    publicId: uploadResult.public_id,
-    url: uploadResult.url,
-  });
-
-  res.status(200).json({
-    success: true,
-    message: "Video uploaded successfully",
-    data: {
-      url: uploadResult.url,
-      public_id: uploadResult.public_id,
-    },
-  });
 });
 
 export { create, findAll, findOne, update, remove, uploadImage, uploadVideo };
