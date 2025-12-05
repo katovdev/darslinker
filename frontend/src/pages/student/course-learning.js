@@ -1343,17 +1343,22 @@ function loadLessonPlayer(course, lesson) {
       
       .video-wrapper {
         width: 100%;
+        max-height: 600px;
         background: #000000;
         border-radius: 16px;
         overflow: hidden;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
         position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       
       .video-wrapper video {
         width: 100%;
-        height: auto;
+        max-height: 600px;
         display: block;
+        object-fit: contain;
         user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
