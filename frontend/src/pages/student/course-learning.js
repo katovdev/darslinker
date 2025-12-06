@@ -1397,6 +1397,44 @@ function loadLessonPlayer(course, lesson) {
         display: none;
       }
       
+      /* Play Button Overlay - Oddiy */
+      .video-play-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 1000;
+        transition: background 0.3s ease;
+      }
+
+      .video-play-overlay:hover {
+        background: rgba(0, 0, 0, 0.7);
+      }
+
+      .play-button-circle {
+        width: 80px;
+        height: 80px;
+        background: rgba(126, 162, 212, 0.9);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .play-button-circle svg {
+        margin-left: 5px;
+      }
+
+      .video-play-overlay.hidden {
+        display: none;
+      }
+      
       /* Video Protection Overlay */
       .video-protection-overlay {
         position: absolute;
@@ -1482,7 +1520,16 @@ function loadLessonPlayer(course, lesson) {
         <div class="lesson-player-content">
           <div class="video-wrapper" id="video-wrapper-protected">
             ${videoUrl 
-              ? `<div class="video-protection-overlay"></div>
+              ? `<!-- Play Button -->
+                 <div id="video-play-overlay" class="video-play-overlay" onclick="startProtectedVideo()">
+                   <div class="play-button-circle">
+                     <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
+                       <path d="M8 5v14l11-7z"/>
+                     </svg>
+                   </div>
+                 </div>
+                 
+                 <div class="video-protection-overlay"></div>
                  <div class="video-watermark" id="video-watermark">ID: Loading...</div>
                  <video id="protected-video" controls controlsList="nodownload" disablePictureInPicture>
                    <source src="${videoUrl}" type="video/mp4">
@@ -1572,11 +1619,27 @@ function initVideoProtection() {
   const video = document.getElementById('protected-video');
   const watermark = document.getElementById('video-watermark');
   const videoWrapper = document.getElementById('video-wrapper-protected');
+  const playOverlay = document.getElementById('video-play-overlay');
   
   if (!video || !watermark || !videoWrapper) {
     console.log('⚠️ Video protection elements not found');
     return;
   }
+  
+  // Start video function
+  window.startProtectedVideo = function() {
+    if (playOverlay) playOverlay.classList.add('hidden');
+    video.play();
+  };
+  
+  // Hide overlay when video starts playing
+  video.addEventListener('play', () => {
+    if (playOverlay) playOverlay.classList.add('hidden');
+  });
+  
+  video.addEventListener('ended', () => {
+    showToast('Lesson completed! 🎉');
+  });
   
   // Get student ID from localStorage or sessionStorage
   let studentId = 'GUEST';
