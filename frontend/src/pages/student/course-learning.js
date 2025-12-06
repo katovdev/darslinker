@@ -935,8 +935,8 @@ function attachEventListeners(course, currentLesson = null) {
           </div>
         `;
         await loadQuizPlayer(course, selectedLesson, sidebarHtml);
-      } else if (selectedLesson.type === 'assignment') {
-        // Build sidebar HTML for assignment player
+      } else if (selectedLesson.type === 'assignment' || selectedLesson.type === 'file') {
+        // Build sidebar HTML for assignment/file players
         const sidebarHtml = `
           <div class="assignment-sidebar">
             <div class="sidebar-header">
@@ -947,8 +947,14 @@ function attachEventListeners(course, currentLesson = null) {
             </div>
           </div>
         `;
-        const { loadAssignmentPlayer } = await import('./assignment-player.js');
-        await loadAssignmentPlayer(course, selectedLesson, sidebarHtml);
+
+        if (selectedLesson.type === 'assignment') {
+          const { loadAssignmentPlayer } = await import('./assignment-player.js');
+          await loadAssignmentPlayer(course, selectedLesson, sidebarHtml);
+        } else if (selectedLesson.type === 'file') {
+          const { loadFilePlayer } = await import('./file-player.js');
+          await loadFilePlayer(course, selectedLesson, sidebarHtml);
+        }
       } else {
         showToast('This lesson type is not supported yet');
       }
@@ -1940,14 +1946,22 @@ function buildLessonsListHtml(course, currentLesson) {
                   <div class="sidebar-lesson ${isActive ? 'active' : ''}" 
                        onclick="openLesson('${module._id}', '${lesson._id}')">
                     <div class="sidebar-lesson-icon">
-                      ${lesson.type === 'video' 
+                      ${lesson.type === 'video'
                         ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                              <path d="M8 5v14l11-7z"/>
                            </svg>`
-                        : lesson.type === 'quiz' 
+                        : lesson.type === 'quiz'
                         ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                              <path d="M9 11l3 3L22 4"></path>
                              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                           </svg>`
+                        : lesson.type === 'assignment'
+                        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                             <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                           </svg>`
+                        : lesson.type === 'file'
+                        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                             <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
                            </svg>`
                         : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>

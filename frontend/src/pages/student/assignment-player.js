@@ -1249,6 +1249,69 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
     }
   };
 
+  // Build lessons list HTML for sidebar
+  function buildLessonsListHtml(course, currentLesson) {
+    let html = '';
+
+    if (course.modules) {
+      course.modules.forEach((module, moduleIndex) => {
+        html += `
+          <div class="sidebar-module">
+            <div class="sidebar-module-header" onclick="togglePlayerModule(${moduleIndex})">
+              <span class="sidebar-module-title">${module.title || `Module ${moduleIndex + 1}`}</span>
+              <span class="sidebar-module-count">${module.lessons?.length || 0} dars</span>
+              <span class="sidebar-module-arrow" id="player-arrow-${moduleIndex}">▼</span>
+            </div>
+            <div class="sidebar-module-lessons" id="player-lessons-${moduleIndex}">
+              ${module.lessons && module.lessons.length > 0
+                ? module.lessons.map((lesson, lessonIndex) => {
+                    const isActive = lesson._id === currentLesson._id;
+
+                    return `
+                    <div class="sidebar-lesson ${isActive ? 'active' : ''}"
+                         onclick="openLesson('${module._id}', '${lesson._id}')">
+                      <div class="sidebar-lesson-icon">
+                        ${lesson.type === 'video'
+                          ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                               <path d="M8 5v14l11-7z"/>
+                             </svg>`
+                          : lesson.type === 'quiz'
+                          ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                               <path d="M9 11l3 3L22 4"></path>
+                               <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+                             </svg>`
+                          : lesson.type === 'assignment'
+                          ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                               <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                             </svg>`
+                          : lesson.type === 'file'
+                          ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                               <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                             </svg>`
+                          : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                               <polyline points="14 2 14 8 20 8"></polyline>
+                             </svg>`
+                        }
+                      </div>
+                      <div class="sidebar-lesson-info">
+                        <div class="sidebar-lesson-title">${lesson.title || `Lesson ${lessonIndex + 1}`}</div>
+                        ${lesson.duration ? `<div class="sidebar-lesson-duration">${lesson.duration}</div>` : ''}
+                      </div>
+                    </div>
+                  `;
+                  }).join('')
+                : '<div style="padding: 20px; text-align: center; color: #9CA3AF;">No lessons</div>'
+              }
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    return html;
+  }
+
   // Logout handler
   window.handleLogout = function() {
     sessionStorage.removeItem('landingUser');
@@ -1268,15 +1331,57 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
   };
 
   // Open lesson function
-  window.openLesson = function(moduleId, lessonId) {
-    // Navigate back to course learning and open the lesson
-    window.location.href = '#/course/' + course._id;
-    setTimeout(() => {
-      const openLessonFunc = window.openLesson;
-      if (openLessonFunc) {
-        openLessonFunc(moduleId, lessonId);
+  window.openLesson = async function(moduleId, lessonId) {
+    console.log('Opening lesson:', moduleId, lessonId);
+
+    // Find the lesson
+    let selectedLesson = null;
+    const module = course.modules.find(m => m._id === moduleId);
+    if (module && module.lessons) {
+      selectedLesson = module.lessons.find(l => l._id === lessonId);
+    }
+
+    if (selectedLesson) {
+      // Check lesson type and load appropriate player
+      if (selectedLesson.type === 'video') {
+        // Load video player
+        window.location.href = '#/course/' + course._id + '/lesson/' + lessonId;
+      } else if (selectedLesson.type === 'quiz') {
+        // Build sidebar HTML for quiz player
+        const sidebarHtml = `
+          <div class="lesson-sidebar" id="lessonSidebar">
+            <div class="sidebar-header">
+              <span class="sidebar-course-title">${course.title || 'Course'}</span>
+            </div>
+            <div class="sidebar-modules">
+              ${buildLessonsListHtml(course, selectedLesson)}
+            </div>
+          </div>
+        `;
+        const { loadQuizPlayer } = await import('./quiz-player.js');
+        await loadQuizPlayer(course, selectedLesson, sidebarHtml);
+      } else if (selectedLesson.type === 'assignment' || selectedLesson.type === 'file') {
+        // Build sidebar HTML for assignment/file players
+        const sidebarHtml = `
+          <div class="assignment-sidebar">
+            <div class="sidebar-header">
+              <span class="sidebar-course-title">${course.title || 'Course'}</span>
+            </div>
+            <div class="sidebar-modules">
+              ${buildLessonsListHtml(course, selectedLesson)}
+            </div>
+          </div>
+        `;
+
+        if (selectedLesson.type === 'assignment') {
+          const { loadAssignmentPlayer } = await import('./assignment-player.js');
+          await loadAssignmentPlayer(course, selectedLesson, sidebarHtml);
+        } else if (selectedLesson.type === 'file') {
+          const { loadFilePlayer } = await import('./file-player.js');
+          await loadFilePlayer(course, selectedLesson, sidebarHtml);
+        }
       }
-    }, 100);
+    }
   };
 
   // Auto-expand module containing current lesson
