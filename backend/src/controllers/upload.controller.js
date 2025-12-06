@@ -2,7 +2,9 @@ import { catchAsync } from "../middlewares/error.middleware.js";
 import { ValidationError } from "../utils/error.utils.js";
 import logger from "../../config/logger.js";
 import { uploadImageToR2, uploadVideoToR2, uploadFileToR2 } from "../services/r2-upload.service.js";
+import { compressVideo, getVideoInfo } from "../services/video-compress.service.js";
 import fs from 'fs/promises';
+import path from 'path';
 
 /**
  * Upload image to Cloudinary
@@ -88,36 +90,118 @@ export const uploadCourseCover = catchAsync(async (req, res) => {
  * @access Private
  */
 export const uploadVideo = catchAsync(async (req, res) => {
+  logger.info("🎥 Video upload request received", {
+    userId: req.user?.userId,
+    hasFile: !!req.file,
+    fileDetails: req.file ? {
+      originalname: req.file.originalname,
+      mimetype: req.file.mimetype,
+      size: req.file.size,
+      path: req.file.path
+    } : null
+  });
+
   if (!req.file) {
+    logger.error("No file uploaded in video upload request", {
+      userId: req.user?.userId,
+      body: req.body,
+      headers: req.headers
+    });
     throw new ValidationError("No file uploaded");
   }
 
+  const inputPath = req.file.path;
+  let fileToUpload = inputPath;
+  let compressionData = null;
+
   try {
+    // Try to compress video if FFmpeg is available
+    try {
+      const compressedPath = path.join(path.dirname(inputPath), `compressed_${req.file.filename}`);
+      
+      // Get original video info
+      const originalInfo = await getVideoInfo(inputPath);
+      logger.info("📹 Original video info", {
+        size: `${(originalInfo.size / 1024 / 1024).toFixed(2)} MB`,
+        duration: `${originalInfo.duration?.toFixed(2)} seconds`,
+        resolution: `${originalInfo.width}x${originalInfo.height}`
+      });
+
+      // Compress video
+      logger.info("🔄 Starting video compression...");
+      await compressVideo(inputPath, compressedPath, {
+        quality: 'medium',
+        resolution: '720p'
+      });
+
+      // Get compressed video info
+      const compressedInfo = await getVideoInfo(compressedPath);
+      const compressionRatio = ((1 - compressedInfo.size / originalInfo.size) * 100).toFixed(2);
+      
+      logger.info("✅ Video compressed successfully", {
+        originalSize: `${(originalInfo.size / 1024 / 1024).toFixed(2)} MB`,
+        compressedSize: `${(compressedInfo.size / 1024 / 1024).toFixed(2)} MB`,
+        saved: `${compressionRatio}%`
+      });
+
+      fileToUpload = compressedPath;
+      compressionData = {
+        originalSize: originalInfo.size,
+        compressedSize: compressedInfo.size,
+        savedPercentage: compressionRatio
+      };
+    } catch (compressionError) {
+      // FFmpeg not available or compression failed, upload original
+      logger.warn("⚠️ Video compression skipped (FFmpeg not available), uploading original", {
+        error: compressionError.message
+      });
+    }
+
     // Read file buffer
-    const fileBuffer = await fs.readFile(req.file.path);
+    const fileBuffer = await fs.readFile(fileToUpload);
     
     // Upload to R2
     const url = await uploadVideoToR2(fileBuffer, req.file.originalname, req.file.mimetype);
     
-    // Delete temp file
-    await fs.unlink(req.file.path);
+    // Delete temp files
+    await fs.unlink(inputPath);
+    if (fileToUpload !== inputPath) {
+      await fs.unlink(fileToUpload);
+    }
 
-    logger.info("Video uploaded successfully to R2", {
+    logger.info("🎉 Video uploaded successfully to R2", {
       userId: req.user?.userId,
-      videoUrl: url
+      videoUrl: url,
+      compressed: !!compressionData
     });
 
-    res.status(200).json({
+    const response = {
       success: true,
-      message: "Video uploaded successfully",
+      message: compressionData ? "Video uploaded and compressed successfully" : "Video uploaded successfully",
       url: url
-    });
+    };
+
+    if (compressionData) {
+      response.compression = compressionData;
+    }
+
+    res.status(200).json(response);
   } catch (error) {
-    logger.error("Video upload failed", {
+    // Clean up files on error
+    try {
+      await fs.unlink(inputPath);
+      if (fileToUpload !== inputPath) {
+        await fs.unlink(fileToUpload);
+      }
+    } catch (cleanupError) {
+      // Ignore cleanup errors
+    }
+
+    logger.error("❌ Video upload failed", {
       error: error.message,
       userId: req.user?.userId
     });
-    throw new ValidationError("Failed to upload video");
+    throw new ValidationError("Failed to upload video: " + error.message);
   }
 });
 

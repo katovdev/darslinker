@@ -1,4 +1,5 @@
-import { S3Client } from '@aws-sdk/client-s3';
+import { S3Client, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 // Cloudflare R2 configuration
 const r2Client = new S3Client({
@@ -12,5 +13,7 @@ const r2Client = new S3Client({
 
 export const R2_BUCKET_NAME = process.env.R2_BUCKET_NAME || 'darslinker';
 export const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL; // e.g., https://files.yourdomain.com
+
+export const getR2Client = () => r2Client;
 
 export default r2Client;

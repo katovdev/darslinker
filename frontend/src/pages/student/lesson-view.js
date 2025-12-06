@@ -168,8 +168,17 @@ function renderLessonViewPage(courseData, currentLesson) {
     });
   }
   
-  // Get video URL
-  const videoUrl = currentLesson.videoUrl || currentLesson.fileUrl || currentLesson.url;
+  // Get video URL - support both direct URLs and streaming
+  let videoUrl = currentLesson.videoUrl || currentLesson.fileUrl || currentLesson.url;
+  
+  // If video URL is from R2, use streaming endpoint
+  if (videoUrl && videoUrl.includes('r2.cloudflarestorage.com')) {
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    // Extract the key from R2 URL
+    const urlParts = videoUrl.split('/');
+    const key = urlParts.slice(urlParts.indexOf('videos')).join('/');
+    videoUrl = `${apiBaseUrl}/stream/r2/${key}`;
+  }
   
   appElement.innerHTML = `
     <style>
@@ -608,10 +617,23 @@ function renderLessonViewPage(courseData, currentLesson) {
           <div class="lesson-view-video-container">
             ${videoUrl 
               ? `<div class="lesson-view-video-wrapper">
-                   <video controls autoplay class="lesson-view-video-player">
+                   <video 
+                     id="lesson-video-player"
+                     controls 
+                     autoplay 
+                     preload="metadata"
+                     class="lesson-view-video-player"
+                     playsinline
+                   >
                      <source src="${videoUrl}" type="video/mp4">
                      Your browser does not support the video tag.
                    </video>
+                   <div id="video-loading" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white;">
+                     <div style="text-align: center;">
+                       <div style="border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                       <p style="margin-top: 10px;">Loading video...</p>
+                     </div>
+                   </div>
                  </div>`
               : `<div style="color: #9CA3AF; text-align: center;">
                    <p>Video not available</p>
@@ -638,6 +660,83 @@ function renderLessonViewPage(courseData, currentLesson) {
       }
     });
   }
+  
+  // Setup video player event listeners
+  setupVideoPlayer(currentLesson._id);
+}
+
+// Setup video player with streaming support
+function setupVideoPlayer(lessonId) {
+  const videoPlayer = document.getElementById('lesson-video-player');
+  const loadingIndicator = document.getElementById('video-loading');
+  
+  if (!videoPlayer) return;
+  
+  // Show loading indicator
+  videoPlayer.addEventListener('waiting', () => {
+    if (loadingIndicator) loadingIndicator.style.display = 'block';
+  });
+  
+  videoPlayer.addEventListener('canplay', () => {
+    if (loadingIndicator) loadingIndicator.style.display = 'none';
+  });
+  
+  // Track video progress
+  let progressInterval;
+  videoPlayer.addEventListener('play', () => {
+    progressInterval = setInterval(() => {
+      const progress = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+      console.log('Video progress:', progress.toFixed(2) + '%');
+      // You can save progress to backend here
+    }, 5000); // Update every 5 seconds
+  });
+  
+  videoPlayer.addEventListener('pause', () => {
+    if (progressInterval) clearInterval(progressInterval);
+  });
+  
+  videoPlayer.addEventListener('ended', () => {
+    if (progressInterval) clearInterval(progressInterval);
+    console.log('Video completed!');
+    // Mark lesson as completed
+  });
+  
+  // Handle errors
+  videoPlayer.addEventListener('error', (e) => {
+    console.error('Video playback error:', e);
+    if (loadingIndicator) loadingIndicator.style.display = 'none';
+    showLessonToast('Video playback error. Please try again.');
+  });
+  
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    
+    switch(e.key) {
+      case ' ':
+        e.preventDefault();
+        if (videoPlayer.paused) {
+          videoPlayer.play();
+        } else {
+          videoPlayer.pause();
+        }
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+        break;
+      case 'f':
+        e.preventDefault();
+        if (videoPlayer.requestFullscreen) {
+          videoPlayer.requestFullscreen();
+        }
+        break;
+    }
+  });
 }
 
 // Show toast notification

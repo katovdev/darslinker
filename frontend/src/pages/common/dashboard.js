@@ -2158,6 +2158,9 @@ function createHiddenInput(form, className) {
   return input;
 }
 
+// Store active XHR requests for cancellation
+window.activeVideoUploads = window.activeVideoUploads || {};
+
 // Handle video upload for lesson creation
 window.handleVideoUpload = async function(input) {
   const file = input.files[0];
@@ -2173,9 +2176,9 @@ window.handleVideoUpload = async function(input) {
   const videoUrlInput = lessonForm.querySelector('.video-url-input');
   const videoFilename = uploadSuccess.querySelector('.video-filename');
 
-  // Validate file size (max 100MB)
-  if (file.size > 100 * 1024 * 1024) {
-    showErrorToast('File size too large. Maximum 100MB allowed');
+  // Validate file size (max 500MB)
+  if (file.size > 500 * 1024 * 1024) {
+    showErrorToast('File size too large. Maximum 500MB allowed');
     input.value = '';
     return;
   }
@@ -2204,17 +2207,16 @@ window.handleVideoUpload = async function(input) {
     const token = localStorage.getItem('accessToken');
 
     const xhr = new XMLHttpRequest();
-
-    // Track upload progress
-    xhr.upload.addEventListener('progress', (e) => {
-      if (e.lengthComputable) {
-        const percentComplete = (e.loaded / e.total) * 100;
-        progressFill.style.width = percentComplete + '%';
-        uploadStatus.textContent = `Uploading... ${Math.round(percentComplete)}%`;
-      }
-    });
+    
+    // Store XHR for cancellation
+    const uploadId = Date.now();
+    window.activeVideoUploads[uploadId] = xhr;
+    uploadSection.dataset.uploadId = uploadId;
 
     xhr.onload = function() {
+      // Remove from active uploads
+      delete window.activeVideoUploads[uploadId];
+      
       if (xhr.status === 200) {
         try {
           const response = JSON.parse(xhr.responseText);
@@ -2227,11 +2229,22 @@ window.handleVideoUpload = async function(input) {
             uploadProgress.style.display = 'none';
             uploadSuccess.style.display = 'block';
 
-            showSuccessToast('Video uploaded successfully');
+            // Show compression info if available
+            let message = 'Video uploaded successfully';
+            if (response.compression) {
+              const saved = response.compression.savedPercentage;
+              const originalMB = (response.compression.originalSize / 1024 / 1024).toFixed(2);
+              const compressedMB = (response.compression.compressedSize / 1024 / 1024).toFixed(2);
+              message += ` (${originalMB}MB → ${compressedMB}MB, ${saved}% saved)`;
+              console.log('🎉 Compression:', { originalMB, compressedMB, saved: `${saved}%` });
+            }
+
+            showSuccessToast(message);
           } else {
             throw new Error(response.message || 'Upload failed');
           }
         } catch (e) {
+          console.error('Parse error:', e);
           throw new Error('Failed to parse server response');
         }
       } else {
@@ -2240,7 +2253,29 @@ window.handleVideoUpload = async function(input) {
     };
 
     xhr.onerror = function() {
-      throw new Error('Network error during upload');
+      delete window.activeVideoUploads[uploadId];
+      console.error('Network error during upload');
+      
+      // Reset UI
+      uploadContent.style.display = 'block';
+      uploadProgress.style.display = 'none';
+      uploadSuccess.style.display = 'none';
+      input.value = '';
+      videoUrlInput.value = '';
+      
+      showErrorToast('Network error during upload');
+    };
+
+    xhr.onabort = function() {
+      delete window.activeVideoUploads[uploadId];
+      console.log('✅ Upload cancelled by user');
+      
+      // Reset UI
+      uploadContent.style.display = 'block';
+      uploadProgress.style.display = 'none';
+      uploadSuccess.style.display = 'none';
+      input.value = '';
+      videoUrlInput.value = '';
     };
 
     xhr.open('POST', `${config.api.baseUrl}/upload/video`);
@@ -2259,6 +2294,41 @@ window.handleVideoUpload = async function(input) {
     input.value = '';
     videoUrlInput.value = '';
   }
+};
+
+// Cancel video upload
+window.cancelVideoUpload = function(button) {
+  const uploadSection = button.closest('.video-upload-section');
+  const uploadId = uploadSection.dataset.uploadId;
+  
+  console.log('🛑 Cancelling upload...', { uploadId, hasActiveUpload: !!window.activeVideoUploads[uploadId] });
+  
+  if (uploadId && window.activeVideoUploads[uploadId]) {
+    // Abort the XHR request - this will trigger xhr.onabort
+    try {
+      window.activeVideoUploads[uploadId].abort();
+      console.log('✅ XHR request aborted');
+    } catch (error) {
+      console.error('Error aborting XHR:', error);
+    }
+    delete window.activeVideoUploads[uploadId];
+  }
+  
+  // Reset UI immediately
+  const lessonForm = button.closest('.lesson-form');
+  const uploadContent = uploadSection.querySelector('.upload-content');
+  const uploadProgress = uploadSection.querySelector('.upload-progress');
+  const uploadSuccess = uploadSection.querySelector('.upload-success');
+  const videoInput = lessonForm.querySelector('input[type="file"]');
+  const videoUrlInput = lessonForm.querySelector('.video-url-input');
+  
+  uploadContent.style.display = 'block';
+  uploadProgress.style.display = 'none';
+  uploadSuccess.style.display = 'none';
+  if (videoInput) videoInput.value = '';
+  if (videoUrlInput) videoUrlInput.value = '';
+  
+  showSuccessToast('Upload cancelled');
 };
 
 // Quiz Type Selection
@@ -11873,13 +11943,29 @@ window.addLesson = function(type, dropdownLink, event) {
                     <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
                   </svg>
                   <p>📹 Video yuklash uchun bosing</p>
-                  <small>Video formatlar: MP4, MOV, AVI, WMV (Maksimal 100MB)</small>
+                  <small>Video formatlar: MP4, MOV, AVI, WMV (Maksimal 500MB)</small>
                 </div>
                 <div class="upload-progress" style="display: none;">
-                  <div class="progress-bar">
-                    <div class="progress-fill" style="width: 0%"></div>
+                  <style>
+                    @keyframes pulse {
+                      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+                      50% { opacity: 1; transform: scale(1.2); }
+                    }
+                    .loading-dots .dot:nth-child(1) { animation: pulse 1.4s ease-in-out infinite; }
+                    .loading-dots .dot:nth-child(2) { animation: pulse 1.4s ease-in-out 0.2s infinite; }
+                    .loading-dots .dot:nth-child(3) { animation: pulse 1.4s ease-in-out 0.4s infinite; }
+                  </style>
+                  <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; padding: 50px 20px; min-height: 200px;">
+                    <div class="loading-dots" style="display: flex; gap: 10px;">
+                      <div class="dot" style="width: 14px; height: 14px; background: #7ea2d4; border-radius: 50%;"></div>
+                      <div class="dot" style="width: 14px; height: 14px; background: #7ea2d4; border-radius: 50%;"></div>
+                      <div class="dot" style="width: 14px; height: 14px; background: #7ea2d4; border-radius: 50%;"></div>
+                    </div>
+                    <p class="upload-status" style="color: var(--text-secondary); font-size: 14px; margin: 0; font-weight: 500;">Uploading video...</p>
+                    <button type="button" onclick="cancelVideoUpload(this)" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 10px 24px; border-radius: 8px; font-size: 13px; cursor: pointer; transition: all 0.2s; font-weight: 500;">
+                      Cancel
+                    </button>
                   </div>
-                  <p class="upload-status">Uploading...</p>
                 </div>
                 <div class="upload-success" style="display: none;">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="green" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

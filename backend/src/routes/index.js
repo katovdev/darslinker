@@ -11,6 +11,7 @@ import uploadRouter from "./upload.routes.js";
 import landingRouter from "./landing.routes.js";
 import landingAuthRouter from "./landing-auth.routes.js";
 import telegramRouter from "./telegram.routes.js";
+import streamRouter from "./stream.routes.js";
 
 const mainRouter = Router();
 
@@ -22,6 +23,7 @@ mainRouter.use("/modules", moduleRouter);
 mainRouter.use("/lessons", lessonRouter);
 mainRouter.use("/assignments", assignmentRouter);
 mainRouter.use("/upload", uploadRouter);
+mainRouter.use("/stream", streamRouter);
 mainRouter.use("/landing", landingRouter);
 mainRouter.use("/landing-auth", landingAuthRouter);
 mainRouter.use("/telegram", telegramRouter);
