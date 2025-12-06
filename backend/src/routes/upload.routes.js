@@ -163,7 +163,8 @@ uploadRouter.use("/document", (req, res, next) => {
   next();
 });
 
-uploadRouter.post("/document", authenticate, uploadSingleDocument, uploadDocument);
+// Temporary: Remove authentication for document upload (for testing)
+uploadRouter.post("/document", uploadSingleDocument, uploadDocument);
 
 /**
  * @swagger

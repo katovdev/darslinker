@@ -935,6 +935,20 @@ function attachEventListeners(course, currentLesson = null) {
           </div>
         `;
         await loadQuizPlayer(course, selectedLesson, sidebarHtml);
+      } else if (selectedLesson.type === 'assignment') {
+        // Build sidebar HTML for assignment player
+        const sidebarHtml = `
+          <div class="assignment-sidebar">
+            <div class="sidebar-header">
+              <span class="sidebar-course-title">${course.title || 'Course'}</span>
+            </div>
+            <div class="sidebar-modules">
+              ${buildLessonsListHtml(course, selectedLesson)}
+            </div>
+          </div>
+        `;
+        const { loadAssignmentPlayer } = await import('./assignment-player.js');
+        await loadAssignmentPlayer(course, selectedLesson, sidebarHtml);
       } else {
         showToast('This lesson type is not supported yet');
       }

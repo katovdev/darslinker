@@ -49,6 +49,7 @@ app.use((req, res, next) => {
   const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5174',
+    'http://localhost:5175',
     'http://localhost:3000',
     'https://bucolic-fairy-0e50d6.netlify.app'
   ];
