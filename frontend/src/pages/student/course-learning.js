@@ -1112,7 +1112,7 @@ function handleLogout() {
 }
 
 // Load lesson player in content area
-function loadLessonPlayer(course, lesson) {
+export function loadLessonPlayer(course, lesson) {
   const mainContent = document.querySelector('.course-learning-page');
   if (!mainContent) return;
   

@@ -350,11 +350,11 @@ const getDashboardStats = catchAsync(async (req, res) => {
   const Student = (await import("../models/student.model.js")).default;
 
   // Get course statistics
-  console.log('🔍 Searching courses for teacher ID:', teacher._id);
-  console.log('🔍 Teacher ID type:', typeof teacher._id);
-  
+  console.log('🔍 Searching courses for teacher ID:', teacherData._id);
+  console.log('🔍 Teacher ID type:', typeof teacherData._id);
+
   // First, let's see all courses for this teacher
-  const allCourses = await Course.find({ teacher: teacher._id });
+  const allCourses = await Course.find({ teacher: teacherData._id });
   console.log('📚 Found courses:', allCourses.length);
   if (allCourses.length > 0) {
     console.log('📚 First course:', {
@@ -365,7 +365,7 @@ const getDashboardStats = catchAsync(async (req, res) => {
   }
   
   const courseStats = await Course.aggregate([
-    { $match: { teacher: teacher._id } },
+    { $match: { teacher: teacherData._id } },
     {
       $addFields: {
         enrolledCount: { $size: { $ifNull: ["$enrolledStudents", []] } }
@@ -389,7 +389,7 @@ const getDashboardStats = catchAsync(async (req, res) => {
   ]);
 
   // Get recent courses
-  const recentCourses = await Course.find({ teacher: teacher._id })
+  const recentCourses = await Course.find({ teacher: teacherData._id })
     .sort({ createdAt: -1 })
     .limit(5)
     .select("title description price enrollmentCount status createdAt");
@@ -401,7 +401,7 @@ const getDashboardStats = catchAsync(async (req, res) => {
   const monthlyEarnings = await Course.aggregate([
     {
       $match: {
-        teacher: teacher._id,
+        teacher: teacherData._id,
         createdAt: { $gte: sixMonthsAgo }
       }
     },

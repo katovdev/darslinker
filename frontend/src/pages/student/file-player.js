@@ -696,8 +696,9 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
     if (selectedLesson) {
       // Check lesson type and load appropriate player
       if (selectedLesson.type === 'video') {
-        // Load video player
-        window.location.href = '#/course/' + course._id + '/lesson/' + lessonId;
+        // Load video player directly
+        const { loadLessonPlayer } = await import('./course-learning.js');
+        await loadLessonPlayer(course, selectedLesson);
       } else if (selectedLesson.type === 'quiz') {
         // Build sidebar HTML for quiz player
         const sidebarHtml = `

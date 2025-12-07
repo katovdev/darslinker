@@ -15324,57 +15324,116 @@ function openAIAssistantPage() {
 };
 
 // Open Assignments Page
-window.openAssignmentsPage = function() {
+window.openAssignmentsPage = async function() {
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (!contentArea) {
     console.error('Content area not found');
     return;
   }
-  
+
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
     pageTitle.textContent = 'Assignments';
   }
-  
+
   // Add assignments-page class to content area
   contentArea.className = 'figma-content-area assignments-page';
-  
-  // Update content area only
+
+  // Show loading state first
   contentArea.innerHTML = `
+    <div style="display: flex; justify-content: center; align-items: center; height: 400px; color: #7ea2d4; font-size: 18px;">
+      <div>Loading assignments...</div>
+    </div>
+  `;
+
+  try {
+    // Get current teacher data - check multiple storage locations
+    let currentTeacher = null;
+    let teacherId = null;
+
+    // First try to get full teacher data from localStorage/sessionStorage
+    let currentUserData = localStorage.getItem('currentUser');
+    if (!currentUserData) {
+      currentUserData = sessionStorage.getItem('currentUser');
+    }
+
+    if (currentUserData) {
+      try {
+        currentTeacher = JSON.parse(currentUserData);
+        teacherId = currentTeacher._id;
+      } catch (e) {
+        console.warn('Failed to parse currentUser data:', e);
+      }
+    }
+
+    // If no full teacher data, try to get just the teacher ID
+    if (!teacherId) {
+      teacherId = sessionStorage.getItem('currentTeacherId');
+    }
+
+    if (!teacherId) {
+      console.error('❌ No teacher ID found in session storage:', {
+        localStorage_currentUser: localStorage.getItem('currentUser'),
+        sessionStorage_currentUser: sessionStorage.getItem('currentUser'),
+        sessionStorage_currentTeacherId: sessionStorage.getItem('currentTeacherId')
+      });
+      throw new Error('Teacher ID not found in session storage');
+    }
+
+    console.log('✅ Found teacher ID:', teacherId);
+
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+
+    // Fetch teacher's submissions and courses in parallel
+    const [submissionsResponse, coursesResponse] = await Promise.all([
+      fetch(`${apiBaseUrl}/submissions/teacher/${teacherId}`),
+      fetch(`${apiBaseUrl}/teachers/${teacherId}/dashboard`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken') || ''}`
+        }
+      })
+    ]);
+
+    if (!submissionsResponse.ok) {
+      throw new Error('Failed to fetch submissions');
+    }
+
+    const submissionsData = await submissionsResponse.json();
+    const submissions = submissionsData.submissions || [];
+
+    // Calculate statistics
+    const totalAssignments = submissions.length;
+    const pendingAssignments = submissions.filter(s => s.status === 'submitted').length;
+    const gradedAssignments = submissions.filter(s => s.status === 'graded').length;
+    const averageGrade = gradedAssignments > 0
+      ? Math.round(submissions.filter(s => s.grade).reduce((sum, s) => sum + s.grade, 0) / gradedAssignments)
+      : 0;
+
+    // Get unique courses from submissions
+    const courseMap = new Map();
+    submissions.forEach(submission => {
+      if (submission.courseId && submission.courseId._id) {
+        courseMap.set(submission.courseId._id, submission.courseId.title);
+      }
+    });
+
+    // Generate course filter options
+    const courseOptions = Array.from(courseMap.entries()).map(([id, title]) =>
+      `<option value="${id}">${title}</option>`
+    ).join('');
+
+    // Store data globally for filter function access
+    window.assignmentSubmissions = submissions;
+    window.assignmentCourseData = {
+      'all': 'all courses',
+      ...Object.fromEntries(courseMap)
+    };
+
+    // Update content area with dynamic data
+    contentArea.innerHTML = `
           <style>
-            .course-assignment-banner {
-              background: rgba(32, 32, 32, 0.4) !important;
-              border: 1px solid var(--primary-border) !important;
-              border-radius: 10px !important;
-              padding: 16px 20px !important;
-              margin-bottom: 20px !important;
-              display: flex !important;
-              align-items: center !important;
-              gap: 12px !important;
-            }
-            .course-assignment-icon {
-              display: flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-              flex-shrink: 0 !important;
-              color: var(--primary-color) !important;
-            }
-            .course-assignment-info {
-              flex: 1 !important;
-            }
-            .course-assignment-title {
-              color: #ffffff !important;
-              font-size: 18px !important;
-              font-weight: 600 !important;
-              margin: 0 0 4px 0 !important;
-            }
-            .course-assignment-subtitle {
-              color: var(--primary-color) !important;
-              font-size: 14px !important;
-              margin: 0 !important;
-            }
             .course-filter-section {
               background: rgba(32, 32, 32, 0.4) !important;
               border: 1px solid var(--primary-border) !important;
@@ -15553,19 +15612,50 @@ window.openAssignmentsPage = function() {
             .assignment-action {
               align-self: flex-end !important;
             }
+            .assignment-action {
+              display: flex !important;
+              align-items: center !important;
+              gap: 12px !important;
+            }
             .grade-btn {
-              background: var(--primary-light) !important;
-              border: 1px solid var(--primary-border-hover) !important;
-              color: var(--primary-color) !important;
-              padding: 8px 16px !important;
-              border-radius: 8px !important;
+              background: rgba(126, 162, 212, 0.1) !important;
+              border: 1px solid rgba(126, 162, 212, 0.3) !important;
+              color: #7ea2d4 !important;
+              padding: 6px 12px !important;
+              border-radius: 6px !important;
               font-size: 12px !important;
-              font-weight: 600 !important;
+              font-weight: 500 !important;
               cursor: pointer !important;
-              transition: all 0.3s ease !important;
+              transition: background 0.2s ease, border-color 0.2s ease !important;
+              height: 32px !important;
             }
             .grade-btn:hover {
-              background: var(--border-color) !important;
+              background: rgba(126, 162, 212, 0.2) !important;
+              border-color: #7ea2d4 !important;
+            }
+            .view-file-btn {
+              display: inline-flex !important;
+              align-items: center !important;
+              gap: 6px !important;
+              background: rgba(126, 162, 212, 0.1) !important;
+              border: 1px solid rgba(126, 162, 212, 0.3) !important;
+              color: #7ea2d4 !important;
+              padding: 6px 12px !important;
+              border-radius: 6px !important;
+              font-size: 12px !important;
+              font-weight: 500 !important;
+              text-decoration: none !important;
+              cursor: pointer !important;
+              transition: background 0.2s ease, border-color 0.2s ease !important;
+              height: 32px !important;
+            }
+            .view-file-btn:hover {
+              background: rgba(126, 162, 212, 0.2) !important;
+              border-color: #7ea2d4 !important;
+            }
+            .view-file-btn svg {
+              width: 14px !important;
+              height: 14px !important;
             }
             @media (max-width: 1200px) {
               .assignments-stats-grid {
@@ -15582,19 +15672,6 @@ window.openAssignmentsPage = function() {
             }
           </style>
 
-          <!-- Course Assignment Notification Banner -->
-          <div class="course-assignment-banner">
-            <div class="course-assignment-icon">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                <path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2" fill="none"/>
-              </svg>
-            </div>
-            <div class="course-assignment-info">
-              <h3 class="course-assignment-title" id="assignment-banner-title">New assignments received today</h3>
-              <p class="course-assignment-subtitle" id="assignment-banner-subtitle">React Masterclass: 3 new • JavaScript Basics: 2 new • Vue.js Advanced: 1 new</p>
-            </div>
-          </div>
 
           <!-- Course Filter Section -->
           <div class="course-filter-section">
@@ -15602,15 +15679,11 @@ window.openAssignmentsPage = function() {
               <span class="course-filter-label">Filter by Course:</span>
               <select class="course-select" id="courseFilterSelect" onchange="filterAssignmentsByCourse(this.value)">
                 <option value="all">All Courses</option>
-                <option value="react-masterclass">React Masterclass</option>
-                <option value="javascript-basics">JavaScript Basics</option>
-                <option value="vue-advanced">Vue.js Advanced</option>
-                <option value="node-backend">Node.js Backend Development</option>
-                <option value="python-django">Python & Django</option>
+                ${courseOptions}
               </select>
             </div>
             <div class="assignment-counter" id="assignment-counter">
-              Showing 15 assignments from all courses
+              Showing ${totalAssignments} assignments from all courses
             </div>
           </div>
 
@@ -15618,19 +15691,19 @@ window.openAssignmentsPage = function() {
           <div class="assignments-stats-grid">
             <div class="assignments-card" onclick="showAssignmentDetails('total')">
               <h3 class="assignments-card-title">Total assignments</h3>
-              <div class="assignments-card-amount">235</div>
+              <div class="assignments-card-amount">${totalAssignments}</div>
             </div>
             <div class="assignments-card" onclick="showAssignmentDetails('pending')">
               <h3 class="assignments-card-title">Pending Review</h3>
-              <div class="assignments-card-amount">15</div>
+              <div class="assignments-card-amount">${pendingAssignments}</div>
             </div>
             <div class="assignments-card" onclick="showAssignmentDetails('graded')">
               <h3 class="assignments-card-title">Graded</h3>
-              <div class="assignments-card-amount">220</div>
+              <div class="assignments-card-amount">${gradedAssignments}</div>
             </div>
             <div class="assignments-card" onclick="showAssignmentDetails('grade')">
               <h3 class="assignments-card-title">Average grade</h3>
-              <div class="assignments-card-amount">80%</div>
+              <div class="assignments-card-amount">${averageGrade}%</div>
             </div>
           </div>
 
@@ -15645,91 +15718,87 @@ window.openAssignmentsPage = function() {
             <h3 class="assignments-section-title">Pending assignments</h3>
 
             <!-- Assignment Items -->
-            <div class="assignment-item" data-course="react-masterclass">
-              <div class="assignment-header">
-                <div>
-                  <h4 class="assignment-title">Build a Todo App Project</h4>
-                  <div class="assignment-meta">Submitted: Oct 10, 2025 • React Masterclass</div>
+            ${submissions.length === 0 ? `
+              <div class="no-assignments">
+                <div class="no-assignments-icon">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                  </svg>
                 </div>
-                <span class="assignment-status">Pending</span>
+                <h3>No assignments yet</h3>
+                <p>Assignment submissions will appear here once students start submitting their work.</p>
               </div>
-              <div class="assignment-description">
-                Submission: Complete Todo application with add, delete, and edit functionality
-              </div>
-              <div class="assignment-action">
-                <button class="grade-btn" onclick="gradeAssignment(1)">Grade now</button>
-              </div>
-            </div>
+            ` : submissions.map((submission, index) => {
+              const submittedDate = new Date(submission.submittedAt).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              });
+              const courseTitle = submission.courseId?.title || 'Unknown Course';
+              const studentName = submission.studentId?.firstName && submission.studentId?.lastName
+                ? `${submission.studentId.firstName} ${submission.studentId.lastName}`
+                : 'Unknown Student';
 
-            <div class="assignment-item" data-course="javascript-basics">
-              <div class="assignment-header">
-                <div>
-                  <h4 class="assignment-title">JavaScript Calculator Project</h4>
-                  <div class="assignment-meta">Submitted: Oct 11, 2025 • JavaScript Basics</div>
+              return `
+                <div class="assignment-item" data-course="${submission.courseId?._id || ''}" data-status="${submission.status}">
+                  <div class="assignment-header">
+                    <div>
+                      <h4 class="assignment-title">${submission.lessonTitle || 'Assignment Submission'}</h4>
+                      <div class="assignment-meta">
+                        Submitted: ${submittedDate} • ${courseTitle} • ${studentName}
+                      </div>
+                    </div>
+                    <span class="assignment-status ${submission.status === 'graded' ? 'graded' : 'pending'}">${submission.status === 'graded' ? 'Graded' : 'Pending'}</span>
+                  </div>
+                  <div class="assignment-description">
+                    <strong>File:</strong> ${submission.fileName || 'submission.pdf'}
+                    ${submission.instructions ? `<br><strong>Instructions:</strong> ${submission.instructions}` : ''}
+                    ${submission.feedback ? `<br><strong>Feedback:</strong> ${submission.feedback}` : ''}
+                  </div>
+                  <div class="assignment-action">
+                    ${submission.status === 'graded'
+                      ? `<div class="grade-display">Grade: ${submission.grade}%</div>`
+                      : `<button class="grade-btn" onclick="gradeAssignment('${submission._id}', '${submission.fileName}', '${submission.fileUrl}')">Grade now</button>`
+                    }
+                    <a href="${submission.fileUrl}" target="_blank" class="view-file-btn">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                      View File
+                    </a>
+                  </div>
                 </div>
-                <span class="assignment-status">Pending</span>
-              </div>
-              <div class="assignment-description">
-                Submission: Basic calculator with arithmetic operations and modern UI
-              </div>
-              <div class="assignment-action">
-                <button class="grade-btn" onclick="gradeAssignment(2)">Grade now</button>
-              </div>
-            </div>
-
-            <div class="assignment-item" data-course="vue-advanced">
-              <div class="assignment-header">
-                <div>
-                  <h4 class="assignment-title">Vue.js Component Library</h4>
-                  <div class="assignment-meta">Submitted: Oct 12, 2025 • Vue.js Advanced</div>
-                </div>
-                <span class="assignment-status">Pending</span>
-              </div>
-              <div class="assignment-description">
-                Submission: Reusable component library with documentation
-              </div>
-              <div class="assignment-action">
-                <button class="grade-btn" onclick="gradeAssignment(3)">Grade now</button>
-              </div>
-            </div>
-
-            <div class="assignment-item" data-course="react-masterclass">
-              <div class="assignment-header">
-                <div>
-                  <h4 class="assignment-title">React Router Implementation</h4>
-                  <div class="assignment-meta">Submitted: Oct 9, 2025 • React Masterclass</div>
-                </div>
-                <span class="assignment-status">Pending</span>
-              </div>
-              <div class="assignment-description">
-                Submission: Multi-page application with client-side routing
-              </div>
-              <div class="assignment-action">
-                <button class="grade-btn" onclick="gradeAssignment(4)">Grade now</button>
-              </div>
-            </div>
-
-            <div class="assignment-item" data-course="node-backend">
-              <div class="assignment-header">
-                <div>
-                  <h4 class="assignment-title">REST API Development</h4>
-                  <div class="assignment-meta">Submitted: Oct 8, 2025 • Node.js Backend Development</div>
-                </div>
-                <span class="assignment-status">Pending</span>
-              </div>
-              <div class="assignment-description">
-                Submission: Complete REST API with authentication and database
-              </div>
-              <div class="assignment-action">
-                <button class="grade-btn" onclick="gradeAssignment(5)">Grade now</button>
-              </div>
-            </div>
+              `;
+            }).join('')}
           </div>
   `;
-  
-  // Apply saved primary color to Assignment page
-  const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
-  applyPrimaryColor(savedColor);
+
+    // Apply saved primary color to Assignment page
+    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+    applyPrimaryColor(savedColor);
+
+  } catch (error) {
+    console.error('Error loading assignments:', error);
+
+    // Show error state
+    contentArea.innerHTML = `
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 400px; text-align: center; color: #ff6b6b;">
+        <div style="margin-bottom: 20px;">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="m15 9-6 6"/>
+            <path d="m9 9 6 6"/>
+          </svg>
+        </div>
+        <h3 style="margin: 0 0 10px 0; color: #ffffff;">Failed to load assignments</h3>
+        <p style="margin: 0 0 20px 0; color: rgba(255,255,255,0.7);">There was an error loading the assignment data. Please try again.</p>
+        <button onclick="openAssignmentsPage()" style="padding: 10px 20px; background: #7ea2d4; border: none; border-radius: 6px; color: white; cursor: pointer;">
+          Try Again
+        </button>
+      </div>
+    `;
+  }
 };
 
 // Assignment Interactive Functions
@@ -15960,24 +16029,10 @@ window.filterAssignmentsByCourse = function(courseValue) {
   const statsCards = document.querySelectorAll('.assignments-card-amount');
 
   let visibleCount = 0;
-  const courseNames = {
-    'all': 'all courses',
-    'react-masterclass': 'React Masterclass',
-    'javascript-basics': 'JavaScript Basics',
-    'vue-advanced': 'Vue.js Advanced',
-    'node-backend': 'Node.js Backend Development',
-    'python-django': 'Python & Django'
-  };
 
-  // Course-specific statistics
-  const courseStats = {
-    'all': { total: 235, pending: 15, graded: 220, average: 80 },
-    'react-masterclass': { total: 89, pending: 6, graded: 83, average: 85 },
-    'javascript-basics': { total: 67, pending: 4, graded: 63, average: 78 },
-    'vue-advanced': { total: 45, pending: 2, graded: 43, average: 82 },
-    'node-backend': { total: 23, pending: 2, graded: 21, average: 79 },
-    'python-django': { total: 11, pending: 1, graded: 10, average: 75 }
-  };
+  // Get actual course data from global assignment data
+  const courseNames = window.assignmentCourseData || { 'all': 'all courses' };
+  const allSubmissions = window.assignmentSubmissions || [];
 
   // Filter assignment items
   assignmentItems.forEach(item => {
@@ -15991,31 +16046,29 @@ window.filterAssignmentsByCourse = function(courseValue) {
     }
   });
 
+  // Calculate statistics for filtered submissions
+  let filteredSubmissions = allSubmissions;
+  if (courseValue !== 'all') {
+    filteredSubmissions = allSubmissions.filter(s => s.courseId && s.courseId._id === courseValue);
+  }
+
+  const totalAssignments = filteredSubmissions.length;
+  const pendingAssignments = filteredSubmissions.filter(s => s.status === 'submitted').length;
+  const gradedAssignments = filteredSubmissions.filter(s => s.status === 'graded').length;
+  const averageGrade = gradedAssignments > 0
+    ? Math.round(filteredSubmissions.filter(s => s.grade).reduce((sum, s) => sum + s.grade, 0) / gradedAssignments)
+    : 0;
+
   // Update counter
-  const courseName = courseNames[courseValue] || courseValue;
+  const courseName = courseNames[courseValue] || courseNames['all'] || 'selected course';
   counter.textContent = `Showing ${visibleCount} assignments from ${courseName}`;
 
   // Update statistics cards
-  const stats = courseStats[courseValue] || courseStats['all'];
-  if (statsCards[0]) statsCards[0].textContent = stats.total;
-  if (statsCards[1]) statsCards[1].textContent = stats.pending;
-  if (statsCards[2]) statsCards[2].textContent = stats.graded;
-  if (statsCards[3]) statsCards[3].textContent = stats.average + '%';
+  if (statsCards[0]) statsCards[0].textContent = totalAssignments;
+  if (statsCards[1]) statsCards[1].textContent = pendingAssignments;
+  if (statsCards[2]) statsCards[2].textContent = gradedAssignments;
+  if (statsCards[3]) statsCards[3].textContent = averageGrade + '%';
 
-  // Update banner for specific course
-  const banner = document.querySelector('.course-assignment-banner');
-  const bannerTitle = document.getElementById('assignment-banner-title');
-  const bannerSubtitle = document.getElementById('assignment-banner-subtitle');
-
-  if (courseValue !== 'all') {
-    bannerTitle.textContent = `Assignments for ${courseNames[courseValue]}`;
-    bannerSubtitle.textContent = `${stats.pending} pending • ${stats.graded} graded • ${stats.average}% average grade`;
-    banner.style.background = 'linear-gradient(135deg, rgba(126, 162, 212, 0.15) 0%, rgba(126, 162, 212, 0.08) 100%)';
-  } else {
-    bannerTitle.textContent = 'New assignments received today';
-    bannerSubtitle.textContent = 'React Masterclass: 3 new • JavaScript Basics: 2 new • Vue.js Advanced: 1 new';
-    banner.style.background = 'linear-gradient(135deg, rgba(126, 162, 212, 0.1) 0%, rgba(126, 162, 212, 0.05) 100%)';
-  }
 
   // Add slide-in animation CSS if not exists
   if (!document.getElementById('slideAnimation')) {

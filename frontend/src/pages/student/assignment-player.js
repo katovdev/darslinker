@@ -1008,11 +1008,55 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
     }
   }
 
+  // Check submission status from backend
+  async function checkBackendSubmission() {
+    try {
+      const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      
+      console.log('🔍 Checking backend for existing submission...');
+      
+      const response = await fetch(
+        `${apiBaseUrl}/submissions/student/${landingUser._id}/lesson/${lesson._id}`
+      );
+      
+      if (response.ok) {
+        const result = await response.json();
+        
+        if (result.success && result.submission) {
+          console.log('✅ Found existing submission in DB:', result.submission);
+          
+          // Show submission status from DB
+          const submission = result.submission;
+          showSubmissionStatus({
+            fileUrl: submission.fileUrl,
+            fileName: submission.fileName,
+            submittedAt: submission.submittedAt,
+          });
+          
+          return true;
+        }
+      }
+      
+      console.log('📭 No submission found in DB');
+      return false;
+      
+    } catch (error) {
+      console.error('Error checking backend submission:', error);
+      return false;
+    }
+  }
+
   // Check submission status first, then restore upload if not submitted
-  setTimeout(() => {
-    const isSubmitted = checkSubmissionStatus();
-    if (!isSubmitted) {
-      restorePreviousUpload();
+  setTimeout(async () => {
+    const hasBackendSubmission = await checkBackendSubmission();
+    
+    if (!hasBackendSubmission) {
+      // Check localStorage as fallback
+      const isSubmitted = checkSubmissionStatus();
+      if (!isSubmitted) {
+        restorePreviousUpload();
+      }
     }
   }, 100);
 
@@ -1180,34 +1224,52 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       submitBtn.disabled = true;
       submitBtn.textContent = 'Submitting...';
 
-      // For now, we'll create a simple submission record
-      // In a real system, this would find or create a proper assignment record
+      // Submit to backend API
       const submissionData = {
         courseId: course._id,
         lessonId: lesson._id,
         studentId: landingUser._id,
         fileUrl: uploadedFileUrl,
         fileName: uploadedFileName,
-        submittedAt: new Date().toISOString(),
         lessonTitle: lesson.title,
         instructions: lesson.instructions
       };
 
-      // For now, let's store this in session storage and show success
-      // In production, this should go to a proper submission endpoint
-      const existingSubmissions = JSON.parse(sessionStorage.getItem('assignmentSubmissions') || '[]');
-      existingSubmissions.push(submissionData);
-      sessionStorage.setItem('assignmentSubmissions', JSON.stringify(existingSubmissions));
+      console.log('📤 Submitting assignment:', {
+        courseId: submissionData.courseId,
+        lessonId: submissionData.lessonId,
+        studentId: submissionData.studentId,
+        fileName: submissionData.fileName,
+        lessonTitle: submissionData.lessonTitle,
+      });
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const url = `${apiBaseUrl}/submissions/lesson-assignment`;
+      console.log('🌐 Submission URL:', url);
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submissionData)
+      });
+
+      console.log('📥 Response status:', response.status, response.statusText);
+
+      const result = await response.json();
+      console.log('📦 Response data:', result);
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to submit assignment');
+      }
 
       // Mark as submitted and clear saved file data
       markAsSubmitted(uploadedFileUrl, uploadedFileName);
       clearSavedFile();
 
       showToast('Assignment Submitted!', 'Your submission has been recorded successfully.', 'success', 3000);
-      console.log('Assignment submitted:', submissionData);
+      console.log('✅ Assignment submitted successfully!');
 
       // Redirect back to course after showing toast
       setTimeout(() => {
@@ -1215,7 +1277,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }, 2000);
 
     } catch (error) {
-      console.error('Submission error:', error);
+      console.error('❌ Submission error:', error);
       showToast('Submission Failed', 'Failed to submit assignment: ' + error.message, 'error', 5000);
 
       const submitBtn = document.getElementById('submitBtn');
@@ -1344,8 +1406,9 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
     if (selectedLesson) {
       // Check lesson type and load appropriate player
       if (selectedLesson.type === 'video') {
-        // Load video player
-        window.location.href = '#/course/' + course._id + '/lesson/' + lessonId;
+        // Load video player directly
+        const { loadLessonPlayer } = await import('./course-learning.js');
+        await loadLessonPlayer(course, selectedLesson);
       } else if (selectedLesson.type === 'quiz') {
         // Build sidebar HTML for quiz player
         const sidebarHtml = `
