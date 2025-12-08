@@ -702,7 +702,6 @@ export function renderLandingStudentDashboard() {
             </div>
             <div class="landing-nav-children hidden" id="general-children">
               <a class="landing-nav-item active" data-page="home">Home</a>
-              <a class="landing-nav-item" data-page="assignments">Assignments</a>
               <a class="landing-nav-item" data-page="messages">Messages</a>
             </div>
           </div>

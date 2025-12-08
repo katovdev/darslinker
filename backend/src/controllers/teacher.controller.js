@@ -802,4 +802,146 @@ const getTeacherStudents = catchAsync(async (req, res) => {
   });
 });
 
-export { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage, getTeacherStudents };
+/**
+ * Get quiz analytics for teacher's courses
+ * @route GET /teachers/:teacherId/quiz-analytics
+ * @access Private (Teacher only)
+ */
+const getQuizAnalytics = catchAsync(async (req, res) => {
+  const { teacherId } = req.params;
+  const { courseId, lessonId } = req.query;
+
+  logger.info("📊 Getting quiz analytics", { teacherId, courseId, lessonId });
+
+  // Validate teacher
+  const teacher = await Teacher.findById(teacherId);
+  if (!teacher) {
+    throw new ValidationError("Teacher not found");
+  }
+
+  // Import models
+  const Course = (await import("../models/course.model.js")).default;
+  const Student = (await import("../models/student.model.js")).default;
+
+  // Build query for courses
+  const courseQuery = { teacher: teacherId };
+  if (courseId) {
+    courseQuery._id = courseId;
+  }
+
+  // Get teacher's courses
+  const courses = await Course.find(courseQuery);
+  
+  if (courses.length === 0) {
+    return res.status(200).json({
+      success: true,
+      data: {
+        courses: [],
+        analytics: []
+      }
+    });
+  }
+
+  const courseIds = courses.map(c => c._id);
+
+  // Get all students who have taken quizzes in these courses
+  const students = await Student.find({
+    'testResults.courseId': { $in: courseIds }
+  }).select('firstName lastName testResults');
+
+  // Process quiz results
+  const analytics = [];
+
+  students.forEach(student => {
+    student.testResults.forEach(result => {
+      // Filter by course and lesson if specified
+      if (courseId && result.courseId.toString() !== courseId) return;
+      if (lessonId && result.lessonId.toString() !== lessonId) return;
+      
+      // Check if course belongs to this teacher
+      if (!courseIds.some(id => id.toString() === result.courseId.toString())) return;
+
+      // Skip results with invalid data (null/undefined score)
+      if (result.score === null || result.score === undefined) {
+        logger.warn("⚠️ Skipping quiz result with null/undefined score", {
+          studentId: student._id,
+          studentName: `${student.firstName} ${student.lastName}`,
+          lessonId: result.lessonId,
+          attemptNumber: result.attemptNumber
+        });
+        return;
+      }
+
+      // Calculate passed if not set (for old data)
+      let isPassed = result.passed;
+      if (isPassed === undefined || isPassed === null) {
+        isPassed = result.score >= 70;
+      }
+
+      analytics.push({
+        studentId: student._id,
+        studentName: `${student.firstName} ${student.lastName}`,
+        courseId: result.courseId,
+        lessonId: result.lessonId,
+        attemptNumber: result.attemptNumber || 1,
+        score: result.score,
+        totalQuestions: result.totalQuestions,
+        correctAnswers: result.correctAnswers,
+        passed: isPassed,
+        timeElapsed: result.timeElapsed,
+        date: result.date,
+        answers: result.answers
+      });
+    });
+  });
+
+  // Group by student and lesson to show only latest attempt
+  const latestAttempts = {};
+  analytics.forEach(item => {
+    const key = `${item.studentId}_${item.lessonId}`;
+    if (!latestAttempts[key] || item.attemptNumber > latestAttempts[key].attemptNumber) {
+      latestAttempts[key] = item;
+    }
+  });
+
+  // Convert back to array and sort by date
+  const finalAnalytics = Object.values(latestAttempts).sort((a, b) => 
+    new Date(b.date) - new Date(a.date)
+  );
+
+  // Calculate summary statistics
+  const passedCount = finalAnalytics.filter(a => a.passed === true).length;
+  const totalCount = finalAnalytics.length;
+  const passRate = totalCount > 0 ? Math.round((passedCount / totalCount) * 100) : 0;
+
+  logger.info("✅ Quiz analytics retrieved", {
+    teacherId,
+    totalResults: analytics.length,
+    latestAttempts: finalAnalytics.length,
+    passedCount,
+    totalCount,
+    passRate,
+    samplePassed: finalAnalytics.slice(0, 3).map(a => ({ passed: a.passed, score: a.score }))
+  });
+
+  res.status(200).json({
+    success: true,
+    data: {
+      courses: courses.map(c => ({
+        _id: c._id,
+        title: c.title
+      })),
+      analytics: finalAnalytics,
+      summary: {
+        totalAttempts: analytics.length, // All attempts, not just latest
+        uniqueStudents: new Set(finalAnalytics.map(a => a.studentId.toString())).size,
+        averageScore: finalAnalytics.length > 0 
+          ? Math.round(finalAnalytics.reduce((sum, a) => sum + a.score, 0) / finalAnalytics.length)
+          : 0,
+        passRate: passRate
+      }
+    }
+  });
+});
+
+export { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage, getTeacherStudents, getQuizAnalytics };

@@ -323,6 +323,21 @@ export const teacherIdSchema = Joi.object({
 });
 
 /**
+ * Teacher ID Param Validation Schema (for :teacherId routes)
+ * Validates MongoDB ObjectId format for teacher
+ */
+export const teacherIdParamSchema = Joi.object({
+  teacherId: Joi.string()
+    .pattern(/^[0-9a-fA-F]{24}$/)
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Invalid teacher ID format. Must be a valid MongoDB ObjectId",
+      "any.required": "Teacher ID is required",
+    }),
+});
+
+/**
  * Teacher Query Validation Schema
  * Validates query parameters for teacher filtering and pagination
  */

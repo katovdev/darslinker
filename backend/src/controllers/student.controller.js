@@ -280,12 +280,44 @@ const saveQuizResult = catchAsync(async (req, res) => {
     timeElapsed
   } = req.body;
 
-  // Find student directly
+  logger.info("💾 Attempting to save quiz result", {
+    studentId: id,
+    lessonId,
+    attemptNumber,
+    score,
+    passed
+  });
+
+  // Try to find user first (could be any role)
+  const User = (await import("../models/user.model.js")).default;
+  const user = await User.findById(id);
+  
+  if (!user) {
+    logger.error("❌ User not found in database", { userId: id });
+    throw new ValidationError(`User not found with ID: ${id}`);
+  }
+  
+  logger.info("✅ User found", {
+    userId: id,
+    userName: `${user.firstName} ${user.lastName}`,
+    userRole: user.role
+  });
+
+  // Find student (discriminator model)
   const student = await Student.findById(id);
   
   if (!student) {
-    throw new ValidationError("Student not found");
+    logger.error("❌ Student profile not found", { 
+      userId: id,
+      userRole: user.role 
+    });
+    throw new ValidationError(`Student profile not found. User role: ${user.role}`);
   }
+  
+  logger.info("✅ Student profile found", {
+    studentId: id,
+    studentName: `${student.firstName} ${student.lastName}`
+  });
 
   // Initialize testResults array if it doesn't exist
   if (!student.testResults) {
@@ -310,12 +342,14 @@ const saveQuizResult = catchAsync(async (req, res) => {
   student.testResults.push(quizResult);
   await student.save();
 
-  logger.info("Quiz result saved", {
+  logger.info("✅ Quiz result saved", {
     studentId: id,
     lessonId,
     attemptNumber,
     score,
-    passed
+    passed,
+    passedType: typeof passed,
+    quizResultPassed: quizResult.passed
   });
 
   res.status(200).json({
@@ -513,4 +547,41 @@ const getCourseProgress = catchAsync(async (req, res) => {
   });
 });
 
-export { createStudentProfile, findAll, findOne, update, remove, saveQuizResult, enrollInCourse, checkEnrollment, completeLesson, getCourseProgress };
+/**
+ * Get quiz attempts for a student and lesson
+ * @route GET /students/:id/quiz-attempts/:lessonId
+ * @access Public
+ */
+const getQuizAttempts = catchAsync(async (req, res) => {
+  const { id, lessonId } = req.params;
+
+  const student = await Student.findById(id).select('testResults');
+  
+  if (!student) {
+    return res.status(200).json({
+      success: true,
+      attempts: []
+    });
+  }
+
+  // Filter results for this specific lesson
+  const lessonResults = student.testResults.filter(
+    r => r.lessonId && r.lessonId.toString() === lessonId.toString()
+  );
+  
+  // Sort by attempt number
+  lessonResults.sort((a, b) => a.attemptNumber - b.attemptNumber);
+
+  logger.info("Quiz attempts retrieved", {
+    studentId: id,
+    lessonId,
+    attemptsCount: lessonResults.length
+  });
+
+  res.status(200).json({
+    success: true,
+    attempts: lessonResults
+  });
+});
+
+export { createStudentProfile, findAll, findOne, update, remove, saveQuizResult, enrollInCourse, checkEnrollment, completeLesson, getCourseProgress, getQuizAttempts };

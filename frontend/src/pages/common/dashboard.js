@@ -17565,7 +17565,7 @@ window.toggleAISetting = function(toggleElement) {
   }
 };
 
-window.openQuizAnalytics = function() {
+window.openQuizAnalytics = async function() {
   console.log('openQuizAnalytics function called');
   
   const contentArea = document.querySelector('.figma-content-area');
@@ -17581,219 +17581,337 @@ window.openQuizAnalytics = function() {
     pageTitle.textContent = 'Quiz Analytics';
   }
   
-  // Update content area only
-  const quizAnalyticsHTML = `
-          <style>
-            .figma-content-area.quiz-analytics-page {
-              padding: 24px !important;
-              display: flex !important;
-              flex-direction: column !important;
-              gap: 24px !important;
-            }
-            .quiz-stats-grid {
-              display: grid !important;
-              grid-template-columns: repeat(3, 1fr) !important;
-              gap: 20px !important;
-              margin-bottom: 0 !important;
-            }
-            .quiz-stat-card {
-              background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid var(--primary-border) !important;
-              border-radius: 12px !important;
-              padding: 24px !important;
-              text-align: center !important;
-              transition: all 0.3s ease !important;
-            }
-            .quiz-stat-card:hover {
-              background: rgba(58, 56, 56, 0.4) !important;
-              border-color: var(--border-color) !important;
-            }
-            .quiz-stat-title {
-              color: rgba(156, 163, 175, 1) !important;
-              font-size: 14px !important;
-              font-weight: 500 !important;
-              margin-bottom: 12px !important;
-              text-transform: uppercase !important;
-              letter-spacing: 0.5px !important;
-            }
-            .quiz-stat-value {
-              color: #ffffff !important;
-              font-size: 36px !important;
-              font-weight: 700 !important;
-              margin-bottom: 0 !important;
-              line-height: 1 !important;
-            }
-            .quiz-tabs {
-              display: flex !important;
-              gap: 0 !important;
-              background: rgba(20, 20, 20, 0.5) !important;
-              border-radius: 12px !important;
-              padding: 4px !important;
-              margin-bottom: 24px !important;
-            }
-            .quiz-tab {
-              flex: 1 !important;
-              padding: 12px 20px !important;
-              background: transparent !important;
-              border: none !important;
-              color: rgba(156, 163, 175, 1) !important;
-              cursor: pointer !important;
-              font-size: 14px !important;
-              font-weight: 500 !important;
-              border-radius: 8px !important;
-              transition: all 0.3s ease !important;
-            }
-            .quiz-tab.active {
-              background: var(--primary-light) !important;
-              color: var(--primary-color) !important;
-            }
-            .quiz-content-section {
-              background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid var(--primary-border) !important;
-              border-radius: 12px !important;
-              padding: 0 !important;
-              overflow: hidden !important;
-            }
-            .quiz-section-header {
-              padding: 20px 24px !important;
-              border-bottom: 1px solid var(--primary-border) !important;
-              color: #ffffff !important;
-              font-size: 18px !important;
-              font-weight: 600 !important;
-              margin: 0 !important;
-            }
-            .quiz-list {
-              padding: 16px !important;
-              display: flex !important;
-              flex-direction: column !important;
-              gap: 16px !important;
-            }
-            .quiz-item {
-              background: rgba(20, 20, 20, 0.4) !important;
-              border: 1px solid var(--primary-border-light) !important;
-              border-radius: 8px !important;
-              padding: 20px !important;
-              transition: all 0.3s ease !important;
-              cursor: pointer !important;
-            }
-            .quiz-item:hover {
-              background: rgba(20, 20, 20, 0.6) !important;
-              border-color: var(--border-color) !important;
-            }
-            .quiz-header {
-              display: flex !important;
-              justify-content: space-between !important;
-              align-items: flex-start !important;
-              margin-bottom: 12px !important;
-            }
-            .quiz-title {
-              color: #ffffff !important;
-              font-size: 16px !important;
-              font-weight: 600 !important;
-              margin: 0 0 4px 0 !important;
-            }
-            .quiz-meta {
-              color: rgba(156, 163, 175, 1) !important;
-              font-size: 14px !important;
-              margin: 0 !important;
-            }
-            .quiz-actions {
-              display: flex !important;
-              gap: 8px !important;
-            }
-            .quiz-action-btn {
-              background: transparent !important;
-              border: 1px solid var(--primary-border-hover) !important;
-              color: var(--primary-color) !important;
-              padding: 4px 8px !important;
-              border-radius: 4px !important;
-              font-size: 12px !important;
-              cursor: pointer !important;
-              transition: all 0.3s ease !important;
-            }
-            .quiz-action-btn:hover {
-              background: rgba(126, 162, 212, 0.1) !important;
-            }
-            .quiz-description {
-              color: rgba(156, 163, 175, 1) !important;
-              font-size: 14px !important;
-              margin: 0 !important;
-              line-height: 1.4 !important;
-            }
-          </style>
-
-          <!-- Stats Cards -->
-          <div class="quiz-stats-grid">
-            <div class="quiz-stat-card">
-              <div class="quiz-stat-title">Total quizzes</div>
-              <div class="quiz-stat-value">24</div>
-            </div>
-            <div class="quiz-stat-card">
-              <div class="quiz-stat-title">Total Attempts</div>
-              <div class="quiz-stat-value">2,845</div>
-            </div>
-            <div class="quiz-stat-card">
-              <div class="quiz-stat-title">Average Score</div>
-              <div class="quiz-stat-value">78%</div>
-            </div>
-          </div>
-
-          <!-- Tab Navigation -->
-          <div class="quiz-tabs">
-            <button class="quiz-tab active" onclick="switchQuizTab('all', this)">All quizzes</button>
-            <button class="quiz-tab" onclick="switchQuizTab('results', this)">Results & Analytics</button>
-          </div>
-
-          <!-- Quiz Content -->
-          <div class="quiz-content-section">
-            <h3 class="quiz-section-header">My quizzes</h3>
-            <div class="quiz-list" id="quizList">
-              <div class="quiz-item">
-                <div class="quiz-header">
-                  <div>
-                    <h4 class="quiz-title">React Hooks Fundamentals Quiz</h4>
-                    <p class="quiz-meta">React Masterclass • 20 questions • 30 min</p>
-                  </div>
-                  <div class="quiz-actions">
-                    <button class="quiz-action-btn">⋯</button>
-                  </div>
-                </div>
-                <p class="quiz-description">Test your knowledge on React Hooks including useState, useEffect, useContext, and custom hooks.</p>
-              </div>
-
-              <div class="quiz-item">
-                <div class="quiz-header">
-                  <div>
-                    <h4 class="quiz-title">Advanced CSS Grid Layout Quiz</h4>
-                    <p class="quiz-meta">UI/UX Design • 15 questions • 25 min • AI</p>
-                  </div>
-                  <div class="quiz-actions">
-                    <button class="quiz-action-btn">⋯</button>
-                  </div>
-                </div>
-                <p class="quiz-description">Master CSS Grid with advanced layout techniques and real-world use cases.</p>
-              </div>
-
-              <div class="quiz-item">
-                <div class="quiz-header">
-                  <div>
-                    <h4 class="quiz-title">React Hooks Fundamentals Quiz</h4>
-                    <p class="quiz-meta">React Masterclass • 20 questions • 30 min</p>
-                  </div>
-                  <div class="quiz-actions">
-                    <button class="quiz-action-btn">⋯</button>
-                  </div>
-                </div>
-                <p class="quiz-description">Test your knowledge on React Hooks including useState, useEffect, useContext, and custom hooks.</p>
-              </div>
-            </div>
-  `;
-
-  contentArea.innerHTML = quizAnalyticsHTML;
+  // Get teacher ID - try multiple sources
+  let teacherId = null;
   
-  // Apply saved primary color to Quiz Analytics page
-  const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
-  applyPrimaryColor(savedColor);
+  // Try currentUser from localStorage first (this is the main one)
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  if (currentUser._id) {
+    teacherId = currentUser._id;
+  }
+  
+  // Try user from localStorage
+  if (!teacherId) {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user._id) {
+      teacherId = user._id;
+    }
+  }
+  
+  // Try window.currentUser if available
+  if (!teacherId && window.currentUser && window.currentUser._id) {
+    teacherId = window.currentUser._id;
+  }
+  
+  // Try sessionStorage
+  if (!teacherId) {
+    const sessionUser = sessionStorage.getItem('currentUser');
+    if (sessionUser) {
+      const parsedUser = JSON.parse(sessionUser);
+      teacherId = parsedUser._id;
+    }
+  }
+  
+  console.log('🔍 Teacher ID for quiz analytics:', teacherId);
+  
+  if (!teacherId) {
+    contentArea.innerHTML = `
+      <div style="padding: 40px; text-align: center; color: #EF4444;">
+        <p style="font-size: 18px; margin-bottom: 8px;">Teacher ID topilmadi</p>
+        <p style="color: #9CA3AF;">Iltimos, qaytadan login qiling</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Show loading state
+  contentArea.innerHTML = `
+    <div style="display: flex; justify-content: center; align-items: center; min-height: 400px; color: #9CA3AF;">
+      <div style="text-align: center;">
+        <div style="width: 40px; height: 40px; border: 4px solid rgba(126, 162, 212, 0.2); border-top-color: #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
+        <p>Yuklanmoqda...</p>
+      </div>
+    </div>
+    <style>
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  `;
+  
+  try {
+    // Fetch quiz analytics data
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/teachers/${teacherId}/quiz-analytics`, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    const result = await response.json();
+    
+    if (!result.success) {
+      throw new Error(result.message || 'Failed to load quiz analytics');
+    }
+    
+    const { analytics, summary, courses } = result.data;
+    
+    // Update content area with real data
+    const quizAnalyticsHTML = `
+      <style>
+        .figma-content-area.quiz-analytics-page {
+          padding: 24px !important;
+          display: flex !important;
+          flex-direction: column !important;
+          gap: 24px !important;
+        }
+        .quiz-stats-grid {
+          display: grid !important;
+          grid-template-columns: repeat(3, 1fr) !important;
+          gap: 20px !important;
+          margin-bottom: 32px !important;
+        }
+        .quiz-stat-card {
+          background: rgba(58, 56, 56, 0.3) !important;
+          border: 1px solid var(--primary-border) !important;
+          border-radius: 12px !important;
+          padding: 24px !important;
+          text-align: center !important;
+          transition: all 0.3s ease !important;
+        }
+        .quiz-stat-card:hover {
+          background: var(--primary-light) !important;
+          border-color: var(--primary-color) !important;
+          transform: translateY(-2px) !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+        }
+        .quiz-stat-title {
+          color: rgba(156, 163, 175, 1) !important;
+          font-size: 14px !important;
+          font-weight: 500 !important;
+          margin-bottom: 12px !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.5px !important;
+        }
+        .quiz-stat-value {
+          color: var(--primary-color) !important;
+          font-size: 32px !important;
+          font-weight: 700 !important;
+          margin-bottom: 0 !important;
+          line-height: 1.2 !important;
+        }
+        .quiz-content-section {
+          background: rgba(58, 56, 56, 0.3) !important;
+          border: 1px solid var(--primary-border) !important;
+          border-radius: 12px !important;
+          padding: 0 !important;
+          overflow: hidden !important;
+        }
+        .quiz-section-header {
+          padding: 20px 24px !important;
+          border-bottom: 1px solid var(--primary-border) !important;
+          color: #ffffff !important;
+          font-size: 18px !important;
+          font-weight: 600 !important;
+          margin: 0 !important;
+        }
+        .quiz-table-container {
+          padding: 16px !important;
+          overflow-x: auto !important;
+        }
+        .quiz-table {
+          width: 100% !important;
+          border-collapse: collapse !important;
+        }
+        .quiz-table th {
+          padding: 12px 16px !important;
+          text-align: center !important;
+          font-size: 13px !important;
+          font-weight: 600 !important;
+          color: var(--primary-color) !important;
+          text-transform: uppercase !important;
+          letter-spacing: 0.5px !important;
+          background: var(--primary-light) !important;
+        }
+        .quiz-table th:first-child {
+          text-align: left !important;
+        }
+        .quiz-table td {
+          padding: 16px !important;
+          border-top: 1px solid var(--primary-border) !important;
+          color: #e0e0e0 !important;
+          font-size: 14px !important;
+          text-align: center !important;
+        }
+        .quiz-table td:first-child {
+          text-align: left !important;
+        }
+        .quiz-table tbody tr {
+          transition: background 0.2s !important;
+        }
+        .quiz-table tbody tr:hover {
+          background: var(--primary-light) !important;
+        }
+        .student-name {
+          font-weight: 600 !important;
+          color: #ffffff !important;
+        }
+        .attempt-badge {
+          font-family: 'Courier New', monospace !important;
+          color: var(--primary-color) !important;
+        }
+        .score-value {
+          font-weight: 700 !important;
+          font-size: 16px !important;
+        }
+        .score-pass {
+          color: #10B981 !important;
+        }
+        .score-fail {
+          color: #EF4444 !important;
+        }
+        .status-badge {
+          display: inline-block !important;
+          padding: 4px 12px !important;
+          border-radius: 12px !important;
+          font-size: 12px !important;
+          font-weight: 600 !important;
+        }
+        .status-passed {
+          background: rgba(16, 185, 129, 0.2) !important;
+          color: #10B981 !important;
+        }
+        .status-failed {
+          background: rgba(239, 68, 68, 0.2) !important;
+          color: #EF4444 !important;
+        }
+        .empty-state {
+          padding: 60px 20px !important;
+          text-align: center !important;
+          color: #9CA3AF !important;
+        }
+      </style>
+
+      <!-- Stats Cards -->
+      <div class="quiz-stats-grid">
+        <div class="quiz-stat-card">
+          <div class="quiz-stat-title">Jami urinishlar</div>
+          <div class="quiz-stat-value">${summary.totalAttempts} ta</div>
+        </div>
+        <div class="quiz-stat-card">
+          <div class="quiz-stat-title">Studentlar soni</div>
+          <div class="quiz-stat-value">${summary.uniqueStudents} ta</div>
+        </div>
+        <div class="quiz-stat-card">
+          <div class="quiz-stat-title">O'rtacha foiz</div>
+          <div class="quiz-stat-value">${summary.averageScore}%</div>
+        </div>
+      </div>
+
+      <!-- Quiz Results Table -->
+      <div class="quiz-content-section">
+        <h3 class="quiz-section-header">Quiz natijalari (eng oxirgi urinish)</h3>
+        <div class="quiz-table-container">
+          ${analytics.length === 0 ? `
+            <div class="empty-state">
+              <p>Hozircha quiz natijalari yo'q</p>
+            </div>
+          ` : `
+            <table class="quiz-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Kurs</th>
+                  <th>Urinish</th>
+                  <th>Ball</th>
+                  <th>To'g'ri javoblar</th>
+                  <th>Holat</th>
+                  <th>Vaqt</th>
+                  <th>Sana</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${analytics.map(item => {
+                  const course = courses.find(c => c._id === item.courseId.toString());
+                  const courseName = course ? course.title : 'Unknown Course';
+                  const statusClass = item.passed ? 'status-passed' : 'status-failed';
+                  const statusText = item.passed ? 'O\'tdi' : 'O\'tmadi';
+                  const scoreClass = item.passed ? 'score-pass' : 'score-fail';
+                  
+                  // Format date as DD/MM/YYYY
+                  const dateObj = new Date(item.date);
+                  const day = String(dateObj.getDate()).padStart(2, '0');
+                  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                  const year = dateObj.getFullYear();
+                  const formattedDate = day + '/' + month + '/' + year;
+                  
+                  const time = window.formatQuizTime(item.timeElapsed);
+                  
+                  return `
+                    <tr>
+                      <td class="student-name">${item.studentName}</td>
+                      <td>${courseName}</td>
+                      <td class="attempt-badge">${item.attemptNumber}/3</td>
+                      <td class="score-value ${scoreClass}">${item.score}%</td>
+                      <td>${item.correctAnswers}/${item.totalQuestions}</td>
+                      <td>
+                        <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 8px; background: ${item.passed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'};">
+                          ${item.passed ? `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          ` : `
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                              <line x1="18" y1="6" x2="6" y2="18"/>
+                              <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                          `}
+                          <span style="color: ${item.passed ? '#10B981' : '#EF4444'}; font-size: 13px; font-weight: 600;">${statusText}</span>
+                        </div>
+                      </td>
+                      <td>${time}</td>
+                      <td>${formattedDate}</td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          `}
+        </div>
+      </div>
+    `;
+
+    contentArea.innerHTML = quizAnalyticsHTML;
+    
+    // Apply saved primary color
+    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
+    applyPrimaryColor(savedColor);
+    
+  } catch (error) {
+    console.error('Error loading quiz analytics:', error);
+    contentArea.innerHTML = `
+      <div style="padding: 40px; text-align: center; color: #EF4444;">
+        <p style="font-size: 18px; margin-bottom: 8px;">Xatolik yuz berdi</p>
+        <p style="color: #9CA3AF;">${error.message}</p>
+      </div>
+    `;
+  }
+};
+
+// Helper function to format time
+window.formatQuizTime = function(seconds) {
+  if (!seconds) return '-';
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const secs = seconds % 60;
+  
+  if (hours > 0) {
+    return `${hours} soat ${minutes} daq`;
+  }
+  if (minutes > 0) {
+    return `${minutes} daq ${secs} sek`;
+  }
+  return `${secs} sek`;
 };
 
 window.switchQuizTab = function(tabType, tabElement) {

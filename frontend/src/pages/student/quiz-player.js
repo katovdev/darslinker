@@ -21,61 +21,100 @@ export async function loadQuizPlayer(course, lesson, sidebarHtml) {
   const timeLimitSeconds = timeLimitMinutes * 60;
 
   // Load previous attempts from backend
-  // TODO: Fix authentication for GET request
-  // const previousAttempts = await loadPreviousQuizAttempts(lesson._id);
-  // For now, use localStorage to track attempts
-  const attemptCount = getLocalAttemptCount(lesson._id);
+  console.log('🔍 Loading previous attempts for lesson:', lesson._id);
+  const previousAttempts = await loadPreviousQuizAttempts(lesson._id);
+  const attemptCount = previousAttempts.length;
   
-  console.log(`📊 Quiz attempt count: ${attemptCount}`);
+  console.log(`📊 Quiz attempt count from backend: ${attemptCount}`);
+  console.log(`📊 Previous attempts:`, previousAttempts);
+  console.log(`📊 Next attempt will be: ${attemptCount + 1}`);
 
-  // Reset quiz state
-  quizState = {
-    state: 'start',
-    currentAttempt: attemptCount + 1, // Next attempt number
-    maxAttempts: 3,
-    score: 0,
-    answers: {},
-    timerInterval: null,
-    timeElapsed: 0,
-    timeLimit: timeLimitSeconds,
-    timeRemaining: timeLimitSeconds,
-    currentQuestionIndex: 0
-  };
+  // Get last attempt if exists
+  const lastAttempt = previousAttempts.length > 0 ? previousAttempts[previousAttempts.length - 1] : null;
+  
+  // If there's a last attempt, show results instead of start
+  if (lastAttempt) {
+    console.log('📊 Last attempt found, showing results:', lastAttempt);
+    
+    // Reconstruct answers from last attempt
+    const reconstructedAnswers = {};
+    if (lastAttempt.answers && Array.isArray(lastAttempt.answers)) {
+      lastAttempt.answers.forEach((answer, index) => {
+        reconstructedAnswers[index] = {
+          answerIndex: answer.selectedAnswer,
+          isCorrect: answer.isCorrect
+        };
+      });
+    }
+    
+    // Set quiz state to results with last attempt data
+    quizState = {
+      state: 'results',
+      currentAttempt: attemptCount,
+      maxAttempts: 3,
+      score: lastAttempt.score || 0,
+      answers: reconstructedAnswers,
+      timerInterval: null,
+      timeElapsed: lastAttempt.timeElapsed || 0,
+      timeLimit: timeLimitSeconds,
+      timeRemaining: 0,
+      currentQuestionIndex: 0
+    };
+  } else {
+    // No previous attempts, show start screen
+    quizState = {
+      state: 'start',
+      currentAttempt: attemptCount + 1,
+      maxAttempts: 3,
+      score: 0,
+      answers: {},
+      timerInterval: null,
+      timeElapsed: 0,
+      timeLimit: timeLimitSeconds,
+      timeRemaining: timeLimitSeconds,
+      currentQuestionIndex: 0
+    };
+  }
   
   renderQuizPage(course, lesson, sidebarHtml);
 }
 
-// Get attempt count from localStorage
+// These functions are no longer needed - we use backend data
+// Keeping them for backward compatibility but they do nothing
 function getLocalAttemptCount(lessonId) {
-  const key = `quiz_attempts_${lessonId}`;
-  const attempts = localStorage.getItem(key);
-  return attempts ? parseInt(attempts) : 0;
+  return 0; // Always return 0, we use backend data
 }
 
-// Increment attempt count in localStorage
 function incrementLocalAttemptCount(lessonId) {
-  const key = `quiz_attempts_${lessonId}`;
-  const currentCount = getLocalAttemptCount(lessonId);
-  localStorage.setItem(key, (currentCount + 1).toString());
+  // Do nothing - backend handles this
 }
 
 // Load previous quiz attempts from backend
 async function loadPreviousQuizAttempts(lessonId) {
   try {
-    // Get student ID from localStorage or sessionStorage
+    // Get student ID - PRIORITY: sessionStorage (landing page student)
     let studentId = null;
     
-    // Try localStorage first (main dashboard)
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user._id) {
+    // Try sessionStorage FIRST (landing page student - correct one!)
+    const landingUser = sessionStorage.getItem('landingUser');
+    if (landingUser) {
+      const userData = JSON.parse(landingUser);
+      studentId = userData._id;
+      console.log('✅ Using landingUser ID:', studentId);
+    }
+    
+    // Try currentUser from localStorage (main dashboard)
+    if (!studentId) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      studentId = currentUser._id;
+      console.log('✅ Using currentUser ID:', studentId);
+    }
+    
+    // Try user from localStorage
+    if (!studentId) {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
       studentId = user._id;
-    } else {
-      // Try sessionStorage (landing page users)
-      const landingUser = sessionStorage.getItem('landingUser');
-      if (landingUser) {
-        const userData = JSON.parse(landingUser);
-        studentId = userData._id;
-      }
+      console.log('✅ Using user ID:', studentId);
     }
     
     if (!studentId) {
@@ -84,9 +123,10 @@ async function loadPreviousQuizAttempts(lessonId) {
     }
     
     console.log('🔑 Loading quiz attempts for student:', studentId);
+    console.log('🔑 Looking for lesson:', lessonId);
     
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    const response = await fetch(`${apiBaseUrl}/students/${studentId}`, {
+    const response = await fetch(`${apiBaseUrl}/students/${studentId}/quiz-attempts/${lessonId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -95,18 +135,21 @@ async function loadPreviousQuizAttempts(lessonId) {
     
     const result = await response.json();
     
-    if (result.success && result.student && result.student.testResults) {
-      // Filter results for this specific lesson
-      const lessonResults = result.student.testResults.filter(
-        r => r.lessonId && r.lessonId.toString() === lessonId.toString()
-      );
+    console.log('📦 Backend response:', result.success);
+    console.log('📦 Attempts found:', result.attempts?.length || 0);
+    
+    if (result.success && result.attempts) {
+      console.log('✅ Found attempts for this lesson:', result.attempts.length);
+      console.log('✅ Lesson results:', result.attempts.map(r => ({
+        attemptNumber: r.attemptNumber,
+        score: r.score,
+        date: r.date
+      })));
       
-      // Sort by attempt number
-      lessonResults.sort((a, b) => a.attemptNumber - b.attemptNumber);
-      
-      return lessonResults;
+      return result.attempts;
     }
     
+    console.log('⚠️ No test results found');
     return [];
   } catch (error) {
     console.error('❌ Error loading previous quiz attempts:', error);
@@ -238,7 +281,7 @@ function renderQuizStart(mainContent, course, lesson, sidebarHtml, shouldUpdateO
             </div>
             <div class="quiz-meta-item">
               <div class="quiz-meta-label">Urinishlar</div>
-              <div class="quiz-meta-value">${quizState.currentAttempt}/${quizState.maxAttempts}</div>
+              <div class="quiz-meta-value" style="color: ${quizState.currentAttempt > quizState.maxAttempts ? '#EF4444' : '#7ea2d4'}">${quizState.currentAttempt > quizState.maxAttempts ? quizState.maxAttempts : quizState.currentAttempt}/${quizState.maxAttempts}</div>
             </div>
             <div class="quiz-meta-item">
               <div class="quiz-meta-label">Timer</div>
@@ -246,7 +289,14 @@ function renderQuizStart(mainContent, course, lesson, sidebarHtml, shouldUpdateO
             </div>
           </div>
           
-          <button class="quiz-start-btn" onclick="startQuiz()">Boshlash</button>
+          ${quizState.currentAttempt > quizState.maxAttempts ? `
+            <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+              <p style="color: #EF4444; margin: 0; font-size: 14px;">⚠️ Siz barcha urinishlardan foydalandingiz (3/3)</p>
+            </div>
+            <button class="quiz-start-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Urinishlar tugadi</button>
+          ` : `
+            <button class="quiz-start-btn" onclick="startQuiz()">Boshlash</button>
+          `}
         </div>
       </div>
     </div>
@@ -347,15 +397,17 @@ function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions, 
   const totalQuestions = questions.length;
   const correctAnswers = Object.values(quizState.answers).filter(a => a.isCorrect).length;
   const percentage = Math.round((correctAnswers / totalQuestions) * 100);
+  const passed = percentage >= 70;
   
-  // Check if we should only update content
-  const existingLayout = mainContent.querySelector('.lesson-player-layout');
+  console.log('🎯 Rendering quiz results:', {
+    totalQuestions,
+    correctAnswers,
+    percentage,
+    passed
+  });
   
-  if (shouldUpdateOnly && existingLayout) {
-    // Layout exists, only update quiz results content
-    updateQuizResultsContent(existingLayout, lesson, questions, correctAnswers, totalQuestions, percentage);
-    return;
-  }
+  // Always re-render for results (don't use shouldUpdateOnly)
+  // This ensures the pass/fail message is always shown
   
   // First time render - create full layout
   mainContent.innerHTML = `
@@ -373,10 +425,37 @@ function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions, 
         <div class="quiz-results-container">
           <h1 class="results-title">Test natijalari</h1>
           
+          <div style="background: ${passed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; border: 1px solid ${passed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}; border-radius: 12px; padding: 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px;">
+            <div style="flex-shrink: 0;">
+              ${passed ? `
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M9 12l2 2 4-4"/>
+                </svg>
+              ` : `
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="15" y1="9" x2="9" y2="15"/>
+                  <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
+              `}
+            </div>
+            <div style="flex: 1; text-align: left;">
+              <p style="color: ${passed ? '#10B981' : '#EF4444'}; margin: 0; font-size: 18px; font-weight: 600;">
+                ${passed ? 'Tabriklaymiz! Siz testdan o\'tdingiz' : 'Siz testdan o\'ta olmadingiz'}
+              </p>
+              ${!passed ? `
+                <p style="color: #9CA3AF; margin: 4px 0 0 0; font-size: 14px;">
+                  O'tish uchun kamida 70% ball kerak
+                </p>
+              ` : ''}
+            </div>
+          </div>
+          
           <div class="results-stats">
             <div class="result-stat-card">
               <div class="result-stat-label">Natijangiz</div>
-              <div class="result-stat-value" style="color: ${percentage >= 75 ? '#10B981' : '#EF4444'}">${percentage}%</div>
+              <div class="result-stat-value" style="color: ${percentage >= 70 ? '#10B981' : '#EF4444'}">${percentage}%</div>
             </div>
             <div class="result-stat-card">
               <div class="result-stat-label">To'g'ri javoblar</div>
@@ -1144,8 +1223,8 @@ window.finishQuiz = async function() {
   const score = Math.round((correctAnswers / totalQuestions) * 100);
   const passed = score >= 70; // 70% to pass
   
-  // Save to backend
-  const saveSuccess = await saveQuizResultToBackend({
+  // Prepare quiz result data
+  const quizResultData = {
     lessonId: window.currentLesson._id,
     courseId: window.currentCourse._id,
     attemptNumber: quizState.currentAttempt,
@@ -1159,12 +1238,20 @@ window.finishQuiz = async function() {
       isCorrect: answer.isCorrect
     })),
     timeElapsed: quizState.timeElapsed
+  };
+  
+  console.log('📊 Quiz result data to save:', {
+    score,
+    passed,
+    correctAnswers,
+    totalQuestions,
+    attemptNumber: quizState.currentAttempt
   });
   
-  // If saved successfully, increment local attempt count
-  if (saveSuccess) {
-    incrementLocalAttemptCount(window.currentLesson._id);
-  }
+  // Save to backend
+  const saveSuccess = await saveQuizResultToBackend(quizResultData);
+  
+  // Backend automatically tracks attempts, no need for localStorage
   
   quizState.state = 'results';
   const course = window.currentCourse;
@@ -1179,25 +1266,40 @@ async function saveQuizResultToBackend(resultData) {
     // Get student ID from localStorage or sessionStorage
     let studentId = null;
     
-    // Try localStorage first (main dashboard)
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user._id) {
+    // Try sessionStorage FIRST (landing page student - correct one!)
+    const landingUser = sessionStorage.getItem('landingUser');
+    if (landingUser) {
+      const userData = JSON.parse(landingUser);
+      studentId = userData._id;
+      console.log('✅ Using landingUser ID for save:', studentId);
+    }
+    
+    // Try currentUser from localStorage (main dashboard)
+    if (!studentId) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+      studentId = currentUser._id;
+      console.log('✅ Using currentUser ID for save:', studentId);
+    }
+    
+    // Try user from localStorage
+    if (!studentId) {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
       studentId = user._id;
-    } else {
-      // Try sessionStorage (landing page users)
-      const landingUser = sessionStorage.getItem('landingUser');
-      if (landingUser) {
-        const userData = JSON.parse(landingUser);
-        studentId = userData._id;
-      }
+      console.log('✅ Using user ID for save:', studentId);
     }
     
     if (!studentId) {
       console.error('❌ Student ID not found');
-      return;
+      console.error('❌ Checked sources:', {
+        currentUser: !!localStorage.getItem('currentUser'),
+        user: !!localStorage.getItem('user'),
+        landingUser: !!sessionStorage.getItem('landingUser')
+      });
+      return false;
     }
     
     console.log('💾 Saving quiz result for student:', studentId);
+    console.log('💾 Quiz result data:', resultData);
     
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const response = await fetch(`${apiBaseUrl}/students/${studentId}/quiz-result`, {

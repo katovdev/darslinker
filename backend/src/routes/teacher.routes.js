@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage, getTeacherStudents } from "../controllers/teacher.controller.js";
+import { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage, getTeacherStudents, getQuizAnalytics } from "../controllers/teacher.controller.js";
 import {
   authenticate,
   isOwnerOrAdmin,
@@ -8,6 +8,7 @@ import { validate } from "../middlewares/validation.middleware.js";
 import {
   createTeacherProfileSchema,
   teacherIdSchema,
+  teacherIdParamSchema,
   updateTeacherProfileSchema,
 } from "../validations/teacher.validation.js";
 
@@ -914,6 +915,105 @@ teacherRouter.get(
   authenticate,
   isOwnerOrAdmin,
   getTeacherStudents
+);
+
+/**
+ * @swagger
+ * /teachers/{teacherId}/quiz-analytics:
+ *   get:
+ *     summary: Get quiz analytics for teacher's courses
+ *     description: Retrieve quiz results and analytics for all students in teacher's courses. Shows only the latest attempt for each student per quiz.
+ *     tags: [User Management - Teachers]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: teacherId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Teacher ID
+ *       - in: query
+ *         name: courseId
+ *         schema:
+ *           type: string
+ *         description: Filter by specific course ID (optional)
+ *       - in: query
+ *         name: lessonId
+ *         schema:
+ *           type: string
+ *         description: Filter by specific lesson ID (optional)
+ *     responses:
+ *       200:
+ *         description: Quiz analytics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     courses:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                           title:
+ *                             type: string
+ *                     analytics:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           studentId:
+ *                             type: string
+ *                           studentName:
+ *                             type: string
+ *                           courseId:
+ *                             type: string
+ *                           lessonId:
+ *                             type: string
+ *                           attemptNumber:
+ *                             type: number
+ *                           score:
+ *                             type: number
+ *                           totalQuestions:
+ *                             type: number
+ *                           correctAnswers:
+ *                             type: number
+ *                           passed:
+ *                             type: boolean
+ *                           timeElapsed:
+ *                             type: number
+ *                           date:
+ *                             type: string
+ *                             format: date-time
+ *                     summary:
+ *                       type: object
+ *                       properties:
+ *                         totalAttempts:
+ *                           type: number
+ *                         uniqueStudents:
+ *                           type: number
+ *                         averageScore:
+ *                           type: number
+ *                         passRate:
+ *                           type: number
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: Teacher not found
+ */
+teacherRouter.get(
+  "/:teacherId/quiz-analytics",
+  validate(teacherIdParamSchema, "params"),
+  getQuizAnalytics
 );
 
 export default teacherRouter;

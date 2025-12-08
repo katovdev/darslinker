@@ -10,6 +10,7 @@ import {
   checkEnrollment,
   completeLesson,
   getCourseProgress,
+  getQuizAttempts,
 } from "../controllers/student.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validation.middleware.js";
@@ -336,7 +337,6 @@ studentRouter.get("/", authenticate, findAll);
 studentRouter.get(
   "/:id",
   validate(studentIdSchema, "params"),
-  authenticate,
   findOne
 );
 
@@ -591,5 +591,31 @@ studentRouter.post("/:id/complete-lesson", completeLesson);
  *     tags: [Students]
  */
 studentRouter.get("/:id/progress/:courseId", getCourseProgress);
+
+/**
+ * @swagger
+ * /students/{id}/quiz-attempts/{lessonId}:
+ *   get:
+ *     summary: Get quiz attempts for a student and lesson
+ *     description: Retrieve all quiz attempts for a specific student and lesson
+ *     tags: [Students]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Student ID
+ *       - in: path
+ *         name: lessonId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Lesson ID
+ *     responses:
+ *       200:
+ *         description: Quiz attempts retrieved successfully
+ */
+studentRouter.get("/:id/quiz-attempts/:lessonId", getQuizAttempts);
 
 export default studentRouter;
