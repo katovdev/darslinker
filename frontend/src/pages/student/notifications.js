@@ -184,7 +184,10 @@ export async function loadNotificationsPage() {
               : '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
             
             return `
-              <div class="notification-item ${notif.read ? 'read' : 'unread'}" onclick="handleNotificationClick('${notif._id}', '${notif.link || ''}')">
+              <div class="notification-item ${notif.read ? 'read' : 'unread'}" 
+                   data-notification-id="${notif._id}" 
+                   data-notification-link="${(notif.link || '').replace(/"/g, '&quot;')}"
+                   onclick="handleNotificationClick(this.dataset.notificationId, this.dataset.notificationLink)">
                 <div class="notification-icon">${icon}</div>
                 <div class="notification-content">
                   <div class="notification-title">${notif.title}</div>
@@ -220,13 +223,18 @@ window.handleNotificationClick = async function(notificationId, link) {
   try {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     
+    console.log('Marking notification as read:', notificationId);
+    
     // Mark as read
-    await fetch(`${apiBaseUrl}/notifications/${notificationId}/read`, {
+    const response = await fetch(`${apiBaseUrl}/notifications/${notificationId}/read`, {
       method: 'PATCH'
     });
 
+    const result = await response.json();
+    console.log('Mark as read result:', result);
+
     // Reload notifications page
-    loadNotificationsPage();
+    await loadNotificationsPage();
 
     // Navigate to link if exists
     if (link && link !== 'undefined' && link !== 'null') {
@@ -244,12 +252,17 @@ window.markAllNotificationsRead = async function(userId) {
   try {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     
-    await fetch(`${apiBaseUrl}/notifications/user/${userId}/read-all`, {
+    console.log('Marking all as read for user:', userId);
+    
+    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}/read-all`, {
       method: 'PATCH'
     });
 
+    const result = await response.json();
+    console.log('Mark all as read result:', result);
+
     // Reload page
-    loadNotificationsPage();
+    await loadNotificationsPage();
 
   } catch (error) {
     console.error('Error marking all as read:', error);
