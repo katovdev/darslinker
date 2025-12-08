@@ -61,6 +61,13 @@ export function renderLandingStudentDashboard() {
 
   container.innerHTML = `
     <style>
+      /* CSS Variables for theming */
+      :root {
+        --primary-color: #7ea2d4;
+        --background-color: #232323;
+        --text-color: #ffffff;
+      }
+
       /* Reset */
       * {
         margin: 0;
@@ -182,8 +189,8 @@ export function renderLandingStudentDashboard() {
       }
 
       .landing-nav-parent:hover {
-        background: rgba(126, 162, 212, 0.1);
-        border-color: #7ea2d4;
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+        border-color: var(--primary-color);
       }
 
       .landing-nav-parent.expanded {
@@ -193,13 +200,13 @@ export function renderLandingStudentDashboard() {
       }
 
       .landing-nav-title {
-        color: #7ea2d4;
+        color: var(--primary-color);
         font-size: 14px;
         font-weight: 500;
       }
 
       .landing-nav-arrow {
-        color: #7ea2d4;
+        color: var(--primary-color);
         font-size: 10px;
         transition: transform 0.3s ease;
       }
@@ -262,10 +269,10 @@ export function renderLandingStudentDashboard() {
       .landing-support-btn {
         width: 100%;
         padding: 12px;
-        background: linear-gradient(135deg, rgba(126, 162, 212, 0.15), rgba(126, 162, 212, 0.05));
-        border: 1px solid rgba(126, 162, 212, 0.3);
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 15%, transparent), color-mix(in srgb, var(--primary-color) 5%, transparent));
+        border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent);
         border-radius: 15px;
-        color: #7ea2d4;
+        color: var(--primary-color);
         font-size: 14px;
         font-weight: 500;
         cursor: pointer;
@@ -274,8 +281,8 @@ export function renderLandingStudentDashboard() {
       }
 
       .landing-support-btn:hover {
-        background: linear-gradient(135deg, rgba(126, 162, 212, 0.25), rgba(126, 162, 212, 0.15));
-        border-color: #7ea2d4;
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 25%, transparent), color-mix(in srgb, var(--primary-color) 15%, transparent));
+        border-color: var(--primary-color);
         transform: translateY(-2px);
       }
 
@@ -333,7 +340,7 @@ export function renderLandingStudentDashboard() {
       }
 
       .landing-logo-highlight {
-        color: #7EA2D4;
+        color: var(--primary-color);
       }
 
       .landing-header-actions {
@@ -358,9 +365,9 @@ export function renderLandingStudentDashboard() {
       }
 
       .landing-icon-btn:hover {
-        background: rgba(126, 162, 212, 0.1);
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
         color: #ffffff;
-        border-color: #7ea2d4;
+        border-color: var(--primary-color);
       }
 
       /* Toast Notification - Bottom Right */
@@ -368,7 +375,7 @@ export function renderLandingStudentDashboard() {
         position: fixed;
         bottom: 30px;
         right: 30px;
-        background: #7ea2d4;
+        background: var(--primary-color);
         color: #ffffff;
         padding: 16px 32px;
         border-radius: 12px;
@@ -417,21 +424,21 @@ export function renderLandingStudentDashboard() {
         width: auto !important;
         padding: 0 16px !important;
         gap: 8px;
-        border-color: #7ea2d4 !important;
+        border-color: var(--primary-color) !important;
         margin-left: 8px;
-        color: #7ea2d4 !important;
+        color: var(--primary-color) !important;
       }
 
       .landing-logout-btn:hover {
-        background: rgba(126, 162, 212, 0.15) !important;
-        border-color: #7ea2d4 !important;
-        color: #7ea2d4 !important;
+        background: color-mix(in srgb, var(--primary-color) 15%, transparent) !important;
+        border-color: var(--primary-color) !important;
+        color: var(--primary-color) !important;
       }
 
       .landing-logout-text {
         font-size: 14px;
         font-weight: 500;
-        color: #7ea2d4;
+        color: var(--primary-color);
       }
 
       /* Dashboard Content */
@@ -479,7 +486,7 @@ export function renderLandingStudentDashboard() {
 
       .landing-stat-card:hover {
         background: rgba(58, 56, 56, 0.4);
-        border-color: #7ea2d4;
+        border-color: var(--primary-color);
         transform: translateY(-4px);
       }
 
@@ -521,14 +528,14 @@ export function renderLandingStudentDashboard() {
       }
 
       .landing-filter-tab:hover {
-        background: rgba(126, 162, 212, 0.1);
-        border-color: #7ea2d4;
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+        border-color: var(--primary-color);
         color: #ffffff;
       }
 
       .landing-filter-tab.active {
-        background: rgba(126, 162, 212, 0.2);
-        border-color: #7ea2d4;
+        background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+        border-color: var(--primary-color);
         color: #ffffff;
       }
 
@@ -550,7 +557,7 @@ export function renderLandingStudentDashboard() {
 
       .landing-course-card:hover {
         background: rgba(58, 56, 56, 0.4);
-        border-color: #7ea2d4;
+        border-color: var(--primary-color);
         transform: translateY(-4px);
       }
 
@@ -606,7 +613,7 @@ export function renderLandingStudentDashboard() {
       .landing-course-price {
         font-size: 14px;
         font-weight: 600;
-        color: #7ea2d4;
+        color: var(--primary-color);
         white-space: nowrap;
         margin-left: 12px;
       }
@@ -636,8 +643,8 @@ export function renderLandingStudentDashboard() {
       }
 
       .landing-continue-btn:hover {
-        background: rgba(126, 162, 212, 0.3);
-        border-color: #7EA2D4;
+        background: color-mix(in srgb, var(--primary-color) 30%, transparent);
+        border-color: var(--primary-color);
       }
 
       /* Loading Animation */
@@ -801,7 +808,7 @@ export function renderLandingStudentDashboard() {
             <div class="landing-courses-grid">
               <!-- Loading spinner will be shown here -->
               <div class="landing-courses-loading" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-                <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid rgba(126, 162, 212, 0.2); border-top: 4px solid #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid color-mix(in srgb, var(--primary-color) 20%, transparent); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite;"></div>
                 <p style="color: #9CA3AF; margin-top: 20px; font-size: 14px;">Loading courses...</p>
               </div>
             </div>
@@ -939,6 +946,35 @@ function handleNavigation(page) {
 // Handle course filter
 let allCoursesData = []; // Store all courses globally
 
+// Apply landing theme (colors and logo)
+function applyLandingTheme(landing) {
+  const primaryColor = landing.primaryColor || '#7ea2d4';
+  const backgroundColor = landing.backgroundColor || '#232323';
+  const textColor = landing.textColor || '#ffffff';
+  const logoText = landing.logoText || 'darslinker';
+  
+  console.log('🎨 Applying theme:', { primaryColor, backgroundColor, textColor, logoText });
+  
+  // Update CSS variables
+  document.documentElement.style.setProperty('--primary-color', primaryColor);
+  document.documentElement.style.setProperty('--background-color', backgroundColor);
+  document.documentElement.style.setProperty('--text-color', textColor);
+  
+  // Update logo in header
+  const logoElement = document.querySelector('.landing-header-logo');
+  if (logoElement) {
+    // Use logo text - split by "linker" or use as is
+    const lowerText = logoText.toLowerCase();
+    if (lowerText.includes('linker')) {
+      const parts = logoText.split(/linker/i);
+      const firstPart = parts[0] || '';
+      logoElement.innerHTML = `<span class="landing-logo-text">${firstPart}<span class="landing-logo-highlight">linker</span></span>`;
+    } else {
+      logoElement.innerHTML = `<span class="landing-logo-text">${logoText}</span>`;
+    }
+  }
+}
+
 // Get enrolled courses for current student
 async function getEnrolledCourses(courses) {
   // Get student ID
@@ -1010,7 +1046,7 @@ async function handleCourseFilter(filter) {
     } else {
       coursesGrid.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-          <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid rgba(126, 162, 212, 0.2); border-top: 4px solid #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid color-mix(in srgb, var(--primary-color) 20%, transparent); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite;"></div>
           <p style="color: #9CA3AF; margin-top: 20px; font-size: 14px;">Loading courses...</p>
         </div>
       `;
@@ -1018,7 +1054,7 @@ async function handleCourseFilter(filter) {
   }
 }
 
-// Load teacher's courses from backend
+// Load teacher's courses and landing settings from backend
 async function loadTeacherCourses() {
   try {
     // Get teacher ID from sessionStorage
@@ -1033,6 +1069,19 @@ async function loadTeacherCourses() {
     
     // Get API base URL from env
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    
+    // Fetch teacher's landing settings first
+    try {
+      const landingResponse = await fetch(`${apiBaseUrl}/landing/public/${teacherId}`);
+      const landingResult = await landingResponse.json();
+      
+      if (landingResult.success && landingResult.landing) {
+        console.log('✅ Landing settings loaded:', landingResult.landing);
+        applyLandingTheme(landingResult.landing);
+      }
+    } catch (error) {
+      console.error('⚠️ Could not load landing settings:', error);
+    }
     
     // Fetch teacher's courses
     const response = await fetch(`${apiBaseUrl}/courses?teacher=${teacherId}`, {
