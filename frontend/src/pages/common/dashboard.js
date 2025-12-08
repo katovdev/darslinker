@@ -17810,16 +17810,26 @@ window.openQuizAnalytics = async function() {
 
       <!-- Quiz Results Table -->
       <div class="quiz-content-section">
-        <h3 class="quiz-section-header">Quiz natijalari (eng oxirgi urinish)</h3>
+        <div style="padding: 20px 24px; border-bottom: 1px solid var(--primary-border); display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="color: #ffffff; font-size: 18px; font-weight: 600; margin: 0;">Quiz natijalari (eng oxirgi urinish)</h3>
+          <input 
+            type="text" 
+            id="quizSearchInput" 
+            placeholder="ID yoki ism bo'yicha qidirish..." 
+            style="padding: 8px 16px; background: rgba(58, 56, 56, 0.5); border: 1px solid var(--primary-border); border-radius: 8px; color: #ffffff; font-size: 14px; width: 300px; outline: none;"
+            onkeyup="filterQuizResults()"
+          />
+        </div>
         <div class="quiz-table-container">
           ${analytics.length === 0 ? `
             <div class="empty-state">
               <p>Hozircha quiz natijalari yo'q</p>
             </div>
           ` : `
-            <table class="quiz-table">
+            <table class="quiz-table" id="quizResultsTable">
               <thead>
                 <tr>
+                  <th>ID</th>
                   <th>Student</th>
                   <th>Kurs</th>
                   <th>Urinish</th>
@@ -17847,8 +17857,12 @@ window.openQuizAnalytics = async function() {
                   
                   const time = window.formatQuizTime(item.timeElapsed);
                   
+                  // Get last 5 digits of student ID
+                  const studentIdShort = item.studentId.toString().slice(-5);
+                  
                   return `
-                    <tr>
+                    <tr data-student-id="${studentIdShort}" data-student-name="${item.studentName.toLowerCase()}">
+                      <td style="font-family: 'Courier New', monospace; color: var(--primary-color); font-weight: 600;">${studentIdShort}</td>
                       <td class="student-name">${item.studentName}</td>
                       <td>${courseName}</td>
                       <td class="attempt-badge">${item.attemptNumber}/3</td>
@@ -17912,6 +17926,28 @@ window.formatQuizTime = function(seconds) {
     return `${minutes} daq ${secs} sek`;
   }
   return `${secs} sek`;
+};
+
+// Filter quiz results by ID or name
+window.filterQuizResults = function() {
+  const searchInput = document.getElementById('quizSearchInput');
+  const table = document.getElementById('quizResultsTable');
+  
+  if (!searchInput || !table) return;
+  
+  const searchTerm = searchInput.value.toLowerCase().trim();
+  const rows = table.querySelectorAll('tbody tr');
+  
+  rows.forEach(row => {
+    const studentId = row.getAttribute('data-student-id') || '';
+    const studentName = row.getAttribute('data-student-name') || '';
+    
+    if (studentId.includes(searchTerm) || studentName.includes(searchTerm)) {
+      row.style.display = '';
+    } else {
+      row.style.display = 'none';
+    }
+  });
 };
 
 window.switchQuizTab = function(tabType, tabElement) {
