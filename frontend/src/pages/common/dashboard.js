@@ -15343,7 +15343,7 @@ window.openAssignmentsPage = async function() {
 
   // Show loading state first
   contentArea.innerHTML = `
-    <div style="display: flex; justify-content: center; align-items: center; height: 400px; color: #7ea2d4; font-size: 18px;">
+    <div style="display: flex; justify-content: center; align-items: center; height: 400px; color: var(--primary-color); font-size: 18px;">
       <div>Loading assignments...</div>
     </div>
   `;
@@ -15578,7 +15578,6 @@ window.openAssignmentsPage = async function() {
             .assignment-item:hover {
               border-color: var(--primary-border-hover) !important;
               background: rgba(58, 56, 56, 0.4) !important;
-              transform: translateX(5px) !important;
             }
             .assignment-header {
               display: flex !important;
@@ -15618,9 +15617,9 @@ window.openAssignmentsPage = async function() {
               gap: 12px !important;
             }
             .grade-btn {
-              background: rgba(126, 162, 212, 0.1) !important;
-              border: 1px solid rgba(126, 162, 212, 0.3) !important;
-              color: #7ea2d4 !important;
+              background: var(--primary-light) !important;
+              border: 1px solid var(--primary-color) !important;
+              color: var(--primary-color) !important;
               padding: 6px 12px !important;
               border-radius: 6px !important;
               font-size: 12px !important;
@@ -15630,16 +15629,16 @@ window.openAssignmentsPage = async function() {
               height: 32px !important;
             }
             .grade-btn:hover {
-              background: rgba(126, 162, 212, 0.2) !important;
-              border-color: #7ea2d4 !important;
+              background: rgba(var(--primary-color-rgb), 0.2) !important;
+              border-color: var(--primary-color) !important;
             }
             .view-file-btn {
               display: inline-flex !important;
               align-items: center !important;
               gap: 6px !important;
-              background: rgba(126, 162, 212, 0.1) !important;
-              border: 1px solid rgba(126, 162, 212, 0.3) !important;
-              color: #7ea2d4 !important;
+              background: var(--primary-light) !important;
+              border: 1px solid var(--primary-color) !important;
+              color: var(--primary-color) !important;
               padding: 6px 12px !important;
               border-radius: 6px !important;
               font-size: 12px !important;
@@ -15650,8 +15649,8 @@ window.openAssignmentsPage = async function() {
               height: 32px !important;
             }
             .view-file-btn:hover {
-              background: rgba(126, 162, 212, 0.2) !important;
-              border-color: #7ea2d4 !important;
+              background: rgba(var(--primary-color-rgb), 0.2) !important;
+              border-color: var(--primary-color) !important;
             }
             .view-file-btn svg {
               width: 14px !important;

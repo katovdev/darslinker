@@ -8057,13 +8057,23 @@ body.light-mode .assignment-description {
 }
 
 body.light-mode .grade-btn {
-  background: rgba(126, 162, 212, 0.1) !important;
-  border: 1px solid #7ea2d4 !important;
-  color: #7ea2d4 !important;
+  background: var(--primary-light) !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .grade-btn:hover {
-  background: rgba(126, 162, 212, 0.2) !important;
+  background: rgba(var(--primary-color-rgb), 0.2) !important;
+}
+
+body.light-mode .view-file-btn {
+  background: var(--primary-light) !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
+}
+
+body.light-mode .view-file-btn:hover {
+  background: rgba(var(--primary-color-rgb), 0.2) !important;
 }
 
 /* Light mode Quiz Analytics page - make it white and clean */
