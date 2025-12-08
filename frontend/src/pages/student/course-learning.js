@@ -4,6 +4,53 @@ import { loadQuizPlayer } from './quiz-player.js';
 // Global flag to track if layout is already rendered
 let isLayoutRendered = false;
 let currentCourse = null;
+let teacherLandingSettings = null; // Store teacher landing settings globally
+
+// Load teacher landing settings
+async function loadTeacherLandingSettings(teacherId) {
+  try {
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/landing/public/${teacherId}`);
+    const result = await response.json();
+    
+    if (result.success && result.landing) {
+      console.log('✅ Teacher landing settings loaded:', result.landing);
+      teacherLandingSettings = result.landing;
+      
+      // Apply CSS variables immediately
+      const primaryColor = result.landing.primaryColor || '#7ea2d4';
+      const backgroundColor = result.landing.backgroundColor || '#232323';
+      const textColor = result.landing.textColor || '#ffffff';
+      
+      document.documentElement.style.setProperty('--primary-color', primaryColor);
+      document.documentElement.style.setProperty('--background-color', backgroundColor);
+      document.documentElement.style.setProperty('--text-color', textColor);
+      
+      return result.landing;
+    }
+  } catch (error) {
+    console.error('⚠️ Could not load teacher landing settings:', error);
+  }
+  return null;
+}
+
+// Get logo HTML based on teacher settings
+function getLogoHTML() {
+  if (!teacherLandingSettings) {
+    return '<span class="logo-text">dars<span class="logo-highlight">linker</span></span>';
+  }
+  
+  const logoText = teacherLandingSettings.logoText || 'darslinker';
+  const lowerText = logoText.toLowerCase();
+  
+  if (lowerText.includes('linker')) {
+    const parts = logoText.split(/linker/i);
+    const firstPart = parts[0] || '';
+    return `<span class="logo-text">${firstPart}<span class="logo-highlight">linker</span></span>`;
+  } else {
+    return `<span class="logo-text">${logoText}</span>`;
+  }
+}
 
 export async function initCourseLearningPage(courseId) {
   console.log('📚 Loading course learning page for:', courseId);
@@ -74,6 +121,14 @@ async function getStudentId() {
 
 // Render course learning page
 async function renderCourseLearningPage(course) {
+  // Load teacher landing settings first
+  if (course.teacher && course.teacher._id) {
+    await loadTeacherLandingSettings(course.teacher._id);
+  } else if (course.teacher) {
+    // If teacher is just an ID string
+    await loadTeacherLandingSettings(course.teacher);
+  }
+  
   // Fetch student progress
   let completedLessons = [];
   let lastAccessedLesson = null;
@@ -208,6 +263,13 @@ async function renderCourseLearningPage(course) {
   const appContainer = document.getElementById('app') || document.body;
   appContainer.innerHTML = `
     <style>
+      /* CSS Variables for theming */
+      :root {
+        --primary-color: #7ea2d4;
+        --background-color: #232323;
+        --text-color: #ffffff;
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -228,7 +290,7 @@ async function renderCourseLearningPage(course) {
         justify-content: space-between;
         padding: 20px 40px;
         background: #232323;
-        border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+        border-bottom: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         position: sticky;
         top: 0;
         z-index: 100;
@@ -247,7 +309,7 @@ async function renderCourseLearningPage(course) {
       }
 
       .logo-highlight {
-        color: #7EA2D4;
+        color: var(--primary-color);
       }
 
       .header-actions {
@@ -272,9 +334,9 @@ async function renderCourseLearningPage(course) {
       }
 
       .icon-btn:hover {
-        background: rgba(126, 162, 212, 0.1);
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
         color: #ffffff;
-        border-color: #7ea2d4;
+        border-color: var(--primary-color);
       }
 
       .meeting-btn,
@@ -291,21 +353,21 @@ async function renderCourseLearningPage(course) {
         width: auto !important;
         padding: 0 16px !important;
         gap: 8px;
-        border-color: #7ea2d4 !important;
+        border-color: var(--primary-color) !important;
         margin-left: 8px;
-        color: #7ea2d4 !important;
+        color: var(--primary-color) !important;
       }
 
       .logout-btn:hover {
-        background: rgba(126, 162, 212, 0.15) !important;
-        border-color: #7ea2d4 !important;
-        color: #7ea2d4 !important;
+        background: color-mix(in srgb, var(--primary-color) 15%, transparent) !important;
+        border-color: var(--primary-color) !important;
+        color: var(--primary-color) !important;
       }
 
       .logout-text {
         font-size: 14px;
         font-weight: 500;
-        color: #7ea2d4;
+        color: var(--primary-color);
       }
 
       /* Main Content */
@@ -338,7 +400,7 @@ async function renderCourseLearningPage(course) {
       }
 
       .progress-percentage {
-        color: #7ea2d4;
+        color: var(--primary-color);
         font-weight: 600;
       }
 
@@ -353,7 +415,7 @@ async function renderCourseLearningPage(course) {
 
       .progress-bar-fill {
         height: 100%;
-        background: linear-gradient(90deg, #7ea2d4, #6b8fc4);
+        background: var(--primary-color);
         border-radius: 6px;
         transition: width 0.3s ease;
         position: relative;
@@ -400,7 +462,7 @@ async function renderCourseLearningPage(course) {
       }
 
       .info-icon {
-        color: #7ea2d4;
+        color: var(--primary-color);
       }
 
       /* Modules Section */
@@ -430,7 +492,7 @@ async function renderCourseLearningPage(course) {
       }
 
       .module-card:hover {
-        border-color: #7ea2d4;
+        border-color: var(--primary-color);
       }
 
       .module-card.expanded {
@@ -507,7 +569,7 @@ async function renderCourseLearningPage(course) {
       }
 
       .module-arrow {
-        color: #7ea2d4;
+        color: var(--primary-color);
         transition: transform 0.3s ease;
       }
 
@@ -556,7 +618,7 @@ async function renderCourseLearningPage(course) {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #7ea2d4;
+        color: var(--primary-color);
         flex-shrink: 0;
       }
 
@@ -597,7 +659,7 @@ async function renderCourseLearningPage(course) {
         position: fixed;
         bottom: 30px;
         right: 30px;
-        background: #7ea2d4;
+        background: var(--primary-color);
         color: #ffffff;
         padding: 16px 32px;
         border-radius: 12px;
@@ -663,7 +725,7 @@ async function renderCourseLearningPage(course) {
       <!-- Header -->
       <header class="course-learning-header">
         <div class="header-logo">
-          <span class="logo-text">dars<span class="logo-highlight">linker</span></span>
+          ${getLogoHTML()}
         </div>
         <div class="header-actions">
           <button class="icon-btn logout-btn" title="Logout">
@@ -1056,11 +1118,12 @@ function showToast(message) {
   }
 
   const toast = document.createElement('div');
+  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#7ea2d4';
   toast.style.cssText = `
     position: fixed !important;
     bottom: 30px !important;
     right: 30px !important;
-    background: #7ea2d4 !important;
+    background: ${primaryColor} !important;
     color: #ffffff !important;
     padding: 16px 32px !important;
     border-radius: 12px !important;
@@ -1186,7 +1249,7 @@ export function loadLessonPlayer(course, lesson) {
       
       .sidebar-close:hover {
         background: rgba(255, 255, 255, 0.1);
-        color: #7ea2d4;
+        color: var(--primary-color);
       }
       
       .sidebar-modules {
@@ -1194,7 +1257,7 @@ export function loadLessonPlayer(course, lesson) {
       }
       
       .sidebar-module {
-        border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+        border-bottom: 1px solid color-mix(in srgb, var(--primary-color) 10%, transparent);
       }
       
       .sidebar-module-header {
@@ -1207,7 +1270,7 @@ export function loadLessonPlayer(course, lesson) {
       }
       
       .sidebar-module-header:hover {
-        background: rgba(126, 162, 212, 0.05);
+        background: color-mix(in srgb, var(--primary-color) 5%, transparent);
       }
       
       .sidebar-module-title {
@@ -1223,7 +1286,7 @@ export function loadLessonPlayer(course, lesson) {
       }
       
       .sidebar-module-arrow {
-        color: #7ea2d4;
+        color: var(--primary-color);
         font-size: 12px;
         transition: transform 0.3s;
       }
@@ -1254,16 +1317,16 @@ export function loadLessonPlayer(course, lesson) {
       }
       
       .sidebar-lesson:hover {
-        background: rgba(126, 162, 212, 0.1);
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
       }
       
       .sidebar-lesson.active {
-        background: rgba(126, 162, 212, 0.2);
-        border-left-color: #7ea2d4;
+        background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+        border-left-color: var(--primary-color);
       }
       
       .sidebar-lesson-icon {
-        color: #7ea2d4;
+        color: var(--primary-color);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1312,20 +1375,20 @@ export function loadLessonPlayer(course, lesson) {
         width: 40px;
         height: 64px;
         background: #232323;
-        border: 1px solid rgba(126, 162, 212, 0.3);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent);
         border-radius: 8px;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        color: #7ea2d4;
+        color: var(--primary-color);
         z-index: 10;
         transition: all 0.2s ease;
       }
       
       .open-sidebar-btn:hover {
-        background: rgba(126, 162, 212, 0.1);
-        border-color: #7ea2d4;
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+        border-color: var(--primary-color);
       }
       
       .lesson-player-container::-webkit-scrollbar {
@@ -1469,7 +1532,7 @@ export function loadLessonPlayer(course, lesson) {
     <!-- Header stays the same -->
     <header class="course-learning-header">
       <div class="header-logo">
-        <span class="logo-text">dars<span class="logo-highlight">linker</span></span>
+        ${getLogoHTML()}
       </div>
       <div class="header-actions">
         <button class="icon-btn logout-btn" title="Logout">
@@ -1538,7 +1601,7 @@ export function loadLessonPlayer(course, lesson) {
               <p style="color: #9CA3AF; font-size: 13px; margin: 0;">${lesson.duration || ''}</p>
             </div>
             
-            <button id="nextLessonBtn" onclick="goToNextLesson('${course._id}', '${lesson._id}')" style="padding: 12px 24px; background: #7ea2d4; color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-left: 20px;">
+            <button id="nextLessonBtn" onclick="goToNextLesson('${course._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-left: 20px;">
               Next Lesson →
             </button>
           </div>
@@ -2015,7 +2078,7 @@ function showErrorPage() {
     <div style="text-align: center; padding: 60px 20px; background: #232323; min-height: 100vh; color: #ffffff;">
       <h1 style="color: #ef4444; margin-bottom: 16px;">Error</h1>
       <p style="color: #9CA3AF; margin-bottom: 24px;">Failed to load course</p>
-      <button onclick="window.history.back()" style="padding: 12px 24px; background: #7ea2d4; color: white; border: none; border-radius: 8px; cursor: pointer;">Go Back</button>
+      <button onclick="window.history.back()" style="padding: 12px 24px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">Go Back</button>
     </div>
   `;
 }
