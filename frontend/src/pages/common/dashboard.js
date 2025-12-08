@@ -16090,51 +16090,25 @@ window.filterAssignmentsByCourse = function(courseValue) {
 };
 
 // Enhanced Grade assignment function
-window.gradeAssignment = function(assignmentId) {
+window.gradeAssignment = async function(assignmentId, fileName, fileUrl) {
   const gradingModal = `
-    <div class="modal-content">
-      <h3>Grade Assignment</h3>
-      <div class="grading-interface">
-        <div class="assignment-details">
-          <h4>Build a Todo App Project</h4>
-          <p><strong>Student:</strong> John Smith</p>
-          <p><strong>Course:</strong> React Masterclass</p>
-          <p><strong>Submitted:</strong> Oct 10, 2025</p>
-        </div>
+    <div class="grading-form">
+      <div class="grade-input-group">
+        <label>Grade (0-100)</label>
+        <input type="number" min="0" max="100" placeholder="85" class="grade-input" id="gradeValue" />
+      </div>
 
-        <div class="grading-form">
-          <div class="grade-input-group">
-            <label>Grade (0-100%):</label>
-            <input type="number" min="0" max="100" value="85" class="grade-input" id="gradeValue" />
-          </div>
+      <div class="feedback-group">
+        <label>Feedback</label>
+        <textarea class="feedback-textarea" placeholder="Write your feedback here..." rows="4"></textarea>
+      </div>
 
-          <div class="feedback-group">
-            <label>Feedback:</label>
-            <textarea class="feedback-textarea" placeholder="Write your feedback here..." rows="4">Good implementation of core functionality. Consider adding error handling and improving UI design.</textarea>
-          </div>
-
-          <div class="grading-actions">
-            <button class="submit-grade-btn" onclick="submitGrade(${assignmentId})">Submit Grade</button>
-            <button class="save-draft-btn" onclick="saveDraft(${assignmentId})">Save as Draft</button>
-          </div>
-        </div>
+      <div class="grading-actions">
+        <button class="cancel-grade-btn" onclick="closeModal()">Cancel</button>
+        <button class="submit-grade-btn" onclick="submitGrade('${assignmentId}')">Submit Grade</button>
       </div>
     </div>
     <style>
-      .grading-interface {
-        max-height: 500px;
-        overflow-y: auto;
-      }
-      .assignment-details {
-        background: rgba(58, 56, 56, 0.3);
-        padding: 15px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-      }
-      .assignment-details h4 {
-        color: rgba(126, 162, 212, 1);
-        margin: 0 0 10px 0;
-      }
       .grading-form .grade-input-group,
       .grading-form .feedback-group {
         margin-bottom: 20px;
@@ -16142,59 +16116,71 @@ window.gradeAssignment = function(assignmentId) {
       .grading-form label {
         display: block;
         margin-bottom: 8px;
-        color: rgba(126, 162, 212, 1);
+        color: var(--primary-color);
         font-weight: 500;
+        font-size: 14px;
       }
       .grade-input {
-        width: 100px;
-        padding: 10px;
-        background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        width: 100%;
+        padding: 10px 12px;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
         border-radius: 8px;
-        color: #ffffff;
+        color: var(--text-primary);
         font-size: 16px;
-        font-weight: bold;
+        transition: border-color 0.2s ease;
+      }
+      .grade-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
       }
       .feedback-textarea {
         width: 100%;
         padding: 12px;
-        background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
         border-radius: 8px;
-        color: #ffffff;
+        color: var(--text-primary);
         font-size: 14px;
         resize: vertical;
         min-height: 100px;
+        transition: border-color 0.2s ease;
+      }
+      .feedback-textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
       }
       .grading-actions {
         display: flex;
         gap: 12px;
       }
       .submit-grade-btn {
-        background: rgba(34, 197, 94, 0.2);
-        border: 1px solid rgba(34, 197, 94, 0.4);
-        color: #22c55e;
+        background: var(--primary-color);
+        border: none;
+        color: #ffffff;
         padding: 12px 24px;
         border-radius: 8px;
         cursor: pointer;
-        font-weight: 600;
+        font-weight: 500;
         flex: 1;
-      }
-      .save-draft-btn {
-        background: rgba(249, 115, 22, 0.2);
-        border: 1px solid rgba(249, 115, 22, 0.4);
-        color: #f97316;
-        padding: 12px 24px;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 600;
-        flex: 1;
+        transition: opacity 0.2s ease;
       }
       .submit-grade-btn:hover {
-        background: rgba(34, 197, 94, 0.3);
+        opacity: 0.9;
       }
-      .save-draft-btn:hover {
-        background: rgba(249, 115, 22, 0.3);
+      .cancel-grade-btn {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-secondary);
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 500;
+        flex: 1;
+        transition: background 0.2s ease;
+      }
+      .cancel-grade-btn:hover {
+        background: var(--bg-tertiary);
       }
     </style>
   `;
@@ -16202,20 +16188,42 @@ window.gradeAssignment = function(assignmentId) {
   showModal('Grade Assignment', gradingModal);
 };
 
-window.submitGrade = function(assignmentId) {
+window.submitGrade = async function(assignmentId) {
   const grade = document.getElementById('gradeValue').value;
   const feedback = document.querySelector('.feedback-textarea').value;
 
-  showMessage(`Assignment graded successfully! Grade: ${grade}%`, 'success');
-  closeModal();
+  if (!grade || grade < 0 || grade > 100) {
+    showMessage('Please enter a valid grade between 0 and 100', 'error');
+    return;
+  }
 
-  // Update assignment status
-  updateAssignmentsList('pending'); // Refresh the list
-};
+  try {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_BASE_URL}/api/teacher/assignments/${assignmentId}/grade`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        grade: parseInt(grade),
+        feedback: feedback || ''
+      })
+    });
 
-window.saveDraft = function(assignmentId) {
-  showMessage('Grade saved as draft. You can continue grading later.', 'info');
-  closeModal();
+    if (!response.ok) {
+      throw new Error('Failed to submit grade');
+    }
+
+    showMessage(`Assignment graded successfully! Grade: ${grade}%`, 'success');
+    closeModal();
+    
+    // Refresh assignments page
+    openAssignmentsPage();
+  } catch (error) {
+    console.error('Error submitting grade:', error);
+    showMessage('Failed to submit grade. Please try again.', 'error');
+  }
 };
 
 window.reviewGrade = function(assignmentId) {
@@ -17970,8 +17978,8 @@ window.showModal = function(title, content) {
         z-index: 1000;
       }
       .finance-modal-content {
-        background: rgba(20, 20, 20, 0.95);
-        border: 1px solid rgba(126, 162, 212, 0.3);
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
         border-radius: 12px;
         width: 90%;
         max-width: 500px;
@@ -17983,16 +17991,16 @@ window.showModal = function(title, content) {
         justify-content: space-between;
         align-items: center;
         padding: 20px;
-        border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+        border-bottom: 1px solid var(--border-color);
       }
       .finance-modal-header h3 {
-        color: rgba(126, 162, 212, 1);
+        color: var(--primary-color);
         margin: 0;
       }
       .close-btn {
         background: none;
         border: none;
-        color: rgba(255, 255, 255, 0.7);
+        color: var(--text-secondary);
         font-size: 24px;
         cursor: pointer;
         padding: 0;
@@ -18001,16 +18009,20 @@ window.showModal = function(title, content) {
         display: flex;
         align-items: center;
         justify-content: center;
+        transition: color 0.2s ease;
+      }
+      .close-btn:hover {
+        color: var(--text-primary);
       }
       .finance-modal-body {
         padding: 20px;
-        color: #ffffff;
+        color: var(--text-primary);
       }
       .revenue-item, .stat-item {
         display: flex;
         justify-content: space-between;
         padding: 8px 0;
-        border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+        border-bottom: 1px solid var(--border-color);
       }
       .revenue-total {
         display: flex;
@@ -18018,13 +18030,13 @@ window.showModal = function(title, content) {
         padding: 12px 0;
         font-weight: bold;
         font-size: 16px;
-        border-top: 2px solid rgba(126, 162, 212, 0.3);
+        border-top: 2px solid var(--border-color);
         margin-top: 10px;
       }
       .withdraw-btn {
-        background: rgba(126, 162, 212, 0.2);
-        border: 1px solid rgba(126, 162, 212, 0.4);
-        color: rgba(126, 162, 212, 1);
+        background: var(--primary-light);
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
         padding: 12px 24px;
         border-radius: 8px;
         cursor: pointer;
@@ -18032,7 +18044,7 @@ window.showModal = function(title, content) {
         font-weight: 600;
       }
       .withdraw-btn:hover {
-        background: rgba(126, 162, 212, 0.3);
+        background: rgba(var(--primary-color-rgb), 0.2);
       }
     </style>
   `;
