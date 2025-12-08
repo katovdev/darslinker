@@ -1488,7 +1488,7 @@ export function loadLessonPlayer(course, lesson) {
       .play-button-circle {
         width: 80px;
         height: 80px;
-        background: rgba(126, 162, 212, 0.9);
+        background: color-mix(in srgb, var(--primary-color) 90%, transparent);
         border-radius: 50%;
         display: flex;
         align-items: center;

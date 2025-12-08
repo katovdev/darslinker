@@ -208,7 +208,7 @@ function renderLessonViewPage(courseData, currentLesson) {
       .lesson-view-header {
         background: #232323;
         padding: 20px 0;
-        border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+        border-bottom: 1px solid color-mix(in srgb, var(--theme-color) 20%, transparent);
         position: sticky;
         top: 0;
         z-index: 1000;
@@ -233,7 +233,7 @@ function renderLessonViewPage(courseData, currentLesson) {
 
       .lesson-view-back-btn {
         background: transparent;
-        border: 1px solid rgba(126, 162, 212, 0.3);
+        border: 1px solid color-mix(in srgb, var(--theme-color) 30%, transparent);
         color: #9CA3AF;
         padding: 8px 16px;
         border-radius: 6px;
@@ -297,7 +297,7 @@ function renderLessonViewPage(courseData, currentLesson) {
         top: 50%;
         transform: translateY(-50%);
         background: #232323;
-        border: 1px solid rgba(126, 162, 212, 0.3);
+        border: 1px solid color-mix(in srgb, var(--theme-color) 30%, transparent);
         border-left: none;
         border-radius: 0 8px 8px 0;
         color: var(--theme-color);
@@ -315,7 +315,7 @@ function renderLessonViewPage(courseData, currentLesson) {
       }
 
       .lesson-view-sidebar-toggle-btn:hover {
-        background: rgba(126, 162, 212, 0.1);
+        background: color-mix(in srgb, var(--theme-color) 10%, transparent);
         padding-right: 12px;
       }
 
@@ -358,7 +358,7 @@ function renderLessonViewPage(courseData, currentLesson) {
       }
 
       .lesson-view-module {
-        border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+        border-bottom: 1px solid color-mix(in srgb, var(--theme-color) 10%, transparent);
       }
 
       .lesson-view-module-header {
@@ -371,7 +371,7 @@ function renderLessonViewPage(courseData, currentLesson) {
       }
 
       .lesson-view-module-header:hover {
-        background: rgba(126, 162, 212, 0.05);
+        background: color-mix(in srgb, var(--theme-color) 5%, transparent);
       }
 
       .lesson-view-module-title {
@@ -418,11 +418,11 @@ function renderLessonViewPage(courseData, currentLesson) {
       }
 
       .lesson-view-lesson:hover {
-        background: rgba(126, 162, 212, 0.1);
+        background: color-mix(in srgb, var(--theme-color) 10%, transparent);
       }
 
       .lesson-view-lesson.active {
-        background: rgba(126, 162, 212, 0.2);
+        background: color-mix(in srgb, var(--theme-color) 20%, transparent);
         border-left-color: var(--theme-color);
       }
 
@@ -818,7 +818,7 @@ function showErrorPage() {
     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background: #232323; color: #ffffff;">
       <h1 style="font-size: 48px; margin-bottom: 16px;">404</h1>
       <p style="font-size: 18px; color: #9CA3AF; margin-bottom: 32px;">Lesson not found</p>
-      <button onclick="window.history.back()" style="padding: 12px 32px; background: #7EA2D4; color: #ffffff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
+      <button onclick="window.history.back()" style="padding: 12px 32px; background: var(--theme-color); color: #ffffff; border: none; border-radius: 8px; font-size: 16px; cursor: pointer;">
         Orqaga
       </button>
     </div>
