@@ -1265,3 +1265,29 @@ window.openCourse = async function(courseId, courseType = 'free') {
 };
 
  
+
+
+// Add navigation event listeners for sidebar
+setTimeout(() => {
+  document.querySelectorAll('.landing-nav-item').forEach(item => {
+    item.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const page = item.dataset.page;
+      
+      // Remove active class from all items
+      document.querySelectorAll('.landing-nav-item').forEach(i => i.classList.remove('active'));
+      // Add active to clicked item
+      item.classList.add('active');
+      
+      // Handle navigation
+      if (page === 'home') {
+        // Reload dashboard home
+        const { initLandingStudentDashboard } = await import('./landing-student-dashboard.js');
+        initLandingStudentDashboard();
+      } else {
+        console.log('Navigate to:', page);
+        // Add other page handlers here
+      }
+    });
+  });
+}, 100);
