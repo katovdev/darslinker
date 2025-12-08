@@ -15508,13 +15508,6 @@ window.openAssignmentsPage = async function() {
               flex-direction: column !important;
               gap: 8px !important;
               transition: all 0.3s ease !important;
-              cursor: pointer !important;
-            }
-            .assignments-card:hover {
-              transform: translateY(-5px) !important;
-              border-color: var(--primary-border-hover) !important;
-              background: rgba(58, 56, 56, 0.5) !important;
-              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
             }
             .assignments-card-title {
               color: var(--primary-color) !important;
@@ -15692,19 +15685,19 @@ window.openAssignmentsPage = async function() {
 
           <!-- Assignment Statistics Cards -->
           <div class="assignments-stats-grid">
-            <div class="assignments-card" onclick="showAssignmentDetails('total')">
+            <div class="assignments-card" style="cursor: default;">
               <h3 class="assignments-card-title">Total assignments</h3>
               <div class="assignments-card-amount">${totalAssignments}</div>
             </div>
-            <div class="assignments-card" onclick="showAssignmentDetails('pending')">
+            <div class="assignments-card" style="cursor: default;">
               <h3 class="assignments-card-title">Pending Review</h3>
               <div class="assignments-card-amount">${pendingAssignments}</div>
             </div>
-            <div class="assignments-card" onclick="showAssignmentDetails('graded')">
+            <div class="assignments-card" style="cursor: default;">
               <h3 class="assignments-card-title">Graded</h3>
               <div class="assignments-card-amount">${gradedAssignments}</div>
             </div>
-            <div class="assignments-card" onclick="showAssignmentDetails('grade')">
+            <div class="assignments-card" style="cursor: default;">
               <h3 class="assignments-card-title">Average grade</h3>
               <div class="assignments-card-amount">${averageGrade}%</div>
             </div>
