@@ -20473,7 +20473,7 @@ window.copyLandingURL = function(url) {
 
 // ==================== NOTIFICATION SYSTEM ====================
 
-// Open Notifications Modal
+// Open Notifications Page
 window.openNotifications = async function() {
   try {
     const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
@@ -20697,3 +20697,19 @@ setInterval(() => {
 setTimeout(() => {
   loadNotificationCount();
 }, 1000);
+
+
+// Override openNotifications to load page instead of modal
+const originalOpenNotifications = window.openNotifications;
+window.openNotifications = async function() {
+  try {
+    const { loadNotificationsPage } = await import('../student/notifications.js');
+    loadNotificationsPage();
+  } catch (error) {
+    console.error('Error loading notifications page:', error);
+    // Fallback to original modal
+    if (originalOpenNotifications) {
+      originalOpenNotifications();
+    }
+  }
+};
