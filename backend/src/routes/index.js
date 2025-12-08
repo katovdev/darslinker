@@ -13,6 +13,7 @@ import landingRouter from "./landing.routes.js";
 import landingAuthRouter from "./landing-auth.routes.js";
 import telegramRouter from "./telegram.routes.js";
 import streamRouter from "./stream.routes.js";
+import notificationRouter from "./notification.routes.js";
 
 const mainRouter = Router();
 
@@ -29,5 +30,6 @@ mainRouter.use("/stream", streamRouter);
 mainRouter.use("/landing", landingRouter);
 mainRouter.use("/landing-auth", landingAuthRouter);
 mainRouter.use("/telegram", telegramRouter);
+mainRouter.use("/notifications", notificationRouter);
 
 export default mainRouter;

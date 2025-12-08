@@ -15603,6 +15603,10 @@ window.openAssignmentsPage = async function() {
               font-size: 12px !important;
               font-weight: 500 !important;
             }
+            .assignment-status.graded {
+              background: rgba(16, 185, 129, 0.2) !important;
+              color: #10B981 !important;
+            }
             .assignment-description {
               color: rgba(255, 255, 255, 0.8) !important;
               font-size: 14px !important;
@@ -15708,13 +15712,14 @@ window.openAssignmentsPage = async function() {
 
           <!-- Assignment Filter Tabs -->
           <div class="assignment-tabs">
-            <div class="assignment-tab active" onclick="switchAssignmentTab(this, 'pending')">Pending</div>
+            <div class="assignment-tab active" onclick="switchAssignmentTab(this, 'all')">All</div>
+            <div class="assignment-tab" onclick="switchAssignmentTab(this, 'pending')">Pending</div>
             <div class="assignment-tab" onclick="switchAssignmentTab(this, 'graded')">Graded</div>
           </div>
 
           <!-- Assignments Section -->
           <div class="assignments-section">
-            <h3 class="assignments-section-title">Pending assignments</h3>
+            <h3 class="assignments-section-title">All assignments</h3>
 
             <!-- Assignment Items -->
             ${submissions.length === 0 ? `
@@ -15912,9 +15917,9 @@ window.showAssignmentDetails = function(cardType) {
 window.reviewAllAssignments = function() {
   showMessage('Starting review session...', 'info');
   closeModal();
-  // Switch to pending tab and highlight first assignment
-  const pendingTab = document.querySelector('.assignment-tab');
-  switchAssignmentTab(pendingTab, 'pending');
+  // Switch to all tab by default
+  const allTab = document.querySelector('.assignment-tab');
+  switchAssignmentTab(allTab, 'all');
 };
 
 // Enhanced Assignment tab switching function
@@ -15931,7 +15936,10 @@ window.switchAssignmentTab = function(tabElement, tabType) {
   const sectionTitle = document.querySelector('.assignments-section-title');
   const assignmentsSection = document.querySelector('.assignments-section');
 
-  if (tabType === 'pending') {
+  if (tabType === 'all') {
+    sectionTitle.textContent = 'All assignments';
+    updateAssignmentsList('all');
+  } else if (tabType === 'pending') {
     sectionTitle.textContent = 'Pending assignments';
     updateAssignmentsList('pending');
   } else {
@@ -15943,81 +15951,51 @@ window.switchAssignmentTab = function(tabElement, tabType) {
 // Update assignments list based on filter
 window.updateAssignmentsList = function(filterType) {
   const assignmentsContainer = document.querySelector('.assignments-section');
-  const existingItems = assignmentsContainer.querySelectorAll('.assignment-item');
-
-  // Remove existing items
-  existingItems.forEach(item => item.remove());
-
-  if (filterType === 'pending') {
-    // Show pending assignments
-    const pendingHTML = `
-      <div class="assignment-item">
-        <div class="assignment-header">
-          <div>
-            <h4 class="assignment-title">Build a Todo App Project</h4>
-            <div class="assignment-meta">Submitted: Oct 10, 2025 • React Masterclass</div>
-          </div>
-          <span class="assignment-status">Pending</span>
-        </div>
-        <div class="assignment-description">
-          Submission: Complete Todo application with add, delete, and edit functionality
-        </div>
-        <div class="assignment-action">
-          <button class="grade-btn" onclick="gradeAssignment(1)">Grade now</button>
-        </div>
-      </div>
-      <div class="assignment-item">
-        <div class="assignment-header">
-          <div>
-            <h4 class="assignment-title">React Router Implementation</h4>
-            <div class="assignment-meta">Submitted: Oct 9, 2025 • React Advanced</div>
-          </div>
-          <span class="assignment-status">Pending</span>
-        </div>
-        <div class="assignment-description">
-          Submission: Multi-page application with client-side routing
-        </div>
-        <div class="assignment-action">
-          <button class="grade-btn" onclick="gradeAssignment(2)">Grade now</button>
-        </div>
-      </div>
-    `;
-    assignmentsContainer.insertAdjacentHTML('beforeend', pendingHTML);
+  
+  // Get all assignment items
+  const allItems = assignmentsContainer.querySelectorAll('.assignment-item');
+  
+  // Filter and show/hide based on status
+  allItems.forEach(item => {
+    const status = item.getAttribute('data-status');
+    
+    if (filterType === 'pending') {
+      // Show only submitted (pending) assignments
+      if (status === 'submitted') {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    } else if (filterType === 'graded') {
+      // Show only graded assignments
+      if (status === 'graded') {
+        item.style.display = 'block';
+      } else {
+        item.style.display = 'none';
+      }
+    } else {
+      // Show all
+      item.style.display = 'block';
+    }
+  });
+  
+  // Check if any items are visible
+  const visibleItems = Array.from(allItems).filter(item => item.style.display !== 'none');
+  
+  if (visibleItems.length === 0) {
+    // Show "no assignments" message
+    const existingNoMsg = assignmentsContainer.querySelector('.no-assignments-msg');
+    if (existingNoMsg) existingNoMsg.remove();
+    
+    const noAssignmentsMsg = document.createElement('div');
+    noAssignmentsMsg.className = 'no-assignments-msg';
+    noAssignmentsMsg.style.cssText = 'padding: 40px; text-align: center; color: rgba(255,255,255,0.5);';
+    noAssignmentsMsg.textContent = filterType === 'pending' ? 'No pending assignments' : 'No graded assignments yet';
+    assignmentsContainer.appendChild(noAssignmentsMsg);
   } else {
-    // Show graded assignments
-    const gradedHTML = `
-      <div class="assignment-item" data-course="javascript-basics">
-        <div class="assignment-header">
-          <div>
-            <h4 class="assignment-title">JavaScript Calculator</h4>
-            <div class="assignment-meta">Submitted: Oct 5, 2025 • JavaScript Basics</div>
-          </div>
-          <span class="assignment-status graded" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">Grade: 85%</span>
-        </div>
-        <div class="assignment-description">
-          Well implemented calculator with all basic operations. Good code structure.
-        </div>
-        <div class="assignment-action">
-          <button class="grade-btn" onclick="reviewGrade(3)">Review Grade</button>
-        </div>
-      </div>
-      <div class="assignment-item">
-        <div class="assignment-header">
-          <div>
-            <h4 class="assignment-title">CSS Grid Layout</h4>
-            <div class="assignment-meta">Submitted: Oct 3, 2025 • CSS Advanced</div>
-          </div>
-          <span class="assignment-status graded" style="background: rgba(34, 197, 94, 0.2); color: #22c55e;">Grade: 92%</span>
-        </div>
-        <div class="assignment-description">
-          Excellent understanding of CSS Grid. Clean and responsive design.
-        </div>
-        <div class="assignment-action">
-          <button class="grade-btn" onclick="reviewGrade(4)">Review Grade</button>
-        </div>
-      </div>
-    `;
-    assignmentsContainer.insertAdjacentHTML('beforeend', gradedHTML);
+    // Remove "no assignments" message if exists
+    const existingNoMsg = assignmentsContainer.querySelector('.no-assignments-msg');
+    if (existingNoMsg) existingNoMsg.remove();
   }
 };
 
@@ -17353,7 +17331,7 @@ window.showMessage = function(message, type = 'info') {
 
   const styles = `
     position: fixed;
-    top: 20px;
+    bottom: 20px;
     right: 20px;
     padding: 16px 24px;
     border-radius: 12px;
@@ -17369,10 +17347,10 @@ window.showMessage = function(message, type = 'info') {
   `;
 
   const typeStyles = {
-    success: 'background: #10B981; border-left: 4px solid #059669;',
-    error: 'background: #EF4444; border-left: 4px solid #DC2626;',
-    info: 'background: #7ea2d4; border-left: 4px solid #6b8fc4;',
-    warning: 'background: #F59E0B; border-left: 4px solid #D97706;'
+    success: 'background: #10B981; border: 2px solid #059669; box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);',
+    error: 'background: #EF4444; border: 2px solid #DC2626; box-shadow: 0 10px 40px rgba(239, 68, 68, 0.4);',
+    info: 'background: #7ea2d4; border: 2px solid #6b8fc4; box-shadow: 0 10px 40px rgba(126, 162, 212, 0.4);',
+    warning: 'background: #F59E0B; border: 2px solid #D97706; box-shadow: 0 10px 40px rgba(245, 158, 11, 0.4);'
   };
 
   console.log('Toast styles loaded:', typeStyles);
@@ -20492,3 +20470,230 @@ window.copyLandingURL = function(url) {
     showErrorToast('Failed to copy URL');
   });
 };
+
+// ==================== NOTIFICATION SYSTEM ====================
+
+// Open Notifications Modal
+window.openNotifications = async function() {
+  try {
+    const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
+    const userId = landingUser._id;
+    
+    if (!userId) {
+      showMessage('Please log in to view notifications', 'error');
+      return;
+    }
+
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}`);
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error('Failed to load notifications');
+    }
+
+    const notifications = data.notifications || [];
+    const unreadCount = data.unreadCount || 0;
+
+    const notificationsHTML = notifications.length === 0 ? `
+      <div style="padding: 40px; text-align: center; color: rgba(255,255,255,0.5);">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 16px; opacity: 0.3;">
+          <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        <div style="font-size: 16px; margin-bottom: 8px;">No notifications yet</div>
+        <div style="font-size: 13px; opacity: 0.7;">You'll see notifications here when you have updates</div>
+      </div>
+    ` : notifications.map(notif => {
+      const date = new Date(notif.createdAt).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      const icon = notif.type === 'assignment_graded' 
+        ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
+        : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+      
+      return `
+        <div class="notification-item ${notif.read ? 'read' : 'unread'}" onclick="handleNotificationClick('${notif._id}', '${notif.link || ''}')">
+          <div class="notification-icon">${icon}</div>
+          <div class="notification-content">
+            <div class="notification-title">${notif.title}</div>
+            <div class="notification-message">${notif.message}</div>
+            <div class="notification-time">${date}</div>
+          </div>
+          ${!notif.read ? '<div class="notification-badge"></div>' : ''}
+        </div>
+      `;
+    }).join('');
+
+    const modalContent = `
+      <div style="max-height: 500px; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 4px;">
+          <div style="font-size: 14px; color: rgba(255,255,255,0.7);">
+            ${unreadCount > 0 ? `${unreadCount} unread` : 'All caught up!'}
+          </div>
+          ${notifications.length > 0 ? `
+            <button onclick="markAllNotificationsRead('${userId}')" style="background: none; border: none; color: var(--primary-color); font-size: 13px; cursor: pointer; padding: 4px 8px;">
+              Mark all as read
+            </button>
+          ` : ''}
+        </div>
+        ${notificationsHTML}
+      </div>
+      <style>
+        .notification-item {
+          display: flex;
+          gap: 12px;
+          padding: 16px;
+          border-radius: 8px;
+          margin-bottom: 8px;
+          cursor: pointer;
+          transition: background 0.2s;
+          position: relative;
+          background: var(--bg-tertiary);
+        }
+        .notification-item:hover {
+          background: rgba(var(--primary-color-rgb), 0.1);
+        }
+        .notification-item.unread {
+          background: rgba(var(--primary-color-rgb), 0.05);
+          border-left: 3px solid var(--primary-color);
+        }
+        .notification-icon {
+          flex-shrink: 0;
+          width: 20px;
+          height: 20px;
+        }
+        .notification-content {
+          flex: 1;
+        }
+        .notification-title {
+          font-weight: 600;
+          font-size: 14px;
+          color: var(--text-primary);
+          margin-bottom: 4px;
+        }
+        .notification-message {
+          font-size: 13px;
+          color: var(--text-secondary);
+          line-height: 1.4;
+          margin-bottom: 4px;
+        }
+        .notification-time {
+          font-size: 12px;
+          color: rgba(255,255,255,0.5);
+        }
+        .notification-badge {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          width: 8px;
+          height: 8px;
+          background: var(--primary-color);
+          border-radius: 50%;
+        }
+      </style>
+    `;
+
+    showModal('Notifications', modalContent);
+    
+    // Update badge count
+    updateNotificationBadge(unreadCount);
+
+  } catch (error) {
+    console.error('Error loading notifications:', error);
+    showMessage('Failed to load notifications', 'error');
+  }
+};
+
+// Handle notification click
+window.handleNotificationClick = async function(notificationId, link) {
+  try {
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    
+    // Mark as read
+    await fetch(`${apiBaseUrl}/notifications/${notificationId}/read`, {
+      method: 'PATCH'
+    });
+
+    // Close modal
+    closeModal();
+
+    // Navigate to link if exists
+    if (link && link !== 'undefined') {
+      // Refresh current page or navigate
+      window.location.reload();
+    }
+
+  } catch (error) {
+    console.error('Error handling notification:', error);
+  }
+};
+
+// Mark all notifications as read
+window.markAllNotificationsRead = async function(userId) {
+  try {
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    
+    await fetch(`${apiBaseUrl}/notifications/user/${userId}/read-all`, {
+      method: 'PATCH'
+    });
+
+    showMessage('All notifications marked as read', 'success');
+    
+    // Reload notifications
+    openNotifications();
+
+  } catch (error) {
+    console.error('Error marking notifications as read:', error);
+    showMessage('Failed to mark notifications as read', 'error');
+  }
+};
+
+// Update notification badge
+window.updateNotificationBadge = function(count) {
+  const badge = document.getElementById('notification-badge');
+  if (badge) {
+    if (count > 0) {
+      badge.textContent = count > 99 ? '99+' : count;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+};
+
+// Load notification count on page load
+window.loadNotificationCount = async function() {
+  try {
+    const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
+    const userId = landingUser._id;
+    
+    if (!userId) return;
+
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}?unreadOnly=true`);
+    const data = await response.json();
+
+    if (data.success) {
+      updateNotificationBadge(data.unreadCount || 0);
+    }
+
+  } catch (error) {
+    console.error('Error loading notification count:', error);
+  }
+};
+
+// Auto-refresh notifications every 30 seconds
+setInterval(() => {
+  if (sessionStorage.getItem('landingUser')) {
+    loadNotificationCount();
+  }
+}, 30000);
+
+// Load notification count on page load
+setTimeout(() => {
+  loadNotificationCount();
+}, 1000);

@@ -197,7 +197,10 @@ export const gradeSubmission = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { grade, feedback } = req.body;
 
-  const submission = await Submission.findById(id);
+  const submission = await Submission.findById(id)
+    .populate('courseId', 'title')
+    .populate('lessonId', 'title');
+    
   if (!submission) {
     throw new NotFoundError('Submission not found');
   }
@@ -210,7 +213,25 @@ export const gradeSubmission = catchAsync(async (req, res) => {
 
   const populatedSubmission = await Submission.findById(submission._id)
     .populate('studentId', 'firstName lastName email')
-    .populate('courseId', 'title');
+    .populate('courseId', 'title')
+    .populate('lessonId', 'title');
+
+  // Create notification for student
+  const { createNotification } = await import('./notification.controller.js');
+  await createNotification({
+    userId: submission.studentId,
+    userType: 'Student',
+    type: 'assignment_graded',
+    title: 'Assignment Graded',
+    message: `Your assignment "${submission.lessonTitle || populatedSubmission.lessonId?.title || 'Assignment'}" has been graded. Grade: ${grade}%`,
+    link: `/course/${submission.courseId}/lesson/${submission.lessonId}`,
+    metadata: {
+      assignmentId: id,
+      courseId: submission.courseId,
+      lessonId: submission.lessonId,
+      grade: grade
+    }
+  });
 
   logger.info('Submission graded', {
     submissionId: id,
