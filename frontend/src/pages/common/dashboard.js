@@ -16199,8 +16199,9 @@ window.submitGrade = async function(assignmentId) {
 
   try {
     const token = localStorage.getItem('token');
-    const response = await fetch(`${API_BASE_URL}/api/teacher/assignments/${assignmentId}/grade`, {
-      method: 'PUT',
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/submissions/${assignmentId}/grade`, {
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
@@ -17368,10 +17369,10 @@ window.showMessage = function(message, type = 'info') {
   `;
 
   const typeStyles = {
-    success: 'background: rgba(42, 250, 10, 1) !important; border-left: 4px solid #04ff25 !important;',
-    error: 'background: rgba(239, 68, 68, 0.9); border-left: 4px solid #ef4444;',
-    info: 'background: rgba(126, 162, 212, 0.9); border-left: 4px solid rgba(126, 162, 212, 1);',
-    warning: 'background: rgba(249, 115, 22, 0.9); border-left: 4px solid #f97316;'
+    success: 'background: #10B981; border-left: 4px solid #059669;',
+    error: 'background: #EF4444; border-left: 4px solid #DC2626;',
+    info: 'background: #7ea2d4; border-left: 4px solid #6b8fc4;',
+    warning: 'background: #F59E0B; border-left: 4px solid #D97706;'
   };
 
   console.log('Toast styles loaded:', typeStyles);

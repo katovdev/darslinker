@@ -510,9 +510,10 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         color: #10B981;
         border: 1px solid rgba(16, 185, 129, 0.3);
         background: rgba(16, 185, 129, 0.1);
-        padding: 12px;
+        padding: 16px;
         border-radius: 8px;
         margin-top: 12px;
+        line-height: 1.8;
       }
 
       .upload-status.submitted strong {
@@ -974,9 +975,36 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         hour: '2-digit',
         minute: '2-digit'
       });
-      uploadStatus.innerHTML =
-        '<strong>✅ Submitted:</strong> ' + submission.fileName + '<br>' +
-        '<small>Submitted on ' + submitTime + '</small>';
+      
+      let statusHtml = '<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><strong>Submitted:</strong></div>' + 
+        '<div style="margin-left: 26px;">' + submission.fileName + '<br>' +
+        '<small>Submitted on ' + submitTime + '</small></div>';
+      
+      // Show grade if graded
+      if (submission.status === 'graded' && submission.grade !== undefined) {
+        // Determine grade color based on score
+        let gradeColor = '#10B981'; // Green for 80+
+        if (submission.grade < 60) {
+          gradeColor = '#EF4444'; // Red for below 60
+        } else if (submission.grade < 80) {
+          gradeColor = '#F59E0B'; // Yellow/Orange for 60-79
+        }
+        
+        statusHtml += '<div style="text-align: center; margin-top: 20px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px;">' +
+          '<div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="' + gradeColor + '" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg><strong style="font-size: 15px;">Grade</strong></div>' +
+          '<div style="font-size: 32px; font-weight: 700; color: ' + gradeColor + ';">' + submission.grade + '%</div>' +
+          '</div>';
+      }
+      
+      // Show feedback if available
+      if (submission.feedback) {
+        statusHtml += '<div style="text-align: center; margin-top: 16px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px;">' +
+          '<div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 8px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><strong style="font-size: 15px;">Feedback</strong></div>' +
+          '<div style="color: rgba(255,255,255,0.9); font-size: 14px; line-height: 1.6;">' + submission.feedback + '</div>' +
+          '</div>';
+      }
+      
+      uploadStatus.innerHTML = statusHtml;
       uploadStatus.className = 'upload-status submitted';
     }
     if (submitBtn) {
@@ -1032,6 +1060,9 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
             fileUrl: submission.fileUrl,
             fileName: submission.fileName,
             submittedAt: submission.submittedAt,
+            status: submission.status,
+            grade: submission.grade,
+            feedback: submission.feedback
           });
           
           return true;
