@@ -93,7 +93,7 @@ export function renderLandingStudentDashboard() {
       .landing-sidebar {
         width: 260px;
         background: #232323;
-        border-right: 1px solid rgba(126, 162, 212, 0.2);
+        border-right: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         display: flex;
         flex-direction: column;
         padding: 24px 16px;
@@ -115,12 +115,12 @@ export function renderLandingStudentDashboard() {
       }
 
       .landing-sidebar::-webkit-scrollbar-thumb {
-        background: rgba(126, 162, 212, 0.3);
+        background: color-mix(in srgb, var(--primary-color) 30%, transparent);
         border-radius: 2px;
       }
 
       .landing-sidebar::-webkit-scrollbar-thumb:hover {
-        background: rgba(126, 162, 212, 0.5);
+        background: color-mix(in srgb, var(--primary-color) 50%, transparent);
       }
 
       /* Profile Section */
@@ -130,7 +130,7 @@ export function renderLandingStudentDashboard() {
         gap: 12px;
         padding: 16px;
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 12px;
         margin-bottom: 24px;
       }
@@ -178,7 +178,7 @@ export function renderLandingStudentDashboard() {
 
       .landing-nav-parent {
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 15px;
         padding: 12px 16px;
         display: flex;
@@ -217,9 +217,9 @@ export function renderLandingStudentDashboard() {
 
       .landing-nav-children {
         background: rgba(40, 40, 40, 0.8);
-        border-left: 0.5px solid rgba(126, 162, 212, 0.2);
-        border-right: 0.5px solid rgba(126, 162, 212, 0.2);
-        border-bottom: 0.5px solid rgba(126, 162, 212, 0.2);
+        border-left: 0.5px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+        border-right: 0.5px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+        border-bottom: 0.5px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-bottom-left-radius: 12px;
         border-bottom-right-radius: 12px;
         padding: 8px 16px 12px 16px;
@@ -263,7 +263,7 @@ export function renderLandingStudentDashboard() {
       .landing-sidebar-footer {
         margin-top: auto;
         padding-top: 20px;
-        border-top: 1px solid rgba(126, 162, 212, 0.2);
+        border-top: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
       }
 
       .landing-support-btn {
@@ -306,12 +306,12 @@ export function renderLandingStudentDashboard() {
       }
 
       .landing-main-content::-webkit-scrollbar-thumb {
-        background: rgba(126, 162, 212, 0.3);
+        background: color-mix(in srgb, var(--primary-color) 30%, transparent);
         border-radius: 4px;
       }
 
       .landing-main-content::-webkit-scrollbar-thumb:hover {
-        background: rgba(126, 162, 212, 0.5);
+        background: color-mix(in srgb, var(--primary-color) 50%, transparent);
       }
 
       /* Header */
@@ -321,7 +321,7 @@ export function renderLandingStudentDashboard() {
         justify-content: space-between;
         padding: 20px 40px;
         background: #232323;
-        border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+        border-bottom: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         position: sticky;
         top: 0;
         z-index: 100;
@@ -356,7 +356,7 @@ export function renderLandingStudentDashboard() {
         align-items: center;
         justify-content: center;
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 8px;
         color: #9CA3AF;
         cursor: pointer;
@@ -449,7 +449,7 @@ export function renderLandingStudentDashboard() {
       /* Welcome Card */
       .landing-welcome-card {
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 20px;
         padding: 32px;
         margin-bottom: 32px;
@@ -477,7 +477,7 @@ export function renderLandingStudentDashboard() {
 
       .landing-stat-card {
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 16px;
         padding: 32px;
         text-align: center;
@@ -487,7 +487,6 @@ export function renderLandingStudentDashboard() {
       .landing-stat-card:hover {
         background: rgba(58, 56, 56, 0.4);
         border-color: var(--primary-color);
-        transform: translateY(-4px);
       }
 
       .landing-stat-value {
@@ -518,7 +517,7 @@ export function renderLandingStudentDashboard() {
       .landing-filter-tab {
         padding: 10px 20px;
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 8px;
         color: #9CA3AF;
         font-size: 14px;
@@ -549,7 +548,7 @@ export function renderLandingStudentDashboard() {
       /* Course Card */
       .landing-course-card {
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 16px;
         padding: 20px;
         transition: all 0.3s ease;
@@ -558,7 +557,6 @@ export function renderLandingStudentDashboard() {
       .landing-course-card:hover {
         background: rgba(58, 56, 56, 0.4);
         border-color: var(--primary-color);
-        transform: translateY(-4px);
       }
 
       .landing-course-thumbnail {
@@ -632,8 +630,8 @@ export function renderLandingStudentDashboard() {
       .landing-continue-btn {
         width: 100%;
         padding: 12px;
-        background: rgba(126, 162, 212, 0.2);
-        border: 1px solid rgba(126, 162, 212, 0.5);
+        background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 50%, transparent);
         border-radius: 8px;
         color: #ffffff;
         font-size: 14px;
