@@ -245,12 +245,12 @@ function renderQuizStart(mainContent, course, lesson, sidebarHtml, shouldUpdateO
       .quiz-meta-value {
         font-size: 24px;
         font-weight: 700;
-        color: #7ea2d4;
+        color: var(--primary-color);
       }
       
       .quiz-start-btn {
         padding: 16px 48px;
-        background: #7ea2d4;
+        background: var(--primary-color);
         color: #ffffff;
         border: none;
         border-radius: 12px;
@@ -261,7 +261,7 @@ function renderQuizStart(mainContent, course, lesson, sidebarHtml, shouldUpdateO
       }
       
       .quiz-start-btn:hover {
-        background: #6b8fc4;
+        background: color-mix(in srgb, var(--primary-color) 80%, #000);
         transform: translateY(-2px);
       }
     </style>
@@ -282,7 +282,7 @@ function renderQuizStart(mainContent, course, lesson, sidebarHtml, shouldUpdateO
             </div>
             <div class="quiz-meta-item">
               <div class="quiz-meta-label">Urinishlar</div>
-              <div class="quiz-meta-value" style="color: ${quizState.currentAttempt > quizState.maxAttempts ? '#EF4444' : '#7ea2d4'}">${quizState.currentAttempt > quizState.maxAttempts ? quizState.maxAttempts : quizState.currentAttempt}/${quizState.maxAttempts}</div>
+              <div class="quiz-meta-value" style="color: ${quizState.currentAttempt > quizState.maxAttempts ? '#EF4444' : 'var(--primary-color)'}">${quizState.currentAttempt > quizState.maxAttempts ? quizState.maxAttempts : quizState.currentAttempt}/${quizState.maxAttempts}</div>
             </div>
             <div class="quiz-meta-item">
               <div class="quiz-meta-label">Timer</div>
@@ -536,7 +536,7 @@ function getSharedStyles() {
     
     .sidebar-close:hover {
       background: rgba(255, 255, 255, 0.1);
-      color: #7ea2d4;
+      color: var(--primary-color);
     }
     
     .sidebar-modules {
@@ -573,7 +573,7 @@ function getSharedStyles() {
     }
     
     .sidebar-module-arrow {
-      color: #7ea2d4;
+      color: var(--primary-color);
       font-size: 12px;
       transition: transform 0.3s;
     }
@@ -608,12 +608,12 @@ function getSharedStyles() {
     }
     
     .sidebar-lesson.active {
-      background: rgba(126, 162, 212, 0.2);
-      border-left-color: #7ea2d4;
+      background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+      border-left-color: var(--primary-color);
     }
     
     .sidebar-lesson-icon {
-      color: #7ea2d4;
+      color: var(--primary-color);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -698,8 +698,8 @@ function getQuizActiveStyles() {
     }
     
     .quiz-timer-display {
-      background: rgba(126, 162, 212, 0.15);
-      border: 1.5px solid #7ea2d4;
+      background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+      border: 1.5px solid var(--primary-color);
       border-radius: 8px;
       padding: 10px 16px;
       display: flex;
@@ -710,7 +710,7 @@ function getQuizActiveStyles() {
     }
     
     .timer-icon {
-      color: #7ea2d4;
+      color: var(--primary-color);
       flex-shrink: 0;
       animation: pulse 2s ease-in-out infinite;
     }
@@ -727,7 +727,7 @@ function getQuizActiveStyles() {
     .timer-value {
       font-size: 20px;
       font-weight: 700;
-      color: #7ea2d4;
+      color: var(--primary-color);
       font-family: 'Courier New', monospace;
       letter-spacing: 1px;
     }
@@ -801,7 +801,7 @@ function getQuizActiveStyles() {
     
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #7ea2d4, #6b8fc4);
+      background: linear-gradient(90deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 85%, #000));
       border-radius: 4px;
       transition: width 0.3s ease;
     }
@@ -840,13 +840,13 @@ function getQuizActiveStyles() {
     }
     
     .question-option:hover {
-      background: rgba(126, 162, 212, 0.1);
-      border-color: #7ea2d4;
+      background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+      border-color: var(--primary-color);
     }
     
     .question-option.selected {
-      background: rgba(126, 162, 212, 0.2);
-      border-color: #7ea2d4;
+      background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+      border-color: var(--primary-color);
       color: #ffffff;
     }
     
@@ -888,14 +888,14 @@ function getQuizActiveStyles() {
     
     .nav-btn-next,
     .nav-btn-finish {
-      background: #7ea2d4;
+      background: var(--primary-color);
       color: #ffffff;
       margin-left: auto;
     }
     
     .nav-btn-next:hover,
     .nav-btn-finish:hover {
-      background: #6b8fc4;
+      background: color-mix(in srgb, var(--primary-color) 85%, #000);
     }
     
     .quiz-actions {
@@ -926,12 +926,12 @@ function getQuizActiveStyles() {
     }
     
     .quiz-btn-primary {
-      background: #7ea2d4;
+      background: var(--primary-color);
       color: #ffffff;
     }
     
     .quiz-btn-primary:hover {
-      background: #6b8fc4;
+      background: color-mix(in srgb, var(--primary-color) 80%, #000);
     }
     
     .quiz-btn-primary:disabled {
@@ -1386,7 +1386,7 @@ function showToast(message) {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background: #7ea2d4;
+    background: var(--primary-color);
     color: #ffffff;
     padding: 16px 32px;
     border-radius: 12px;
@@ -1569,7 +1569,7 @@ function renderQuizStartContent(contentArea, lesson) {
       }
 
       .quiz-start-btn:hover:not(:disabled) {
-        background: #6b8fc4;
+        background: color-mix(in srgb, var(--primary-color) 80%, #000);
         transform: translateY(-2px);
       }
 
@@ -1746,7 +1746,7 @@ function renderQuizActiveContent(contentArea, lesson, questions) {
 
       .progress-fill {
         height: 100%;
-        background: linear-gradient(90deg, var(--primary-color), #6b8fc4);
+        background: linear-gradient(90deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 85%, #000));
         border-radius: 4px;
         transition: width 0.3s ease;
       }
@@ -1840,7 +1840,7 @@ function renderQuizActiveContent(contentArea, lesson, questions) {
 
       .nav-btn-next:hover,
       .nav-btn-finish:hover {
-        background: #6b8fc4;
+        background: color-mix(in srgb, var(--primary-color) 85%, #000);
       }
     </style>
 
@@ -1973,7 +1973,7 @@ function renderQuizResultsContent(contentArea, lesson, questions) {
       }
 
       .quiz-btn-primary:hover:not(:disabled) {
-        background: #6b8fc4;
+        background: color-mix(in srgb, var(--primary-color) 80%, #000);
       }
 
       .quiz-btn-primary:disabled {

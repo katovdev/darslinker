@@ -45,7 +45,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .logo-highlight {
-        color: #7EA2D4;
+        color: var(--primary-color);
       }
 
       .header-actions {
@@ -69,23 +69,23 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .icon-btn:hover {
-        background: rgba(126, 162, 212, 0.1);
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
         color: #ffffff;
-        border-color: #7ea2d4;
+        border-color: var(--primary-color);
       }
 
       .logout-btn {
         width: auto !important;
         padding: 0 16px !important;
         gap: 8px;
-        border-color: #7ea2d4 !important;
-        color: #7ea2d4 !important;
+        border-color: var(--primary-color) !important;
+        color: var(--primary-color) !important;
       }
 
       .logout-text {
         font-size: 14px;
         font-weight: 500;
-        color: #7ea2d4;
+        color: var(--primary-color);
       }
 
       /* Layout */
@@ -162,7 +162,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .sidebar-module-arrow {
-        color: #7ea2d4;
+        color: var(--primary-color);
         font-size: 12px;
         transition: transform 0.3s;
       }
@@ -196,12 +196,12 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .sidebar-lesson.active {
-        background: rgba(126, 162, 212, 0.2);
-        border-left-color: #7ea2d4;
+        background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+        border-left-color: var(--primary-color);
       }
 
       .sidebar-lesson-icon {
-        color: #7ea2d4;
+        color: var(--primary-color);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -276,7 +276,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .meta-icon {
-        color: #7ea2d4;
+        color: var(--primary-color);
       }
 
       /* Assignment Instruction */
@@ -322,14 +322,14 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .file-attachment:hover {
-        background: rgba(126, 162, 212, 0.15);
-        border-color: #7ea2d4;
+        background: color-mix(in srgb, var(--primary-color) 15%, transparent);
+        border-color: var(--primary-color);
       }
 
       .file-icon {
         width: 40px;
         height: 40px;
-        background: #7ea2d4;
+        background: var(--primary-color);
         border-radius: 8px;
         display: flex;
         align-items: center;
@@ -365,8 +365,8 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .submit-section.drag-over {
-        border-color: #7ea2d4;
-        background: rgba(126, 162, 212, 0.1);
+        border-color: var(--primary-color);
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
       }
 
       .submit-section.uploading {
@@ -387,7 +387,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         display: flex;
         align-items: center;
         justify-content: center;
-        color: #7ea2d4;
+        color: var(--primary-color);
       }
 
       .upload-text {
@@ -403,7 +403,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
 
       .upload-btn {
         padding: 12px 32px;
-        background: #7ea2d4;
+        background: var(--primary-color);
         color: white;
         border: none;
         border-radius: 8px;
@@ -414,14 +414,14 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .upload-btn:hover {
-        background: #6b8fc4;
+        background: color-mix(in srgb, var(--primary-color) 85%, #000);
         transform: translateY(-1px);
       }
 
       .upload-btn.change-file {
-        background: rgba(126, 162, 212, 0.2);
-        border: 1px solid rgba(126, 162, 212, 0.5);
-        color: #7ea2d4;
+        background: color-mix(in srgb, var(--primary-color) 20%, transparent);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 50%, transparent);
+        color: var(--primary-color);
         font-size: 12px;
         padding: 8px 16px;
         margin-top: 8px;
@@ -438,7 +438,8 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         gap: 16px;
         margin-top: 32px;
         padding-top: 24px;
-        border-top: 1px solid rgba(126, 162, 212, 0.2);
+        border-top: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+        justify-content: flex-end;
       }
 
       .btn {
@@ -452,16 +453,16 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .btn-primary {
-        background: #7ea2d4;
+        background: var(--primary-color);
         color: white;
       }
 
       .btn-primary:hover {
-        background: #6b8fc4;
+        background: color-mix(in srgb, var(--primary-color) 85%, #000);
       }
 
       .btn-primary:disabled {
-        background: rgba(126, 162, 212, 0.5);
+        background: color-mix(in srgb, var(--primary-color) 50%, transparent);
         cursor: not-allowed;
         opacity: 0.6;
       }
@@ -469,11 +470,11 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       .btn-secondary {
         background: rgba(58, 56, 56, 0.5);
         color: #E5E7EB;
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
       }
 
       .btn-secondary:hover {
-        background: rgba(126, 162, 212, 0.1);
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
       }
 
       .upload-progress {
@@ -487,7 +488,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
 
       .upload-progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, #7ea2d4, #6b8fc4);
+        background: linear-gradient(90deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 85%, #000));
         transition: width 0.3s ease;
         border-radius: 8px;
       }
@@ -588,7 +589,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .toast-icon.info {
-        color: #7ea2d4;
+        color: var(--primary-color);
       }
 
       .toast-content {
@@ -698,7 +699,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
                 <div class="file-name">Assignment File</div>
                 <div class="file-size">Click to download</div>
               </div>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7ea2d4" stroke-width="2">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2">
                 <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
               </svg>
             </div>
@@ -1663,7 +1664,7 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
       }
 
       .upload-btn:hover {
-        background: #6b8fc4;
+        background: color-mix(in srgb, var(--primary-color) 80%, #000);
         transform: translateY(-1px);
       }
 
@@ -1686,7 +1687,8 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
         gap: 16px;
         margin-top: 32px;
         padding-top: 24px;
-        border-top: 1px solid rgba(126, 162, 212, 0.2);
+        border-top: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+        justify-content: flex-end;
       }
 
       .btn {
@@ -1705,11 +1707,11 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
       }
 
       .btn-primary:hover {
-        background: #6b8fc4;
+        background: color-mix(in srgb, var(--primary-color) 85%, #000);
       }
 
       .btn-primary:disabled {
-        background: rgba(126, 162, 212, 0.5);
+        background: color-mix(in srgb, var(--primary-color) 50%, transparent);
         cursor: not-allowed;
         opacity: 0.6;
       }
@@ -1717,11 +1719,11 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
       .btn-secondary {
         background: rgba(58, 56, 56, 0.5);
         color: #E5E7EB;
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
       }
 
       .btn-secondary:hover {
-        background: rgba(126, 162, 212, 0.1);
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
       }
 
       .upload-progress {
@@ -1735,7 +1737,7 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
 
       .upload-progress-bar {
         height: 100%;
-        background: linear-gradient(90deg, var(--primary-color), #6b8fc4);
+        background: linear-gradient(90deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 85%, #000));
         transition: width 0.3s ease;
         border-radius: 8px;
       }
