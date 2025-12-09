@@ -305,7 +305,7 @@ async function renderCourseLearningPage(course) {
       .logo-text {
         font-size: 24px;
         font-weight: 700;
-        color: #ffffff;
+        color: var(--primary-color, #7ea2d4);
       }
 
       .logo-highlight {
