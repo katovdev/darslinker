@@ -12,6 +12,11 @@ export async function initLandingStudentDashboard() {
 
   // Load teacher's courses after rendering
   loadTeacherCourses();
+  
+  // Load notification count after DOM is ready
+  setTimeout(() => {
+    loadNotificationCount();
+  }, 100);
 }
 
 // Global variable to store teacher theme
@@ -21,6 +26,9 @@ let teacherTheme = {
   textColor: '#ffffff',
   logoText: 'darslinker'
 };
+
+// Global variable to store notification count
+let notificationCount = 0;
 
 // Get logo HTML based on teacher theme
 function getLogoHTML() {
@@ -820,7 +828,7 @@ export function renderLandingStudentDashboard() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
-              <span id="notification-badge" style="position: absolute; top: -4px; right: -4px; background: #EF4444; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; font-weight: 600; display: none; min-width: 18px; text-align: center;"></span>
+              <span id="notification-badge" style="position: absolute; top: -4px; right: -4px; background: #EF4444; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; font-weight: 600; display: ${notificationCount > 0 ? 'block' : 'none'}; min-width: 18px; text-align: center;">${notificationCount > 0 ? notificationCount : ''}</span>
             </button>
             <button class="landing-icon-btn" style="margin-right: 8px;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -997,8 +1005,11 @@ function handleLogout() {
 function handleNavigation(page) {
   console.log('Navigate to:', page);
   
-  // Show coming soon for messages
-  if (page === 'messages') {
+  if (page === 'home') {
+    // Reload dashboard home
+    initLandingStudentDashboard();
+  } else if (page === 'messages') {
+    // Show coming soon for messages
     showToast('Coming soon');
   }
   // Add your navigation logic here
@@ -1112,6 +1123,59 @@ async function handleCourseFilter(filter) {
         </div>
       `;
     }
+  }
+}
+
+// Load notification count and update badge
+async function loadNotificationCount() {
+  try {
+    // Get student ID
+    const landingUser = sessionStorage.getItem('landingUser');
+    if (!landingUser) {
+      console.log('⚠️ No landing user found');
+      return;
+    }
+    
+    const userData = JSON.parse(landingUser);
+    const studentId = userData._id;
+    
+    if (!studentId) {
+      console.log('⚠️ No student ID found');
+      return;
+    }
+    
+    // Get API base URL
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    
+    // Fetch unread notification count
+    const response = await fetch(`${apiBaseUrl}/notifications/student/${studentId}/unread-count`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      notificationCount = result.count || 0;
+      console.log('✅ Notification count:', notificationCount);
+      
+      // Update badge
+      const badge = document.getElementById('notification-badge');
+      if (badge) {
+        if (notificationCount > 0) {
+          badge.textContent = notificationCount;
+          badge.style.display = 'block';
+        } else {
+          badge.style.display = 'none';
+        }
+      }
+    } else {
+      console.log('📭 No unread notifications');
+    }
+  } catch (error) {
+    console.error('❌ Error loading notification count:', error);
   }
 }
 
