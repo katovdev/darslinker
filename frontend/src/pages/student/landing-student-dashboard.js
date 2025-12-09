@@ -14,6 +14,28 @@ export async function initLandingStudentDashboard() {
   loadTeacherCourses();
 }
 
+// Global variable to store teacher theme
+let teacherTheme = {
+  primaryColor: '#7ea2d4',
+  backgroundColor: '#232323',
+  textColor: '#ffffff',
+  logoText: 'darslinker'
+};
+
+// Get logo HTML based on teacher theme
+function getLogoHTML() {
+  const logoText = teacherTheme.logoText || 'darslinker';
+  const lowerText = logoText.toLowerCase();
+  
+  if (lowerText.includes('linker')) {
+    const parts = logoText.split(/linker/i);
+    const firstPart = parts[0] || '';
+    return `<span class="landing-logo-text">${firstPart}<span class="landing-logo-highlight">linker</span></span>`;
+  } else {
+    return `<span class="landing-logo-text">${logoText}</span>`;
+  }
+}
+
 // Load teacher theme early to prevent color flash
 async function loadTeacherTheme() {
   try {
@@ -36,6 +58,13 @@ async function loadTeacherTheme() {
 
     if (landingResult.success && landingResult.landing) {
       console.log('✅ Teacher theme loaded early:', landingResult.landing);
+      // Store theme globally
+      teacherTheme = {
+        primaryColor: landingResult.landing.primaryColor || '#7ea2d4',
+        backgroundColor: landingResult.landing.backgroundColor || '#232323',
+        textColor: landingResult.landing.textColor || '#ffffff',
+        logoText: landingResult.landing.logoText || 'darslinker'
+      };
       applyLandingTheme(landingResult.landing);
     } else {
       console.log('⚠️ No landing settings found, using default theme');
@@ -779,7 +808,7 @@ export function renderLandingStudentDashboard() {
         <!-- Header -->
         <header class="landing-header">
           <div class="landing-header-logo">
-            <span class="landing-logo-text">dars<span class="landing-logo-highlight">linker</span></span>
+            ${getLogoHTML()}
           </div>
           <div class="landing-header-actions">
             <button class="landing-icon-btn landing-meeting-btn">
