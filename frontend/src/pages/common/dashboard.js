@@ -8713,13 +8713,16 @@ window.payNow = function() {
 };
 
 // Open Progress Page
-window.openProgress = function() {
+window.openProgress = async function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
     updatePageTitle(t('pages.progress'));
-    contentArea.innerHTML = getProgressHTML();
+    contentArea.innerHTML = '<div style="padding: 40px; text-align: center; color: #9CA3AF;">Loading...</div>';
     updateActiveMenuItem('Progress');
+    
+    // Load real data
+    await loadProgressData();
     
     // Apply saved primary color to Progress page
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
@@ -8728,8 +8731,89 @@ window.openProgress = function() {
   }
 };
 
-// Helper function to get progress HTML
-function getProgressHTML() {
+// Load progress data from backend
+async function loadProgressData() {
+  try {
+    // Try multiple sources for teacher ID
+    let teacherId = null;
+    
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    
+    teacherId = user._id || currentUser._id || user.userId || currentUser.userId;
+    
+    console.log('Teacher ID:', teacherId);
+    
+    if (!teacherId) {
+      console.error('Teacher ID not found');
+      const contentArea = document.querySelector('.figma-content-area');
+      contentArea.innerHTML = '<div style="padding: 40px; text-align: center; color: #EF4444;">Teacher ID not found. Please login again.</div>';
+      return;
+    }
+    
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    
+    // Fetch all courses and filter by teacher
+    const coursesResponse = await fetch(`${apiBaseUrl}/courses`);
+    const coursesResult = await coursesResponse.json();
+    const allCourses = coursesResult.success ? coursesResult.courses : [];
+    const courses = allCourses.filter(course => 
+      course.teacher === teacherId || course.teacher?._id === teacherId
+    );
+    
+    // Fetch all students enrolled in teacher's courses with full info
+    const studentsData = [];
+    for (const course of courses) {
+      if (course.enrolledStudents && course.enrolledStudents.length > 0) {
+        for (const studentId of course.enrolledStudents) {
+          try {
+            // Get student info
+            const studentInfoResponse = await fetch(`${apiBaseUrl}/students/${studentId}`);
+            const studentInfoResult = await studentInfoResponse.json();
+            
+            // Get student progress
+            const studentProgressResponse = await fetch(`${apiBaseUrl}/students/${studentId}/progress/${course._id}`);
+            const studentProgressResult = await studentProgressResponse.json();
+            
+            if (studentInfoResult.success && studentProgressResult.success) {
+              studentsData.push({
+                studentId,
+                studentInfo: studentInfoResult.student,
+                courseId: course._id,
+                courseName: course.title,
+                progress: studentProgressResult.progress
+              });
+            }
+          } catch (error) {
+            console.error('Error fetching student data:', error);
+          }
+        }
+      }
+    }
+    
+    // Render progress page with real data
+    const contentArea = document.querySelector('.figma-content-area');
+    contentArea.innerHTML = getProgressHTML(courses, studentsData);
+    
+  } catch (error) {
+    console.error('Error loading progress data:', error);
+    const contentArea = document.querySelector('.figma-content-area');
+    contentArea.innerHTML = '<div style="padding: 40px; text-align: center; color: #EF4444;">Error loading progress data</div>';
+  }
+}
+
+// Helper function to get progress HTML with real data
+function getProgressHTML(courses = [], studentsData = []) {
+  // Calculate stats
+  const totalCompleted = studentsData.filter(s => s.progress?.progressPercentage === 100).length;
+  const currentlyLearning = studentsData.filter(s => s.progress?.progressPercentage > 0 && s.progress?.progressPercentage < 100).length;
+  
+  // Get all students sorted by progress percentage
+  const allStudents = studentsData
+    .sort((a, b) => (b.progress?.progressPercentage || 0) - (a.progress?.progressPercentage || 0));
+  
+  console.log('All students:', allStudents.length);
+  
   return `
     <div class="progress-page">
       <style>
@@ -8970,35 +9054,119 @@ function getProgressHTML() {
 
       <div class="progress-stats-grid">
         <div class="progress-stat-card">
-          <div class="progress-stat-title">Avg Completion</div>
-          <div class="progress-stat-value">68%</div>
+          <div class="progress-stat-title">Tugallangan</div>
+          <div class="progress-stat-value">${totalCompleted}</div>
+          <div class="progress-stat-subtitle">100% tugatgan o'quvchilar</div>
         </div>
         <div class="progress-stat-card">
-          <div class="progress-stat-title">Currently Learning</div>
-          <div class="progress-stat-value">23</div>
-          <div class="progress-stat-subtitle">● Live now</div>
+          <div class="progress-stat-title">Hozirda o'qiyotganlar</div>
+          <div class="progress-stat-value">${currentlyLearning}</div>
+          <div class="progress-stat-subtitle">● Jarayonda</div>
         </div>
         <div class="progress-stat-card">
-          <div class="progress-stat-title">Completed</div>
-          <div class="progress-stat-value">156</div>
-          <div class="progress-stat-subtitle">Finished all modules</div>
+          <div class="progress-stat-title">Jami o'quvchilar</div>
+          <div class="progress-stat-value">${allStudents.length}</div>
+          <div class="progress-stat-subtitle">Barcha kurslar</div>
         </div>
       </div>
 
       <div class="course-filters">
-        <button class="filter-btn active" onclick="filterProgressCourse(this, 'all')">All courses (4)</button>
-        <button class="filter-btn" onclick="filterProgressCourse(this, 'javascript')">JavaScript</button>
-        <button class="filter-btn" onclick="filterProgressCourse(this, 'react')">React</button>
-        <button class="filter-btn" onclick="filterProgressCourse(this, 'ui')">UI/UX</button>
-        <button class="filter-btn" onclick="filterProgressCourse(this, 'db')">Databases</button>
+        <button class="filter-btn active" onclick="filterProgressCourse(this, 'all')">Barcha kurslar (${courses.length})</button>
+        ${courses.map(course => `
+          <button class="filter-btn" onclick="filterProgressCourse(this, '${course._id}')">${course.title}</button>
+        `).join('')}
       </div>
 
       <!-- Student Progress Overview -->
       <div class="students-progress-section">
-        <h3 class="section-header">Student Progress Overview</h3>
+        <h3 class="section-header">O'quvchilar ro'yxati</h3>
         
-        <!-- Student 1 -->
-        <div class="student-progress-card">
+        ${allStudents.map((student, index) => {
+          const firstName = student.studentInfo?.firstName || 'Student';
+          const lastName = student.studentInfo?.lastName || (index + 1);
+          const email = student.studentInfo?.email || '';
+          const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+          const progressPercent = student.progress?.progressPercentage || 0;
+          const completedLessons = student.progress?.completedLessons?.length || 0;
+          
+          return `
+        <div class="student-progress-card" data-course-id="${student.courseId}">
+          <div class="student-header">
+            <div class="student-info-header">
+              <div class="student-avatar-progress">${initials}</div>
+              <div class="student-name-email">
+                <h4>${firstName} ${lastName}</h4>
+                <p>${email || student.courseName}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="progress-stats-row">
+            <div class="stat-item">
+              <div class="stat-label">Progress</div>
+              <div class="stat-value">${progressPercent}%</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Kurs</div>
+              <div class="stat-value">${student.courseName}</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">Tugallangan</div>
+              <div class="stat-value">${completedLessons} dars</div>
+            </div>
+          </div>
+        </div>
+          `;
+        }).join('')}
+        
+      </div>
+    </div>
+  `;
+}
+
+// DELETED ALL STATIC HTML BELOW - NOW ONLY SHOWS REAL DATA
+
+// Filter progress by course
+window.filterProgressCourse = function(button, courseId) {
+  console.log('Filter clicked:', courseId);
+  
+  // Remove active class from all buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+  
+  // Filter student cards
+  const cards = document.querySelectorAll('.student-progress-card');
+  console.log('Found cards:', cards.length);
+  
+  let visibleCount = 0;
+  cards.forEach(card => {
+    const cardCourseId = card.getAttribute('data-course-id');
+    console.log('Card course ID:', cardCourseId, 'Filter:', courseId);
+    
+    if (courseId === 'all') {
+      card.style.display = 'block';
+      visibleCount++;
+    } else {
+      if (cardCourseId === courseId) {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    }
+  });
+  
+  console.log('Visible cards:', visibleCount);
+};
+
+// Load more progress (keep this function)
+window.loadMoreProgress = function() {
+  return; // Disabled for now
+};
+
+// RESUME ORIGINAL CODE BELOW
+function originalCodeResume() {
+  return `<div class="student-progress-card">
           <div class="student-header">
             <div class="student-info-header">
               <div class="student-avatar-progress">SM</div>
