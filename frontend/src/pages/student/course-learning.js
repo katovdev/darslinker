@@ -325,7 +325,7 @@ async function renderCourseLearningPage(course) {
         align-items: center;
         justify-content: center;
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 8px;
         color: #9CA3AF;
         cursor: pointer;
@@ -485,7 +485,7 @@ async function renderCourseLearningPage(course) {
 
       .module-card {
         background: transparent;
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 16px;
         overflow: hidden;
         transition: all 0.3s ease;
@@ -509,7 +509,7 @@ async function renderCourseLearningPage(course) {
       }
 
       .module-header:hover {
-        background: rgba(126, 162, 212, 0.05);
+        background: color-mix(in srgb, var(--primary-color) 5%, transparent);
       }
 
       .module-title-section {
@@ -589,7 +589,7 @@ async function renderCourseLearningPage(course) {
       .lessons-list.expanded {
         max-height: 2000px;
         opacity: 1;
-        border-top: 1px solid rgba(126, 162, 212, 0.1);
+        border-top: 1px solid color-mix(in srgb, var(--primary-color) 10%, transparent);
       }
 
       .lesson-item {
@@ -599,7 +599,7 @@ async function renderCourseLearningPage(course) {
         gap: 12px;
         cursor: pointer;
         transition: all 0.2s ease;
-        border-bottom: 1px solid rgba(126, 162, 212, 0.05);
+        border-bottom: 1px solid color-mix(in srgb, var(--primary-color) 5%, transparent);
       }
 
       .lesson-item:last-child {
@@ -607,14 +607,14 @@ async function renderCourseLearningPage(course) {
       }
 
       .lesson-item:hover {
-        background: rgba(126, 162, 212, 0.1);
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
       }
 
       .lesson-icon {
         width: 40px;
         height: 40px;
         border-radius: 8px;
-        background: rgba(126, 162, 212, 0.2);
+        background: color-mix(in srgb, var(--primary-color) 20%, transparent);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -1545,8 +1545,8 @@ async function loadFileContent(contentArea, lesson) {
           </svg>
           Download File
         </h2>
-        <div style="background: linear-gradient(135deg, rgba(126, 162, 212, 0.1), rgba(126, 162, 212, 0.05)); border: 2px solid rgba(126, 162, 212, 0.3); border-radius: 16px; padding: 32px; text-align: center; transition: all 0.3s ease; cursor: pointer;" onclick="downloadFile('${lesson.fileUrl}', getFileName('${lesson.fileUrl}', '${lesson.title}'))">
-          <div style="width: 80px; height: 80px; margin: 0 auto 24px; background: linear-gradient(135deg, var(--primary-color), #6b8fc4); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 24px rgba(126, 162, 212, 0.3);">
+        <div style="background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 10%, transparent), color-mix(in srgb, var(--primary-color) 5%, transparent)); border: 2px solid color-mix(in srgb, var(--primary-color) 30%, transparent); border-radius: 16px; padding: 32px; text-align: center; transition: all 0.3s ease; cursor: pointer;" onclick="downloadFile('${lesson.fileUrl}', getFileName('${lesson.fileUrl}', '${lesson.title}'))">
+          <div style="width: 80px; height: 80px; margin: 0 auto 24px; background: linear-gradient(135deg, var(--primary-color), #6b8fc4); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 24px color-mix(in srgb, var(--primary-color) 30%, transparent);">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
               <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
             </svg>
@@ -1556,7 +1556,7 @@ async function loadFileContent(contentArea, lesson) {
             <div style="font-size: 14px; color: #9CA3AF; margin-bottom: 4px;">Click to download</div>
             <div style="font-size: 14px; color: #9CA3AF;">File available for download</div>
           </div>
-          <button style="background: linear-gradient(135deg, var(--primary-color), #6b8fc4); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 4px 16px rgba(126, 162, 212, 0.3);" onclick="event.stopPropagation(); downloadFile('${lesson.fileUrl}', getFileName('${lesson.fileUrl}', '${lesson.title}'))">
+          <button style="background: linear-gradient(135deg, var(--primary-color), #6b8fc4); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 4px 16px color-mix(in srgb, var(--primary-color) 30%, transparent);" onclick="event.stopPropagation(); downloadFile('${lesson.fileUrl}', getFileName('${lesson.fileUrl}', '${lesson.title}'))">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/>
             </svg>
