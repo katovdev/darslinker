@@ -740,8 +740,8 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
             <button class="btn btn-primary" id="submitBtn" onclick="submitAssignment()" disabled>
               Submit Assignment
             </button>
-            <button class="btn btn-secondary" onclick="window.history.back()">
-              Back to Course
+            <button class="btn btn-secondary" onclick="if(window.markCompleteAndGoNext && window.currentCourse && window.currentLesson) { window.markCompleteAndGoNext(window.currentCourse._id, window.currentLesson._id); } else { window.history.back(); }">
+              Keyingi dars →
             </button>
           </div>
         </div>
@@ -1303,10 +1303,27 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       showToast('Assignment Submitted!', 'Your submission has been recorded successfully.', 'success', 3000);
       console.log('✅ Assignment submitted successfully!');
 
-      // Redirect back to course after showing toast
-      setTimeout(() => {
-        window.history.back();
-      }, 2000);
+      // Show "Next Lesson" button instead of auto-redirect
+      const submitButton = document.getElementById('submitBtn');
+      const actionsDiv = document.querySelector('.assignment-actions');
+      
+      if (submitButton) {
+        submitButton.textContent = 'Topshirildi ✓';
+        submitButton.disabled = true;
+      }
+      
+      if (actionsDiv && window.currentCourse && window.currentLesson) {
+        // Add Next button
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'btn btn-primary';
+        nextBtn.textContent = 'Keyingi dars →';
+        nextBtn.onclick = () => {
+          if (window.markCompleteAndGoNext) {
+            window.markCompleteAndGoNext(window.currentCourse._id, window.currentLesson._id);
+          }
+        };
+        actionsDiv.insertBefore(nextBtn, actionsDiv.firstChild);
+      }
 
     } catch (error) {
       console.error('❌ Submission error:', error);
@@ -1499,6 +1516,10 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
 // NEW: Content-only rendering for unified player
 export async function renderAssignmentContent(contentArea, course, lesson) {
   console.log('📝 Rendering assignment content only:', lesson.title);
+  
+  // Store course and lesson globally for submit button
+  window.currentCourse = course;
+  window.currentLesson = lesson;
 
   contentArea.innerHTML = `
     <style>
@@ -1967,8 +1988,8 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
         <button class="btn btn-primary" id="submitBtn" onclick="submitAssignment()" disabled>
           Submit Assignment
         </button>
-        <button class="btn btn-secondary" onclick="window.history.back()">
-          Back to Course
+        <button class="btn btn-secondary" onclick="if(window.markCompleteAndGoNext && window.currentCourse && window.currentLesson) { window.markCompleteAndGoNext(window.currentCourse._id, window.currentLesson._id); } else { window.history.back(); }">
+          Keyingi dars →
         </button>
       </div>
     </div>

@@ -447,7 +447,7 @@ const checkEnrollment = catchAsync(async (req, res) => {
  */
 const completeLesson = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const { courseId, lessonId } = req.body;
+  const { courseId, lessonId, updateLastAccessed } = req.body;
 
   const student = await Student.findById(id);
   if (!student) {
@@ -476,14 +476,20 @@ const completeLesson = catchAsync(async (req, res) => {
     student.courseProgress.push(courseProgress);
   }
 
-  // Add lesson to completed if not already there
-  if (!courseProgress.completedLessons.includes(lessonId)) {
-    courseProgress.completedLessons.push(lessonId);
+  // If updateLastAccessed is true, only update lastAccessedLesson (don't mark as complete)
+  if (updateLastAccessed) {
+    courseProgress.lastAccessedLesson = lessonId;
+    courseProgress.lastAccessedAt = new Date();
+  } else {
+    // Add lesson to completed if not already there
+    if (!courseProgress.completedLessons.includes(lessonId)) {
+      courseProgress.completedLessons.push(lessonId);
+    }
+    
+    // Update last accessed
+    courseProgress.lastAccessedLesson = lessonId;
+    courseProgress.lastAccessedAt = new Date();
   }
-
-  // Update last accessed
-  courseProgress.lastAccessedLesson = lessonId;
-  courseProgress.lastAccessedAt = new Date();
 
   // Calculate progress percentage
   let totalLessons = 0;

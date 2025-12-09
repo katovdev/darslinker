@@ -10,7 +10,7 @@ export async function initCourseStartPage(courseId) {
     return;
   }
   
-  renderCourseStartPage(courseData);
+  await renderCourseStartPage(courseData);
 }
 
 // Fetch course data from API
@@ -40,13 +40,32 @@ async function fetchCourseData(courseId) {
 }
 
 // Render course start page
-function renderCourseStartPage(course) {
+async function renderCourseStartPage(course) {
   const teacherName = course.teacher 
     ? `${course.teacher.firstName || ''} ${course.teacher.lastName || ''}`.trim() || 'Instructor'
     : 'Instructor';
 
+  // Load teacher landing settings for theme
+  let primaryColor = '#7ea2d4';
+  if (course.teacher && course.teacher._id) {
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const response = await fetch(`${apiBaseUrl}/landing/public/${course.teacher._id}`);
+      const result = await response.json();
+      if (result.success && result.landing) {
+        primaryColor = result.landing.primaryColor || '#7ea2d4';
+      }
+    } catch (error) {
+      console.error('Error loading teacher theme:', error);
+    }
+  }
+
   document.body.innerHTML = `
     <style>
+      :root {
+        --primary-color: ${primaryColor};
+      }
+
       * {
         margin: 0;
         padding: 0;
@@ -67,7 +86,7 @@ function renderCourseStartPage(course) {
         max-width: 600px;
         width: 100%;
         background: rgba(58, 56, 56, 0.3);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-radius: 20px;
         padding: 40px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -124,23 +143,23 @@ function renderCourseStartPage(course) {
 
       .btn-cancel {
         background: rgba(58, 56, 56, 0.5);
-        border: 1px solid rgba(126, 162, 212, 0.2);
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         color: #9CA3AF;
       }
 
       .btn-cancel:hover {
         background: rgba(58, 56, 56, 0.7);
-        border-color: #7ea2d4;
+        border-color: var(--primary-color);
         color: #ffffff;
       }
 
       .btn-start {
-        background: #7ea2d4;
+        background: var(--primary-color);
         color: #ffffff;
       }
 
       .btn-start:hover {
-        background: #6b8fc4;
+        background: color-mix(in srgb, var(--primary-color) 80%, #000);
       }
     </style>
 
@@ -148,7 +167,7 @@ function renderCourseStartPage(course) {
       <div class="course-start-header">
         <div class="course-nav">
           <span class="course-nav-item">Kurs nomi</span>
-          <span class="course-nav-item" style="color: #7ea2d4; font-weight: 600;">Bepul</span>
+          <span class="course-nav-item" style="color: var(--primary-color); font-weight: 600;">Bepul</span>
         </div>
       </div>
 

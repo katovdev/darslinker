@@ -467,8 +467,15 @@ function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions, 
           <div class="results-actions">
             <button 
               class="quiz-btn quiz-btn-primary" 
+              onclick="if(window.markCompleteAndGoNext && window.currentCourse && window.currentLesson) { window.markCompleteAndGoNext(window.currentCourse._id, window.currentLesson._id); }" 
+              style="background: var(--primary-color);">
+              Keyingi dars →
+            </button>
+            <button 
+              class="quiz-btn quiz-btn-secondary" 
               onclick="retryQuiz()" 
-              ${quizState.currentAttempt >= quizState.maxAttempts ? 'disabled' : ''}>
+              ${quizState.currentAttempt >= quizState.maxAttempts ? 'disabled' : ''}
+              style="background: rgba(58, 56, 56, 0.5); border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);">
               Qayta urinish (${quizState.currentAttempt}/${quizState.maxAttempts})
             </button>
           </div>
@@ -938,6 +945,21 @@ function getQuizActiveStyles() {
       background: #4B5563;
       cursor: not-allowed;
       opacity: 0.5;
+    }
+    
+    .quiz-btn-secondary {
+      background: rgba(58, 56, 56, 0.5);
+      color: #E5E7EB;
+      border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+    }
+    
+    .quiz-btn-secondary:hover {
+      background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+    }
+    
+    .quiz-btn-secondary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
     }
     
     /* Results Page Styles */
@@ -1976,6 +1998,21 @@ function renderQuizResultsContent(contentArea, lesson, questions) {
         background: color-mix(in srgb, var(--primary-color) 80%, #000);
       }
 
+      .quiz-btn-secondary {
+        background: rgba(58, 56, 56, 0.5);
+        color: #E5E7EB;
+        border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+      }
+
+      .quiz-btn-secondary:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+      }
+
+      .quiz-btn-secondary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
       .quiz-btn-primary:disabled {
         background: #4B5563;
         cursor: not-allowed;
@@ -2027,8 +2064,15 @@ function renderQuizResultsContent(contentArea, lesson, questions) {
       <div class="results-actions">
         <button
           class="quiz-btn quiz-btn-primary"
+          onclick="if(window.markCompleteAndGoNext && window.currentCourse && window.currentLesson) { window.markCompleteAndGoNext(window.currentCourse._id, window.currentLesson._id); }"
+          style="background: var(--primary-color);">
+          Keyingi dars →
+        </button>
+        <button
+          class="quiz-btn quiz-btn-secondary"
           onclick="retryQuiz()"
-          ${quizState.currentAttempt >= quizState.maxAttempts ? 'disabled' : ''}>
+          ${quizState.currentAttempt >= quizState.maxAttempts ? 'disabled' : ''}
+          style="background: rgba(58, 56, 56, 0.5); border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);">
           Qayta urinish (${quizState.currentAttempt}/${quizState.maxAttempts})
         </button>
       </div>

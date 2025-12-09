@@ -429,15 +429,16 @@ async function renderCourseLearningPage(course) {
         left: 0;
         right: 0;
         bottom: 0;
-        display: flex;
-        justify-content: space-between;
-        padding: 0 25%;
+        pointer-events: none;
       }
 
       .progress-marker {
+        position: absolute;
+        top: 0;
         width: 2px;
         height: 100%;
         background: rgba(255, 255, 255, 0.2);
+        transform: translateX(-1px);
       }
 
       .progress-labels {
@@ -551,7 +552,7 @@ async function renderCourseLearningPage(course) {
       }
 
       .module-progress-fill.in-progress {
-        background: linear-gradient(90deg, #3B82F6, #60A5FA);
+        background: linear-gradient(90deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 70%, #fff));
       }
 
       .module-progress-fill.not-started {
@@ -610,6 +611,15 @@ async function renderCourseLearningPage(course) {
 
       .lesson-item:hover {
         background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+      }
+      
+      .lesson-item.locked {
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+      
+      .lesson-item.locked:hover {
+        background: transparent;
       }
 
       .lesson-icon {
@@ -753,16 +763,17 @@ async function renderCourseLearningPage(course) {
             <div class="progress-bar-container">
               <div class="progress-bar-fill" style="width: ${progress}%"></div>
               <div class="progress-markers">
-                <div class="progress-marker"></div>
-                <div class="progress-marker"></div>
-                <div class="progress-marker"></div>
+                <div class="progress-marker" style="left: 25%;"></div>
+                <div class="progress-marker" style="left: 50%;"></div>
+                <div class="progress-marker" style="left: 75%;"></div>
               </div>
             </div>
             <div class="progress-labels">
-              <span>20%</span>
-              <span>40%</span>
-              <span>60%</span>
-              <span>80%</span>
+              <span>0%</span>
+              <span>25%</span>
+              <span>50%</span>
+              <span>75%</span>
+              <span>100%</span>
             </div>
           </div>
 
@@ -806,7 +817,16 @@ function renderModules(modules) {
 
   return modules.map((module, index) => {
     const lessonCount = module.lessons ? module.lessons.length : 0;
-    const moduleProgress = 0; // Will be calculated based on user progress
+    
+    // Calculate module progress based on completed lessons
+    const progress = window.courseProgress || { completedLessons: [], lastAccessedLesson: null };
+    let completedInModule = 0;
+    if (module.lessons && module.lessons.length > 0) {
+      completedInModule = module.lessons.filter(lesson => 
+        progress.completedLessons.includes(lesson._id)
+      ).length;
+    }
+    const moduleProgress = lessonCount > 0 ? Math.round((completedInModule / lessonCount) * 100) : 0;
     
     // Determine progress status
     let progressClass = 'not-started';
@@ -816,7 +836,7 @@ function renderModules(modules) {
       progressColor = '#10B981';
     } else if (moduleProgress > 0) {
       progressClass = 'in-progress';
-      progressColor = '#3B82F6';
+      progressColor = 'var(--primary-color)';
     }
 
     return `
@@ -852,24 +872,40 @@ function renderLessons(lessons, moduleId) {
 
   const progress = window.courseProgress || { completedLessons: [], lastAccessedLesson: null };
 
-  return lessons.map(lesson => {
+  return lessons.map((lesson, index) => {
     const lessonIcon = getLessonIcon(lesson.type);
     const isCompleted = progress.completedLessons.includes(lesson._id);
     const isInProgress = progress.lastAccessedLesson === lesson._id && !isCompleted;
+    
+    // Check if lesson is unlocked (sequential access)
+    const isFirstLesson = index === 0;
+    const previousLessonCompleted = index > 0 && progress.completedLessons.includes(lessons[index - 1]._id);
+    const isUnlocked = isFirstLesson || previousLessonCompleted || isCompleted || isInProgress;
+    
+    const clickHandler = isUnlocked 
+      ? `openLesson('${moduleId}', '${lesson._id}')`
+      : `showLockedLessonToast()`;
 
     return `
-      <div class="lesson-item" onclick="openLesson('${moduleId}', '${lesson._id}')">
-        <div class="lesson-icon">
+      <div class="lesson-item ${!isUnlocked ? 'locked' : ''}" onclick="${clickHandler}">
+        <div class="lesson-icon" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">
           ${lessonIcon}
         </div>
         <div class="lesson-info">
-          <div class="lesson-title">${lesson.title || 'Untitled Lesson'}</div>
-          <div class="lesson-duration">${lesson.duration || 'No duration'}</div>
+          <div class="lesson-title" style="${!isUnlocked ? 'opacity: 0.6;' : ''}">${lesson.title || 'Untitled Lesson'}</div>
+          <div class="lesson-duration" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">${lesson.duration || 'No duration'}</div>
         </div>
         ${isCompleted ? `
         <div class="lesson-status completed" style="width: 20px; height: 20px; border-radius: 50%; background: #10B981;"></div>
         ` : isInProgress ? `
         <div class="lesson-status in-progress" style="width: 20px; height: 20px; border-radius: 50%; background: #F59E0B;"></div>
+        ` : !isUnlocked ? `
+        <div class="lesson-status locked" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+        </div>
         ` : '<div class="lesson-status"></div>'}
       </div>
     `;
@@ -929,6 +965,11 @@ function attachEventListeners(course, currentLesson = null) {
       arrow.classList.toggle('rotated');
       card.classList.toggle('expanded');
     }
+  };
+  
+  // Show locked lesson toast
+  window.showLockedLessonToast = function() {
+    showToast('⚠️ Iltimos, darslarni ketma-ketlikda ko\'ring');
   };
 
   // Open specific lesson - unified loader for ALL lesson types
@@ -1022,12 +1063,24 @@ function attachEventListeners(course, currentLesson = null) {
     }
   };
   
-  // Go to next lesson (and mark current as complete)
-  window.goToNextLesson = async function(courseId, lessonId) {
-    // First, mark current lesson as complete
+  // NEW: Mark complete and go to next lesson (called by "Keyingi" button)
+  window.markCompleteAndGoNext = async function(courseId, lessonId) {
+    console.log('📝 Marking lesson complete and moving to next:', lessonId);
+    
+    // Mark current lesson as complete
     await window.markLessonComplete(courseId, lessonId);
     
-    // Find current lesson in course modules
+    // Update UI to show completion
+    if (window.courseProgress) {
+      if (!window.courseProgress.completedLessons.includes(lessonId)) {
+        window.courseProgress.completedLessons.push(lessonId);
+      }
+    }
+    
+    // Reload sidebar to show updated progress
+    updateSidebarActiveLesson(course, window.currentLesson);
+    
+    // Find and navigate to next lesson
     let currentModuleIndex = -1;
     let currentLessonIndex = -1;
     
@@ -1041,7 +1094,7 @@ function attachEventListeners(course, currentLesson = null) {
     });
     
     if (currentModuleIndex === -1) {
-      showToast('Cannot find next lesson');
+      showToast('Keyingi dars topilmadi');
       return;
     }
     
@@ -1049,11 +1102,60 @@ function attachEventListeners(course, currentLesson = null) {
     const currentModule = course.modules[currentModuleIndex];
     if (currentLessonIndex < currentModule.lessons.length - 1) {
       const nextLesson = currentModule.lessons[currentLessonIndex + 1];
-      window.openLesson(currentModule._id, nextLesson._id);
+      showToast('✅ Dars tugatildi!');
+      setTimeout(() => {
+        window.openLesson(currentModule._id, nextLesson._id);
+      }, 500);
       return;
     }
     
     // Try first lesson of next module
+    if (currentModuleIndex < course.modules.length - 1) {
+      const nextModule = course.modules[currentModuleIndex + 1];
+      if (nextModule.lessons && nextModule.lessons.length > 0) {
+        showToast('✅ Modul tugatildi!');
+        setTimeout(() => {
+          window.openLesson(nextModule._id, nextModule.lessons[0]._id);
+        }, 500);
+        return;
+      }
+    }
+    
+    // No more lessons - course completed!
+    showToast('🎉 Kurs muvaffaqiyatli tugatildi!');
+    setTimeout(() => {
+      // Reload course overview to show final progress
+      initCourseLearningPage(courseId);
+    }, 2000);
+  };
+  
+  // DEPRECATED: Old function - kept for backward compatibility
+  window.goToNextLesson = async function(courseId, lessonId) {
+    // Just navigate without marking complete (used by quiz/assignment after they handle completion)
+    let currentModuleIndex = -1;
+    let currentLessonIndex = -1;
+    
+    const course = window.currentCourse || window.loadedCourse;
+    if (!course) return;
+    
+    course.modules.forEach((module, mIdx) => {
+      module.lessons.forEach((lesson, lIdx) => {
+        if (lesson._id === lessonId) {
+          currentModuleIndex = mIdx;
+          currentLessonIndex = lIdx;
+        }
+      });
+    });
+    
+    if (currentModuleIndex === -1) return;
+    
+    const currentModule = course.modules[currentModuleIndex];
+    if (currentLessonIndex < currentModule.lessons.length - 1) {
+      const nextLesson = currentModule.lessons[currentLessonIndex + 1];
+      window.openLesson(currentModule._id, nextLesson._id);
+      return;
+    }
+    
     if (currentModuleIndex < course.modules.length - 1) {
       const nextModule = course.modules[currentModuleIndex + 1];
       if (nextModule.lessons && nextModule.lessons.length > 0) {
@@ -1062,8 +1164,7 @@ function attachEventListeners(course, currentLesson = null) {
       }
     }
     
-    // No more lessons
-    showToast('🎉 You completed all lessons!');
+    showToast('🎉 Barcha darslar tugatildi!');
   };
   
   // Store current lesson globally for next lesson function
@@ -1269,6 +1370,15 @@ async function renderUnifiedPlayerLayout(mainContent, course, lesson) {
       .sidebar-lesson.active {
         background: color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-left-color: var(--primary-color);
+      }
+      
+      .sidebar-lesson.locked {
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+      
+      .sidebar-lesson.locked:hover {
+        background: transparent;
       }
 
       .sidebar-lesson-icon {
@@ -1495,8 +1605,8 @@ async function loadVideoContent(contentArea, lesson) {
           <p style="color: #9CA3AF; font-size: 13px; margin: 0;">${lesson.duration || ''}</p>
         </div>
 
-        <button id="nextLessonBtn" onclick="goToNextLesson('${window.currentCourse?._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-left: 20px;">
-          Next Lesson →
+        <button id="nextLessonBtn" onclick="markCompleteAndGoNext('${window.currentCourse?._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-left: 20px;">
+          Keyingi dars →
         </button>
       </div>
     </div>
@@ -1664,6 +1774,13 @@ async function loadFileContent(contentArea, lesson) {
         </div>
       </div>
       ` : ''}
+
+      <!-- Next Lesson Button -->
+      <div style="margin-top: 32px; display: flex; justify-content: flex-end; padding-top: 24px; border-top: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);">
+        <button id="nextLessonBtn" onclick="markCompleteAndGoNext('${window.currentCourse?._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
+          Keyingi dars →
+        </button>
+      </div>
     </div>
   `;
 
@@ -1754,25 +1871,41 @@ function buildSidebarLessons(lessons, moduleId, currentLesson) {
 
   const progress = window.courseProgress || { completedLessons: [], lastAccessedLesson: null };
 
-  return lessons.map(lesson => {
+  return lessons.map((lesson, index) => {
     const lessonIcon = getLessonIcon(lesson.type);
     const isCompleted = progress.completedLessons.includes(lesson._id);
     const isActive = currentLesson && currentLesson._id === lesson._id;
     const isInProgress = progress.lastAccessedLesson === lesson._id && !isCompleted;
+    
+    // Check if lesson is unlocked (sequential access)
+    const isFirstLesson = index === 0;
+    const previousLessonCompleted = index > 0 && progress.completedLessons.includes(lessons[index - 1]._id);
+    const isUnlocked = isFirstLesson || previousLessonCompleted || isCompleted || isInProgress;
+    
+    const clickHandler = isUnlocked 
+      ? `openLesson('${moduleId}', '${lesson._id}')`
+      : `showLockedLessonToast()`;
 
     return `
-      <div class="sidebar-lesson ${isActive ? 'active' : ''}" onclick="openLesson('${moduleId}', '${lesson._id}')">
-        <div class="sidebar-lesson-icon">
+      <div class="sidebar-lesson ${isActive ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}" onclick="${clickHandler}">
+        <div class="sidebar-lesson-icon" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">
           ${lessonIcon}
         </div>
         <div class="sidebar-lesson-info">
-          <div class="sidebar-lesson-title">${lesson.title || 'Untitled Lesson'}</div>
-          <div class="sidebar-lesson-duration">${lesson.duration || 'No duration'}</div>
+          <div class="sidebar-lesson-title" style="${!isUnlocked ? 'opacity: 0.6;' : ''}">${lesson.title || 'Untitled Lesson'}</div>
+          <div class="sidebar-lesson-duration" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">${lesson.duration || 'No duration'}</div>
         </div>
         ${isCompleted ? `
           <div style="width: 16px; height: 16px; border-radius: 50%; background: #10B981; margin-left: auto;"></div>
         ` : isInProgress ? `
           <div style="width: 16px; height: 16px; border-radius: 50%; background: #F59E0B; margin-left: auto;"></div>
+        ` : !isUnlocked ? `
+          <div style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; margin-left: auto;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6B7280" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
         ` : ''}
       </div>
     `;
@@ -1884,11 +2017,12 @@ window.goToNextLesson = function(courseId, currentLessonId) {
 // Unified toast notification system
 function showToast(title, message, type = 'info') {
   const toast = document.createElement('div');
+  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#7ea2d4';
   toast.style.cssText = `
     position: fixed;
     bottom: 30px;
     right: 30px;
-    background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#7ea2d4'};
+    background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : primaryColor};
     color: #ffffff;
     padding: 16px 32px;
     border-radius: 12px;
