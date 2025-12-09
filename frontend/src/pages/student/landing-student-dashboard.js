@@ -9,14 +9,12 @@ export async function initLandingStudentDashboard() {
   await loadTeacherTheme();
 
   renderLandingStudentDashboard();
+  
+  // Load notification count in background (don't wait)
+  loadNotificationCount();
 
   // Load teacher's courses after rendering
   loadTeacherCourses();
-  
-  // Load notification count after DOM is ready
-  setTimeout(() => {
-    loadNotificationCount();
-  }, 100);
 }
 
 // Global variable to store teacher theme
@@ -27,6 +25,7 @@ let teacherTheme = {
   logoText: 'darslinker'
 };
 
+// Global variable to store notification count
 // Global variable to store notification count
 let notificationCount = 0;
 
@@ -83,6 +82,8 @@ async function loadTeacherTheme() {
 }
 
 export function renderLandingStudentDashboard() {
+  console.log('🎨 Rendering dashboard... notificationCount:', notificationCount);
+  
   // Render directly to body
   const container = document.body;
 
@@ -828,7 +829,7 @@ export function renderLandingStudentDashboard() {
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
-              <span id="notification-badge" style="position: absolute; top: -4px; right: -4px; background: #EF4444; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; font-weight: 600; display: ${notificationCount > 0 ? 'block' : 'none'}; min-width: 18px; text-align: center;">${notificationCount > 0 ? notificationCount : ''}</span>
+              <span id="notification-badge" style="position: absolute; top: -4px; right: -4px; background: #EF4444; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; font-weight: 600; display: none; min-width: 18px; text-align: center;"></span>
             </button>
             <button class="landing-icon-btn" style="margin-right: 8px;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1128,6 +1129,8 @@ async function handleCourseFilter(filter) {
 
 // Load notification count and update badge
 async function loadNotificationCount() {
+  console.log('🔔 Loading notification count... Current count:', notificationCount);
+  
   try {
     // Get student ID
     const landingUser = sessionStorage.getItem('landingUser');
@@ -1144,11 +1147,13 @@ async function loadNotificationCount() {
       return;
     }
     
+    console.log('📡 Fetching notifications for student:', studentId);
+    
     // Get API base URL
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     
-    // Fetch unread notification count
-    const response = await fetch(`${apiBaseUrl}/notifications/student/${studentId}/unread-count`, {
+    // Fetch all notifications and count unread ones
+    const response = await fetch(`${apiBaseUrl}/notifications/user/${studentId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -1157,19 +1162,31 @@ async function loadNotificationCount() {
     
     const result = await response.json();
     
+    console.log('📬 API Response:', result);
+    
     if (result.success) {
-      notificationCount = result.count || 0;
-      console.log('✅ Notification count:', notificationCount);
+      // Use unreadCount from backend if available, otherwise count manually
+      const unreadCount = result.unreadCount !== undefined 
+        ? result.unreadCount 
+        : (result.notifications ? result.notifications.filter(n => !n.isRead).length : 0);
+      
+      notificationCount = unreadCount;
+      console.log('✅ Notification count updated to:', notificationCount, '(from backend:', result.unreadCount, ')');
       
       // Update badge
       const badge = document.getElementById('notification-badge');
       if (badge) {
+        console.log('🎯 Updating badge element...');
         if (notificationCount > 0) {
           badge.textContent = notificationCount;
           badge.style.display = 'block';
+          console.log('✅ Badge shown with count:', notificationCount);
         } else {
           badge.style.display = 'none';
+          console.log('❌ Badge hidden (no notifications)');
         }
+      } else {
+        console.log('⚠️ Badge element not found!');
       }
     } else {
       console.log('📭 No unread notifications');
