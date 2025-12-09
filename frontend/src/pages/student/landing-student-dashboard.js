@@ -1,14 +1,48 @@
-// Initialize function called from dashboard.jsana 
-export function initLandingStudentDashboard() {
+// Initialize function called from dashboard.jsana
+export async function initLandingStudentDashboard() {
   // Clear body and set up for dashboard
   document.body.style.padding = '0';
   document.body.style.margin = '0';
   document.body.style.overflow = 'hidden';
-  
+
+  // Load teacher theme BEFORE rendering to prevent color flash
+  await loadTeacherTheme();
+
   renderLandingStudentDashboard();
-  
+
   // Load teacher's courses after rendering
   loadTeacherCourses();
+}
+
+// Load teacher theme early to prevent color flash
+async function loadTeacherTheme() {
+  try {
+    // Get teacher ID from sessionStorage
+    const teacherId = sessionStorage.getItem('currentTeacherId');
+
+    if (!teacherId) {
+      console.log('⚠️ No teacher ID found, using default theme');
+      return;
+    }
+
+    console.log('🎨 Loading teacher theme early for:', teacherId);
+
+    // Get API base URL from env
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+
+    // Fetch teacher's landing settings
+    const landingResponse = await fetch(`${apiBaseUrl}/landing/public/${teacherId}`);
+    const landingResult = await landingResponse.json();
+
+    if (landingResult.success && landingResult.landing) {
+      console.log('✅ Teacher theme loaded early:', landingResult.landing);
+      applyLandingTheme(landingResult.landing);
+    } else {
+      console.log('⚠️ No landing settings found, using default theme');
+    }
+  } catch (error) {
+    console.error('⚠️ Could not load teacher theme early:', error);
+  }
 }
 
 export function renderLandingStudentDashboard() {

@@ -54,18 +54,26 @@ function getLogoHTML() {
 
 export async function initCourseLearningPage(courseId) {
   console.log('📚 Loading course learning page for:', courseId);
-  
+
   // Fetch course data
   const courseData = await fetchCourseData(courseId);
-  
+
   if (!courseData) {
     showErrorPage();
     return;
   }
-  
+
   // Store course data globally
   currentCourse = courseData;
-  
+
+  // Load teacher theme BEFORE rendering to prevent color flash
+  if (courseData.teacher && courseData.teacher._id) {
+    await loadTeacherLandingSettings(courseData.teacher._id);
+  } else if (courseData.teacher) {
+    // If teacher is just an ID string
+    await loadTeacherLandingSettings(courseData.teacher);
+  }
+
   // Check if layout already exists
   if (!isLayoutRendered) {
     await renderCourseLearningPage(courseData);
@@ -121,13 +129,7 @@ async function getStudentId() {
 
 // Render course learning page
 async function renderCourseLearningPage(course) {
-  // Load teacher landing settings first
-  if (course.teacher && course.teacher._id) {
-    await loadTeacherLandingSettings(course.teacher._id);
-  } else if (course.teacher) {
-    // If teacher is just an ID string
-    await loadTeacherLandingSettings(course.teacher);
-  }
+  // Teacher settings already loaded in initCourseLearningPage
   
   // Fetch student progress
   let completedLessons = [];
