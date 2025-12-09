@@ -250,7 +250,7 @@ async function renderTeacherDashboard(user) {
             <div class="figma-menu-children hidden" id="analytics-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.studentsAnalytics')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">Students</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
             </div>
           </div>
@@ -8795,6 +8795,25 @@ async function loadProgressData() {
     const contentArea = document.querySelector('.figma-content-area');
     contentArea.innerHTML = getProgressHTML(courses, studentsData);
     
+    // Attach event listeners to filter buttons and search input
+    setTimeout(() => {
+      const filterButtons = document.querySelectorAll('.filter-btn');
+      filterButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const courseId = this.getAttribute('data-course-id');
+          window.filterProgressCourse(this, courseId);
+        });
+      });
+
+      // Add search functionality
+      const searchInput = document.getElementById('studentSearchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          window.searchStudents(this.value);
+        });
+      }
+    }, 100);
+    
   } catch (error) {
     console.error('Error loading progress data:', error);
     const contentArea = document.querySelector('.figma-content-area');
@@ -8830,7 +8849,7 @@ function getProgressHTML(courses = [], studentsData = []) {
         }
         .progress-stat-card {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid var(--primary-border);
+          border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
           border-radius: 16px;
           padding: 24px;
           text-align: center;
@@ -8838,7 +8857,7 @@ function getProgressHTML(courses = [], studentsData = []) {
         }
         .progress-stat-card:hover {
           transform: translateY(-5px);
-          border-color: var(--primary-border-hover);
+          border-color: var(--primary-color);
           background: rgba(58, 56, 56, 0.5);
         }
         .progress-stat-title {
@@ -8857,34 +8876,66 @@ function getProgressHTML(courses = [], studentsData = []) {
           color: #10b981;
           font-size: 12px;
         }
+        .search-section {
+          margin: 20px 0;
+        }
+        .search-container {
+          position: relative;
+          max-width: 400px;
+        }
+        .search-input {
+          width: 100%;
+          padding: 12px 16px;
+          background: rgba(58, 56, 56, 0.3);
+          border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
+          border-radius: 12px;
+          color: #ffffff;
+          font-size: 14px;
+          transition: all 0.3s ease;
+        }
+        .search-input:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          background: rgba(58, 56, 56, 0.5);
+        }
+        .search-input::placeholder {
+          color: #9CA3AF;
+        }
+        .student-id {
+          color: #9CA3AF !important;
+          font-size: 11px !important;
+          margin: 2px 0 0 0 !important;
+        }
         .course-filters {
           display: flex;
           gap: 12px;
           flex-wrap: wrap;
+          margin: 20px 0;
         }
         .filter-btn {
           padding: 10px 20px;
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid var(--primary-border);
+          border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
           border-radius: 8px;
-          color: rgba(156, 163, 175, 1);
+          color: #9CA3AF;
           font-size: 14px;
           font-weight: 500;
           cursor: pointer;
           transition: all 0.3s ease;
         }
         .filter-btn.active {
-          background: var(--primary-light);
+          background: color-mix(in srgb, var(--primary-color) 20%, transparent);
           border-color: var(--primary-color);
           color: #ffffff;
         }
         .filter-btn:hover {
-          border-color: var(--primary-border-hover);
+          background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+          border-color: var(--primary-color);
           color: #ffffff;
         }
         .students-progress-section {
           background: rgba(58, 56, 56, 0.3);
-          border: 1px solid var(--primary-border);
+          border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
           border-radius: 16px;
           padding: 24px;
         }
@@ -8896,19 +8947,18 @@ function getProgressHTML(courses = [], studentsData = []) {
         }
         .student-progress-card {
           background: rgba(58, 56, 56, 0.5);
-          border: 1px solid var(--primary-border-light);
+          border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
           border-radius: 12px;
           padding: 20px;
           margin-bottom: 16px;
           transition: all 0.3s ease;
         }
         .student-progress-card:hover {
-          border-color: var(--border-color);
+          border-color: var(--primary-color);
           background: rgba(58, 56, 56, 0.7);
         }
         .student-header {
           display: flex;
-          justify-content: space-between;
           align-items: center;
           margin-bottom: 16px;
         }
@@ -8938,25 +8988,6 @@ function getProgressHTML(courses = [], studentsData = []) {
         .student-name-email p {
           color: rgba(156, 163, 175, 1);
           font-size: 12px;
-        }
-        .student-actions {
-          display: flex;
-          gap: 8px;
-        }
-        .action-btn {
-          padding: 8px 16px;
-          background: transparent;
-          border: 1px solid rgba(126, 162, 212, 0.3);
-          border-radius: 8px;
-          color: rgba(126, 162, 212, 1);
-          font-size: 12px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .action-btn:hover {
-          background: rgba(126, 162, 212, 0.1);
-          border-color: rgba(126, 162, 212, 0.5);
         }
         .status-badge {
           padding: 4px 12px;
@@ -9070,10 +9101,18 @@ function getProgressHTML(courses = [], studentsData = []) {
         </div>
       </div>
 
+      <!-- Search Section -->
+      <div class="search-section">
+        <div class="search-container">
+          <input type="text" id="studentSearchInput" placeholder="O'quvchi qidirish (ism, familya, ID)..." class="search-input">
+        </div>
+      </div>
+
       <div class="course-filters">
-        <button class="filter-btn active" onclick="filterProgressCourse(this, 'all')">Barcha kurslar (${courses.length})</button>
+        <button class="filter-btn active" data-course-id="all">Barcha kurslar (${courses.length})</button>
+        <button class="filter-btn" data-course-id="active">Eng faol o'quvchilar</button>
         ${courses.map(course => `
-          <button class="filter-btn" onclick="filterProgressCourse(this, '${course._id}')">${course.title}</button>
+          <button class="filter-btn" data-course-id="${course._id}">${course.title}</button>
         `).join('')}
       </div>
 
@@ -9085,18 +9124,23 @@ function getProgressHTML(courses = [], studentsData = []) {
           const firstName = student.studentInfo?.firstName || 'Student';
           const lastName = student.studentInfo?.lastName || (index + 1);
           const email = student.studentInfo?.email || '';
+          const studentId = student.studentInfo?._id || student.studentId || `ID${index + 1}`;
+          const displayId = studentId.length > 10 ? studentId.slice(-5).toUpperCase() : studentId.toUpperCase();
           const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
           const progressPercent = student.progress?.progressPercentage || 0;
           const completedLessons = student.progress?.completedLessons?.length || 0;
+
+          // No status badges needed
           
           return `
-        <div class="student-progress-card" data-course-id="${student.courseId}">
+        <div class="student-progress-card" data-course-id="${student.courseId}" data-student-id="${studentId}" data-student-name="${firstName} ${lastName}" data-progress="${progressPercent}">
           <div class="student-header">
             <div class="student-info-header">
               <div class="student-avatar-progress">${initials}</div>
               <div class="student-name-email">
                 <h4>${firstName} ${lastName}</h4>
                 <p>${email || student.courseName}</p>
+                <p class="student-id">ID: ${displayId}</p>
               </div>
             </div>
           </div>
@@ -9139,24 +9183,66 @@ window.filterProgressCourse = function(button, courseId) {
   console.log('Found cards:', cards.length);
   
   let visibleCount = 0;
-  cards.forEach(card => {
-    const cardCourseId = card.getAttribute('data-course-id');
-    console.log('Card course ID:', cardCourseId, 'Filter:', courseId);
-    
-    if (courseId === 'all') {
-      card.style.display = 'block';
-      visibleCount++;
-    } else {
-      if (cardCourseId === courseId) {
+
+  if (courseId === 'active') {
+    // Show only most active students (progress >= 70%)
+    cards.forEach(card => {
+      const progress = parseFloat(card.getAttribute('data-progress') || '0');
+      console.log('Student progress:', progress);
+
+      if (progress >= 70) {
         card.style.display = 'block';
         visibleCount++;
       } else {
         card.style.display = 'none';
       }
-    }
-  });
+    });
+  } else {
+    cards.forEach(card => {
+      const cardCourseId = card.getAttribute('data-course-id');
+      console.log('Card course ID:', cardCourseId, 'Filter:', courseId);
+
+      if (courseId === 'all') {
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        if (cardCourseId === courseId) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      }
+    });
+  }
   
   console.log('Visible cards:', visibleCount);
+};
+
+// Search students function
+window.searchStudents = function(searchTerm) {
+  console.log('Searching for:', searchTerm);
+
+  const cards = document.querySelectorAll('.student-progress-card');
+  const searchLower = searchTerm.toLowerCase().trim();
+
+  let visibleCount = 0;
+  cards.forEach(card => {
+    const studentName = card.getAttribute('data-student-name').toLowerCase();
+    const studentId = card.getAttribute('data-student-id').toLowerCase();
+
+    // Search in name and ID
+    const matchesSearch = studentName.includes(searchLower) || studentId.includes(searchLower);
+
+    if (searchTerm === '' || matchesSearch) {
+      card.style.display = 'block';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  console.log('Search results:', visibleCount, 'students found');
 };
 
 // Load more progress (keep this function)
@@ -9305,255 +9391,6 @@ function originalCodeResume() {
   `;
 }
 
-// Filter progress by course
-window.filterProgressCourse = function(button, course) {
-  document.querySelectorAll('.filter-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  button.classList.add('active');
-  
-  const section = document.querySelector('.students-progress-section');
-  if (!section) return;
-  
-  // Remove extra students
-  document.querySelectorAll('.student-progress-card.extra').forEach(card => card.remove());
-  
-  // Reset show more button
-  const btn = document.querySelector('.show-more-progress-btn');
-  if (btn) {
-    btn.textContent = 'Show more';
-    btn.dataset.loaded = 'false';
-  }
-  
-  let studentsHTML = '';
-  
-  if (course === 'all') {
-    studentsHTML = `
-      <div class="student-progress-card">
-        <div class="student-header">
-          <div class="student-info-header">
-            <div class="student-avatar-progress">SM</div>
-            <div class="student-name-email">
-              <h4>Sarah Martinez</h4>
-              <p>sarah.martinez@email.com</p>
-            </div>
-          </div>
-          <div class="student-actions">
-            <button class="action-btn">View details</button>
-          </div>
-        </div>
-        <div class="current-lesson">
-          <div class="lesson-title">Last Watched</div>
-          <div class="lesson-subtitle">CSS Grid Layout Advanced Techniques</div>
-          <div class="lesson-progress-bar">
-            <div class="lesson-progress-fill green" style="width: 100%"></div>
-          </div>
-          <div class="progress-text">100% completed</div>
-        </div>
-        <div class="progress-stats-row">
-          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">78%</div></div>
-          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">37/47</div></div>
-          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">92%</div></div>
-          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">30 ago</div></div>
-        </div>
-      </div>
-
-      <div class="student-progress-card">
-        <div class="student-header">
-          <div class="student-info-header">
-            <div class="student-avatar-progress">MJ</div>
-            <div class="student-name-email">
-              <h4>Mike Johnson</h4>
-              <p>mike.johnson@email.com</p>
-            </div>
-            <span class="status-badge needs-help">Needs help</span>
-          </div>
-          <div class="student-actions">
-            <button class="action-btn">Send message</button>
-          </div>
-        </div>
-        <div class="current-lesson">
-          <div class="lesson-title">Stuck on</div>
-          <div class="lesson-subtitle">JavaScript Async/Await Basics</div>
-          <div class="lesson-progress-bar">
-            <div class="lesson-progress-fill yellow" style="width: 18%"></div>
-          </div>
-          <div class="progress-text">18% • Watched 3 times</div>
-        </div>
-        <div class="progress-stats-row">
-          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">28%</div></div>
-          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">13/47</div></div>
-          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">58%</div></div>
-          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">1 day ago</div></div>
-        </div>
-      </div>
-
-      <div class="student-progress-card">
-        <div class="student-header">
-          <div class="student-info-header">
-            <div class="student-avatar-progress">AJ</div>
-            <div class="student-name-email">
-              <h4>Alex Johnson</h4>
-              <p>alex.johnson@email.com</p>
-            </div>
-            <span class="status-badge live">● Live</span>
-          </div>
-          <div class="student-actions">
-            <button class="action-btn">View details</button>
-          </div>
-        </div>
-        <div class="current-lesson">
-          <div class="lesson-title">Currently Watching</div>
-          <div class="lesson-subtitle">React Hooks - Introduction to useState</div>
-          <div class="lesson-progress-bar">
-            <div class="lesson-progress-fill green" style="width: 45%"></div>
-          </div>
-          <div class="progress-text">Module 2 • Lesson 5 • 10:32 / 23:08</div>
-        </div>
-        <div class="progress-stats-row">
-          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">45%</div></div>
-          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">21/47</div></div>
-          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">87%</div></div>
-          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">Now</div></div>
-        </div>
-      </div>
-    `;
-  } else if (course === 'javascript') {
-    studentsHTML = `
-      <div class="student-progress-card">
-        <div class="student-header">
-          <div class="student-info-header">
-            <div class="student-avatar-progress">MJ</div>
-            <div class="student-name-email">
-              <h4>Mike Johnson</h4>
-              <p>mike.johnson@email.com</p>
-            </div>
-            <span class="status-badge needs-help">Needs help</span>
-          </div>
-          <div class="student-actions">
-            <button class="action-btn">Send message</button>
-          </div>
-        </div>
-        <div class="current-lesson">
-          <div class="lesson-title">Stuck on</div>
-          <div class="lesson-subtitle">JavaScript Async/Await Basics</div>
-          <div class="lesson-progress-bar">
-            <div class="lesson-progress-fill yellow" style="width: 18%"></div>
-          </div>
-          <div class="progress-text">18% • Watched 3 times</div>
-        </div>
-        <div class="progress-stats-row">
-          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">28%</div></div>
-          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">13/47</div></div>
-          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">58%</div></div>
-          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">1 day ago</div></div>
-        </div>
-      </div>
-    `;
-  } else if (course === 'react') {
-    studentsHTML = `
-      <div class="student-progress-card">
-        <div class="student-header">
-          <div class="student-info-header">
-            <div class="student-avatar-progress">AJ</div>
-            <div class="student-name-email">
-              <h4>Alex Johnson</h4>
-              <p>alex.johnson@email.com</p>
-            </div>
-            <span class="status-badge live">● Live</span>
-          </div>
-          <div class="student-actions">
-            <button class="action-btn">View details</button>
-          </div>
-        </div>
-        <div class="current-lesson">
-          <div class="lesson-title">Currently Watching</div>
-          <div class="lesson-subtitle">React Hooks - Introduction to useState</div>
-          <div class="lesson-progress-bar">
-            <div class="lesson-progress-fill green" style="width: 45%"></div>
-          </div>
-          <div class="progress-text">Module 2 • Lesson 5 • 10:32 / 23:08</div>
-        </div>
-        <div class="progress-stats-row">
-          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">45%</div></div>
-          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">21/47</div></div>
-          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">87%</div></div>
-          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">Now</div></div>
-        </div>
-      </div>
-    `;
-  } else if (course === 'ui') {
-    studentsHTML = `
-      <div class="student-progress-card">
-        <div class="student-header">
-          <div class="student-info-header">
-            <div class="student-avatar-progress">SM</div>
-            <div class="student-name-email">
-              <h4>Sarah Martinez</h4>
-              <p>sarah.martinez@email.com</p>
-            </div>
-          </div>
-          <div class="student-actions">
-            <button class="action-btn">View details</button>
-          </div>
-        </div>
-        <div class="current-lesson">
-          <div class="lesson-title">Last Watched</div>
-          <div class="lesson-subtitle">CSS Grid Layout Advanced Techniques</div>
-          <div class="lesson-progress-bar">
-            <div class="lesson-progress-fill green" style="width: 100%"></div>
-          </div>
-          <div class="progress-text">100% completed</div>
-        </div>
-        <div class="progress-stats-row">
-          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">78%</div></div>
-          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">37/47</div></div>
-          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">92%</div></div>
-          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">30 ago</div></div>
-        </div>
-      </div>
-    `;
-  } else if (course === 'db') {
-    studentsHTML = `
-      <div class="student-progress-card">
-        <div class="student-header">
-          <div class="student-info-header">
-            <div class="student-avatar-progress">TM</div>
-            <div class="student-name-email">
-              <h4>Tom Martinez</h4>
-              <p>tom.martinez@email.com</p>
-            </div>
-          </div>
-          <div class="student-actions">
-            <button class="action-btn">View details</button>
-          </div>
-        </div>
-        <div class="current-lesson">
-          <div class="lesson-title">Last Watched</div>
-          <div class="lesson-subtitle">SQL Joins and Relationships</div>
-          <div class="lesson-progress-bar">
-            <div class="lesson-progress-fill green" style="width: 82%"></div>
-          </div>
-          <div class="progress-text">82% completed</div>
-        </div>
-        <div class="progress-stats-row">
-          <div class="stat-item"><div class="stat-label">Overall Progress</div><div class="stat-value">82%</div></div>
-          <div class="stat-item"><div class="stat-label">Completed Lessons</div><div class="stat-value">28/34</div></div>
-          <div class="stat-item"><div class="stat-label">Quiz Average</div><div class="stat-value">88%</div></div>
-          <div class="stat-item"><div class="stat-label">Last Active</div><div class="stat-value">5h ago</div></div>
-        </div>
-      </div>
-    `;
-  }
-  
-  // Remove existing students
-  section.querySelectorAll('.student-progress-card').forEach(card => card.remove());
-  
-  // Insert new students before the button
-  if (btn) {
-    btn.insertAdjacentHTML('beforebegin', studentsHTML);
-  }
-};
 
 // Load more progress
 window.loadMoreProgress = function() {
@@ -9628,9 +9465,9 @@ window.openStudentsAnalytics = function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
-    updatePageTitle(t('pages.studentsAnalytics'));
+    updatePageTitle('Students');
     contentArea.innerHTML = getStudentsAnalyticsHTML();
-    updateActiveMenuItem('Students Analytics');
+    updateActiveMenuItem('Students');
     
     // Apply saved primary color to Students Analytics page
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
@@ -9655,7 +9492,7 @@ function getStudentsAnalyticsHTML() {
         }
         .analytics-stats-grid {
           display: grid;
-          grid-template-columns: repeat(3, 1fr);
+          grid-template-columns: 1fr;
           gap: 20px;
         }
         .analytics-stat-card {
@@ -9665,6 +9502,8 @@ function getStudentsAnalyticsHTML() {
           padding: 24px;
           text-align: center;
           transition: all 0.3s ease;
+          max-width: 300px;
+          flex: 0 0 auto;
         }
         .analytics-stat-card:hover {
           transform: translateY(-5px);
@@ -9829,16 +9668,11 @@ function getStudentsAnalyticsHTML() {
           <div class="analytics-stat-title">Total Students</div>
           <div class="analytics-stat-value" id="total-students">-</div>
         </div>
-        <div class="analytics-stat-card">
-          <div class="analytics-stat-title">Active Students</div>
-          <div class="analytics-stat-value" id="active-students">-</div>
-        </div>
       </div>
 
       <!-- Tabs -->
       <div class="students-tabs">
         <button class="student-tab active" onclick="switchStudentTab(this, 'all')">All Students</button>
-        <button class="student-tab" onclick="switchStudentTab(this, 'recent')">Recent</button>
       </div>
 
       <!-- Students List -->
@@ -19206,7 +19040,7 @@ function handleLanguageChange() {
       'My Subscription': () => openMySubscription(),
       'Quiz Analytics': () => openQuizAnalytics(),
       'Rating Comments': () => openRatingComments(),
-      'Students Analytics': () => openStudentsAnalytics(),
+      'Students': () => openStudentsAnalytics(),
       'Progress': () => openProgress(),
     };
     
