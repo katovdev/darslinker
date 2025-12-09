@@ -929,10 +929,10 @@ function attachEventListeners(course, currentLesson = null) {
     }
   };
 
-  // Open specific lesson - load in same page
+  // Open specific lesson - unified loader for ALL lesson types
   window.openLesson = async function(moduleId, lessonId) {
     console.log('Opening lesson:', moduleId, lessonId);
-    
+
     // Update lastAccessedLesson in progress
     const studentId = await getStudentId();
     if (studentId) {
@@ -943,7 +943,7 @@ function attachEventListeners(course, currentLesson = null) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ courseId: course._id, lessonId, updateLastAccessed: true })
         });
-        
+
         // Update local progress
         if (window.courseProgress) {
           window.courseProgress.lastAccessedLesson = lessonId;
@@ -952,59 +952,19 @@ function attachEventListeners(course, currentLesson = null) {
         console.error('Error updating last accessed:', error);
       }
     }
-    
+
     // Find the lesson
     let selectedLesson = null;
     const module = course.modules.find(m => m._id === moduleId);
     if (module && module.lessons) {
       selectedLesson = module.lessons.find(l => l._id === lessonId);
     }
-    
-    if (selectedLesson) {
-      // Check lesson type and load appropriate player
-      if (selectedLesson.type === 'video') {
-        loadLessonPlayer(course, selectedLesson);
-      } else if (selectedLesson.type === 'quiz') {
-        // Build sidebar HTML for quiz player
-        const sidebarHtml = `
-          <div class="lesson-sidebar" id="lessonSidebar">
-            <div class="sidebar-header">
-              <span class="sidebar-course-title">${course.title || 'Course'}</span>
-              <button class="sidebar-close" onclick="togglePlayerSidebar()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M6 18L18 6M6 6l12 12"/>
-                </svg>
-              </button>
-            </div>
-            <div class="sidebar-modules">
-              ${buildLessonsListHtml(course, selectedLesson)}
-            </div>
-          </div>
-        `;
-        await loadQuizPlayer(course, selectedLesson, sidebarHtml);
-      } else if (selectedLesson.type === 'assignment' || selectedLesson.type === 'file') {
-        // Build sidebar HTML for assignment/file players
-        const sidebarHtml = `
-          <div class="assignment-sidebar">
-            <div class="sidebar-header">
-              <span class="sidebar-course-title">${course.title || 'Course'}</span>
-            </div>
-            <div class="sidebar-modules">
-              ${buildLessonsListHtml(course, selectedLesson)}
-            </div>
-          </div>
-        `;
 
-        if (selectedLesson.type === 'assignment') {
-          const { loadAssignmentPlayer } = await import('./assignment-player.js');
-          await loadAssignmentPlayer(course, selectedLesson, sidebarHtml);
-        } else if (selectedLesson.type === 'file') {
-          const { loadFilePlayer } = await import('./file-player.js');
-          await loadFilePlayer(course, selectedLesson, sidebarHtml);
-        }
-      } else {
-        showToast('This lesson type is not supported yet');
-      }
+    if (selectedLesson) {
+      // Load unified lesson player (handles ALL lesson types)
+      await loadUnifiedLessonPlayer(course, selectedLesson);
+    } else {
+      showToast('Lesson not found');
     }
   };
   
@@ -1110,44 +1070,6 @@ function attachEventListeners(course, currentLesson = null) {
   }
 }
 
-// Show toast notification
-function showToast(message) {
-  const existingToast = document.querySelector('.toast-notification');
-  if (existingToast) {
-    existingToast.remove();
-  }
-
-  const toast = document.createElement('div');
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#7ea2d4';
-  toast.style.cssText = `
-    position: fixed !important;
-    bottom: 30px !important;
-    right: 30px !important;
-    background: ${primaryColor} !important;
-    color: #ffffff !important;
-    padding: 16px 32px !important;
-    border-radius: 12px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    z-index: 10000 !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
-    width: auto !important;
-    height: auto !important;
-    min-height: auto !important;
-    max-width: 400px !important;
-    white-space: nowrap !important;
-    display: inline-block !important;
-  `;
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.animation = 'slideOutBottomRight 0.3s ease';
-    setTimeout(() => {
-      toast.remove();
-    }, 300);
-  }, 3000);
-}
 
 // Handle logout
 function handleLogout() {
@@ -1159,81 +1081,103 @@ function handleLogout() {
   }, 1000);
 }
 
-// Load lesson player in content area
-export function loadLessonPlayer(course, lesson) {
+// Unified lesson player that handles ALL lesson types with consistent header/sidebar
+export async function loadUnifiedLessonPlayer(course, lesson) {
+  console.log(`🎯 Loading unified player for ${lesson.type}:`, lesson.title);
+  console.log(`📊 Course data:`, course);
+
   const mainContent = document.querySelector('.course-learning-page');
   if (!mainContent) return;
-  
-  // Get video URL
-  const videoUrl = lesson.videoUrl || '';
-  
+
+  // Store course data globally for sidebar and navigation functions
+  window.loadedCourse = course;
+  window.currentCourse = course;
+  window.currentLesson = lesson;
+
   // Check if layout already exists
   const existingLayout = mainContent.querySelector('.lesson-player-layout');
-  
+
   if (existingLayout) {
-    // Layout exists, only update video player content
-    updateVideoPlayerContent(existingLayout, lesson, videoUrl);
+    // Layout exists, only update content area and sidebar with current lesson
+    await updateLessonContent(existingLayout, course, lesson);
+    updateSidebarActiveLesson(course, lesson);
     return;
   }
-  
-  // First time - create full layout
+
+  // Create unified layout with consistent header and sidebar
+  await renderUnifiedPlayerLayout(mainContent, course, lesson);
+}
+
+// Render the unified player layout
+async function renderUnifiedPlayerLayout(mainContent, course, lesson) {
+  console.log('🎨 renderUnifiedPlayerLayout:', {
+    courseTitle: course?.title,
+    lessonTitle: lesson?.title,
+    courseModules: course?.modules?.length
+  });
+
   mainContent.innerHTML = `
     <style>
+      /* CSS Variables for theming - inherit from parent */
+      :root {
+        --primary-color: ${getComputedStyle(document.documentElement).getPropertyValue('--primary-color') || '#7ea2d4'};
+        --background-color: ${getComputedStyle(document.documentElement).getPropertyValue('--background-color') || '#232323'};
+        --text-color: ${getComputedStyle(document.documentElement).getPropertyValue('--text-color') || '#ffffff'};
+      }
+
       .lesson-player-layout {
         display: flex;
         height: calc(100vh - 81px);
         overflow: hidden;
       }
-      
-      /* Sidebar - Collapsible */
+
+      /* Unified Sidebar */
       .lesson-sidebar {
         width: 280px;
         background: #2a2a2a;
-        border-right: 1px solid rgba(126, 162, 212, 0.15);
+        border-right: 1px solid color-mix(in srgb, var(--primary-color) 15%, transparent);
         overflow-y: auto;
         overflow-x: hidden;
         flex-shrink: 0;
         transition: all 0.3s ease;
         position: relative;
       }
-      
+
       .lesson-sidebar.collapsed {
         width: 0;
         min-width: 0;
         border-right: none;
       }
-      
+
       .lesson-sidebar::-webkit-scrollbar {
         width: 6px;
       }
-      
+
       .lesson-sidebar::-webkit-scrollbar-track {
         background: rgba(255, 255, 255, 0.05);
       }
-      
+
       .lesson-sidebar::-webkit-scrollbar-thumb {
-        background: rgba(126, 162, 212, 0.3);
+        background: color-mix(in srgb, var(--primary-color) 30%, transparent);
         border-radius: 3px;
       }
-      
 
-      
       .sidebar-header {
         padding: 20px 24px;
-        border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+        border-bottom: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);
         display: flex;
         justify-content: space-between;
         align-items: center;
         gap: 12px;
       }
-      
+
       .sidebar-course-title {
         font-size: 16px;
         font-weight: 600;
         color: #ffffff;
         flex: 1;
       }
-      
+
       .sidebar-close {
         background: transparent;
         border: none;
@@ -1246,20 +1190,20 @@ export function loadLessonPlayer(course, lesson) {
         transition: all 0.2s;
         border-radius: 4px;
       }
-      
+
       .sidebar-close:hover {
         background: rgba(255, 255, 255, 0.1);
         color: var(--primary-color);
       }
-      
+
       .sidebar-modules {
         padding: 12px 0;
       }
-      
+
       .sidebar-module {
         border-bottom: 1px solid color-mix(in srgb, var(--primary-color) 10%, transparent);
       }
-      
+
       .sidebar-module-header {
         padding: 16px 24px;
         display: flex;
@@ -1268,43 +1212,43 @@ export function loadLessonPlayer(course, lesson) {
         cursor: pointer;
         transition: background 0.2s;
       }
-      
+
       .sidebar-module-header:hover {
         background: color-mix(in srgb, var(--primary-color) 5%, transparent);
       }
-      
+
       .sidebar-module-title {
         flex: 1;
         font-size: 15px;
         font-weight: 600;
         color: #ffffff;
       }
-      
+
       .sidebar-module-count {
         font-size: 12px;
         color: #9CA3AF;
       }
-      
+
       .sidebar-module-arrow {
         color: var(--primary-color);
         font-size: 12px;
         transition: transform 0.3s;
       }
-      
+
       .sidebar-module-arrow.rotated {
         transform: rotate(-180deg);
       }
-      
+
       .sidebar-module-lessons {
         max-height: 0;
         overflow: hidden;
         transition: max-height 0.3s ease;
       }
-      
+
       .sidebar-module-lessons.expanded {
         max-height: 2000px;
       }
-      
+
       .sidebar-lesson {
         padding: 14px 24px 14px 44px;
         display: flex;
@@ -1315,16 +1259,16 @@ export function loadLessonPlayer(course, lesson) {
         border-left: 4px solid transparent;
         position: relative;
       }
-      
+
       .sidebar-lesson:hover {
         background: color-mix(in srgb, var(--primary-color) 10%, transparent);
       }
-      
+
       .sidebar-lesson.active {
         background: color-mix(in srgb, var(--primary-color) 20%, transparent);
         border-left-color: var(--primary-color);
       }
-      
+
       .sidebar-lesson-icon {
         color: var(--primary-color);
         display: flex;
@@ -1333,39 +1277,39 @@ export function loadLessonPlayer(course, lesson) {
         width: 24px;
         height: 24px;
       }
-      
+
       .sidebar-lesson-icon svg {
         display: block;
       }
-      
+
       .sidebar-lesson-info {
         flex: 1;
       }
-      
+
       .sidebar-lesson-title {
         font-size: 14px;
         color: #ffffff;
         margin-bottom: 4px;
         font-weight: 500;
       }
-      
+
       .sidebar-lesson-duration {
         font-size: 12px;
         color: #9CA3AF;
       }
-      
-      /* Video Player Area */
-      .lesson-player-container {
+
+      /* Content Area */
+      .lesson-content-area {
         flex: 1;
         overflow-y: auto;
         background: #1a1a1a;
         display: flex;
         align-items: flex-start;
-        justify-content: center;
-        padding: 40px 60px;
+        justify-content: flex-start;
         position: relative;
+        width: 100%;
       }
-      
+
       /* Open Sidebar Button */
       .open-sidebar-btn {
         position: absolute;
@@ -1385,150 +1329,26 @@ export function loadLessonPlayer(course, lesson) {
         z-index: 10;
         transition: all 0.2s ease;
       }
-      
+
       .open-sidebar-btn:hover {
         background: color-mix(in srgb, var(--primary-color) 10%, transparent);
         border-color: var(--primary-color);
       }
-      
-      .lesson-player-container::-webkit-scrollbar {
+
+      .lesson-content-area::-webkit-scrollbar {
         width: 8px;
       }
-      
-      .lesson-player-container::-webkit-scrollbar-track {
+
+      .lesson-content-area::-webkit-scrollbar-track {
         background: rgba(255, 255, 255, 0.05);
       }
-      
-      .lesson-player-container::-webkit-scrollbar-thumb {
-        background: rgba(126, 162, 212, 0.3);
+
+      .lesson-content-area::-webkit-scrollbar-thumb {
+        background: color-mix(in srgb, var(--primary-color) 30%, transparent);
         border-radius: 4px;
       }
-      
-      .lesson-player-content {
-        width: 100%;
-        max-width: 1400px;
-      }
-      
-      .video-wrapper {
-        width: 100%;
-        max-height: 600px;
-        background: #000000;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-      
-      .video-wrapper video {
-        width: 100%;
-        max-height: 600px;
-        display: block;
-        object-fit: contain;
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-      }
-      
-      /* Hide video content during screen capture */
-      @media (prefers-reduced-motion: reduce) {
-        .video-wrapper video {
-          filter: brightness(0);
-        }
-      }
-      
-      /* Detect screen recording via visibility API */
-      .video-wrapper.recording-detected video {
-        filter: brightness(0) !important;
-      }
-      
-      /* Video Watermark */
-      .video-watermark {
-        position: absolute;
-        color: rgba(220, 220, 220, 0.9);
-        font-size: 16px;
-        font-weight: 400;
-        font-family: monospace;
-        pointer-events: none;
-        z-index: 999;
-        user-select: none;
-        -webkit-user-select: none;
-        opacity: 0.9;
-        display: block;
-      }
-      
-      .video-watermark.hidden {
-        opacity: 0 !important;
-        display: none;
-      }
-      
-      /* Play Button Overlay - Oddiy */
-      .video-play-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        z-index: 1000;
-        transition: background 0.3s ease;
-      }
-
-      .video-play-overlay:hover {
-        background: rgba(0, 0, 0, 0.7);
-      }
-
-      .play-button-circle {
-        width: 80px;
-        height: 80px;
-        background: color-mix(in srgb, var(--primary-color) 90%, transparent);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      .play-button-circle svg {
-        margin-left: 5px;
-      }
-
-      .video-play-overlay.hidden {
-        display: none;
-      }
-      
-      /* Video Protection Overlay */
-      .video-protection-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        pointer-events: none;
-        z-index: 998;
-        background: transparent;
-      }
-      
-      /* Black overlay when screenshot detected */
-      .video-protection-overlay.screenshot-detected {
-        background: #000000;
-        z-index: 1000;
-      }
-      
-      .video-placeholder {
-        padding: 200px 40px;
-        text-align: center;
-        color: #9CA3AF;
-        font-size: 16px;
-      }
     </style>
-    
+
     <!-- Header stays the same -->
     <header class="course-learning-header">
       <div class="header-logo">
@@ -1543,8 +1363,8 @@ export function loadLessonPlayer(course, lesson) {
         </button>
       </div>
     </header>
-    
-    <!-- Sidebar + Video Player Layout -->
+
+    <!-- Unified Layout -->
     <div class="lesson-player-layout">
       <!-- Left Sidebar with Lessons -->
       <div class="lesson-sidebar" id="lessonSidebar">
@@ -1560,59 +1380,27 @@ export function loadLessonPlayer(course, lesson) {
           ${buildLessonsListHtml(course, lesson)}
         </div>
       </div>
-      
-      <!-- Right Video Player -->
-      <div class="lesson-player-container">
+
+      <!-- Content Area -->
+      <div class="lesson-content-area" id="lessonContentArea">
         <!-- Open Sidebar Button (shown when sidebar is closed) -->
         <button class="open-sidebar-btn" id="openSidebarBtn" onclick="togglePlayerSidebar()" style="display: none;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M9 18l6-6-6-6"/>
           </svg>
         </button>
-        
-        <div class="lesson-player-content">
-          <div class="video-wrapper" id="video-wrapper-protected">
-            ${videoUrl 
-              ? `<!-- Play Button -->
-                 <div id="video-play-overlay" class="video-play-overlay" onclick="startProtectedVideo()">
-                   <div class="play-button-circle">
-                     <svg width="40" height="40" viewBox="0 0 24 24" fill="white">
-                       <path d="M8 5v14l11-7z"/>
-                     </svg>
-                   </div>
-                 </div>
-                 
-                 <div class="video-protection-overlay"></div>
-                 <div class="video-watermark" id="video-watermark">ID: Loading...</div>
-                 <video id="protected-video" controls controlsList="nodownload" disablePictureInPicture>
-                   <source src="${videoUrl}" type="video/mp4">
-                   Your browser does not support the video tag.
-                 </video>`
-              : `<div class="video-placeholder">
-                   <p>Video not available</p>
-                 </div>`
-            }
-          </div>
-          
-          <!-- Lesson Info and Actions -->
-          <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; background: rgba(58, 56, 56, 0.3); border-radius: 12px; border: 1px solid rgba(126, 162, 212, 0.2);">
-            <div style="flex: 1;">
-              <h2 style="color: #ffffff; font-size: 20px; margin-bottom: 4px;">${lesson.title}</h2>
-              <p style="color: #9CA3AF; font-size: 13px; margin: 0;">${lesson.duration || ''}</p>
-            </div>
-            
-            <button id="nextLessonBtn" onclick="goToNextLesson('${course._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-left: 20px;">
-              Next Lesson →
-            </button>
-          </div>
+
+        <!-- Content will be loaded here -->
+        <div id="dynamicLessonContent" style="width: 100%; display: flex; flex: 1;">
+          Loading...
         </div>
       </div>
     </div>
   `;
-  
+
   // Re-attach event listeners for header
   attachEventListeners(course, lesson);
-  
+
   // Auto-expand module containing current lesson
   if (course.modules) {
     course.modules.forEach((module, index) => {
@@ -1628,457 +1416,395 @@ export function loadLessonPlayer(course, lesson) {
       }
     });
   }
-  
+
+  // Load the specific lesson content
+  await updateLessonContent(mainContent.querySelector('.lesson-player-layout'), course, lesson);
+}
+
+// Update lesson content based on type
+async function updateLessonContent(layout, course, lesson) {
+  const contentArea = layout.querySelector('#dynamicLessonContent');
+  if (!contentArea) return;
+
+  console.log(`📄 Updating content for ${lesson.type}:`, lesson.title);
+
+  // Load content based on lesson type
+  switch (lesson.type) {
+    case 'video':
+      await loadVideoContent(contentArea, lesson);
+      break;
+    case 'file':
+      await loadFileContent(contentArea, lesson);
+      break;
+    case 'assignment':
+      await loadAssignmentContent(contentArea, course, lesson);
+      break;
+    case 'quiz':
+      await loadQuizContent(contentArea, course, lesson);
+      break;
+    default:
+      contentArea.innerHTML = `
+        <div style="text-align: center; padding: 60px; color: #9CA3AF;">
+          <p>This lesson type (${lesson.type}) is not supported yet</p>
+        </div>
+      `;
+  }
+}
+
+// Load lesson player in content area
+export function loadLessonPlayer(course, lesson) {
+  // For backward compatibility, redirect to unified player
+  return loadUnifiedLessonPlayer(course, lesson);
+}
+
+// Content loading functions for each lesson type
+async function loadVideoContent(contentArea, lesson) {
+  const videoUrl = lesson.videoUrl || '';
+
+  contentArea.innerHTML = `
+    <div style="width: 100%; max-width: none; padding: 40px 60px; flex: 1;">
+      <div style="width: 100%; max-height: 600px; background: #000000; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); position: relative; display: flex; align-items: center; justify-content: center;">
+        ${videoUrl
+          ? `<!-- Play Button -->
+             <div id="video-play-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; transition: background 0.3s ease;" onclick="startProtectedVideo()">
+               <div style="width: 80px; height: 80px; background: color-mix(in srgb, var(--primary-color) 90%, transparent); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                 <svg width="40" height="40" viewBox="0 0 24 24" fill="white" style="margin-left: 5px;">
+                   <path d="M8 5v14l11-7z"/>
+                 </svg>
+               </div>
+             </div>
+
+             <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 998; background: transparent;" class="video-protection-overlay"></div>
+             <div style="position: absolute; color: rgba(220, 220, 220, 0.9); font-size: 16px; font-weight: 400; font-family: monospace; pointer-events: none; z-index: 999; user-select: none; opacity: 0.9;" id="video-watermark">ID: Loading...</div>
+             <video id="protected-video" controls controlsList="nodownload" disablePictureInPicture style="width: 100%; max-height: 600px; display: block; object-fit: contain; user-select: none;">
+               <source src="${videoUrl}" type="video/mp4">
+               Your browser does not support the video tag.
+             </video>`
+          : `<div style="padding: 200px 40px; text-align: center; color: #9CA3AF; font-size: 16px;">
+               <p>Video not available</p>
+             </div>`
+        }
+      </div>
+
+      <!-- Lesson Info and Actions -->
+      <div style="margin-top: 24px; display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; background: rgba(58, 56, 56, 0.3); border-radius: 12px; border: 1px solid rgba(126, 162, 212, 0.2);">
+        <div style="flex: 1;">
+          <h2 style="color: #ffffff; font-size: 20px; margin-bottom: 4px;">${lesson.title}</h2>
+          <p style="color: #9CA3AF; font-size: 13px; margin: 0;">${lesson.duration || ''}</p>
+        </div>
+
+        <button id="nextLessonBtn" onclick="goToNextLesson('${window.currentCourse?._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-left: 20px;">
+          Next Lesson →
+        </button>
+      </div>
+    </div>
+  `;
+
   // Initialize video protection if video exists
   if (videoUrl) {
     setTimeout(() => initVideoProtection(), 200);
   }
 }
 
-// Helper function to update only video player content (without re-rendering header/sidebar)
-function updateVideoPlayerContent(layout, lesson, videoUrl) {
-  const playerContainer = layout.querySelector('.lesson-player-container');
-  if (!playerContainer) return;
-  
-  // Update only the video player content
-  playerContainer.innerHTML = `
-    <div class="lesson-player-content">
-      <div class="video-wrapper" id="video-wrapper-protected">
-        ${videoUrl 
-          ? `<div class="video-protection-overlay"></div>
-             <div class="video-watermark" id="video-watermark">Loading...</div>
-             <video id="protected-video" controls controlsList="nodownload" disablePictureInPicture>
-               <source src="${videoUrl}" type="video/mp4">
-               Your browser does not support the video tag.
-             </video>`
-          : `<div class="video-placeholder">
-               <p>Video not available</p>
-             </div>`
-        }
+async function loadFileContent(contentArea, lesson) {
+  contentArea.innerHTML = `
+    <div style="width: 100%; max-width: none; padding: 40px 60px; flex: 1;">
+      <!-- File Header -->
+      <h1 style="font-size: 36px; font-weight: 700; color: #ffffff; margin-bottom: 16px;">${lesson.title || 'File Resource'}</h1>
+
+      <div style="display: flex; gap: 24px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid rgba(126, 162, 212, 0.2);">
+        <div style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: #9CA3AF;">
+          <svg style="color: var(--primary-color);" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+          </svg>
+          <span>File</span>
+        </div>
       </div>
+
+      <!-- Description -->
+      ${lesson.description ? `
+      <div style="margin-bottom: 32px;">
+        <h2 style="font-size: 14px; font-weight: 500; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          About This File
+        </h2>
+        <div style="background: rgba(58, 56, 56, 0.3); border: 1px solid rgba(126, 162, 212, 0.2); border-radius: 12px; padding: 24px; color: #E5E7EB; line-height: 1.6;">
+          ${lesson.description}
+        </div>
+      </div>
+      ` : ''}
+
+      <!-- File Download -->
+      ${lesson.fileUrl ? `
+      <div style="margin-bottom: 32px;">
+        <h2 style="font-size: 14px; font-weight: 500; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/>
+          </svg>
+          Download File
+        </h2>
+        <div style="background: linear-gradient(135deg, rgba(126, 162, 212, 0.1), rgba(126, 162, 212, 0.05)); border: 2px solid rgba(126, 162, 212, 0.3); border-radius: 16px; padding: 32px; text-align: center; transition: all 0.3s ease; cursor: pointer;" onclick="downloadFile('${lesson.fileUrl}', getFileName('${lesson.fileUrl}', '${lesson.title}'))">
+          <div style="width: 80px; height: 80px; margin: 0 auto 24px; background: linear-gradient(135deg, var(--primary-color), #6b8fc4); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: white; box-shadow: 0 8px 24px rgba(126, 162, 212, 0.3);">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <div style="margin-bottom: 24px;">
+            <div style="font-size: 20px; font-weight: 600; color: #ffffff; margin-bottom: 8px;">${lesson.title || 'Download File'}</div>
+            <div style="font-size: 14px; color: #9CA3AF; margin-bottom: 4px;">Click to download</div>
+            <div style="font-size: 14px; color: #9CA3AF;">File available for download</div>
+          </div>
+          <button style="background: linear-gradient(135deg, var(--primary-color), #6b8fc4); color: white; border: none; padding: 16px 32px; border-radius: 12px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 12px; box-shadow: 0 4px 16px rgba(126, 162, 212, 0.3);" onclick="event.stopPropagation(); downloadFile('${lesson.fileUrl}', getFileName('${lesson.fileUrl}', '${lesson.title}'))">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/>
+            </svg>
+            Download File
+          </button>
+        </div>
+      </div>
+      ` : ''}
     </div>
   `;
-  
-  // Re-initialize video protection
-  if (videoUrl) {
-    setTimeout(() => initVideoProtection(), 200);
-  }
-  
-  console.log('✅ Video player content updated without re-rendering layout');
+
+  // Add file download functionality
+  window.downloadFile = function(url, filename) {
+    try {
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename || 'downloaded_file';
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Download failed:', error);
+      window.open(url, '_blank');
+    }
+  };
+
+  window.getFileName = function(url, title) {
+    try {
+      const urlPath = new URL(url).pathname;
+      const fileName = urlPath.split('/').pop();
+      if (fileName && fileName.includes('.')) {
+        return fileName;
+      }
+    } catch (error) {
+      console.log('Could not extract filename from URL');
+    }
+    const cleanTitle = title.replace(/[^a-zA-Z0-9\s]/g, '').trim();
+    return cleanTitle || 'download';
+  };
 }
 
-// Video Protection System
-function initVideoProtection() {
-  const video = document.getElementById('protected-video');
-  const watermark = document.getElementById('video-watermark');
-  const videoWrapper = document.getElementById('video-wrapper-protected');
-  const playOverlay = document.getElementById('video-play-overlay');
-  
-  if (!video || !watermark || !videoWrapper) {
-    console.log('⚠️ Video protection elements not found');
-    return;
-  }
-  
-  // Start video function
-  window.startProtectedVideo = function() {
-    if (playOverlay) playOverlay.classList.add('hidden');
-    video.play();
-  };
-  
-  // Hide overlay when video starts playing
-  video.addEventListener('play', () => {
-    if (playOverlay) playOverlay.classList.add('hidden');
-  });
-  
-  video.addEventListener('ended', () => {
-    showToast('Lesson completed! 🎉');
-  });
-  
-  // Get student ID from localStorage or sessionStorage
-  let studentId = 'GUEST';
-  
-  // Try localStorage first (main dashboard)
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  if (user._id) {
-    studentId = user._id.slice(-5).toUpperCase();
-  } else {
-    // Try sessionStorage (landing page users)
-    const landingUser = sessionStorage.getItem('landingUser');
-    if (landingUser) {
-      try {
-        const userData = JSON.parse(landingUser);
-        if (userData._id) {
-          studentId = userData._id.slice(-5).toUpperCase();
-        }
-      } catch (error) {
-        console.error('Error parsing landing user:', error);
-      }
-    }
-  }
-  
-  console.log('🔑 Student ID for watermark:', studentId);
-  
-  watermark.textContent = studentId;
-  
-  // 1. Disable right-click on video
-  video.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    showToast('Video yuklab olish taqiqlangan!');
-    return false;
-  });
-  
-  videoWrapper.addEventListener('contextmenu', (e) => {
-    e.preventDefault();
-    return false;
-  });
-  
-  // 2. Disable keyboard shortcuts for screenshot and hide video
-  const protectionOverlay = videoWrapper.querySelector('.video-protection-overlay');
-  
-  const handleKeyDown = (e) => {
-    // Disable Print Screen, Cmd+Shift+3/4/5 (Mac), Windows+Shift+S
-    if (
-      e.key === 'PrintScreen' ||
-      (e.metaKey && e.shiftKey && ['3', '4', '5'].includes(e.key)) ||
-      (e.key === 's' && e.metaKey && e.shiftKey)
-    ) {
-      e.preventDefault();
-      
-      // Show black overlay
-      if (protectionOverlay) {
-        protectionOverlay.classList.add('screenshot-detected');
-        video.pause();
-      }
-      
-      showToast('Screenshot taqiqlangan!');
-      
-      // Remove overlay after 2 seconds
-      setTimeout(() => {
-        if (protectionOverlay) {
-          protectionOverlay.classList.remove('screenshot-detected');
-        }
-      }, 2000);
-      
-      return false;
-    }
-    
-    // Disable F12, Ctrl+Shift+I, Cmd+Option+I (DevTools)
-    if (
-      e.key === 'F12' ||
-      (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-      (e.metaKey && e.altKey && e.key === 'I')
-    ) {
-      e.preventDefault();
-      showToast('DevTools taqiqlangan!');
-      return false;
-    }
-  };
-  
-  const handleKeyUp = (e) => {
-    // Remove black overlay when key is released
-    if (e.key === 'PrintScreen') {
-      setTimeout(() => {
-        if (protectionOverlay) {
-          protectionOverlay.classList.remove('screenshot-detected');
-        }
-      }, 1000);
-    }
-  };
-  
-  document.addEventListener('keydown', handleKeyDown);
-  document.addEventListener('keyup', handleKeyUp);
-  
-  // 3. Random watermark position animation - disappear completely, then appear at new location
-  function updateWatermarkPosition() {
-    const wrapper = videoWrapper.getBoundingClientRect();
-    const watermarkWidth = 100;
-    const watermarkHeight = 25;
-    
-    // Random position (with padding from edges)
-    const padding = 40;
-    const maxX = wrapper.width - watermarkWidth - padding;
-    const maxY = wrapper.height - watermarkHeight - padding;
-    
-    const randomX = Math.random() * maxX + padding;
-    const randomY = Math.random() * maxY + padding;
-    
-    // Step 1: Hide completely (instant)
-    watermark.style.transition = 'none';
-    watermark.style.display = 'none';
-    
-    // Step 2: Wait, then change position while hidden
-    setTimeout(() => {
-      watermark.style.left = `${randomX}px`;
-      watermark.style.top = `${randomY}px`;
-      
-      // Step 3: Show at new position (instant) - only show ID, no position info
-      watermark.textContent = studentId; // Only student ID, no coordinates
-      watermark.style.display = 'block';
-    }, 500); // Hidden for 500ms
-  }
-  
-  // Initial position (no fade on first load)
-  const wrapper = videoWrapper.getBoundingClientRect();
-  const watermarkWidth = 120;
-  const watermarkHeight = 30;
-  const padding = 40;
-  const maxX = wrapper.width - watermarkWidth - padding;
-  const maxY = wrapper.height - watermarkHeight - padding;
-  const initialX = Math.random() * maxX + padding;
-  const initialY = Math.random() * maxY + padding;
-  watermark.style.left = `${initialX}px`;
-  watermark.style.top = `${initialY}px`;
-  watermark.textContent = studentId; // Only show student ID
-  
-  // Update position every 10 seconds (8s visible + 2s for fade animation)
-  const positionInterval = setInterval(updateWatermarkPosition, 10000);
-  
-  // Update position when video size changes
-  video.addEventListener('loadedmetadata', updateWatermarkPosition);
-  const resizeHandler = () => updateWatermarkPosition();
-  window.addEventListener('resize', resizeHandler);
-  
-  // 4. Detect DevTools opening
-  let devtoolsOpen = false;
-  const threshold = 160;
-  
-  const devtoolsInterval = setInterval(() => {
-    if (
-      window.outerWidth - window.innerWidth > threshold ||
-      window.outerHeight - window.innerHeight > threshold
-    ) {
-      if (!devtoolsOpen) {
-        devtoolsOpen = true;
-        showToast('⚠️ DevTools aniqlandi! Video to\'xtatildi.');
-        video.pause();
-      }
-    } else {
-      devtoolsOpen = false;
-    }
-  }, 1000);
-  
-  // 5. Advanced screen recording detection with blur
-  let isRecording = false;
-  
-  // Detect when page loses focus (screen recording apps often cause this)
-  const visibilityHandler = () => {
-    if (document.hidden) {
-      // Pause video
-      video.pause();
-      
-      // Add blur and black overlay
-      video.style.filter = 'blur(50px) brightness(0)';
-      videoWrapper.classList.add('recording-detected');
-      isRecording = true;
-      
-      console.log('⚠️ Page hidden - video paused and blurred');
-    } else {
-      // Remove blur and overlay after delay
-      setTimeout(() => {
-        video.style.filter = 'none';
-        videoWrapper.classList.remove('recording-detected');
-        isRecording = false;
-        console.log('✅ Page visible - video restored');
-      }, 500);
-    }
-  };
-  document.addEventListener('visibilitychange', visibilityHandler);
-  
-  // Also detect window blur (when user switches to another app)
-  const windowBlurHandler = () => {
-    video.pause();
-    video.style.filter = 'blur(50px) brightness(0)';
-    videoWrapper.classList.add('recording-detected');
-    console.log('⚠️ Window blur - video paused');
-  };
-  
-  const windowFocusHandler = () => {
-    setTimeout(() => {
-      video.style.filter = 'none';
-      videoWrapper.classList.remove('recording-detected');
-      console.log('✅ Window focus - video restored');
-    }, 500);
-  };
-  
-  window.addEventListener('blur', windowBlurHandler);
-  window.addEventListener('focus', windowFocusHandler);
-  
-  // Detect screen capture via getDisplayMedia
-  const detectScreenCapture = () => {
-    // Check if screen is being captured
-    if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
-      const originalGetDisplayMedia = navigator.mediaDevices.getDisplayMedia;
-      
-      navigator.mediaDevices.getDisplayMedia = function(...args) {
-        videoWrapper.classList.add('recording-detected');
-        video.pause();
-        showToast('⚠️ Screen recording aniqlandi!');
-        isRecording = true;
-        
-        return originalGetDisplayMedia.apply(this, args);
-      };
-    }
-  };
-  
-  detectScreenCapture();
-  
-  // Monitor for screen recording apps (check window focus frequently)
-  const recordingCheckInterval = setInterval(() => {
-    // If video is playing but document is not focused, likely recording
-    if (!document.hasFocus() && !video.paused) {
-      videoWrapper.classList.add('recording-detected');
-      video.pause();
-      isRecording = true;
-    }
-  }, 500);
-  
-  // 6. Prevent drag and drop
-  video.addEventListener('dragstart', (e) => {
-    e.preventDefault();
-    return false;
-  });
-  
-  // Cleanup function when navigating away
-  const cleanup = () => {
-    clearInterval(positionInterval);
-    clearInterval(devtoolsInterval);
-    clearInterval(recordingCheckInterval);
-    document.removeEventListener('keydown', handleKeyDown);
-    document.removeEventListener('keyup', handleKeyUp);
-    document.removeEventListener('visibilitychange', visibilityHandler);
-    window.removeEventListener('blur', windowBlurHandler);
-    window.removeEventListener('focus', windowFocusHandler);
-    window.removeEventListener('resize', resizeHandler);
-  };
-  
-  // Store cleanup function for later use
-  window._videoProtectionCleanup = cleanup;
-  
-  console.log('🔒 Video protection enabled for student:', studentId);
+async function loadAssignmentContent(contentArea, course, lesson) {
+  // Import and use the assignment player content
+  const { renderAssignmentContent } = await import('./assignment-player.js');
+  await renderAssignmentContent(contentArea, course, lesson);
 }
 
-// Build lessons list HTML (like lesson-view.js)
+async function loadQuizContent(contentArea, course, lesson) {
+  // Import and use the quiz player content
+  const { renderQuizContent } = await import('./quiz-player.js');
+  await renderQuizContent(contentArea, course, lesson);
+}
+
+// Build sidebar lessons list HTML for unified player
 function buildLessonsListHtml(course, currentLesson) {
-  let html = '';
-  
-  if (course.modules) {
-    course.modules.forEach((module, moduleIndex) => {
-      html += `
-        <div class="sidebar-module">
-          <div class="sidebar-module-header" onclick="togglePlayerModule(${moduleIndex})">
-            <span class="sidebar-module-title">${module.title || `Module ${moduleIndex + 1}`}</span>
-            <span class="sidebar-module-count">${module.lessons?.length || 0} dars</span>
-            <span class="sidebar-module-arrow" id="player-arrow-${moduleIndex}">▼</span>
-          </div>
-          <div class="sidebar-module-lessons" id="player-lessons-${moduleIndex}">
-            ${module.lessons && module.lessons.length > 0 
-              ? module.lessons.map((lesson, lessonIndex) => {
-                  const isActive = lesson._id === currentLesson._id;
-                  
-                  return `
-                  <div class="sidebar-lesson ${isActive ? 'active' : ''}" 
-                       onclick="openLesson('${module._id}', '${lesson._id}')">
-                    <div class="sidebar-lesson-icon">
-                      ${lesson.type === 'video'
-                        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                             <path d="M8 5v14l11-7z"/>
-                           </svg>`
-                        : lesson.type === 'quiz'
-                        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                             <path d="M9 11l3 3L22 4"></path>
-                             <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
-                           </svg>`
-                        : lesson.type === 'assignment'
-                        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                             <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                           </svg>`
-                        : lesson.type === 'file'
-                        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                             <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                           </svg>`
-                        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                             <polyline points="14 2 14 8 20 8"></polyline>
-                           </svg>`
-                      }
-                    </div>
-                    <div class="sidebar-lesson-info">
-                      <div class="sidebar-lesson-title">${lesson.title || `Lesson ${lessonIndex + 1}`}</div>
-                      ${lesson.duration ? `<div class="sidebar-lesson-duration">${lesson.duration}</div>` : ''}
-                    </div>
-                  </div>
-                `;
-                }).join('')
-              : '<div style="padding: 20px; text-align: center; color: #9CA3AF;">No lessons</div>'
-            }
-          </div>
-        </div>
-      `;
-    });
-  }
-  
-  return html;
-}
+  console.log('🔧 buildLessonsListHtml called with:', course, currentLesson);
 
-// Toggle sidebar visibility
-window.togglePlayerSidebar = function() {
-  const sidebar = document.getElementById('lessonSidebar');
-  const openBtn = document.getElementById('openSidebarBtn');
-  
-  if (sidebar) {
-    sidebar.classList.toggle('collapsed');
-    
-    // Toggle open button visibility
-    if (openBtn) {
-      openBtn.style.display = sidebar.classList.contains('collapsed') ? 'flex' : 'none';
-    }
+  if (!course || !course.modules || course.modules.length === 0) {
+    console.log('❌ No course or modules found');
+    return '<p style="color: #9CA3AF; text-align: center; padding: 40px;">No modules available</p>';
   }
-};
 
-// Toggle sidebar module
-window.togglePlayerModule = function(index) {
-  const lessonsDiv = document.getElementById(`player-lessons-${index}`);
-  const arrow = document.getElementById(`player-arrow-${index}`);
-  
-  if (lessonsDiv && arrow) {
-    lessonsDiv.classList.toggle('expanded');
-    arrow.classList.toggle('rotated');
-  }
-}
+  console.log('✅ Course data:', {
+    title: course.title,
+    modules: course.modules.length,
+    moduleNames: course.modules.map(m => m.title)
+  });
 
-// Render sidebar modules
-function renderSidebarModules(modules, currentLessonId) {
-  return modules.map((module, index) => {
-    const lessons = module.lessons || [];
+  return course.modules.map((module, index) => {
+    const lessonCount = module.lessons ? module.lessons.length : 0;
+
     return `
       <div class="sidebar-module">
-        <div class="sidebar-module-header">
-          <div class="sidebar-module-title">${index + 1}. ${module.title}</div>
+        <div class="sidebar-module-header" onclick="togglePlayerModule('${module._id}', ${index})">
+          <div class="sidebar-module-title">${index + 1}. ${module.title || 'Untitled Module'}</div>
+          <div class="sidebar-module-count">${lessonCount}</div>
+          <svg class="sidebar-module-arrow" id="player-arrow-${index}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"/>
+          </svg>
         </div>
-        ${lessons.map(lesson => `
-          <div class="sidebar-lesson ${lesson._id === currentLessonId ? 'active' : ''}" onclick="openLesson('${module._id}', '${lesson._id}')">
-            <div class="sidebar-lesson-icon">
-              ${getLessonIcon(lesson.type)}
-            </div>
-            <div class="sidebar-lesson-info">
-              <div class="sidebar-lesson-title">${lesson.title}</div>
-              <div class="sidebar-lesson-duration">${lesson.duration || 'No duration'}</div>
-            </div>
-          </div>
-        `).join('')}
+        <div class="sidebar-module-lessons" id="player-lessons-${index}">
+          ${buildSidebarLessons(module.lessons || [], module._id, currentLesson)}
+        </div>
       </div>
     `;
   }).join('');
 }
 
+// Build sidebar lessons HTML
+function buildSidebarLessons(lessons, moduleId, currentLesson) {
+  if (!lessons || lessons.length === 0) {
+    return '<div style="color: #9CA3AF; text-align: center; padding: 20px; font-size: 14px;">No lessons</div>';
+  }
+
+  const progress = window.courseProgress || { completedLessons: [], lastAccessedLesson: null };
+
+  return lessons.map(lesson => {
+    const lessonIcon = getLessonIcon(lesson.type);
+    const isCompleted = progress.completedLessons.includes(lesson._id);
+    const isActive = currentLesson && currentLesson._id === lesson._id;
+    const isInProgress = progress.lastAccessedLesson === lesson._id && !isCompleted;
+
+    return `
+      <div class="sidebar-lesson ${isActive ? 'active' : ''}" onclick="openLesson('${moduleId}', '${lesson._id}')">
+        <div class="sidebar-lesson-icon">
+          ${lessonIcon}
+        </div>
+        <div class="sidebar-lesson-info">
+          <div class="sidebar-lesson-title">${lesson.title || 'Untitled Lesson'}</div>
+          <div class="sidebar-lesson-duration">${lesson.duration || 'No duration'}</div>
+        </div>
+        ${isCompleted ? `
+          <div style="width: 16px; height: 16px; border-radius: 50%; background: #10B981; margin-left: auto;"></div>
+        ` : isInProgress ? `
+          <div style="width: 16px; height: 16px; border-radius: 50%; background: #F59E0B; margin-left: auto;"></div>
+        ` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+// Toggle module expansion in sidebar
+window.togglePlayerModule = function(moduleId, index) {
+  const lessonsDiv = document.getElementById(`player-lessons-${index}`);
+  const arrow = document.getElementById(`player-arrow-${index}`);
+
+  if (!lessonsDiv || !arrow) return;
+
+  if (lessonsDiv.classList.contains('expanded')) {
+    lessonsDiv.classList.remove('expanded');
+    arrow.classList.remove('rotated');
+  } else {
+    lessonsDiv.classList.add('expanded');
+    arrow.classList.add('rotated');
+  }
+};
+
+// Update sidebar active lesson when navigating
+function updateSidebarActiveLesson(course, lesson) {
+  // Remove active class from all lessons
+  const allLessons = document.querySelectorAll('.sidebar-lesson');
+  allLessons.forEach(lessonEl => lessonEl.classList.remove('active'));
+
+  // Add active class to current lesson
+  const currentLessonEl = document.querySelector(`[onclick="openLesson('${lesson.moduleId || ''}', '${lesson._id}')"]`);
+  if (currentLessonEl) {
+    currentLessonEl.classList.add('active');
+  }
+
+  // Update sidebar content with fresh data if needed
+  const sidebarModules = document.querySelector('.sidebar-modules');
+  if (sidebarModules && course && lesson) {
+    sidebarModules.innerHTML = buildLessonsListHtml(course, lesson);
+
+    // Auto-expand module containing current lesson
+    if (course.modules) {
+      course.modules.forEach((module, index) => {
+        if (module.lessons && module.lessons.some(l => l._id === lesson._id)) {
+          setTimeout(() => {
+            const lessonsDiv = document.getElementById(`player-lessons-${index}`);
+            const arrow = document.getElementById(`player-arrow-${index}`);
+            if (lessonsDiv && arrow) {
+              lessonsDiv.classList.add('expanded');
+              arrow.classList.add('rotated');
+            }
+          }, 100);
+        }
+      });
+    }
+  }
+}
+
+// Sidebar toggle functionality for unified player
+window.togglePlayerSidebar = function() {
+  const sidebar = document.getElementById('lessonSidebar');
+  const openBtn = document.getElementById('openSidebarBtn');
+
+  if (!sidebar) return;
+
+  if (sidebar.classList.contains('collapsed')) {
+    // Show sidebar
+    sidebar.classList.remove('collapsed');
+    if (openBtn) openBtn.style.display = 'none';
+  } else {
+    // Hide sidebar
+    sidebar.classList.add('collapsed');
+    if (openBtn) openBtn.style.display = 'flex';
+  }
+};
+
+// Global navigation functionality
+window.goToNextLesson = function(courseId, currentLessonId) {
+  // Find next lesson in the current course
+  const course = window.loadedCourse;
+  if (!course || !course.modules) return;
+
+  let foundCurrent = false;
+  let nextLesson = null;
+
+  for (const module of course.modules) {
+    if (!module.lessons) continue;
+
+    for (const lesson of module.lessons) {
+      if (foundCurrent) {
+        nextLesson = { lesson, moduleId: module._id };
+        break;
+      }
+      if (lesson._id === currentLessonId) {
+        foundCurrent = true;
+      }
+    }
+    if (nextLesson) break;
+  }
+
+  if (nextLesson) {
+    window.openLesson(nextLesson.moduleId, nextLesson.lesson._id);
+  } else {
+    // No more lessons - could show completion or return to course overview
+    showToast('Course Complete', 'You have finished all lessons in this course!', 'success');
+  }
+};
 
 
-function showErrorPage() {
-  document.body.innerHTML = `
-    <div style="text-align: center; padding: 60px 20px; background: #232323; min-height: 100vh; color: #ffffff;">
-      <h1 style="color: #ef4444; margin-bottom: 16px;">Error</h1>
-      <p style="color: #9CA3AF; margin-bottom: 24px;">Failed to load course</p>
-      <button onclick="window.history.back()" style="padding: 12px 24px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">Go Back</button>
-    </div>
+// Unified toast notification system
+function showToast(title, message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : '#7ea2d4'};
+    color: #ffffff;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 10000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
   `;
+
+  toast.innerHTML = `<strong>${title}</strong>${message ? `<br><span style="opacity: 0.9;">${message}</span>` : ''}`;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    if (toast.parentNode) {
+      toast.parentNode.removeChild(toast);
+    }
+  }, 4000);
 }
