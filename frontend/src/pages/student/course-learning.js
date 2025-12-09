@@ -1508,6 +1508,103 @@ async function loadVideoContent(contentArea, lesson) {
   }
 }
 
+// Video protection functions - make them globally accessible
+window.initVideoProtection = function() {
+  const video = document.getElementById('protected-video');
+  const watermark = document.getElementById('video-watermark');
+  const overlay = document.querySelector('.video-protection-overlay');
+  
+  if (!video || !watermark) {
+    console.log('⚠️ Video protection elements not found');
+    return;
+  }
+
+  // Get student ID for watermark (last 5 characters only)
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const landingUser = sessionStorage.getItem('landingUser');
+  let studentId = 'XXXXX';
+  
+  if (user._id) {
+    studentId = user._id.slice(-5).toUpperCase();
+  } else if (landingUser) {
+    try {
+      const userData = JSON.parse(landingUser);
+      if (userData._id) {
+        studentId = userData._id.slice(-5).toUpperCase();
+      }
+    } catch (error) {
+      console.error('Error parsing landing user:', error);
+    }
+  }
+
+  // Set watermark text (only the ID, no prefix)
+  watermark.textContent = studentId;
+
+  // Position watermark randomly
+  function updateWatermarkPosition() {
+    const videoRect = video.getBoundingClientRect();
+    const maxX = videoRect.width - 150;
+    const maxY = videoRect.height - 30;
+    
+    const x = Math.random() * Math.max(0, maxX);
+    const y = Math.random() * Math.max(0, maxY);
+    
+    watermark.style.left = `${x}px`;
+    watermark.style.top = `${y}px`;
+  }
+
+  // Update position every 5 seconds
+  updateWatermarkPosition();
+  setInterval(updateWatermarkPosition, 5000);
+
+  // Prevent right-click on video
+  video.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    return false;
+  });
+
+  // Detect screenshot attempts (basic detection)
+  document.addEventListener('keydown', (e) => {
+    // Detect common screenshot keys
+    if (
+      (e.key === 'PrintScreen') ||
+      (e.metaKey && e.shiftKey && (e.key === '3' || e.key === '4' || e.key === '5')) || // Mac
+      (e.ctrlKey && e.shiftKey && e.key === 'S') // Windows Snipping Tool
+    ) {
+      if (overlay) {
+        overlay.style.background = '#000000';
+        overlay.style.zIndex = '1000';
+        setTimeout(() => {
+          overlay.style.background = 'transparent';
+          overlay.style.zIndex = '998';
+        }, 500);
+      }
+    }
+  });
+
+  console.log('✅ Video protection initialized');
+};
+
+window.startProtectedVideo = function() {
+  const video = document.getElementById('protected-video');
+  const playOverlay = document.getElementById('video-play-overlay');
+  
+  if (!video) {
+    console.log('⚠️ Video element not found');
+    return;
+  }
+
+  // Hide play overlay
+  if (playOverlay) {
+    playOverlay.style.display = 'none';
+  }
+
+  // Start playing video
+  video.play().catch(error => {
+    console.error('Error playing video:', error);
+  });
+};
+
 async function loadFileContent(contentArea, lesson) {
   contentArea.innerHTML = `
     <div style="width: 100%; max-width: none; padding: 40px 60px; flex: 1;">
