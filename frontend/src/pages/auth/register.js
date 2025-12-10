@@ -1058,14 +1058,25 @@ function initRegisterPageFunctionality() {
       <div class="otp-modal">
         <div class="otp-header">
           <h3>Tasdiqlash kodi</h3>
-          <p>Tasdiqlash kodi ${identifier.includes('@') ? 'emailingizga' : 'telefon raqamingizga'} yuborildi</p>
+          <p>Tasdiqlash kodini <strong>@DarsLinkeer_bot</strong> orqali oling</p>
+          <p class="bot-instruction">Telegram botga o'ting va tasdiqlash kodini oling</p>
+        </div>
+        <div class="otp-actions-telegram">
+          <button class="telegram-bot-btn" id="openTelegramBot">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161l-1.84 8.673c-.137.613-.5.76-1.013.474l-2.8-2.062-1.347 1.298c-.15.15-.273.273-.562.273l.2-2.86 5.2-4.7c.226-.2-.05-.313-.35-.112l-6.425 4.047-2.774-.867c-.6-.187-.612-.6.126-.887l10.85-4.187c.5-.187.937.112.774.887z"/>
+            </svg>
+            Telegram Botga O'tish
+          </button>
+        </div>
+        <div class="otp-divider">
+          <span>Kodni oldingizmi?</span>
         </div>
         <div class="otp-input-container">
           <input type="text" class="otp-input" maxlength="6" placeholder="000000" id="otpCodeInput">
         </div>
         <div class="otp-actions">
           <button class="otp-verify-btn" id="verifyOtpBtn">Tasdiqlash</button>
-          <button class="otp-resend-btn" id="resendOtpBtn">Qayta yuborish</button>
         </div>
         <button class="otp-close-btn" id="closeOtpModal">&times;</button>
       </div>
@@ -1108,8 +1119,88 @@ function initRegisterPageFunctionality() {
       .otp-header p {
         color: rgba(255, 255, 255, 0.8);
         font-size: 0.9rem;
-        margin: 0 0 24px 0;
+        margin: 0 0 8px 0;
         text-align: center;
+      }
+
+      .otp-header p.bot-instruction {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.85rem;
+        margin: 0 0 20px 0;
+      }
+
+      .otp-header strong {
+        color: #7EA2D4;
+        font-weight: 600;
+      }
+
+      .otp-actions-telegram {
+        margin-bottom: 16px;
+      }
+
+      .telegram-bot-btn {
+        width: 100%;
+        padding: 14px 20px;
+        background: linear-gradient(135deg, #0088cc 0%, #006699 100%);
+        border: none;
+        border-radius: 25px;
+        color: #ffffff;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+      }
+
+      .telegram-bot-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
+        background: linear-gradient(135deg, #0099dd 0%, #0077aa 100%);
+      }
+
+      .telegram-bot-btn:active {
+        transform: translateY(0px);
+      }
+
+      .telegram-bot-btn svg {
+        width: 20px;
+        height: 20px;
+      }
+
+      .otp-divider {
+        text-align: center;
+        margin: 16px 0;
+        position: relative;
+      }
+
+      .otp-divider::before,
+      .otp-divider::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        width: 40%;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .otp-divider::before {
+        left: 0;
+      }
+
+      .otp-divider::after {
+        right: 0;
+      }
+
+      .otp-divider span {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.85rem;
+        background: rgba(90, 90, 90, 0.1);
+        padding: 0 12px;
+        position: relative;
       }
 
       .otp-input-container {
@@ -1146,8 +1237,8 @@ function initRegisterPageFunctionality() {
         margin-bottom: 16px;
       }
 
-      .otp-verify-btn, .otp-resend-btn {
-        flex: 1;
+      .otp-verify-btn {
+        width: 100%;
         padding: 12px;
         border: none;
         border-radius: 25px;
@@ -1155,9 +1246,6 @@ function initRegisterPageFunctionality() {
         font-weight: 600;
         cursor: pointer;
         transition: all 0.3s ease;
-      }
-
-      .otp-verify-btn {
         background: linear-gradient(135deg, #7EA2D4 0%, #5A85C7 100%);
         color: #ffffff;
         box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
@@ -1172,16 +1260,6 @@ function initRegisterPageFunctionality() {
         opacity: 0.7;
         cursor: not-allowed;
         transform: none;
-      }
-
-      .otp-resend-btn {
-        background: rgba(60, 60, 80, 0.5);
-        color: #ffffff;
-        border: 1px solid #7EA2D4;
-      }
-
-      .otp-resend-btn:hover {
-        background: rgba(70, 70, 90, 0.7);
       }
 
       .otp-close-btn {
@@ -1213,8 +1291,19 @@ function initRegisterPageFunctionality() {
     // Get OTP modal elements
     const otpInput = document.getElementById('otpCodeInput');
     const verifyBtn = document.getElementById('verifyOtpBtn');
-    const resendBtn = document.getElementById('resendOtpBtn');
     const closeBtn = document.getElementById('closeOtpModal');
+    const telegramBtn = document.getElementById('openTelegramBot');
+
+    // Open Telegram Bot
+    telegramBtn.addEventListener('click', () => {
+      // Open Telegram bot in new tab
+      window.open('https://t.me/DarsLinkeer_bot', '_blank');
+      
+      // Focus on OTP input after opening bot
+      setTimeout(() => {
+        otpInput.focus();
+      }, 500);
+    });
 
     // Focus on input
     setTimeout(() => otpInput.focus(), 100);
@@ -1292,27 +1381,6 @@ function initRegisterPageFunctionality() {
       } finally {
         verifyBtn.textContent = 'Tasdiqlash';
         verifyBtn.disabled = false;
-      }
-    });
-
-    // Resend OTP
-    resendBtn.addEventListener('click', async () => {
-      resendBtn.textContent = 'Yuborilmoqda...';
-      resendBtn.disabled = true;
-
-      try {
-        const result = await apiService.resendRegistrationOtp(identifier);
-        if (result.success) {
-          showSuccessToast('OTP kod qayta yuborildi');
-          otpInput.value = '';
-          otpInput.focus();
-        }
-      } catch (error) {
-        console.error('Resend OTP error:', error);
-        showErrorToast(error.message || 'OTP qayta yuborishda xatolik yuz berdi');
-      } finally {
-        resendBtn.textContent = 'Qayta yuborish';
-        resendBtn.disabled = false;
       }
     });
 
