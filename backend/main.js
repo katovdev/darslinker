@@ -15,7 +15,7 @@ import { setWebhook, getWebhookInfo } from "./src/services/telegram-webhook.serv
 
 connectToDB();
 
-// Setup Telegram bot - use webhook or polling based on USE_WEBHOOK env variable
+// Setup Student Telegram bot - use webhook or polling based on USE_WEBHOOK env variable
 if (process.env.TELEGRAM_BOT_TOKEN) {
   const useWebhook = process.env.USE_WEBHOOK === 'true';
   
@@ -27,19 +27,28 @@ if (process.env.TELEGRAM_BOT_TOKEN) {
       
       const success = await setWebhook();
       if (success) {
-        logger.info('✅ Telegram webhook configured successfully');
+        logger.info('✅ Student Telegram webhook configured successfully');
       } else {
-        logger.error('❌ Failed to configure Telegram webhook');
+        logger.error('❌ Failed to configure Student Telegram webhook');
       }
     }, 3000);
   } else {
     // Use polling (for local development)
     const { startTelegramBot } = await import("./src/services/telegram-bot.service.js");
     startTelegramBot();
-    logger.info('🤖 Telegram bot polling started (local development)');
+    logger.info('🤖 Student Telegram bot polling started (local development)');
   }
 } else {
-  logger.warn('⚠️ Telegram bot token not found. Bot will not start.');
+  logger.warn('⚠️ Student Telegram bot token not found. Bot will not start.');
+}
+
+// Setup Teacher Telegram bot (always use polling for now)
+try {
+  const { initTeacherBot } = await import("./src/services/telegram-teacher-bot.service.js");
+  initTeacherBot();
+  logger.info('🎓 Teacher Telegram bot started successfully');
+} catch (error) {
+  logger.error('❌ Failed to start Teacher Telegram bot:', error.message);
 }
 
 const app = express();

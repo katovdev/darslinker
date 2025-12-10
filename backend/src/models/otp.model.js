@@ -35,8 +35,10 @@ const otpSchema = new mongoose.Schema(
       userAgent: String,
       channel: {
         type: String,
-        enum: ["email", "sms"],
+        enum: ["email", "sms", "telegram"],
       },
+      chatId: String,
+      botType: String,
     },
     status: {
       type: String,

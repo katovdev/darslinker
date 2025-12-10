@@ -796,42 +796,69 @@ function showOtpVerificationModal(identifier, user) {
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.7);
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 1000;
+      z-index: 9999;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
     }
 
     .otp-modal {
-      background: rgba(90, 90, 90, 0.1);
+      background: rgba(90, 90, 90, 0.15);
       backdrop-filter: blur(50px);
+      -webkit-backdrop-filter: blur(50px);
       border-radius: 24px;
-      padding: 32px;
-      width: 400px;
+      padding: 40px 48px;
+      width: 550px;
       max-width: 90vw;
       border: 1px solid #7EA2D4;
       position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
     }
 
     .otp-header h3 {
       color: #ffffff;
-      font-size: 1.4rem;
-      margin: 0 0 8px 0;
+      font-size: 1.6rem;
+      margin: 0 0 12px 0;
       text-align: center;
+      font-weight: 600;
     }
 
     .otp-header p {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 0.9rem;
-      margin: 0 0 8px 0;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 1rem;
+      margin: 0 0 10px 0;
       text-align: center;
+      line-height: 1.5;
     }
 
     .otp-header p.bot-instruction {
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.85rem;
-      margin: 0 0 20px 0;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 0.9rem;
+      margin: 0 0 24px 0;
     }
 
     .otp-header strong {
@@ -845,20 +872,20 @@ function showOtpVerificationModal(identifier, user) {
 
     .telegram-bot-btn {
       width: 100%;
-      padding: 14px 20px;
+      padding: 16px 24px;
       background: linear-gradient(135deg, #0088cc 0%, #006699 100%);
       border: none;
       border-radius: 25px;
       color: #ffffff;
-      font-size: 0.95rem;
+      font-size: 1.05rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+      gap: 12px;
+      box-shadow: 0 6px 16px rgba(0, 136, 204, 0.4);
     }
 
     .telegram-bot-btn:hover {
@@ -909,22 +936,23 @@ function showOtpVerificationModal(identifier, user) {
     }
 
     .otp-input-container {
-      margin-bottom: 24px;
+      margin-bottom: 28px;
     }
 
     .otp-input {
       width: 100%;
-      padding: 12px 16px;
-      background: rgba(60, 60, 80, 0.5);
-      border: 1px solid #7EA2D4;
+      padding: 16px 20px;
+      background: rgba(60, 60, 80, 0.6);
+      border: 2px solid #7EA2D4;
       border-radius: 25px;
       color: #ffffff;
-      font-size: 1.2rem;
+      font-size: 1.4rem;
       text-align: center;
-      letter-spacing: 4px;
+      letter-spacing: 6px;
       outline: none;
       transition: all 0.3s ease;
       box-sizing: border-box;
+      font-weight: 600;
     }
 
     .otp-input:focus {
@@ -944,16 +972,16 @@ function showOtpVerificationModal(identifier, user) {
 
     .otp-verify-btn {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       border: none;
       border-radius: 25px;
-      font-size: 0.9rem;
+      font-size: 1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
       background: linear-gradient(135deg, #7EA2D4 0%, #5A85C7 100%);
       color: #ffffff;
-      box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
+      box-shadow: 0 6px 16px rgba(126, 162, 212, 0.4);
     }
 
     .otp-verify-btn:hover {
@@ -969,24 +997,27 @@ function showOtpVerificationModal(identifier, user) {
 
     .otp-close-btn {
       position: absolute;
-      top: 16px;
-      right: 16px;
-      background: none;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.1);
       border: none;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 24px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 28px;
       cursor: pointer;
       padding: 0;
-      width: 32px;
-      height: 32px;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: color 0.3s ease;
+      transition: all 0.3s ease;
+      border-radius: 50%;
     }
 
     .otp-close-btn:hover {
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 1);
+      background: rgba(255, 255, 255, 0.2);
+      transform: rotate(90deg);
     }
   `;
 

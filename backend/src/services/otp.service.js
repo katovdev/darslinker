@@ -14,6 +14,7 @@ import {
   OTP_MAX_ATTEMPTS,
 } from "../../config/env.js";
 import logger from "../../config/logger.js";
+import { sendTeacherOtpViaTelegram } from "./telegram-teacher-bot.service.js";
 
 /**
  * Create and send OTP via email or SMS
@@ -76,8 +77,25 @@ export async function createAndSendOtp({
         await emailService.sendEmail(identifier, "Verification Code", message);
         logger.info("OTP sent via email", { identifier, purpose });
       } else if (channel === "sms") {
-        await smsService.sendSms(identifier, message);
-        logger.info("OTP sent via SMS", { identifier, purpose });
+        // Check if user is a teacher - send via Telegram bot
+        const user = await User.findOne({
+          $or: [{ email: identifier }, { phone: identifier }]
+        });
+        
+        if (user && user.role === 'teacher') {
+          // Send via Teacher Telegram Bot
+          const sent = await sendTeacherOtpViaTelegram(identifier, otp);
+          if (sent) {
+            logger.info("OTP sent via Teacher Telegram Bot", { identifier, purpose });
+          } else {
+            logger.warn("Failed to send via Telegram, user needs to start bot first", { identifier });
+            // Don't throw error, just log warning
+          }
+        } else {
+          // Regular SMS for students or if user not found
+          await smsService.sendSms(identifier, message);
+          logger.info("OTP sent via SMS", { identifier, purpose });
+        }
       } else {
         await emailService.sendEmail(identifier, "Verification Code", message);
       }
@@ -246,7 +264,18 @@ export async function resendOtp({
         message
       );
     } else {
-      await smsService.sendSms(identifier, message);
+      // Check if user is a teacher - send via Telegram bot
+      const user = await User.findOne({
+        $or: [{ email: identifier }, { phone: identifier }]
+      });
+      
+      if (user && user.role === 'teacher') {
+        // Send via Teacher Telegram Bot
+        await sendTeacherOtpViaTelegram(identifier, otp);
+      } else {
+        // Regular SMS for students
+        await smsService.sendSms(identifier, message);
+      }
     }
 
     return {
