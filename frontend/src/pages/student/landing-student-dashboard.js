@@ -783,16 +783,7 @@ export function renderLandingStudentDashboard() {
             </div>
           </div>
 
-          <!-- Progress Section -->
-          <div class="landing-nav-section">
-            <div class="landing-nav-parent" onclick="toggleLandingMenu('progress')">
-              <span class="landing-nav-title">Progress</span>
-              <span class="landing-nav-arrow" id="progress-arrow">▶</span>
-            </div>
-            <div class="landing-nav-children hidden" id="progress-children">
-              <a class="landing-nav-item" data-page="progress">My Progress</a>
-            </div>
-          </div>
+
 
           <!-- Account Section -->
           <div class="landing-nav-section">
