@@ -10150,3 +10150,34 @@ button.filter-tab.active {
 .delete-btn:hover {
   /* No hover effect */
 }
+
+/* Logout Button */
+.figma-btn-logout {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+  color: #ffffff !important;
+  border: none !important;
+  transition: all 0.3s ease !important;
+}
+
+.figma-btn-logout:hover {
+  background: linear-gradient(135deg, #c82333 0%, #bd2130 100%) !important;
+  color: #ffffff !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4) !important;
+}
+
+.figma-btn-logout:active,
+.figma-btn-logout:focus {
+  color: #ffffff !important;
+}
+
+/* Override any theme color changes for logout button */
+[data-theme="light"] .figma-btn-logout,
+[data-theme="dark"] .figma-btn-logout {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .figma-btn-logout:hover,
+[data-theme="dark"] .figma-btn-logout:hover {
+  color: #ffffff !important;
+}

@@ -195,6 +195,7 @@ async function renderTeacherDashboard(user) {
           <button class="figma-btn" onclick="startNewMeeting()">${t('header.newMeeting')}</button>
           <button class="figma-btn" onclick="openTelegramBot()">${t('header.telegramBot')}</button>
           <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">${t('header.newCourse')}</button>
+          <button class="figma-btn figma-btn-logout" onclick="handleLogout()">Chiqish</button>
         </div>
       </div>
 
@@ -20861,4 +20862,16 @@ window.openNotifications = async function() {
       originalOpenNotifications();
     }
   }
+};
+
+// Logout function
+window.handleLogout = function() {
+  // Clear all localStorage
+  localStorage.clear();
+  
+  // Clear all sessionStorage
+  sessionStorage.clear();
+  
+  // Navigate to login page
+  router.navigate('/login');
 };
