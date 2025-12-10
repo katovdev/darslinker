@@ -10181,3 +10181,39 @@ button.filter-tab.active {
 [data-theme="dark"] .figma-btn-logout:hover {
   color: #ffffff !important;
 }
+
+/* Notification Button */
+.figma-notification-btn {
+  position: relative !important;
+  padding: 8px 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.figma-notification-btn svg {
+  flex-shrink: 0;
+}
+
+.notification-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #dc3545;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}

@@ -210,6 +210,57 @@ const verifyAndRegister = catchAsync(async (req, res) => {
     linkedToTeacher: !!validatedTeacherId
   });
 
+  // Send notification to teacher if teacherId is provided
+  if (validatedTeacherId) {
+    logger.info("🔔 Attempting to send notification to teacher", {
+      teacherId: validatedTeacherId,
+      studentName: `${newStudent.firstName} ${newStudent.lastName}`
+    });
+    
+    try {
+      const { notifyTeacherNewStudent } = await import("../services/notification-telegram.service.js");
+      const { createNotification } = await import("../services/notification.service.js");
+      
+      // Send Telegram notification
+      logger.info("📱 Sending Telegram notification...");
+      const telegramSent = await notifyTeacherNewStudent(validatedTeacherId, {
+        firstName: newStudent.firstName,
+        lastName: newStudent.lastName
+      });
+      logger.info("📱 Telegram notification result:", { sent: telegramSent });
+      
+      // Create in-app notification
+      logger.info("💾 Creating in-app notification...");
+      const notification = await createNotification({
+        userId: validatedTeacherId,
+        type: 'new_student',
+        title: 'Yangi o\'quvchi',
+        message: `${newStudent.firstName} ${newStudent.lastName} ro'yxatdan o'tdi`,
+        data: {
+          studentId: newStudent._id,
+          studentName: `${newStudent.firstName} ${newStudent.lastName}`
+        }
+      });
+      logger.info("💾 In-app notification created:", { notificationId: notification._id });
+      
+      logger.info("✅ Teacher notified about new student", {
+        teacherId: validatedTeacherId,
+        studentId: newStudent._id,
+        telegramSent,
+        notificationCreated: true
+      });
+    } catch (notifError) {
+      logger.error("❌ Failed to notify teacher", {
+        teacherId: validatedTeacherId,
+        error: notifError.message,
+        stack: notifError.stack
+      });
+      // Don't fail registration if notification fails
+    }
+  } else {
+    logger.warn("⚠️ No teacherId provided - notification not sent");
+  }
+
   // Get device info
   const deviceInfo = parseDeviceInfo(req.headers['user-agent']);
   const deviceFingerprint = createDeviceFingerprint(req);

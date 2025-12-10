@@ -192,6 +192,13 @@ async function renderTeacherDashboard(user) {
           <h2 id="page-title">${t('dashboard.title')}</h2>
         </div>
         <div class="figma-header-buttons">
+          <button class="figma-btn figma-notification-btn" onclick="openNotificationsPage()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+            </svg>
+            <span class="notification-text">Notification</span>
+            <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+          </button>
           <button class="figma-btn" onclick="startNewMeeting()">${t('header.newMeeting')}</button>
           <button class="figma-btn" onclick="openTelegramBot()">${t('header.telegramBot')}</button>
           <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">${t('header.newCourse')}</button>
@@ -20875,3 +20882,70 @@ window.handleLogout = function() {
   // Navigate to login page
   router.navigate('/login');
 };
+
+// Open notifications page
+window.openNotificationsPage = async function() {
+  try {
+    // Load notifications page
+    const { loadNotificationsPage } = await import('../student/notifications.js');
+    await loadNotificationsPage();
+    
+    // Update badge after opening
+    setTimeout(() => {
+      loadNotificationCount();
+    }, 1000);
+  } catch (error) {
+    console.error('Error loading notifications page:', error);
+  }
+};
+
+// Load notification count
+window.loadNotificationCount = async function() {
+  try {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const userId = currentUser._id;
+    
+    if (!userId) return;
+
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const token = localStorage.getItem('accessToken');
+    
+    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}?unreadOnly=true`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      updateNotificationBadge(data.unreadCount || 0);
+    }
+  } catch (error) {
+    console.error('Error loading notification count:', error);
+  }
+};
+
+// Update notification badge
+window.updateNotificationBadge = function(count) {
+  const badge = document.getElementById('notification-badge');
+  if (badge) {
+    if (count > 0) {
+      badge.textContent = count > 99 ? '99+' : count;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+};
+
+// Load notification count on dashboard load
+setTimeout(() => {
+  loadNotificationCount();
+}, 1000);
+
+// Auto-refresh notifications every 30 seconds
+setInterval(() => {
+  if (localStorage.getItem('currentUser')) {
+    loadNotificationCount();
+  }
+}, 30000);

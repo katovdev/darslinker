@@ -1,15 +1,31 @@
-// Notifications page for students
+// Notifications page for students and teachers
 export async function loadNotificationsPage() {
-  const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
-  const userId = landingUser._id;
+  // Try to get user from multiple sources
+  let userId = null;
+  
+  // Try localStorage first (teacher dashboard)
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+  if (currentUser._id) {
+    userId = currentUser._id;
+  }
+  
+  // Fallback to sessionStorage (landing/student)
+  if (!userId) {
+    const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
+    userId = landingUser._id;
+  }
   
   if (!userId) {
-    showMessage('Please log in to view notifications', 'error');
+    console.error('No user ID found');
+    const mainContent = document.querySelector('.figma-content-area') || document.querySelector('.landing-dashboard-content');
+    if (mainContent) {
+      mainContent.innerHTML = '<div style="padding: 40px; text-align: center; color: #EF4444;">Please log in to view notifications</div>';
+    }
     return;
   }
 
-  // Get main content area
-  const mainContent = document.querySelector('.landing-dashboard-content');
+  // Get main content area (try both teacher and student dashboards)
+  const mainContent = document.querySelector('.figma-content-area') || document.querySelector('.landing-dashboard-content');
   if (!mainContent) {
     console.error('Main content area not found');
     return;
