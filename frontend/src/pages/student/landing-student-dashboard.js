@@ -816,7 +816,7 @@ export function renderLandingStudentDashboard() {
                 <path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
               </svg>
             </button>
-            <button class="landing-icon-btn landing-notification-btn" onclick="openNotifications()" style="position: relative;">
+            <button class="landing-icon-btn landing-notification-btn" onclick="openStudentNotifications()" style="position: relative;">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
               </svg>
@@ -1144,7 +1144,7 @@ async function loadNotificationCount() {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     
     // Fetch all notifications and count unread ones
-    const response = await fetch(`${apiBaseUrl}/notifications/user/${studentId}`, {
+    const response = await fetch(`${apiBaseUrl}/notifications/user/${studentId}?userType=Student`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -1472,3 +1472,112 @@ setTimeout(() => {
     });
   });
 }, 100);
+// Student notification function
+window.openStudentNotifications = async function() {
+  const userId = JSON.parse(sessionStorage.getItem('landingUser') || '{}')._id;
+  if (!userId) { 
+    alert('No user found'); 
+    return; 
+  }
+  
+  const content = document.querySelector('.landing-dashboard-content');
+  content.innerHTML = '<div style="padding: 40px; text-align: center; color: #7ea2d4; font-size: 18px;">Loading notifications...</div>';
+  
+  try {
+    const response = await fetch('http://localhost:8001/api/notifications/user/' + userId + '?userType=Student');
+    const data = await response.json();
+    
+    if (data.success) {
+      const notifs = data.notifications || [];
+      const unreadCount = notifs.filter(n => !n.read).length;
+      
+      let notificationCards = '';
+      if (notifs.length > 0) {
+        notificationCards = notifs.map(n => {
+          const isUnread = !n.read;
+          const date = new Date(n.createdAt);
+          const now = new Date();
+          const diffMs = now - date;
+          const diffMins = Math.floor(diffMs / 60000);
+          const diffHours = Math.floor(diffMs / 3600000);
+          const diffDays = Math.floor(diffMs / 86400000);
+          
+          let timeAgo = 'Just now';
+          if (diffMins >= 1 && diffMins < 60) {
+            timeAgo = diffMins + ' minute' + (diffMins > 1 ? 's' : '') + ' ago';
+          } else if (diffHours >= 1 && diffHours < 24) {
+            timeAgo = diffHours + ' hour' + (diffHours > 1 ? 's' : '') + ' ago';
+          } else if (diffDays >= 1) {
+            timeAgo = diffDays + ' day' + (diffDays > 1 ? 's' : '') + ' ago';
+          }
+          
+          return `
+            <div onclick="markAsRead('${n._id}')" 
+                 style="background: ${isUnread ? 'rgba(126, 162, 212, 0.1)' : 'rgba(58, 56, 56, 0.3)'}; 
+                        border: 1px solid rgba(126, 162, 212, 0.2); 
+                        border-radius: 12px; 
+                        padding: 20px; 
+                        cursor: pointer; 
+                        transition: all 0.2s; 
+                        ${isUnread ? 'border-left: 4px solid var(--primary-color);' : ''}" 
+                 id="notif-${n._id}"
+                 onmouseover="this.style.background='rgba(58, 56, 56, 0.5)'"
+                 onmouseout="this.style.background='${isUnread ? 'rgba(126, 162, 212, 0.1)' : 'rgba(58, 56, 56, 0.3)'}'">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                <div style="font-weight: 600; font-size: 16px; color: #ffffff;">${n.title}</div>
+                ${isUnread ? '<div style="width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; margin-top: 4px;"></div>' : ''}
+              </div>
+              <div style="font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.5; margin-bottom: 10px;">${n.message}</div>
+              <div style="font-size: 12px; color: rgba(255,255,255,0.5);">${timeAgo}</div>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      content.innerHTML = `
+        <div style="padding: 30px; max-width: 1200px; margin: 0 auto; width: 100%;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div>
+              <h2 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Notifications</h2>
+              <p style="color: rgba(255,255,255,0.7); margin: 5px 0 0 0; font-size: 14px;">
+                ${unreadCount > 0 ? unreadCount + ' unread notification' + (unreadCount > 1 ? 's' : '') : 'All caught up!'}
+              </p>
+            </div>
+            <button onclick="location.reload()" style="background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">← Back</button>
+          </div>
+          ${notifs.length === 0 ? 
+            `<div style="text-align: center; padding: 80px 20px; color: rgba(255,255,255,0.5);">
+              <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;">🔔</div>
+              <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.7);">No notifications yet</div>
+            </div>` : 
+            `<div style="display: flex; flex-direction: column; gap: 15px;">${notificationCards}</div>`
+          }
+        </div>
+      `;
+      
+      document.getElementById('notification-badge').style.display = 'none';
+    }
+  } catch (e) {
+    content.innerHTML = '<div style="padding: 40px; text-align: center; color: #EF4444;">Error loading notifications</div>';
+  }
+};
+
+// Mark notification as read
+window.markAsRead = function(notificationId) {
+  fetch('http://localhost:8001/api/notifications/' + notificationId + '/read', {
+    method: 'PATCH'
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      const notifElement = document.getElementById('notif-' + notificationId);
+      if (notifElement) {
+        notifElement.style.background = 'rgba(58, 56, 56, 0.3)';
+        notifElement.style.borderLeft = 'none';
+        const dot = notifElement.querySelector('div[style*="width: 8px"]');
+        if (dot) dot.remove();
+      }
+    }
+  })
+  .catch(e => {});
+};
