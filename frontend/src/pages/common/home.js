@@ -1483,25 +1483,14 @@ function initFooterNavigation() {
   });
 }
 
-
 // Initialize mobile menu functionality
 function initMobileMenu() {
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const navMenu = document.getElementById('navMenu');
   
-  if (!mobileMenuBtn || !navMenu) {
-    console.log('Mobile menu elements not found');
-    return;
-  }
+  if (!mobileMenuBtn || !navMenu) return;
 
-  console.log('Mobile menu initialized');
-
-  mobileMenuBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    console.log('Mobile menu button clicked');
-    
+  mobileMenuBtn.addEventListener('click', function() {
     // Toggle mobile menu
     navMenu.classList.toggle('mobile-open');
     mobileMenuBtn.classList.toggle('active');
@@ -1509,10 +1498,8 @@ function initMobileMenu() {
     // Prevent body scroll when menu is open
     if (navMenu.classList.contains('mobile-open')) {
       document.body.style.overflow = 'hidden';
-      console.log('Mobile menu opened');
     } else {
       document.body.style.overflow = '';
-      console.log('Mobile menu closed');
     }
   });
 
@@ -1523,22 +1510,12 @@ function initMobileMenu() {
       navMenu.classList.remove('mobile-open');
       mobileMenuBtn.classList.remove('active');
       document.body.style.overflow = '';
-      console.log('Mobile menu closed via nav item');
     });
   });
 
   // Close mobile menu when clicking outside
   document.addEventListener('click', function(e) {
     if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-      navMenu.classList.remove('mobile-open');
-      mobileMenuBtn.classList.remove('active');
-      document.body.style.overflow = '';
-    }
-  });
-
-  // Handle window resize
-  window.addEventListener('resize', function() {
-    if (window.innerWidth > 768) {
       navMenu.classList.remove('mobile-open');
       mobileMenuBtn.classList.remove('active');
       document.body.style.overflow = '';
