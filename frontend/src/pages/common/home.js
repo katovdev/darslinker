@@ -18,18 +18,11 @@ export function initHomePage() {
     <!-- Header -->
     <header class="header">
       <div class="container">
-        <!-- Mobile Menu Button -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn">
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-        </button>
-
         <div class="nav-brand">
           <img src="/images/darslinker.png" alt="Dars Linker" class="logo" />
         </div>
 
-        <nav class="nav-menu" id="navMenu">
+        <nav class="nav-menu">
           <a href="#" class="nav-item">Asosiy</a>
           <a href="#" class="nav-item">Ma'lumot</a>
           <a href="#" class="nav-item">Tariflar</a>
@@ -762,9 +755,6 @@ export function initHomePage() {
   // Initialize navigation
   initNavigation();
 
-  // Initialize mobile menu
-  initMobileMenu();
-
   // Update store
   store.setState({ currentPage: 'home' });
 }
@@ -1480,45 +1470,5 @@ function initFooterNavigation() {
         }
       }, 100);
     });
-  });
-}
-
-// Initialize mobile menu functionality
-function initMobileMenu() {
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const navMenu = document.getElementById('navMenu');
-  
-  if (!mobileMenuBtn || !navMenu) return;
-
-  mobileMenuBtn.addEventListener('click', function() {
-    // Toggle mobile menu
-    navMenu.classList.toggle('mobile-open');
-    mobileMenuBtn.classList.toggle('active');
-    
-    // Prevent body scroll when menu is open
-    if (navMenu.classList.contains('mobile-open')) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-  });
-
-  // Close mobile menu when clicking on nav items
-  const navItems = navMenu.querySelectorAll('.nav-item');
-  navItems.forEach(item => {
-    item.addEventListener('click', function() {
-      navMenu.classList.remove('mobile-open');
-      mobileMenuBtn.classList.remove('active');
-      document.body.style.overflow = '';
-    });
-  });
-
-  // Close mobile menu when clicking outside
-  document.addEventListener('click', function(e) {
-    if (!navMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-      navMenu.classList.remove('mobile-open');
-      mobileMenuBtn.classList.remove('active');
-      document.body.style.overflow = '';
-    }
   });
 }
