@@ -106,13 +106,24 @@ export const submitLessonAssignment = catchAsync(async (req, res) => {
 
   // Notify teacher about new submission
   try {
+    logger.info('🔔 Creating teacher notification', {
+      teacherId,
+      teacherIdType: typeof teacherId,
+      submissionId: submission._id
+    });
+
+    // Get student information for the notification
+    const Student = (await import('../models/student.model.js')).default;
+    const student = await Student.findById(studentId).select('firstName lastName');
+    const studentName = student ? `${student.firstName} ${student.lastName}` : 'Talaba';
+
     const { createNotification } = await import('../services/notification.service.js');
-    await createNotification({
+    const notification = await createNotification({
       userId: teacherId,
       userType: 'Teacher',
       type: 'assignment_submitted',
       title: 'Yangi vazifa topshirildi',
-      message: `Talaba ${foundLesson.title} vazifasini topshirdi`,
+      message: `${studentName} "${foundLesson.title}" vazifasini topshirdi`,
       link: `/teacher/submissions`,
       metadata: {
         submissionId: submission._id,
@@ -121,9 +132,20 @@ export const submitLessonAssignment = catchAsync(async (req, res) => {
         studentId: studentId
       }
     });
-    logger.info('✅ Teacher notified about new submission', { teacherId, submissionId: submission._id });
+    
+    logger.info('✅ Teacher notification created successfully', { 
+      teacherId, 
+      submissionId: submission._id,
+      notificationId: notification._id,
+      studentName
+    });
   } catch (error) {
-    logger.error('❌ Failed to notify teacher', { error: error.message, teacherId });
+    logger.error('❌ Failed to notify teacher', { 
+      error: error.message, 
+      stack: error.stack,
+      teacherId,
+      submissionId: submission._id
+    });
     // Don't fail the submission if notification fails
   }
 
@@ -240,21 +262,42 @@ export const gradeSubmission = catchAsync(async (req, res) => {
     .populate('lessonId', 'title');
 
   // Create notification for student
-  const { createNotification } = await import('./notification.controller.js');
-  await createNotification({
-    userId: submission.studentId,
-    userType: 'Student',
-    type: 'assignment_graded',
-    title: 'Assignment Graded',
-    message: `Your assignment "${submission.lessonTitle || populatedSubmission.lessonId?.title || 'Assignment'}" has been graded. Grade: ${grade}%`,
-    link: `/course/${submission.courseId}/lesson/${submission.lessonId}`,
-    metadata: {
-      assignmentId: id,
-      courseId: submission.courseId,
-      lessonId: submission.lessonId,
-      grade: grade
-    }
-  });
+  try {
+    logger.info('🔔 Creating student notification for graded assignment', {
+      studentId: submission.studentId,
+      submissionId: id,
+      grade
+    });
+
+    const { createNotification } = await import('../services/notification.service.js');
+    const notification = await createNotification({
+      userId: submission.studentId,
+      userType: 'Student',
+      type: 'assignment_graded',
+      title: 'Assignment Graded',
+      message: `Your assignment "${submission.lessonTitle || populatedSubmission.lessonId?.title || 'Assignment'}" has been graded. Grade: ${grade}%`,
+      link: `/course/${submission.courseId}/lesson/${submission.lessonId}`,
+      metadata: {
+        assignmentId: id,
+        courseId: submission.courseId,
+        lessonId: submission.lessonId,
+        grade: grade
+      }
+    });
+
+    logger.info('✅ Student notification created successfully', { 
+      studentId: submission.studentId, 
+      submissionId: id,
+      notificationId: notification._id
+    });
+  } catch (error) {
+    logger.error('❌ Failed to notify student', { 
+      error: error.message, 
+      stack: error.stack,
+      studentId: submission.studentId,
+      submissionId: id
+    });
+  }
 
   logger.info('Submission graded', {
     submissionId: id,

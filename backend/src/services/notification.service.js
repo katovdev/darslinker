@@ -14,6 +14,13 @@ import logger from '../../config/logger.js';
  */
 export async function createNotification(data) {
   try {
+    logger.info('🔔 Creating notification', {
+      userId: data.userId,
+      userType: data.userType,
+      type: data.type,
+      title: data.title
+    });
+
     const notification = await Notification.create({
       userId: data.userId,
       userType: data.userType,
@@ -24,17 +31,21 @@ export async function createNotification(data) {
       metadata: data.metadata || {}
     });
 
-    logger.info('Notification created', {
+    logger.info('✅ Notification created successfully', {
       notificationId: notification._id,
       userId: data.userId,
+      userType: data.userType,
       type: data.type
     });
 
     return notification;
   } catch (error) {
-    logger.error('Error creating notification', {
+    logger.error('❌ Error creating notification', {
       error: error.message,
-      userId: data.userId
+      stack: error.stack,
+      userId: data.userId,
+      userType: data.userType,
+      type: data.type
     });
     throw error;
   }

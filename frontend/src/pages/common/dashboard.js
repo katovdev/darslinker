@@ -20922,10 +20922,11 @@ window.loadNotificationCount = async function() {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    console.log('🌐 Making API call to:', `${apiBaseUrl}/notifications/user/${userId}?unreadOnly=true&userType=${userType}`);
+    const url = `${apiBaseUrl}/notifications/user/${userId}?unreadOnly=true&userType=${userType}`;
+    console.log('🌐 Making API call to:', url);
     console.log('🔐 Headers:', headers);
 
-    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}?unreadOnly=true&userType=${userType}`, {
+    const response = await fetch(url, {
       headers
     });
 

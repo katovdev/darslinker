@@ -5,7 +5,7 @@ export async function loadNotificationsPage() {
   
   // Try localStorage first (teacher dashboard)
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-  if (currentUser._id) {
+  if (currentUser._id && currentUser.role === 'teacher') {
     userId = currentUser._id;
   }
   
@@ -44,11 +44,13 @@ export async function loadNotificationsPage() {
     let userType = 'Student'; // Default
     let token = null;
 
-    if (teacherUser._id) {
+    if (teacherUser._id && teacherUser.role === 'teacher') {
       userType = 'Teacher';
       token = localStorage.getItem('accessToken');
+      userId = teacherUser._id;
     } else if (studentUser._id) {
       userType = 'Student';
+      userId = studentUser._id;
     }
 
     const headers = {};

@@ -23,7 +23,7 @@ export const getUserNotifications = catchAsync(async (req, res) => {
   console.log('🔍 Notification query:', query);
 
   const notifications = await Notification.find(query)
-    .sort({ createdAt: -1 })
+    .sort({ createdAt: -1, _id: -1 })
     .limit(50);
 
   const unreadCount = await Notification.countDocuments({
