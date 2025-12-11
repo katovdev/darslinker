@@ -104,6 +104,29 @@ export const submitLessonAssignment = catchAsync(async (req, res) => {
 
   await submission.save();
 
+  // Notify teacher about new submission
+  try {
+    const { createNotification } = await import('../services/notification.service.js');
+    await createNotification({
+      userId: teacherId,
+      userType: 'Teacher',
+      type: 'assignment_submitted',
+      title: 'Yangi vazifa topshirildi',
+      message: `Talaba ${foundLesson.title} vazifasini topshirdi`,
+      link: `/teacher/submissions`,
+      metadata: {
+        submissionId: submission._id,
+        courseId: courseId,
+        lessonId: lessonId,
+        studentId: studentId
+      }
+    });
+    logger.info('✅ Teacher notified about new submission', { teacherId, submissionId: submission._id });
+  } catch (error) {
+    logger.error('❌ Failed to notify teacher', { error: error.message, teacherId });
+    // Don't fail the submission if notification fails
+  }
+
   // Populate for response
   const populatedSubmission = await Submission.findById(submission._id)
     .populate('studentId', 'firstName lastName email')

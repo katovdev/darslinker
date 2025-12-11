@@ -5,20 +5,23 @@ import logger from '../../config/logger.js';
  * Create a new notification
  * @param {Object} data - Notification data
  * @param {string} data.userId - User ID to receive notification
+ * @param {string} data.userType - User type (Student or Teacher)
  * @param {string} data.type - Notification type
  * @param {string} data.title - Notification title
  * @param {string} data.message - Notification message
- * @param {Object} data.data - Additional data
+ * @param {string} data.link - Optional link
+ * @param {Object} data.metadata - Additional metadata
  */
 export async function createNotification(data) {
   try {
     const notification = await Notification.create({
       userId: data.userId,
+      userType: data.userType,
       type: data.type,
       title: data.title,
       message: data.message,
-      data: data.data || {},
-      read: false
+      link: data.link,
+      metadata: data.metadata || {}
     });
 
     logger.info('Notification created', {

@@ -36,7 +36,31 @@ export async function loadNotificationsPage() {
 
   try {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}`);
+
+    // Determine user type based on where user data is stored
+    const teacherUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const studentUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
+
+    let userType = 'Student'; // Default
+    let token = null;
+
+    if (teacherUser._id) {
+      userType = 'Teacher';
+      token = localStorage.getItem('accessToken');
+    } else if (studentUser._id) {
+      userType = 'Student';
+    }
+
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    console.log('🔔 Loading notifications for:', { userId, userType });
+
+    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}?userType=${userType}`, {
+      headers
+    });
     const data = await response.json();
 
     if (!data.success) {

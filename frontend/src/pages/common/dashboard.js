@@ -197,7 +197,7 @@ async function renderTeacherDashboard(user) {
               <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
             </svg>
             <span class="notification-text">Notification</span>
-            <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
+            <span class="notification-badge" id="notification-badge" style="display: none;"></span>
           </button>
           <button class="figma-btn" onclick="startNewMeeting()">${t('header.newMeeting')}</button>
           <button class="figma-btn" onclick="openTelegramBot()">${t('header.telegramBot')}</button>
@@ -399,6 +399,49 @@ async function renderTeacherDashboard(user) {
         </div>
       </div>
     </div>
+
+    <style>
+      /* Notification badge styles */
+      .figma-notification-btn {
+        position: relative;
+        display: flex !important;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .notification-badge {
+        position: absolute !important;
+        top: -6px !important;
+        right: -6px !important;
+        background: var(--primary-color, #7ea2d4) !important;
+        color: #ffffff !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        padding: 2px 6px !important;
+        border-radius: 10px !important;
+        min-width: 16px !important;
+        height: 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+        border: 1px solid #232323 !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+        z-index: 10 !important;
+      }
+
+      .notification-text {
+        color: currentColor !important;
+        font-size: 14px !important;
+      }
+
+      /* Hide notification text on smaller screens */
+      @media (max-width: 768px) {
+        .notification-text {
+          display: none !important;
+        }
+      }
+    </style>
   `;
 
   // Load dashboard data from API
@@ -408,6 +451,12 @@ async function renderTeacherDashboard(user) {
 
   // Set up event listeners
   setupTeacherEventListeners();
+
+  // Load notification count after dashboard renders
+  setTimeout(() => {
+    console.log('🎯 Dashboard rendered, loading notification count...');
+    loadNotificationCount();
+  }, 100);
 }
 
 function renderStudentDashboard(user) {
@@ -20809,52 +20858,93 @@ window.markAllNotificationsRead = async function(userId) {
   }
 };
 
-// Update notification badge
+// Update notification badge - single unified function
 window.updateNotificationBadge = function(count) {
+  console.log('🔔 updateNotificationBadge called with count:', count);
   const badge = document.getElementById('notification-badge');
+  console.log('🎯 Badge element found:', !!badge);
+
   if (badge) {
     if (count > 0) {
       badge.textContent = count > 99 ? '99+' : count;
       badge.style.display = 'flex';
+      console.log('✅ Badge updated - showing count:', badge.textContent);
     } else {
       badge.style.display = 'none';
+      console.log('❌ Badge hidden (count is 0)');
     }
+  } else {
+    console.error('❌ Badge element not found!');
   }
 };
 
-// Load notification count on page load
+// Load notification count - unified function for both teachers and students
 window.loadNotificationCount = async function() {
   try {
-    const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
-    const userId = landingUser._id;
-    
-    if (!userId) return;
+    console.log('🔄 Loading notification count...');
 
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}?unreadOnly=true`);
-    const data = await response.json();
+    // Check for teacher user (localStorage) first, then student user (sessionStorage)
+    const teacherUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const studentUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
 
-    if (data.success) {
-      updateNotificationBadge(data.unreadCount || 0);
+    console.log('👤 User data check:', {
+      teacherUser: teacherUser,
+      studentUser: studentUser,
+      hasTeacherId: !!teacherUser._id,
+      hasStudentId: !!studentUser._id
+    });
+
+    let userId = null;
+    let token = null;
+    let userType = null;
+
+    if (teacherUser._id) {
+      userId = teacherUser._id;
+      token = localStorage.getItem('accessToken');
+      userType = 'Teacher';
+    } else if (studentUser._id) {
+      userId = studentUser._id;
+      userType = 'Student';
     }
 
+    console.log('🆔 Resolved user info:', { userId, userType, hasToken: !!token });
+
+    if (!userId) {
+      console.log('❌ No user found for notifications');
+      return;
+    }
+
+    console.log('🔔 Loading notifications for:', { userId, userType });
+
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    console.log('🌐 Making API call to:', `${apiBaseUrl}/notifications/user/${userId}?unreadOnly=true&userType=${userType}`);
+    console.log('🔐 Headers:', headers);
+
+    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}?unreadOnly=true&userType=${userType}`, {
+      headers
+    });
+
+    console.log('📡 Response status:', response.status);
+    const data = await response.json();
+    console.log('📊 API response data:', data);
+
+    if (data.success) {
+      const unreadCount = data.unreadCount || 0;
+      console.log('✅ Updating badge with count:', unreadCount);
+      updateNotificationBadge(unreadCount);
+      console.log('📊 Notification count updated:', unreadCount);
+    } else {
+      console.log('❌ API returned error, keeping badge hidden');
+    }
   } catch (error) {
     console.error('Error loading notification count:', error);
   }
 };
-
-// Auto-refresh notifications every 30 seconds
-setInterval(() => {
-  if (sessionStorage.getItem('landingUser')) {
-    loadNotificationCount();
-  }
-}, 30000);
-
-// Load notification count on page load
-setTimeout(() => {
-  loadNotificationCount();
-}, 1000);
-
 
 // Override openNotifications to load page instead of modal
 const originalOpenNotifications = window.openNotifications;
@@ -20871,81 +20961,37 @@ window.openNotifications = async function() {
   }
 };
 
-// Logout function
-window.handleLogout = function() {
-  // Clear all localStorage
-  localStorage.clear();
-  
-  // Clear all sessionStorage
-  sessionStorage.clear();
-  
-  // Navigate to login page
-  router.navigate('/login');
-};
-
 // Open notifications page
 window.openNotificationsPage = async function() {
   try {
     // Load notifications page
     const { loadNotificationsPage } = await import('../student/notifications.js');
     await loadNotificationsPage();
-    
-    // Update badge after opening
-    setTimeout(() => {
-      loadNotificationCount();
-    }, 1000);
+
+    // Badge update is handled by loadNotificationsPage itself, no need to call loadNotificationCount again
   } catch (error) {
     console.error('Error loading notifications page:', error);
   }
 };
 
-// Load notification count
-window.loadNotificationCount = async function() {
-  try {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    const userId = currentUser._id;
-    
-    if (!userId) return;
+// Logout function
+window.handleLogout = function() {
+  // Clear all localStorage
+  localStorage.clear();
 
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    const token = localStorage.getItem('accessToken');
-    
-    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}?unreadOnly=true`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    const data = await response.json();
+  // Clear all sessionStorage
+  sessionStorage.clear();
 
-    if (data.success) {
-      updateNotificationBadge(data.unreadCount || 0);
-    }
-  } catch (error) {
-    console.error('Error loading notification count:', error);
-  }
+  // Navigate to login page
+  router.navigate('/login');
 };
 
-// Update notification badge
-window.updateNotificationBadge = function(count) {
-  const badge = document.getElementById('notification-badge');
-  if (badge) {
-    if (count > 0) {
-      badge.textContent = count > 99 ? '99+' : count;
-      badge.style.display = 'flex';
-    } else {
-      badge.style.display = 'none';
-    }
-  }
-};
-
-// Load notification count on dashboard load
-setTimeout(() => {
-  loadNotificationCount();
-}, 1000);
+// Removed old setTimeout - notification count now loads in renderTeacherDashboard
 
 // Auto-refresh notifications every 30 seconds
 setInterval(() => {
-  if (localStorage.getItem('currentUser')) {
+  // Check if either teacher or student is logged in
+  if (localStorage.getItem('currentUser') || sessionStorage.getItem('landingUser')) {
     loadNotificationCount();
   }
 }, 30000);

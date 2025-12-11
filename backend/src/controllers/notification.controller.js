@@ -7,18 +7,32 @@ import { NotFoundError } from '../utils/error.utils.js';
  */
 export const getUserNotifications = catchAsync(async (req, res) => {
   const { userId } = req.params;
-  const { unreadOnly } = req.query;
+  const { unreadOnly, userType } = req.query;
 
   const query = { userId };
+
+  // Add userType filter if provided
+  if (userType) {
+    query.userType = userType;
+  }
+
   if (unreadOnly === 'true') {
     query.read = false;
   }
+
+  console.log('🔍 Notification query:', query);
 
   const notifications = await Notification.find(query)
     .sort({ createdAt: -1 })
     .limit(50);
 
-  const unreadCount = await Notification.countDocuments({ userId, read: false });
+  const unreadCount = await Notification.countDocuments({
+    userId,
+    read: false,
+    ...(userType && { userType })
+  });
+
+  console.log('📊 Found notifications:', { count: notifications.length, unreadCount });
 
   res.status(200).json({
     success: true,

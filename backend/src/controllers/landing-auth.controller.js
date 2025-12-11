@@ -233,10 +233,11 @@ const verifyAndRegister = catchAsync(async (req, res) => {
       logger.info("💾 Creating in-app notification...");
       const notification = await createNotification({
         userId: validatedTeacherId,
+        userType: 'Teacher',
         type: 'new_student',
         title: 'Yangi o\'quvchi',
         message: `${newStudent.firstName} ${newStudent.lastName} ro'yxatdan o'tdi`,
-        data: {
+        metadata: {
           studentId: newStudent._id,
           studentName: `${newStudent.firstName} ${newStudent.lastName}`
         }
