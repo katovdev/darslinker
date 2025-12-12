@@ -14739,28 +14739,28 @@ window.openMyCourses = async function() {
                 <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                 </svg>
-                <input type="text" id="courseSearchInput" placeholder="Search courses..." oninput="searchCourses()">
+                <input type="text" id="courseSearchInput" placeholder="${t('myCourses.searchPlaceholder')}" oninput="searchCourses()">
               </div>
             </div>
             <div class="sort-section">
               <select id="courseSortSelect" onchange="sortCourses()">
-                <option value="newest">Newest first</option>
-                <option value="oldest">Oldest first</option>
-                <option value="name-asc">Name A-Z</option>
-                <option value="name-desc">Name Z-A</option>
+                <option value="newest">${t('myCourses.newestFirst')}</option>
+                <option value="oldest">${t('myCourses.oldestFirst')}</option>
+                <option value="name-asc">${t('myCourses.nameAZ')}</option>
+                <option value="name-desc">${t('myCourses.nameZA')}</option>
               </select>
-              <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()" style="margin-left: 15px;">+ Add Course</button>
+              <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()" style="margin-left: 15px;">+ ${t('myCourses.addCourse')}</button>
             </div>
           </div>
 
           <!-- Statistics Cards -->
           <div class="stats-cards-grid" id="courseStatsCards">
             <div class="stat-card">
-              <div class="stat-card-label">Total courses</div>
+              <div class="stat-card-label">${t('myCourses.totalCourses')}</div>
               <div class="stat-card-value" id="totalCoursesCount">0</div>
             </div>
             <div class="stat-card">
-              <div class="stat-card-label">Total enrolled</div>
+              <div class="stat-card-label">${t('myCourses.totalEnrolled')}</div>
               <div class="stat-card-value" id="totalEnrolledCount">0</div>
             </div>
             <div class="stat-card">
@@ -14768,24 +14768,24 @@ window.openMyCourses = async function() {
               <div class="stat-card-value" id="totalRevenueAmount">$0</div>
             </div>
             <div class="stat-card">
-              <div class="stat-card-label">Live now</div>
+              <div class="stat-card-label">${t('myCourses.liveNow')}</div>
               <div class="stat-card-value" id="liveStudentsCount">0</div>
             </div>
           </div>
 
           <!-- Course Filter Tabs -->
           <div class="course-filter-tabs" id="courseFilterTabs">
-            <button class="filter-tab active" data-filter="active" onclick="filterCourses('active')">Active</button>
-            <button class="filter-tab" data-filter="draft" onclick="filterCourses('draft')">Draft</button>
-            <button class="filter-tab" data-filter="archived" onclick="filterCourses('archived')">Archived</button>
-            <button class="filter-tab" data-filter="free" onclick="filterCourses('free')">Free</button>
-            <button class="filter-tab" data-filter="paid" onclick="filterCourses('paid')">Paid</button>
-            <button class="filter-tab" data-filter="all" onclick="filterCourses('all')">All</button>
+            <button class="filter-tab active" data-filter="active" onclick="filterCourses('active')">${t('myCourses.active')}</button>
+            <button class="filter-tab" data-filter="draft" onclick="filterCourses('draft')">${t('myCourses.draft')}</button>
+            <button class="filter-tab" data-filter="archived" onclick="filterCourses('archived')">${t('myCourses.archived')}</button>
+            <button class="filter-tab" data-filter="free" onclick="filterCourses('free')">${t('myCourses.free')}</button>
+            <button class="filter-tab" data-filter="paid" onclick="filterCourses('paid')">${t('myCourses.paid')}</button>
+            <button class="filter-tab" data-filter="all" onclick="filterCourses('all')">${t('myCourses.all')}</button>
           </div>
 
           <!-- Course Cards Grid -->
           <div class="my-courses-grid" id="myCoursesGrid">
-            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">Loading courses...</div>
+            <div style="text-align: center; padding: 40px; color: var(--text-secondary);">${t('myCourses.loading')}</div>
           </div>
   `;
 
@@ -16012,7 +16012,7 @@ window.openAssignmentsPage = async function() {
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
-    pageTitle.textContent = 'Assignments';
+    pageTitle.textContent = t('sidebar.assignments');
   }
 
   // Add assignments-page class to content area
@@ -16021,7 +16021,7 @@ window.openAssignmentsPage = async function() {
   // Show loading state first
   contentArea.innerHTML = `
     <div style="display: flex; justify-content: center; align-items: center; height: 400px; color: var(--primary-color); font-size: 18px;">
-      <div>Loading assignments...</div>
+      <div>${t('assignments.loading')}</div>
     </div>
   `;
 
@@ -16468,14 +16468,14 @@ window.openAssignmentsPage = async function() {
           <!-- Course Filter Section -->
           <div class="course-filter-section">
             <div class="course-filter-left">
-              <span class="course-filter-label">Filter by Course:</span>
+              <span class="course-filter-label">${t('assignments.filterByCourse')}:</span>
               <select class="course-select" id="courseFilterSelect" onchange="filterAssignmentsByCourse(this.value)">
-                <option value="all">All Courses</option>
+                <option value="all">${t('assignments.allCourses')}</option>
                 ${courseOptions}
               </select>
             </div>
             <div class="assignment-counter" id="assignment-counter">
-              Showing ${totalAssignments} assignments from all courses
+              ${t('assignments.showing')} ${totalAssignments} ${t('assignments.assignmentsFromAllCourses')}
             </div>
           </div>
 
@@ -19387,19 +19387,19 @@ function updateCoursesStatistics() {
 
   statsContainer.innerHTML = `
     <div class="stat-card-my-courses">
-      <h3>Total courses</h3>
+      <h3>${t('myCourses.totalCourses')}</h3>
       <div class="stat-number">${stats.totalCourses}</div>
     </div>
     <div class="stat-card-my-courses">
-      <h3>Total enrolled</h3>
+      <h3>${t('myCourses.totalEnrolled')}</h3>
       <div class="stat-number">${stats.totalStudents.toLocaleString()}</div>
     </div>
     <div class="stat-card-my-courses">
-      <h3>Total revenue</h3>
+      <h3>${t('finance.totalRevenue')}</h3>
       <div class="stat-number">$${stats.totalRevenue.toLocaleString()}</div>
     </div>
     <div class="stat-card-my-courses">
-      <h3>Live now</h3>
+      <h3>${t('myCourses.liveNow')}</h3>
       <div class="stat-number">${stats.activeStudents}</div>
     </div>
   `;
@@ -19448,12 +19448,12 @@ function updateFilterTabs() {
   if (!tabsContainer) return;
 
   tabsContainer.innerHTML = `
-    <button class="filter-tab active" data-filter="active" onclick="filterCoursesByTab(this, 'active')">Active (${counts.active})</button>
-    <button class="filter-tab" data-filter="draft" onclick="filterCoursesByTab(this, 'draft')">Draft (${counts.draft})</button>
-    <button class="filter-tab" data-filter="archived" onclick="filterCoursesByTab(this, 'archived')">Archived (${counts.archived})</button>
-    <button class="filter-tab" data-filter="free" onclick="filterCoursesByTab(this, 'free')">Free (${counts.free})</button>
-    <button class="filter-tab" data-filter="paid" onclick="filterCoursesByTab(this, 'paid')">Paid (${counts.paid})</button>
-    <button class="filter-tab" data-filter="all" onclick="filterCoursesByTab(this, 'all')">All courses (${counts.all})</button>
+    <button class="filter-tab active" data-filter="active" onclick="filterCoursesByTab(this, 'active')">${t('myCourses.active')} (${counts.active})</button>
+    <button class="filter-tab" data-filter="draft" onclick="filterCoursesByTab(this, 'draft')">${t('myCourses.draft')} (${counts.draft})</button>
+    <button class="filter-tab" data-filter="archived" onclick="filterCoursesByTab(this, 'archived')">${t('myCourses.archived')} (${counts.archived})</button>
+    <button class="filter-tab" data-filter="free" onclick="filterCoursesByTab(this, 'free')">${t('myCourses.free')} (${counts.free})</button>
+    <button class="filter-tab" data-filter="paid" onclick="filterCoursesByTab(this, 'paid')">${t('myCourses.paid')} (${counts.paid})</button>
+    <button class="filter-tab" data-filter="all" onclick="filterCoursesByTab(this, 'all')">${t('myCourses.allCourses')} (${counts.all})</button>
   `;
 }
 
@@ -20198,8 +20198,8 @@ function renderMyCoursesCards(courses) {
           <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
           <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
         </svg>
-        <h3 style="margin-bottom: 12px; font-size: 20px; font-weight: 600; color: var(--text-primary);">No courses yet</h3>
-        <p style="margin-bottom: 24px; opacity: 0.7; font-size: 15px;">Create your first course to get started</p>
+        <h3 style="margin-bottom: 12px; font-size: 20px; font-weight: 600; color: var(--text-primary);">${t('myCourses.noCoursesYet')}</h3>
+        <p style="margin-bottom: 24px; opacity: 0.7; font-size: 15px;">${t('myCourses.createFirstCourse')}</p>
         <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">${t('sidebar.createCourse')}</button>
       </div>
     `;
@@ -20223,33 +20223,33 @@ function renderMyCoursesCards(courses) {
         <div class="course-stats-grid-modern">
           <div class="stat-item-modern">
             <div class="stat-value-modern">${course.totalStudents || 0}</div>
-            <div class="stat-label-modern">Students</div>
+            <div class="stat-label-modern">${t('myCourses.students')}</div>
           </div>
           <div class="stat-item-modern">
             <div class="stat-value-modern">${course.rating || 0}</div>
-            <div class="stat-label-modern">Rating</div>
+            <div class="stat-label-modern">${t('myCourses.rating')}</div>
           </div>
           <div class="stat-item-modern">
             <div class="stat-value-modern">${course.totalLessons || 0}</div>
-            <div class="stat-label-modern">Lessons</div>
+            <div class="stat-label-modern">${t('myCourses.lessons')}</div>
           </div>
           <div class="stat-item-modern">
-            <div class="stat-value-modern">${course.price > 0 ? course.price.toLocaleString('uz-UZ') + ' UZS' : 'Bepul'}</div>
-            <div class="stat-label-modern">Price</div>
+            <div class="stat-value-modern">${course.price > 0 ? course.price.toLocaleString('uz-UZ') + ' UZS' : t('myCourses.free')}</div>
+            <div class="stat-label-modern">${t('myCourses.price')}</div>
           </div>
         </div>
         
         <!-- Revenue -->
         <div class="course-revenue-modern">
-          <span class="revenue-label-modern">Revenue</span>
+          <span class="revenue-label-modern">${t('myCourses.revenue')}</span>
           <span class="revenue-amount-modern">$${(course.revenue || 0).toLocaleString()}</span>
         </div>
-        
+
         <!-- Actions -->
         <div class="course-actions-modern">
-          <button class="course-btn-modern" onclick="editCourse('${course._id}')">Edit</button>
-          <button class="course-btn-modern" onclick="viewCourseStats('${course._id}')">Stats</button>
-          <button class="course-btn-modern course-btn-delete-modern" onclick="deleteCourseConfirm('${course._id}', \`${course.title.replace(/`/g, '')}\`)">Delete</button>
+          <button class="course-btn-modern" onclick="editCourse('${course._id}')">${t('myCourses.edit')}</button>
+          <button class="course-btn-modern" onclick="viewCourseStats('${course._id}')">${t('myCourses.stats')}</button>
+          <button class="course-btn-modern course-btn-delete-modern" onclick="deleteCourseConfirm('${course._id}', \`${course.title.replace(/`/g, '')}\`)">${t('myCourses.delete')}</button>
         </div>
       </div>
     </div>
