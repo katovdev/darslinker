@@ -1,4 +1,6 @@
 // Assignment player page - DEPRECATED: Use renderAssignmentContent instead
+import { t } from '../../utils/i18n.js';
+
 export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
   console.log('📝 Loading assignment player:', lesson.title);
 
@@ -804,7 +806,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
           </svg>
-          <span class="logout-text">Log out</span>
+          <span class="logout-text">${t('header.logout')}</span>
         </button>
       </div>
     </header>
@@ -818,7 +820,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       <div class="assignment-content">
         <div class="assignment-container">
           <!-- Assignment Header -->
-          <h1 class="assignment-title">${lesson.title || 'Assignment'}</h1>
+          <h1 class="assignment-title">${lesson.title || t('assignment.title')}</h1>
           
           ${lesson.duration ? `
           <div class="assignment-meta">
@@ -839,7 +841,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
-              Instruction
+              ${t('assignment.instruction')}
             </h2>
             <div class="section-content">
               ${lesson.instructions}
@@ -854,7 +856,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/>
               </svg>
-              Attachments
+              ${t('assignment.attachments')}
             </h2>
             <div onclick="downloadFile('${lesson.fileUrl}', 'assignment_file')" class="file-attachment">
               <div class="file-icon">
@@ -863,8 +865,8 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
                 </svg>
               </div>
               <div class="file-info">
-                <div class="file-name">Assignment File</div>
-                <div class="file-size">Click to download</div>
+                <div class="file-name">${t('assignment.assignmentFile')}</div>
+                <div class="file-size">${t('assignment.clickToDownload')}</div>
               </div>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2">
                 <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
@@ -879,7 +881,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
               </svg>
-              Submit Your Work
+              ${t('assignment.submitYourWork')}
             </h2>
             <div class="submit-section" id="submitSection" onclick="chooseFile()" ondragover="handleDragOver(event)" ondrop="handleDrop(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
               <div class="upload-area">
@@ -888,11 +890,11 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
                     <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M12 12v9m0-9l-3 3m3-3l3 3"/>
                   </svg>
                 </div>
-                <div class="upload-text" id="uploadText">Drag and drop your file here</div>
-                <div class="upload-hint">or</div>
+                <div class="upload-text" id="uploadText">${t('assignment.dragDropFile')}</div>
+                <div class="upload-hint">${t('assignment.or')}</div>
               </div>
               <button class="upload-btn" onclick="chooseFile()">
-                Choose File
+                ${t('assignment.chooseFile')}
               </button>
               <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
               <div class="upload-progress" id="uploadProgress" style="display: none;">
@@ -905,10 +907,10 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
           <!-- Actions -->
           <div class="assignment-actions">
             <button class="btn btn-primary" id="submitBtn" onclick="submitAssignment()" disabled>
-              Submit Assignment
+              ${t('assignment.submitAssignment')}
             </button>
             <button class="btn btn-secondary" onclick="if(window.markCompleteAndGoNext && window.currentCourse && window.currentLesson) { window.markCompleteAndGoNext(window.currentCourse._id, window.currentLesson._id); } else { window.history.back(); }">
-              Keyingi dars →
+              ${t('assignment.nextLesson')}
             </button>
           </div>
         </div>

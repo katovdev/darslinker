@@ -16462,6 +16462,34 @@ window.openAssignmentsPage = async function() {
                 font-size: 13px !important;
               }
             }
+            
+            /* No Assignments Styles */
+            .no-assignments {
+              display: flex !important;
+              flex-direction: column !important;
+              align-items: center !important;
+              justify-content: center !important;
+              padding: 60px 20px !important;
+              text-align: center !important;
+              color: rgba(255, 255, 255, 0.6) !important;
+            }
+            .no-assignments-icon {
+              margin-bottom: 20px !important;
+              opacity: 0.5 !important;
+            }
+            .no-assignments h3 {
+              color: #ffffff !important;
+              font-size: 18px !important;
+              font-weight: 600 !important;
+              margin: 0 0 8px 0 !important;
+            }
+            .no-assignments p {
+              color: rgba(255, 255, 255, 0.7) !important;
+              font-size: 14px !important;
+              margin: 0 !important;
+              max-width: 400px !important;
+              line-height: 1.5 !important;
+            }
           </style>
 
 
@@ -16482,33 +16510,33 @@ window.openAssignmentsPage = async function() {
           <!-- Assignment Statistics Cards -->
           <div class="assignments-stats-grid">
             <div class="assignments-card" style="cursor: default;">
-              <h3 class="assignments-card-title">Total assignments</h3>
+              <h3 class="assignments-card-title">${t('assignments.totalAssignments')}</h3>
               <div class="assignments-card-amount">${totalAssignments}</div>
             </div>
             <div class="assignments-card" style="cursor: default;">
-              <h3 class="assignments-card-title">Pending Review</h3>
+              <h3 class="assignments-card-title">${t('assignments.pendingReview')}</h3>
               <div class="assignments-card-amount">${pendingAssignments}</div>
             </div>
             <div class="assignments-card" style="cursor: default;">
-              <h3 class="assignments-card-title">Graded</h3>
+              <h3 class="assignments-card-title">${t('assignments.graded')}</h3>
               <div class="assignments-card-amount">${gradedAssignments}</div>
             </div>
             <div class="assignments-card" style="cursor: default;">
-              <h3 class="assignments-card-title">Average grade</h3>
+              <h3 class="assignments-card-title">${t('assignments.averageGrade')}</h3>
               <div class="assignments-card-amount">${averageGrade}%</div>
             </div>
           </div>
 
           <!-- Assignment Filter Tabs -->
           <div class="assignment-tabs">
-            <div class="assignment-tab active" onclick="switchAssignmentTab(this, 'all')">All</div>
-            <div class="assignment-tab" onclick="switchAssignmentTab(this, 'pending')">Pending</div>
-            <div class="assignment-tab" onclick="switchAssignmentTab(this, 'graded')">Graded</div>
+            <div class="assignment-tab active" onclick="switchAssignmentTab(this, 'all')">${t('assignments.all')}</div>
+            <div class="assignment-tab" onclick="switchAssignmentTab(this, 'pending')">${t('assignments.pending')}</div>
+            <div class="assignment-tab" onclick="switchAssignmentTab(this, 'graded')">${t('assignments.graded')}</div>
           </div>
 
           <!-- Assignments Section -->
           <div class="assignments-section">
-            <h3 class="assignments-section-title">All assignments</h3>
+            <h3 class="assignments-section-title">${t('assignments.allAssignments')}</h3>
 
             <!-- Assignment Items -->
             ${submissions.length === 0 ? `
@@ -16518,8 +16546,8 @@ window.openAssignmentsPage = async function() {
                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                   </svg>
                 </div>
-                <h3>No assignments yet</h3>
-                <p>Assignment submissions will appear here once students start submitting their work.</p>
+                <h3>${t('assignments.noAssignmentsYet')}</h3>
+                <p>${t('assignments.noAssignmentsDesc')}</p>
               </div>
             ` : submissions.map((submission, index) => {
               const submittedDate = new Date(submission.submittedAt).toLocaleDateString('en-US', {
@@ -16527,38 +16555,38 @@ window.openAssignmentsPage = async function() {
                 month: 'short',
                 day: 'numeric'
               });
-              const courseTitle = submission.courseId?.title || 'Unknown Course';
+              const courseTitle = submission.courseId?.title || t('assignments.unknownCourse');
               const studentName = submission.studentId?.firstName && submission.studentId?.lastName
                 ? `${submission.studentId.firstName} ${submission.studentId.lastName}`
-                : 'Unknown Student';
+                : t('assignments.unknownStudent');
 
               return `
                 <div class="assignment-item" data-course="${submission.courseId?._id || ''}" data-status="${submission.status}">
                   <div class="assignment-header">
                     <div>
-                      <h4 class="assignment-title">${submission.lessonTitle || 'Assignment Submission'}</h4>
+                      <h4 class="assignment-title">${submission.lessonTitle || t('assignments.assignmentSubmission')}</h4>
                       <div class="assignment-meta">
-                        Submitted: ${submittedDate} • ${courseTitle} • ${studentName}
+                        ${t('assignments.submitted')} ${submittedDate} • ${courseTitle} • ${studentName}
                       </div>
                     </div>
-                    <span class="assignment-status ${submission.status === 'graded' ? 'graded' : 'pending'}">${submission.status === 'graded' ? 'Graded' : 'Pending'}</span>
+                    <span class="assignment-status ${submission.status === 'graded' ? 'graded' : 'pending'}">${submission.status === 'graded' ? t('assignments.graded') : t('assignments.pending')}</span>
                   </div>
                   <div class="assignment-description">
-                    <strong>File:</strong> ${submission.fileName || 'submission.pdf'}
-                    ${submission.instructions ? `<br><strong>Instructions:</strong> ${submission.instructions}` : ''}
-                    ${submission.feedback ? `<br><strong>Feedback:</strong> ${submission.feedback}` : ''}
+                    <strong>${t('assignments.file')}</strong> ${submission.fileName || 'submission.pdf'}
+                    ${submission.instructions ? `<br><strong>${t('assignments.instructions')}</strong> ${submission.instructions}` : ''}
+                    ${submission.feedback ? `<br><strong>${t('assignments.feedback')}</strong> ${submission.feedback}` : ''}
                   </div>
                   <div class="assignment-action">
                     ${submission.status === 'graded'
-                      ? `<div class="grade-display">Grade: ${submission.grade}%</div>`
-                      : `<button class="grade-btn" onclick="gradeAssignment('${submission._id}', '${submission.fileName}', '${submission.fileUrl}')">Grade now</button>`
+                      ? `<div class="grade-display">${t('assignments.grade')} ${submission.grade}%</div>`
+                      : `<button class="grade-btn" onclick="gradeAssignment('${submission._id}', '${submission.fileName}', '${submission.fileUrl}')">${t('assignments.gradeNow')}</button>`
                     }
                     <a href="${submission.fileUrl}" target="_blank" class="view-file-btn">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                       </svg>
-                      View File
+                      ${t('assignments.viewFile')}
                     </a>
                   </div>
                 </div>
@@ -16584,10 +16612,10 @@ window.openAssignmentsPage = async function() {
             <path d="m9 9 6 6"/>
           </svg>
         </div>
-        <h3 style="margin: 0 0 10px 0; color: #ffffff;">Failed to load assignments</h3>
-        <p style="margin: 0 0 20px 0; color: rgba(255,255,255,0.7);">There was an error loading the assignment data. Please try again.</p>
+        <h3 style="margin: 0 0 10px 0; color: #ffffff;">${t('assignments.failedToLoad')}</h3>
+        <p style="margin: 0 0 20px 0; color: rgba(255,255,255,0.7);">${t('assignments.errorMessage')}</p>
         <button onclick="openAssignmentsPage()" style="padding: 10px 20px; background: #7ea2d4; border: none; border-radius: 6px; color: white; cursor: pointer;">
-          Try Again
+          ${t('assignments.tryAgain')}
         </button>
       </div>
     `;
@@ -16726,13 +16754,13 @@ window.switchAssignmentTab = function(tabElement, tabType) {
   const assignmentsSection = document.querySelector('.assignments-section');
 
   if (tabType === 'all') {
-    sectionTitle.textContent = 'All assignments';
+    sectionTitle.textContent = t('assignments.allAssignments');
     updateAssignmentsList('all');
   } else if (tabType === 'pending') {
-    sectionTitle.textContent = 'Pending assignments';
+    sectionTitle.textContent = t('assignments.pending') + ' ' + t('assignments.title').toLowerCase();
     updateAssignmentsList('pending');
   } else {
-    sectionTitle.textContent = 'Graded assignments';
+    sectionTitle.textContent = t('assignments.graded') + ' ' + t('assignments.title').toLowerCase();
     updateAssignmentsList('graded');
   }
 };
@@ -16779,7 +16807,7 @@ window.updateAssignmentsList = function(filterType) {
     const noAssignmentsMsg = document.createElement('div');
     noAssignmentsMsg.className = 'no-assignments-msg';
     noAssignmentsMsg.style.cssText = 'padding: 40px; text-align: center; color: rgba(255,255,255,0.5);';
-    noAssignmentsMsg.textContent = filterType === 'pending' ? 'No pending assignments' : 'No graded assignments yet';
+    noAssignmentsMsg.textContent = filterType === 'pending' ? t('assignments.noPendingAssignments') : t('assignments.noGradedAssignments');
     assignmentsContainer.appendChild(noAssignmentsMsg);
   } else {
     // Remove "no assignments" message if exists
@@ -16826,8 +16854,9 @@ window.filterAssignmentsByCourse = function(courseValue) {
     : 0;
 
   // Update counter
-  const courseName = courseNames[courseValue] || courseNames['all'] || 'selected course';
-  counter.textContent = `Showing ${visibleCount} assignments from ${courseName}`;
+  const courseName = courseNames[courseValue] || courseNames['all'] || t('assignments.allCourses');
+  const fromText = courseValue === 'all' ? t('assignments.assignmentsFromAllCourses') : `topshiriqlar ${courseName}dan`;
+  counter.textContent = `${t('assignments.showing')} ${visibleCount} ${fromText}`;
 
   // Update statistics cards
   if (statsCards[0]) statsCards[0].textContent = totalAssignments;
@@ -16861,18 +16890,18 @@ window.gradeAssignment = async function(assignmentId, fileName, fileUrl) {
   const gradingModal = `
     <div class="grading-form">
       <div class="grade-input-group">
-        <label>Grade (0-100)</label>
+        <label>${t('assignments.grade')} (0-100)</label>
         <input type="number" min="0" max="100" placeholder="85" class="grade-input" id="gradeValue" />
       </div>
 
       <div class="feedback-group">
-        <label>Feedback</label>
-        <textarea class="feedback-textarea" placeholder="Write your feedback here..." rows="4"></textarea>
+        <label>${t('assignments.feedback')}</label>
+        <textarea class="feedback-textarea" placeholder="${t('assignments.writeFeedback')}" rows="4"></textarea>
       </div>
 
       <div class="grading-actions">
-        <button class="cancel-grade-btn" onclick="closeModal()">Cancel</button>
-        <button class="submit-grade-btn" onclick="submitGrade('${assignmentId}')">Submit Grade</button>
+        <button class="cancel-grade-btn" onclick="closeModal()">${t('assignments.cancel')}</button>
+        <button class="submit-grade-btn" onclick="submitGrade('${assignmentId}')">${t('assignments.submitGrade')}</button>
       </div>
     </div>
     <style>
