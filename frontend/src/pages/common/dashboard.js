@@ -183,24 +183,79 @@ async function renderTeacherDashboard(user) {
   
   appElement.innerHTML = `
     <div class="figma-dashboard">
-      <!-- Top Header exactly like Figma -->
-      <div class="figma-header">
-        <div class="figma-header-left">
-          <!-- Mobile Sidebar Toggle -->
-          <button class="figma-mobile-toggle mobile-only" id="mobileMenuToggle" onclick="toggleMobileSidebar()" 
-                  aria-label="Toggle sidebar menu" aria-expanded="false" aria-controls="dashboardSidebar">
-            <span></span>
+      <!-- Mobile Header -->
+      <div class="mobile-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #1a1a1a; border-bottom: 1px solid #333;">
+        <div style="display: flex; justify-content: space-between; align-items: center; height: 56px; padding: 0 16px; width: 100%;">
+          <!-- Left: Burger Menu + Logo -->
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <button id="mobileMenuToggle" onclick="toggleMobileSidebar()"
+                    style="background: none; border: none; color: #fff; cursor: pointer; padding: 8px; border-radius: 6px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+              </svg>
+            </button>
+            <h1 style="margin: 0; font-size: 18px; font-weight: 700; color: #fff;">dars<span style="color: var(--primary-color);">linker</span></h1>
+          </div>
+
+          <!-- Right: 3-Dot Menu -->
+          <button id="mobileHeaderMenu" onclick="toggleMobileMenu()"
+                  style="background: none; border: none; color: #fff; cursor: pointer; padding: 8px; border-radius: 6px; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="2"/>
+              <circle cx="12" cy="12" r="2"/>
+              <circle cx="12" cy="19" r="2"/>
+            </svg>
           </button>
+        </div>
+      </div>
+
+      <!-- Mobile Dropdown Menu -->
+      <div class="figma-mobile-dropdown" id="mobileHeaderDropdown" style="display: none;">
+        <button onclick="openNotificationsPage(); closeMobileMenu()" style="width: 100%; background: none; border: none; color: #fff; text-align: left; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+          </svg>
+          <span>Notifications</span>
+        </button>
+        <button onclick="startNewMeeting(); closeMobileMenu()" style="width: 100%; background: none; border: none; color: #fff; text-align: left; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+          </svg>
+          <span>New Meeting</span>
+        </button>
+        <button onclick="openTelegramBot(); closeMobileMenu()" style="width: 100%; background: none; border: none; color: #fff; text-align: left; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+          </svg>
+          <span>Telegram Bot</span>
+        </button>
+        <button onclick="openCreateCourse(); closeMobileMenu()" style="width: 100%; background: none; border: none; color: #7ea2d4; text-align: left; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-weight: 600; transition: background 0.2s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+          </svg>
+          <span>New Course</span>
+        </button>
+        <hr style="border: none; border-top: 1px solid #444; margin: 8px 0;">
+        <button onclick="handleLogout(); closeMobileMenu()" style="width: 100%; background: none; border: none; color: #ef4444; text-align: left; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+          <span>Logout</span>
+        </button>
+      </div>
+
+      <!-- Desktop Header (original layout) -->
+      <div class="figma-header desktop-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #1a1a1a; border-bottom: 1px solid #333; display: none;">
+        <div class="figma-header-left">
           <div class="figma-logo">
             <h1>dars<span>linker</span></h1>
           </div>
-          <div class="figma-title desktop-only">
-            <h2 id="page-title">${t('dashboard.title')}</h2>
+          <div class="figma-title" style="margin-left: 120px;">
+            <h2 id="page-title" style="margin: 0; font-size: 20px; color: var(--primary-color); font-weight: 600;">${t('dashboard.title')}</h2>
           </div>
         </div>
         <div class="figma-header-right">
-          <!-- Desktop Buttons -->
-          <div class="figma-header-buttons desktop-only">
+          <div class="figma-header-buttons">
             <button class="figma-btn figma-notification-btn" onclick="openNotificationsPage()">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
@@ -213,53 +268,9 @@ async function renderTeacherDashboard(user) {
             <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">${t('header.newCourse')}</button>
             <button class="figma-btn figma-btn-logout" onclick="handleLogout()">Chiqish</button>
           </div>
-          
-          <!-- Mobile Menu Button -->
-          <button class="figma-mobile-menu-btn mobile-only" id="mobileHeaderMenu" onclick="toggleMobileHeaderMenu()"
-                  aria-label="Toggle header menu" aria-expanded="false" aria-controls="mobileHeaderDropdown">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <circle cx="12" cy="5" r="2"/>
-              <circle cx="12" cy="12" r="2"/>
-              <circle cx="12" cy="19" r="2"/>
-            </svg>
-          </button>
-          
-          <!-- Mobile Dropdown Menu -->
-          <div class="figma-mobile-dropdown" id="mobileHeaderDropdown" aria-hidden="true" role="menu">
-            <button class="figma-mobile-dropdown-item" onclick="openNotificationsPage(); closeMobileHeaderMenu()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
-              </svg>
-              <span>Notifications</span>
-              <span class="notification-badge-mobile" id="notification-badge-mobile" style="display: none;"></span>
-            </button>
-            <button class="figma-mobile-dropdown-item" onclick="startNewMeeting(); closeMobileHeaderMenu()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
-              </svg>
-              <span>${t('header.newMeeting')}</span>
-            </button>
-            <button class="figma-mobile-dropdown-item" onclick="openTelegramBot(); closeMobileHeaderMenu()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-              </svg>
-              <span>${t('header.telegramBot')}</span>
-            </button>
-            <button class="figma-mobile-dropdown-item primary" onclick="openCreateCourse(); closeMobileHeaderMenu()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-              </svg>
-              <span>${t('header.newCourse')}</span>
-            </button>
-            <button class="figma-mobile-dropdown-item logout" onclick="handleLogout(); closeMobileHeaderMenu()">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
-              </svg>
-              <span>Chiqish</span>
-            </button>
-          </div>
         </div>
       </div>
+
 
       <!-- Mobile Overlay -->
       <div class="figma-mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()" 
@@ -499,9 +510,194 @@ async function renderTeacherDashboard(user) {
         .notification-text {
           display: none !important;
         }
+        .mobile-header {
+          display: block !important;
+        }
+        .desktop-header {
+          display: none !important;
+        }
+        .figma-main-layout {
+          margin-top: 56px !important;
+        }
+
+        /* Mobile dropdown menu styles */
+        .figma-mobile-dropdown {
+          display: none;
+        }
+
+        .figma-mobile-dropdown.show {
+          display: block !important;
+          animation: fadeIn 0.2s ease;
+          position: fixed !important;
+          top: 56px !important;
+          right: 16px !important;
+          z-index: 9999 !important;
+          background: #2a2a2a !important;
+          border: 1px solid #444 !important;
+          border-radius: 8px !important;
+          min-width: 200px !important;
+        }
+
+        .figma-mobile-dropdown button:hover {
+          background: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      }
+
+      @media (min-width: 769px) {
+        .mobile-header {
+          display: none !important;
+        }
+        .desktop-header {
+          display: flex !important;
+          justify-content: space-between !important;
+          align-items: center !important;
+          padding: 12px 20px !important;
+          height: 60px !important;
+          box-sizing: border-box !important;
+        }
+        .figma-header-left {
+          display: flex !important;
+          align-items: center !important;
+          gap: 16px !important;
+        }
+        .figma-header-right {
+          display: flex !important;
+          align-items: center !important;
+          gap: 12px !important;
+        }
+        .figma-header-buttons {
+          display: flex !important;
+          gap: 12px !important;
+        }
+        .figma-title {
+          margin-left: 120px !important;
+        }
+        .figma-title h2 {
+          margin: 0 !important;
+          font-size: 20px !important;
+          color: var(--primary-color) !important;
+          font-weight: 600 !important;
+        }
+        .figma-main-layout {
+          margin-top: 60px !important;
+        }
+
+        /* Desktop hides mobile dropdown */
+        .figma-mobile-dropdown:not(.show) {
+          display: none !important;
+        }
       }
     </style>
+
   `;
+
+  // Define mobile menu functions globally
+  window.toggleMobileMenu = function() {
+    console.log('🔥 Toggle clicked');
+    const dropdown = document.getElementById('mobileHeaderDropdown');
+    const button = document.getElementById('mobileHeaderMenu');
+
+    console.log('🔍 Elements found:');
+    console.log('- dropdown:', dropdown);
+    console.log('- button:', button);
+
+    if (dropdown && button) {
+      console.log('✅ Both elements exist');
+      console.log('- dropdown parent:', dropdown.parentElement);
+      console.log('- dropdown current style:', dropdown.style.cssText);
+
+      if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+        console.log('❌ Menu CLOSED');
+      } else {
+        // Get button position
+        const rect = button.getBoundingClientRect();
+        console.log('📍 Button position:', rect);
+
+        // Move dropdown to body to escape CSS conflicts
+        if (dropdown.parentElement !== document.body) {
+          console.log('📦 Moving dropdown to body');
+          document.body.appendChild(dropdown);
+        }
+
+        // Position dropdown under the button
+        dropdown.style.cssText = `
+          display: block !important;
+          position: fixed !important;
+          top: ${rect.bottom + 8}px !important;
+          right: 16px !important;
+          left: auto !important;
+          bottom: auto !important;
+          z-index: 99999 !important;
+          background: #2a2a2a !important;
+          border: 1px solid #444 !important;
+          border-radius: 8px !important;
+          width: 200px !important;
+          height: auto !important;
+          opacity: 1 !important;
+          visibility: visible !important;
+          pointer-events: auto !important;
+          margin: 0 !important;
+          padding: 8px 0 !important;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+        `;
+
+        console.log('✅ Menu OPENED - dropdown should appear under the button');
+        console.log('📊 Final styles:', dropdown.style.cssText);
+
+        // Check computed styles
+        const computedStyle = window.getComputedStyle(dropdown);
+        console.log('🎨 Computed styles:');
+        console.log('- display:', computedStyle.display);
+        console.log('- position:', computedStyle.position);
+        console.log('- zIndex:', computedStyle.zIndex);
+        console.log('- top:', computedStyle.top);
+        console.log('- left:', computedStyle.left);
+        console.log('- width:', computedStyle.width);
+        console.log('- height:', computedStyle.height);
+        console.log('- visibility:', computedStyle.visibility);
+        console.log('- opacity:', computedStyle.opacity);
+
+        // Check parent hierarchy
+        console.log('🏗️ Parent chain:');
+        let parent = dropdown.parentElement;
+        let level = 0;
+        while (parent && level < 5) {
+          const parentComputed = window.getComputedStyle(parent);
+          console.log(`- Level ${level}: ${parent.tagName}.${parent.className} - display: ${parentComputed.display}, visibility: ${parentComputed.visibility}, opacity: ${parentComputed.opacity}`);
+          parent = parent.parentElement;
+          level++;
+        }
+      }
+    } else {
+      console.error('❌ Missing elements - dropdown:', !!dropdown, 'button:', !!button);
+    }
+  };
+
+  window.closeMobileMenu = function() {
+    const dropdown = document.getElementById('mobileHeaderDropdown');
+    if (dropdown) {
+      dropdown.style.display = 'none';
+      console.log('❌ Menu CLOSED');
+    }
+  };
+
+  // Close menu when clicking outside
+  setTimeout(() => {
+    document.addEventListener('click', function(event) {
+      const dropdown = document.getElementById('mobileHeaderDropdown');
+      const menuBtn = document.getElementById('mobileHeaderMenu');
+      if (dropdown && menuBtn && dropdown.style.display === 'block' && !dropdown.contains(event.target) && !menuBtn.contains(event.target)) {
+        dropdown.style.display = 'none';
+        console.log('❌ Menu closed by clicking outside');
+      }
+    });
+  }, 100);
 
   // Load dashboard data from API
   if (typeof window.loadMainDashboard === 'function') {
