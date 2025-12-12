@@ -33,6 +33,36 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         backdrop-filter: blur(10px);
       }
 
+      /* Mobile Header */
+      @media (max-width: 768px) {
+        .assignment-header {
+          padding: 15px 20px;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .header-logo .logo-text {
+          font-size: 20px;
+        }
+
+        .header-actions {
+          gap: 8px;
+        }
+
+        .icon-btn {
+          width: 36px;
+          height: 36px;
+        }
+
+        .logout-btn {
+          padding: 0 12px !important;
+        }
+
+        .logout-text {
+          font-size: 12px;
+        }
+      }
+
       .header-logo {
         display: flex;
         align-items: center;
@@ -95,6 +125,14 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         overflow: hidden;
       }
 
+      /* Mobile Layout */
+      @media (max-width: 768px) {
+        .assignment-layout {
+          flex-direction: column;
+          height: calc(100vh - 71px);
+        }
+      }
+
       /* Sticky Sidebar */
       .assignment-sidebar {
         width: 320px;
@@ -105,6 +143,25 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         position: sticky;
         top: 81px;
         height: calc(100vh - 81px);
+      }
+
+      /* Mobile Sidebar */
+      @media (max-width: 768px) {
+        .assignment-sidebar {
+          width: 100%;
+          height: auto;
+          max-height: 40vh;
+          position: relative;
+          top: 0;
+          border-right: none;
+          border-bottom: 1px solid rgba(126, 162, 212, 0.15);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .assignment-sidebar {
+          max-height: 35vh;
+        }
       }
 
       .assignment-sidebar::-webkit-scrollbar {
@@ -127,6 +184,17 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         color: #ffffff;
       }
 
+      /* Mobile Sidebar Header */
+      @media (max-width: 768px) {
+        .sidebar-header {
+          padding: 16px 20px;
+        }
+
+        .sidebar-course-title {
+          font-size: 14px;
+        }
+      }
+
       /* Sidebar Modules */
       .sidebar-modules {
         padding: 12px 0;
@@ -143,6 +211,29 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         gap: 12px;
         cursor: pointer;
         transition: background 0.2s;
+      }
+
+      /* Mobile Sidebar Module */
+      @media (max-width: 768px) {
+        .sidebar-module-header {
+          padding: 12px 20px;
+        }
+
+        .sidebar-module-title {
+          font-size: 14px;
+        }
+
+        .sidebar-lesson {
+          padding: 10px 20px 10px 36px;
+        }
+
+        .sidebar-lesson-title {
+          font-size: 13px;
+        }
+
+        .sidebar-lesson-duration {
+          font-size: 11px;
+        }
       }
 
       .sidebar-module-header:hover {
@@ -237,6 +328,21 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         background: #1a1a1a;
       }
 
+      /* Mobile Main Content */
+      @media (max-width: 768px) {
+        .assignment-content {
+          padding: 20px;
+          height: calc(60vh - 71px);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .assignment-content {
+          padding: 15px;
+          height: calc(65vh - 71px);
+        }
+      }
+
       .assignment-content::-webkit-scrollbar {
         width: 8px;
       }
@@ -249,6 +355,14 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       .assignment-container {
         max-width: 900px;
         margin: 0 auto;
+      }
+
+      /* Mobile Assignment Container */
+      @media (max-width: 768px) {
+        .assignment-container {
+          max-width: 100%;
+          margin: 0;
+        }
       }
 
       /* Assignment Header */
@@ -265,6 +379,37 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         margin-bottom: 32px;
         padding-bottom: 24px;
         border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+      }
+
+      /* Mobile Assignment Header */
+      @media (max-width: 768px) {
+        .assignment-title {
+          font-size: 24px;
+          margin-bottom: 12px;
+          line-height: 1.3;
+        }
+
+        .assignment-meta {
+          flex-direction: column;
+          gap: 12px;
+          margin-bottom: 20px;
+          padding-bottom: 16px;
+        }
+
+        .meta-item {
+          font-size: 13px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .assignment-title {
+          font-size: 20px;
+        }
+
+        .assignment-meta {
+          gap: 8px;
+          margin-bottom: 16px;
+        }
       }
 
       .meta-item {
@@ -297,6 +442,28 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       h2.section-title {
         font-size: 14px !important;
         font-weight: 500 !important;
+      }
+
+      /* Mobile Assignment Section */
+      @media (max-width: 768px) {
+        .assignment-section {
+          margin-bottom: 20px;
+        }
+
+        .section-title {
+          font-size: 13px !important;
+          margin-bottom: 6px;
+        }
+
+        h2.section-title {
+          font-size: 13px !important;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .assignment-section {
+          margin-bottom: 16px;
+        }
       }
 
       .section-content {

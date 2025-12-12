@@ -15911,6 +15911,57 @@ window.openAssignmentsPage = async function() {
               align-items: flex-start !important;
               margin-bottom: 12px !important;
             }
+            
+            /* Mobile Assignment Items */
+            @media (max-width: 768px) {
+              .assignment-item {
+                padding: 16px !important;
+                margin-bottom: 12px !important;
+              }
+              .assignment-header {
+                flex-direction: column !important;
+                gap: 8px !important;
+                align-items: flex-start !important;
+              }
+              .assignment-title {
+                font-size: 15px !important;
+              }
+              .assignment-meta {
+                font-size: 11px !important;
+              }
+              .assignment-status {
+                align-self: flex-start !important;
+                margin-top: 4px !important;
+              }
+              .assignment-description {
+                font-size: 13px !important;
+                margin-bottom: 12px !important;
+              }
+              .assignment-action {
+                width: 100% !important;
+                justify-content: flex-start !important;
+              }
+            }
+            
+            @media (max-width: 480px) {
+              .assignment-item {
+                padding: 12px !important;
+                margin-bottom: 10px !important;
+              }
+              .assignment-title {
+                font-size: 14px !important;
+                line-height: 1.3 !important;
+              }
+              .assignment-description {
+                font-size: 12px !important;
+                margin-bottom: 10px !important;
+              }
+              .assignment-action {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+              }
+            }
             .assignment-title {
               color: #ffffff !important;
               font-size: 16px !important;
@@ -15989,14 +16040,63 @@ window.openAssignmentsPage = async function() {
             @media (max-width: 1200px) {
               .assignments-stats-grid {
                 grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px !important;
               }
             }
             @media (max-width: 768px) {
               .assignments-stats-grid {
                 grid-template-columns: 1fr !important;
+                gap: 12px !important;
               }
               .figma-content-area.assignments-page {
                 padding: 16px !important;
+              }
+              .course-filter-section {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 12px !important;
+                padding: 16px !important;
+              }
+              .course-filter-left {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                gap: 8px !important;
+                width: 100% !important;
+              }
+              .course-select {
+                min-width: 100% !important;
+                width: 100% !important;
+              }
+              .assignment-counter {
+                align-self: flex-start !important;
+              }
+            }
+            @media (max-width: 480px) {
+              .figma-content-area.assignments-page {
+                padding: 12px !important;
+                gap: 16px !important;
+              }
+              .assignments-stats-grid {
+                gap: 10px !important;
+              }
+              .assignments-card {
+                padding: 16px !important;
+              }
+              .assignments-card-title {
+                font-size: 13px !important;
+              }
+              .assignments-card-amount {
+                font-size: 24px !important;
+              }
+              .course-filter-section {
+                padding: 12px !important;
+              }
+              .course-filter-label {
+                font-size: 14px !important;
+              }
+              .course-select {
+                padding: 10px 12px !important;
+                font-size: 13px !important;
               }
             }
           </style>
