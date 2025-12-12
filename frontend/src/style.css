@@ -3289,7 +3289,7 @@ body:has(.figma-dashboard) {
   font-weight: 600;
   color: #ffffff;
   margin: 0;
-  margin-left: 30px;
+  margin-left: 50px;
   letter-spacing: -0.5px;
 }
 
@@ -11005,7 +11005,12 @@ button.filter-tab.active {
   .figma-header-left {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 30px;
+    margin-left: 30px;
+  }
+  
+  .figma-logo h1 {
+    margin-left: 20px !important;
   }
   
   .figma-header-right {
@@ -12199,9 +12204,9 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
 @media (min-width: 769px) {
   .figma-notification-btn {
     position: relative;
-    background: rgba(var(--primary-color-rgb), 0.1);
-    border-color: rgba(var(--primary-color-rgb), 0.3);
-    color: var(--primary-color);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
   }
   
   .figma-notification-btn:hover {
@@ -12348,9 +12353,9 @@ EAN DESKTOP HEADER ===== */
   /* Desktop notification button */
   .figma-notification-btn {
     position: relative;
-    background: rgba(var(--primary-color-rgb), 0.1);
-    border: 1px solid rgba(var(--primary-color-rgb), 0.3);
-    color: var(--primary-color);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
     padding: 10px 18px;
     border-radius: 8px;
     font-size: 14px;
@@ -12623,9 +12628,9 @@ EAN DESKTOP HEADER ===== */
   
   /* Notification button special styling */
   .figma-notification-btn {
-    background: rgba(var(--primary-color-rgb), 0.1) !important;
-    border: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
-    color: var(--primary-color) !important;
+    background: transparent !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
   }
   
   .figma-notification-btn:hover {
