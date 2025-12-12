@@ -39,7 +39,10 @@ const connectToDB = async () => {
       message: error.message,
       stack: error.stack,
     });
-    process.exit(1);
+    logger.warn("⚠️ Server will continue without database connection");
+    logger.info("💡 Please check your network connection and MongoDB Atlas access list");
+    // Don't exit process, let server continue for debugging
+    // process.exit(1);
   }
 };
 

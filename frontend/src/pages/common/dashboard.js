@@ -3,7 +3,7 @@ import { apiService } from '../../utils/api.js';
 import { router } from '../../utils/router.js';
 import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
 import { getTheme, saveTheme, initTheme, presetColors } from '../../utils/theme.js';
-import { showSuccessToast, showErrorToast } from '../../utils/toast.js';
+import { showSuccessToast, showErrorToast, showInfoToast } from '../../utils/toast.js';
 import { config } from '../../utils/config.js';
 import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
@@ -10809,18 +10809,9 @@ window.loadMoreStudents = function() {
 
 // Open Rating & Comments Page
 window.openRatingComments = function() {
-  const contentArea = document.querySelector('.figma-content-area');
-  
-  if (contentArea) {
-    updatePageTitle(t('pages.ratingComments'));
-    contentArea.innerHTML = getRatingCommentsHTML();
-    updateActiveMenuItem('Rating Comments');
-    
-    // Apply saved primary color to Rating Comments page
-    const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
-    applyPrimaryColor(savedColor);
-    return;
-  }
+  // Show coming soon toast
+  showInfoToast(t('comingSoon.ratingComments'));
+  return;
 };
 
 // Helper function to get rating comments HTML
@@ -12177,18 +12168,9 @@ async function handleProfileSave(e) {
 
 // Open Messages Page
 window.openMessagesPage = function() {
-  const userData = store.getState().user;
-  
-  // Check if dashboard structure exists
-  const contentArea = document.querySelector('.figma-content-area');
-  
-  if (contentArea) {
-    // Just update content area, keep sidebar
-    updatePageTitle(t('pages.messages'));
-    contentArea.innerHTML = getMessagesHTML();
-    updateActiveMenuItem('Messages');
-    return;
-  }
+  // Show coming soon toast
+  showInfoToast(t('comingSoon.messages'));
+  return;
 
   // Check current general menu state before navigating
   const generalChildren = document.getElementById('general-children');
@@ -15570,6 +15552,10 @@ window.openFinancePage = function() {
 // Open AI Assistant Page
 function openAIAssistantPage() {
   console.log('Opening AI Assistant Page');
+  
+  // Show coming soon toast
+  showInfoToast(t('comingSoon.aiAssistant'));
+  return;
 
   try {
     // Update page title

@@ -49,6 +49,7 @@ try {
   logger.info('🎓 Teacher Telegram bot started successfully');
 } catch (error) {
   logger.error('❌ Failed to start Teacher Telegram bot:', error.message);
+  logger.warn('⚠️ Server will continue without Teacher Telegram bot');
 }
 
 const app = express();

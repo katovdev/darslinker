@@ -388,6 +388,12 @@ const translations = {
     'assignments.cancel': 'Cancel',
     'assignments.noPendingAssignments': 'No pending assignments',
     'assignments.noGradedAssignments': 'No graded assignments yet',
+
+    // Coming Soon Messages
+    'comingSoon.title': 'Coming Soon!',
+    'comingSoon.messages': 'Messages feature is coming soon. Stay tuned!',
+    'comingSoon.aiAssistant': 'AI Assistant feature is coming soon. Stay tuned!',
+    'comingSoon.ratingComments': 'Rating & Comments feature is coming soon. Stay tuned!',
   },
   
   uz: {
@@ -777,6 +783,12 @@ const translations = {
     'assignments.cancel': 'Bekor qilish',
     'assignments.noPendingAssignments': 'Kutilayotgan topshiriqlar yo\'q',
     'assignments.noGradedAssignments': 'Hali baholangan topshiriqlar yo\'q',
+
+    // Coming Soon Messages
+    'comingSoon.title': 'Tez orada!',
+    'comingSoon.messages': 'Xabarlar funksiyasi tez orada ishga tushadi. Kuting!',
+    'comingSoon.aiAssistant': 'AI Yordamchi funksiyasi tez orada ishga tushadi. Kuting!',
+    'comingSoon.ratingComments': 'Reyting va sharhlar funksiyasi tez orada ishga tushadi. Kuting!',
   },
   
   ru: {
@@ -1140,6 +1152,12 @@ const translations = {
     'assignments.cancel': 'Отмена',
     'assignments.noPendingAssignments': 'Нет заданий на проверке',
     'assignments.noGradedAssignments': 'Пока нет оцененных заданий',
+
+    // Coming Soon Messages
+    'comingSoon.title': 'Скоро!',
+    'comingSoon.messages': 'Функция сообщений скоро будет доступна. Ждите!',
+    'comingSoon.aiAssistant': 'Функция AI помощника скоро будет доступна. Ждите!',
+    'comingSoon.ratingComments': 'Функция рейтинга и комментариев скоро будет доступна. Ждите!',
   }
 };
 

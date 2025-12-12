@@ -8919,7 +8919,7 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
 
 .toast-notification {
   position: fixed;
-  top: 20px;
+  bottom: 20px;
   right: 20px;
   background: rgba(20, 20, 20, 0.95);
   border-radius: 12px;
@@ -8934,7 +8934,7 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
   opacity: 0;
   transition: all 0.3s ease;
   z-index: 10000;
-  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+  border: 1px solid var(--primary-color);
 }
 
 .toast-notification.show {
@@ -8965,7 +8965,7 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
 }
 
 .toast-info .toast-icon {
-  background: #2196f3;
+  background: var(--primary-color);
   color: white;
 }
 
@@ -8977,6 +8977,7 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
 
 @media (max-width: 768px) {
   .toast-notification {
+    bottom: 10px;
     right: 10px;
     left: 10px;
     min-width: auto;

@@ -10,8 +10,18 @@ import { BCRYPT_SALT_ROUNDS, HASH_OTP, OTP_EXPIRES_SECONDS, OTP_LENGTH } from '.
 // Bot token
 const TEACHER_BOT_TOKEN = '8529221614:AAGx_XYo4x6J6Z8qAiIA2QFaazPMrYg6SLc';
 
-// Create bot instance
-const teacherBot = new TelegramBot(TEACHER_BOT_TOKEN, { polling: true });
+// Create bot instance with error handling
+let teacherBot;
+try {
+  teacherBot = new TelegramBot(TEACHER_BOT_TOKEN, { 
+    polling: {
+      interval: 1000,
+      autoStart: false
+    }
+  });
+} catch (error) {
+  logger.error('Failed to create teacher bot instance:', error.message);
+}
 
 // Store user states (in-memory, you can use Redis for production)
 const userStates = new Map();
@@ -20,7 +30,20 @@ const userStates = new Map();
  * Initialize Teacher Telegram Bot
  */
 export function initTeacherBot() {
+  if (!teacherBot) {
+    logger.error('❌ Teacher bot instance not available');
+    return;
+  }
+
   logger.info('🤖 Teacher Telegram Bot starting...');
+
+  // Start polling with error handling
+  try {
+    teacherBot.startPolling();
+  } catch (error) {
+    logger.error('Failed to start teacher bot polling:', error.message);
+    return;
+  }
 
   // Handle /start command
   teacherBot.onText(/\/start/, async (msg) => {
@@ -237,6 +260,12 @@ Ro'yxatdan o'tish uchun kontaktingizni yuboring.`;
       error: error.message,
       code: error.code,
     });
+    
+    // If it's a network error, stop polling to prevent spam
+    if (error.code === 'EFATAL' || error.message.includes('ENOTFOUND')) {
+      logger.warn('🚫 Stopping teacher bot polling due to network issues');
+      teacherBot.stopPolling();
+    }
   });
 
   logger.info('✅ Teacher Telegram Bot initialized successfully');
