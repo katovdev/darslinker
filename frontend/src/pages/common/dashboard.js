@@ -4001,6 +4001,61 @@ async function generateLandingPageHTML(teacher) {
             align-items: center;
         }
 
+        /* Mobile Menu */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(35, 35, 35, 0.98);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+        }
+
+        .mobile-menu .nav-link {
+            font-size: 24px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu .nav-link:hover {
+            color: ${themeColor};
+            transform: scale(1.1);
+        }
+
+        .mobile-menu-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 30px;
+            cursor: pointer;
+        }
+
         .nav-link {
             color: rgba(255, 255, 255, 0.6);
             text-decoration: none;
@@ -4149,6 +4204,51 @@ async function generateLandingPageHTML(teacher) {
             color: ${themeColor};
         }
 
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+
+            .header {
+                padding: 15px 0;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .header-actions {
+                gap: 10px;
+            }
+
+            .auth-buttons {
+                display: none;
+            }
+
+            .logo {
+                font-size: 24px;
+            }
+
+            .language-selector {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+        }
+
       
 
         /* Hero Section */
@@ -4167,8 +4267,49 @@ async function generateLandingPageHTML(teacher) {
             margin: 0 auto;
         }
 
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 0 50px;
+            }
+
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+                text-align: center;
+            }
+
+            .hero-text {
+                text-align: center;
+                order: 2;
+            }
+
+            .cta-button {
+                margin-top: 20px;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+                line-height: 1.2;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero {
+                padding: 40px 0 30px;
+            }
+
+            .hero h1 {
+                font-size: 1.6rem;
+                line-height: 1.3;
+            }
+
+            .hero-content {
+                gap: 20px;
+            }
+        }
+
         .hero-text {
-            text-align: left;
+            text-align: center;
         }
 
         .hero h1 {
@@ -4215,25 +4356,56 @@ async function generateLandingPageHTML(teacher) {
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
 
+        @media (max-width: 768px) {
+            .hero-image img {
+                max-width: 300px;
+                width: 300px;
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-image img {
+                max-width: 250px;
+                width: 250px;
+                height: 250px;
+            }
+
+            .stats-badge {
+                top: 10px;
+                right: 10px;
+                padding: 8px 12px;
+                border-radius: 6px;
+            }
+
+            .stats-number {
+                font-size: 14px;
+            }
+
+            .stats-label {
+                font-size: 9px;
+            }
+        }
+
         .stats-badge {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: white;
-            padding: 15px 20px;
-            border-radius: 12px;
+            padding: 10px 15px;
+            border-radius: 8px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             text-align: center;
         }
 
         .stats-number {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: bold;
             color: ${themeColor};
         }
 
         .stats-label {
-            font-size: 12px;
+            font-size: 10px;
             color: #666;
         }
 
@@ -4784,10 +4956,47 @@ async function generateLandingPageHTML(teacher) {
                         <a href="#" class="auth-button secondary" style="border-color: ${themeColor}; color: ${themeColor};" onclick="openLoginModal(event)" data-i18n="login">Kirish</a>
                         <a href="#" class="auth-button" style="background: ${themeColor};" onclick="openRegistrationModal(event)" data-i18n="register" data-teacher-id="${teacher._id}">Ro'yxatdan o'tish</a>
                     </div>
+
+                    <!-- Mobile Menu Toggle -->
+                    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                        ☰
+                    </button>
                 </div>
             </div>
         </div>
     </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <button class="mobile-menu-close" onclick="toggleMobileMenu()">×</button>
+        <a href="#hero" class="nav-link" onclick="scrollToSection(event, 'hero'); toggleMobileMenu();" data-i18n="home">Asosiy</a>
+        <a href="#about" class="nav-link" onclick="scrollToSection(event, 'about'); toggleMobileMenu();" data-i18n="about">Haqida</a>
+        <a href="#certificates" class="nav-link" onclick="scrollToSection(event, 'certificates'); toggleMobileMenu();" data-i18n="certificates">Sertifikatlar</a>
+        <a href="#courses" class="nav-link" onclick="scrollToSection(event, 'courses'); toggleMobileMenu();" data-i18n="courses">Kurslar</a>
+        
+        <!-- Mobile Language Selector -->
+        <div class="mobile-lang-selector" style="margin-top: 20px;">
+            <div class="mobile-lang-options" style="display: flex; justify-content: center; gap: 15px;">
+                <div class="mobile-lang-option active" data-lang="uz" onclick="selectLanguage(event, 'uz')" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid ${themeColor}; border-radius: 6px; cursor: pointer; background: rgba(126, 162, 212, 0.1);">
+                    <img src="/images/uz-flag.jpg" alt="UZ" style="width: 20px; height: 15px; object-fit: cover; border-radius: 2px;">
+                    <span style="color: rgba(255, 255, 255, 0.9); font-weight: 500; font-size: 13px;">UZ</span>
+                </div>
+                <div class="mobile-lang-option" data-lang="en" onclick="selectLanguage(event, 'en')" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer;">
+                    <img src="/images/us-flag.png" alt="EN" style="width: 20px; height: 15px; object-fit: cover; border-radius: 2px;">
+                    <span style="color: rgba(255, 255, 255, 0.9); font-weight: 500; font-size: 13px;">EN</span>
+                </div>
+                <div class="mobile-lang-option" data-lang="ru" onclick="selectLanguage(event, 'ru')" style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 6px; cursor: pointer;">
+                    <img src="/images/ru-flag.jpg" alt="RU" style="width: 20px; height: 15px; object-fit: cover; border-radius: 2px;">
+                    <span style="color: rgba(255, 255, 255, 0.9); font-weight: 500; font-size: 13px;">RU</span>
+                </div>
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px;">
+            <a href="#" class="auth-button secondary" style="border-color: ${themeColor}; color: ${themeColor}; text-align: center;" onclick="openLoginModal(event); toggleMobileMenu();" data-i18n="login">Kirish</a>
+            <a href="#" class="auth-button" style="background: ${themeColor}; text-align: center;" onclick="openRegistrationModal(event); toggleMobileMenu();" data-i18n="register" data-teacher-id="${teacher._id}">Ro'yxatdan o'tish</a>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <section class="hero" id="hero">
@@ -6660,6 +6869,19 @@ async function generateLandingPageHTML(teacher) {
             }
         };
 
+        // Toggle mobile menu
+        window.toggleMobileMenu = function() {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('active');
+            
+            // Prevent body scroll when menu is open
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        };
+
         // Toggle language dropdown
         window.toggleLangDropdown = function(e) {
             e.stopPropagation();
@@ -6736,9 +6958,23 @@ async function generateLandingPageHTML(teacher) {
             document.getElementById('currentLangFlag').src = flags[lang];
             document.getElementById('currentLangText').textContent = names[lang];
             
-            // Update active
+            // Update active for desktop
             document.querySelectorAll('.lang-option').forEach(opt => opt.classList.remove('active'));
-            document.querySelector(\`.lang-option[data-lang="\${lang}"]\`).classList.add('active');
+            const desktopOption = document.querySelector(\`.lang-option[data-lang="\${lang}"]\`);
+            if (desktopOption) desktopOption.classList.add('active');
+            
+            // Update active for mobile
+            document.querySelectorAll('.mobile-lang-option').forEach(opt => {
+                opt.classList.remove('active');
+                opt.style.background = 'transparent';
+                opt.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+            });
+            const mobileOption = document.querySelector(\`.mobile-lang-option[data-lang="\${lang}"]\`);
+            if (mobileOption) {
+                mobileOption.classList.add('active');
+                mobileOption.style.background = 'rgba(126, 162, 212, 0.1)';
+                mobileOption.style.borderColor = '${themeColor}';
+            }
             
             // Close dropdown
             document.querySelector('.language-selector').classList.remove('open');

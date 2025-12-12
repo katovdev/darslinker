@@ -1322,8 +1322,8 @@ body {
 }
 
 .play-btn-image {
-  width: 400px;
-  height: 400px;
+  width: 250px;
+  height: 250px;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
   transition: all 0.3s ease;
