@@ -567,6 +567,41 @@ function renderLessonViewPage(courseData, currentLesson) {
         .lesson-view-sidebar {
           display: none;
         }
+
+        .lesson-view-video-container {
+          padding: 20px 15px;
+        }
+
+        .lesson-view-video-wrapper {
+          border-radius: 12px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .lesson-view-video-container {
+          padding: 10px 8px;
+        }
+
+        .lesson-view-video-wrapper {
+          border-radius: 8px;
+        }
+
+        .lesson-view-header {
+          padding: 15px 0;
+        }
+
+        .lesson-view-container {
+          padding: 0 15px;
+        }
+
+        .lesson-view-logo-text {
+          font-size: 24px;
+        }
+
+        .lesson-view-back-btn {
+          padding: 6px 12px;
+          font-size: 13px;
+        }
       }
     </style>
 
