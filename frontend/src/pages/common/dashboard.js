@@ -9173,10 +9173,40 @@ function getProgressHTML(courses = [], studentsData = []) {
           flex-direction: column;
           gap: 24px;
         }
+        
+        /* Mobile Progress Page */
+        @media (max-width: 768px) {
+          .progress-page {
+            padding: 16px;
+            gap: 16px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .progress-page {
+            padding: 12px;
+            gap: 12px;
+          }
+        }
         .progress-stats-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
           gap: 20px;
+        }
+        
+        /* Mobile Progress Stats Grid */
+        @media (max-width: 1024px) {
+          .progress-stats-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .progress-stats-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+          }
         }
         .progress-stat-card {
           background: rgba(58, 56, 56, 0.3);
@@ -9185,6 +9215,21 @@ function getProgressHTML(courses = [], studentsData = []) {
           padding: 24px;
           text-align: center;
           transition: all 0.3s ease;
+        }
+        
+        /* Mobile Progress Stat Cards */
+        @media (max-width: 768px) {
+          .progress-stat-card {
+            padding: 16px;
+            border-radius: 12px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .progress-stat-card {
+            padding: 12px;
+            border-radius: 8px;
+          }
         }
         .progress-stat-card:hover {
           transform: translateY(-5px);
@@ -9202,6 +9247,27 @@ function getProgressHTML(courses = [], studentsData = []) {
           font-size: 36px;
           font-weight: 700;
           margin-bottom: 8px;
+        }
+        
+        /* Mobile Progress Stat Text */
+        @media (max-width: 768px) {
+          .progress-stat-title {
+            font-size: 12px;
+            margin-bottom: 8px;
+          }
+          .progress-stat-value {
+            font-size: 28px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .progress-stat-title {
+            font-size: 11px;
+            margin-bottom: 6px;
+          }
+          .progress-stat-value {
+            font-size: 24px;
+          }
         }
         .progress-stat-subtitle {
           color: #10b981;
@@ -9242,6 +9308,21 @@ function getProgressHTML(courses = [], studentsData = []) {
           gap: 12px;
           flex-wrap: wrap;
           margin: 20px 0;
+        }
+        
+        /* Mobile Course Filters */
+        @media (max-width: 768px) {
+          .course-filters {
+            gap: 8px;
+            margin: 16px 0;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .course-filters {
+            gap: 6px;
+            margin: 12px 0;
+          }
         }
         .filter-btn {
           padding: 10px 20px;
@@ -9284,6 +9365,22 @@ function getProgressHTML(courses = [], studentsData = []) {
           margin-bottom: 16px;
           transition: all 0.3s ease;
         }
+        
+        /* Mobile Student Progress Cards */
+        @media (max-width: 768px) {
+          .student-progress-card {
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .student-progress-card {
+            padding: 12px;
+            margin-bottom: 10px;
+          }
+        }
         .student-progress-card:hover {
           border-color: var(--primary-color);
           background: rgba(58, 56, 56, 0.7);
@@ -9293,10 +9390,41 @@ function getProgressHTML(courses = [], studentsData = []) {
           align-items: center;
           margin-bottom: 16px;
         }
+        
+        /* Mobile Student Header - Vertical Layout */
+        @media (max-width: 768px) {
+          .student-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .student-header {
+            gap: 8px;
+            margin-bottom: 10px;
+          }
+        }
         .student-info-header {
           display: flex;
           align-items: center;
           gap: 12px;
+        }
+        
+        /* Mobile Student Info Header */
+        @media (max-width: 768px) {
+          .student-info-header {
+            width: 100%;
+            justify-content: space-between;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .student-info-header {
+            gap: 8px;
+          }
         }
         .student-avatar-progress {
           width: 48px;
@@ -9310,6 +9438,23 @@ function getProgressHTML(courses = [], studentsData = []) {
           font-weight: 600;
           font-size: 16px;
         }
+        
+        /* Mobile Student Avatar */
+        @media (max-width: 768px) {
+          .student-avatar-progress {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .student-avatar-progress {
+            width: 36px;
+            height: 36px;
+            font-size: 12px;
+          }
+        }
         .student-name-email h4 {
           color: #ffffff;
           font-size: 16px;
@@ -9319,6 +9464,26 @@ function getProgressHTML(courses = [], studentsData = []) {
         .student-name-email p {
           color: rgba(156, 163, 175, 1);
           font-size: 12px;
+        }
+        
+        /* Mobile Student Name Email */
+        @media (max-width: 768px) {
+          .student-name-email h4 {
+            font-size: 14px;
+            margin-bottom: 2px;
+          }
+          .student-name-email p {
+            font-size: 11px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .student-name-email h4 {
+            font-size: 13px;
+          }
+          .student-name-email p {
+            font-size: 10px;
+          }
         }
         .status-badge {
           padding: 4px 12px;
@@ -9334,6 +9499,86 @@ function getProgressHTML(courses = [], studentsData = []) {
           background: rgba(16, 185, 129, 0.2);
           color: #10b981;
         }
+        .progress-stats-row {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 16px;
+          margin-top: 16px;
+        }
+        
+        .stat-item {
+          text-align: center;
+          padding: 12px;
+          background: rgba(32, 32, 32, 0.5);
+          border: 1px solid rgba(126, 162, 212, 0.2);
+          border-radius: 8px;
+        }
+        
+        .stat-label {
+          color: rgba(156, 163, 175, 1);
+          font-size: 11px;
+          font-weight: 500;
+          margin-bottom: 4px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .stat-value {
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 600;
+        }
+        
+        /* Mobile Progress Stats Row */
+        @media (max-width: 768px) {
+          .progress-stats-row {
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 12px;
+          }
+          
+          .stat-item {
+            padding: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-align: left;
+          }
+          
+          .stat-label {
+            font-size: 10px;
+            margin-bottom: 0;
+            text-transform: none;
+            letter-spacing: 0;
+            font-weight: 600;
+            color: var(--primary-color);
+          }
+          
+          .stat-value {
+            font-size: 13px;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .progress-stats-row {
+            gap: 6px;
+            margin-top: 10px;
+          }
+          
+          .stat-item {
+            padding: 6px 8px;
+          }
+          
+          .stat-label {
+            font-size: 9px;
+            font-weight: 600;
+          }
+          
+          .stat-value {
+            font-size: 12px;
+          }
+        }
+        
         .current-lesson {
           background: rgba(58, 56, 56, 0.7);
           border: 1px solid rgba(126, 162, 212, 0.2);
@@ -9478,16 +9723,16 @@ function getProgressHTML(courses = [], studentsData = []) {
           
           <div class="progress-stats-row">
             <div class="stat-item">
-              <div class="stat-label">Progress</div>
+              <div class="stat-label">Jarayon</div>
               <div class="stat-value">${progressPercent}%</div>
             </div>
             <div class="stat-item">
-              <div class="stat-label">Kurs</div>
+              <div class="stat-label">Kurs nomi</div>
               <div class="stat-value">${student.courseName}</div>
             </div>
             <div class="stat-item">
-              <div class="stat-label">Tugallangan</div>
-              <div class="stat-value">${completedLessons} dars</div>
+              <div class="stat-label">Bajarilgan</div>
+              <div class="stat-value">${completedLessons} ta</div>
             </div>
           </div>
         </div>
@@ -9946,6 +10191,50 @@ function getStudentsAnalyticsHTML() {
         .student-details p {
           color: rgba(156, 163, 175, 1);
           font-size: 12px;
+        }
+        
+        /* Mobile Student Info */
+        @media (max-width: 768px) {
+          .student-info {
+            gap: 12px !important;
+            flex: 1 !important;
+          }
+          
+          .student-avatar {
+            width: 40px !important;
+            height: 40px !important;
+            font-size: 14px !important;
+            flex-shrink: 0 !important;
+          }
+          
+          .student-details h4 {
+            font-size: 14px !important;
+            margin-bottom: 2px !important;
+          }
+          
+          .student-details p {
+            font-size: 11px !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .student-info {
+            gap: 10px !important;
+          }
+          
+          .student-avatar {
+            width: 36px !important;
+            height: 36px !important;
+            font-size: 13px !important;
+          }
+          
+          .student-details h4 {
+            font-size: 13px !important;
+          }
+          
+          .student-details p {
+            font-size: 10px !important;
+          }
         }
         .student-meta {
           display: flex;
