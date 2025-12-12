@@ -10041,9 +10041,9 @@ window.openStudentsAnalytics = function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (contentArea) {
-    updatePageTitle('Students');
+    updatePageTitle(t('studentsAnalytics.title'));
     contentArea.innerHTML = getStudentsAnalyticsHTML();
-    updateActiveMenuItem('Students');
+    updateActiveMenuItem(t('studentsAnalytics.title'));
     
     // Apply saved primary color to Students Analytics page
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
@@ -10340,21 +10340,21 @@ function getStudentsAnalyticsHTML() {
       <!-- Statistics Cards -->
       <div class="analytics-stats-grid">
         <div class="analytics-stat-card">
-          <div class="analytics-stat-title">Total Students</div>
+          <div class="analytics-stat-title">${t('studentsAnalytics.totalStudents')}</div>
           <div class="analytics-stat-value" id="total-students">-</div>
         </div>
       </div>
 
       <!-- Tabs -->
       <div class="students-tabs">
-        <button class="student-tab active" onclick="switchStudentTab(this, 'all')">All Students</button>
+        <button class="student-tab active" onclick="switchStudentTab(this, 'all')">${t('studentsAnalytics.allStudents')}</button>
       </div>
 
       <!-- Students List -->
       <div class="students-list">
         <div class="loading-spinner">
           <div class="spinner"></div>
-          <span>Loading students...</span>
+          <span>${t('studentsAnalytics.loadingStudents')}</span>
         </div>
       </div>
     </div>
@@ -10393,11 +10393,11 @@ window.loadStudentsAnalytics = async function() {
     if (data.success) {
       updateStudentsAnalytics(data.data);
     } else {
-      showStudentsError(data.message || 'Failed to load students');
+      showStudentsError(data.message || t('studentsAnalytics.failedToLoad'));
     }
   } catch (error) {
     console.error('❌ Error loading students analytics:', error);
-    showStudentsError('Failed to load students data');
+    showStudentsError(t('studentsAnalytics.failedToLoad'));
   }
 };
 
@@ -10447,8 +10447,8 @@ function updateStudentsList(students) {
           <path d="M8 11h8"/>
           <path d="M8 15h5"/>
         </svg>
-        <h3>No students yet</h3>
-        <p>Students who register through your landing page will appear here</p>
+        <h3>${t('studentsAnalytics.noStudentsYet')}</h3>
+        <p>${t('studentsAnalytics.noStudentsDesc')}</p>
       </div>
     `;
     return;
@@ -10510,7 +10510,7 @@ function showStudentsError(message) {
         <line x1="12" y1="8" x2="12" y2="12"/>
         <line x1="12" y1="16" x2="12.01" y2="16"/>
       </svg>
-      <h3>Error loading students</h3>
+      <h3>${t('studentsAnalytics.errorLoading')}</h3>
       <p>${message}</p>
     </div>
   `;

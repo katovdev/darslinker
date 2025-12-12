@@ -32,6 +32,7 @@ const translations = {
     'sidebar.analytics': 'Analytics',
     'sidebar.quizAnalytics': 'Quiz Analytics',
     'sidebar.ratingComments': 'Rating Comments',
+    'sidebar.students': 'Students',
     'sidebar.studentsAnalytics': 'Students Analytics',
     'sidebar.engagement': 'Engagement',
     'sidebar.progress': 'Progress',
@@ -422,6 +423,16 @@ const translations = {
     'quizAnalytics.hours': 'hours',
     'quizAnalytics.minutes': 'min',
     'quizAnalytics.seconds': 'sec',
+
+    // Students Analytics
+    'studentsAnalytics.title': 'Students',
+    'studentsAnalytics.totalStudents': 'Total Students',
+    'studentsAnalytics.allStudents': 'All Students',
+    'studentsAnalytics.loadingStudents': 'Loading students...',
+    'studentsAnalytics.noStudentsYet': 'No students yet',
+    'studentsAnalytics.noStudentsDesc': 'Students who register through your landing page will appear here',
+    'studentsAnalytics.errorLoading': 'Error loading students',
+    'studentsAnalytics.failedToLoad': 'Failed to load students data',
   },
   
   uz: {
@@ -455,6 +466,7 @@ const translations = {
     'sidebar.analytics': 'Tahlil',
     'sidebar.quizAnalytics': 'Test tahlili',
     'sidebar.ratingComments': 'Reyting va sharhlar',
+    'sidebar.students': "O'quvchilar",
     'sidebar.studentsAnalytics': "O'quvchilar tahlili",
     'sidebar.engagement': 'Faollik',
     'sidebar.progress': 'Jarayon',
@@ -845,6 +857,16 @@ const translations = {
     'quizAnalytics.hours': 'soat',
     'quizAnalytics.minutes': 'daq',
     'quizAnalytics.seconds': 'sek',
+
+    // Students Analytics
+    'studentsAnalytics.title': "O'quvchilar",
+    'studentsAnalytics.totalStudents': "Jami o'quvchilar",
+    'studentsAnalytics.allStudents': "Barcha o'quvchilar",
+    'studentsAnalytics.loadingStudents': "O'quvchilar yuklanmoqda...",
+    'studentsAnalytics.noStudentsYet': "Hali o'quvchilar yo'q",
+    'studentsAnalytics.noStudentsDesc': "Sizning landing sahifangiz orqali ro'yxatdan o'tgan o'quvchilar bu yerda ko'rinadi",
+    'studentsAnalytics.errorLoading': "O'quvchilarni yuklashda xatolik",
+    'studentsAnalytics.failedToLoad': "O'quvchilar ma'lumotlarini yuklashda xatolik",
   },
   
   ru: {
@@ -878,6 +900,7 @@ const translations = {
     'sidebar.analytics': 'Аналитика',
     'sidebar.quizAnalytics': 'Аналитика тестов',
     'sidebar.ratingComments': 'Рейтинг и комментарии',
+    'sidebar.students': 'Студенты',
     'sidebar.studentsAnalytics': 'Аналитика студентов',
     'sidebar.engagement': 'Вовлеченность',
     'sidebar.progress': 'Прогресс',
@@ -1242,6 +1265,16 @@ const translations = {
     'quizAnalytics.hours': 'часов',
     'quizAnalytics.minutes': 'мин',
     'quizAnalytics.seconds': 'сек',
+
+    // Students Analytics
+    'studentsAnalytics.title': 'Студенты',
+    'studentsAnalytics.totalStudents': 'Всего студентов',
+    'studentsAnalytics.allStudents': 'Все студенты',
+    'studentsAnalytics.loadingStudents': 'Загрузка студентов...',
+    'studentsAnalytics.noStudentsYet': 'Студентов пока нет',
+    'studentsAnalytics.noStudentsDesc': 'Студенты, которые зарегистрируются через вашу целевую страницу, появятся здесь',
+    'studentsAnalytics.errorLoading': 'Ошибка загрузки студентов',
+    'studentsAnalytics.failedToLoad': 'Не удалось загрузить данные студентов',
   }
 };
 
