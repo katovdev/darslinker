@@ -93,8 +93,8 @@ body.light-mode .figma-profile-section {
 
 body.light-mode .figma-stats-card:hover {
   background: #f9fafb !important;
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.12) !important;
 }
 
 body.light-mode .figma-stats-title {
@@ -150,7 +150,7 @@ body.light-mode .course-section {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: var(--bg-primary);
+  background-color: #232323;
   color: var(--text-primary);
   line-height: 1.6;
   overflow-x: hidden;
@@ -271,14 +271,14 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  border: 1px solid #7ea2d4;
+  border: 1px solid var(--primary-color);
   min-width: 60px;
   backdrop-filter: blur(20px);
 }
 
 .lang-selected:hover {
   background: rgba(58, 56, 56, 0.3);
-  border-color: #7ea2d4;
+  border-color: var(--primary-color);
 }
 
 .dropdown-arrow {
@@ -297,7 +297,7 @@ body {
   left: 0;
   right: 0;
   background: rgba(58, 56, 56, 0.2);
-  border: 1px solid #7ea2d4;
+  border: 1px solid var(--primary-color);
   border-radius: 8px;
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
@@ -426,7 +426,7 @@ body {
 
 .hero-feature-card {
   background: rgba(58, 56, 56, 0.2);
-  border: 1px solid #7ea2d4;
+  border: 1px solid var(--primary-color);
   border-radius: 20px;
   padding: 35px;
   backdrop-filter: blur(20px);
@@ -439,7 +439,7 @@ body {
 
 .hero-feature-card:hover {
   background: rgba(58, 56, 56, 0.3);
-  border-color: #7ea2d4;
+  border-color: var(--primary-color);
   transform: translateY(-5px);
 }
 
@@ -486,7 +486,7 @@ body {
   padding: 8px 16px;
   background: rgba(255, 255, 255, 0.12);
   border-radius: 25px;
-  border: 1px solid #7ea2d4;
+  border: 1px solid var(--primary-color);
   backdrop-filter: blur(20px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   white-space: nowrap;
@@ -614,10 +614,10 @@ body {
   gap: 15px;
   background: linear-gradient(
     135deg,
-    rgba(126, 162, 212, 0.15),
-    rgba(126, 162, 212, 0.08)
+    rgba(var(--primary-color-rgb), 0.15),
+    rgba(var(--primary-color-rgb), 0.08)
   );
-  border: 1px solid rgba(126, 162, 212, 0.4);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.4);
   color: #ffffff;
   padding: 18px 36px;
   border-radius: 20px;
@@ -626,7 +626,7 @@ body {
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
   backdrop-filter: blur(20px);
-  box-shadow: 0 8px 24px rgba(126, 162, 212, 0.15),
+  box-shadow: 0 8px 24px rgba(var(--primary-color-rgb), 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
@@ -655,12 +655,12 @@ body {
 .video-btn:hover {
   background: linear-gradient(
     135deg,
-    rgba(126, 162, 212, 0.25),
-    rgba(126, 162, 212, 0.15)
+    rgba(var(--primary-color-rgb), 0.25),
+    rgba(var(--primary-color-rgb), 0.15)
   );
-  border-color: rgba(126, 162, 212, 0.6);
+  border-color: rgba(var(--primary-color-rgb), 0.6);
   transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 12px 32px rgba(126, 162, 212, 0.25),
+  box-shadow: 0 12px 32px rgba(var(--primary-color-rgb), 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
@@ -676,15 +676,15 @@ body {
 }
 
 .play-icon-svg {
-  color: #7ea2d4;
+  color: var(--primary-color);
   transition: all 0.3s ease;
-  filter: drop-shadow(0 2px 4px rgba(126, 162, 212, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(var(--primary-color-rgb), 0.3));
 }
 
 .video-btn:hover .play-icon-svg {
   color: #ffffff;
   transform: scale(1.1);
-  filter: drop-shadow(0 4px 8px rgba(126, 162, 212, 0.5));
+  filter: drop-shadow(0 4px 8px rgba(var(--primary-color-rgb), 0.5));
 }
 
 .video-text {
@@ -728,7 +728,7 @@ body {
 
 .platform-feature-card {
   background: rgba(58, 56, 56, 0.2);
-  /* border: 1px solid #7ea2d4; */
+  /* border: 1px solid var(--primary-color); */
   border-radius: 15px;
   padding: 25px 20px;
   backdrop-filter: blur(20px);
@@ -1060,7 +1060,7 @@ body {
 .btn-outline {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  border: 2px solid #7ea2d4;
+  border: 2px solid var(--primary-color);
   /* padding: 16px 32px; */
   width: 200px;
   height: 50px;
@@ -1074,7 +1074,7 @@ body {
 
 .btn-outline:hover {
   background: rgba(255, 255, 255, 0.15);
-  border-color: #7ea2d4;
+  border-color: var(--primary-color);
   transform: translateY(-2px);
 }
 
@@ -1371,7 +1371,7 @@ body {
   background: rgba(90, 90, 90, 0.2);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(126, 162, 212, 0.3);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1382,7 +1382,7 @@ body {
 
 .toggle-container:hover {
   background: rgba(90, 90, 90, 0.3);
-  border-color: rgba(126, 162, 212, 0.5);
+  border-color: rgba(var(--primary-color-rgb), 0.5);
   box-shadow: 0 6px 20px rgba(107, 123, 255, 0.2);
   transform: scale(1.05);
 }
@@ -1419,30 +1419,30 @@ body {
   position: relative;
   width: 60px;
   height: 60px;
-  background: rgba(126, 162, 212, 0.1);
+  background: rgba(var(--primary-color-rgb), 0.1);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 2px solid rgba(126, 162, 212, 0.4);
+  border: 2px solid rgba(var(--primary-color-rgb), 0.4);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
-  box-shadow: 0 8px 25px rgba(126, 162, 212, 0.3);
+  box-shadow: 0 8px 25px rgba(var(--primary-color-rgb), 0.3);
   animation: smsBounce 3s ease-in-out infinite;
 }
 
 .sms-container:hover {
-  background: rgba(126, 162, 212, 0.2);
-  border-color: rgba(126, 162, 212, 0.6);
-  box-shadow: 0 12px 35px rgba(126, 162, 212, 0.5);
+  background: rgba(var(--primary-color-rgb), 0.2);
+  border-color: rgba(var(--primary-color-rgb), 0.6);
+  box-shadow: 0 12px 35px rgba(var(--primary-color-rgb), 0.5);
   transform: scale(1.1);
   animation-play-state: paused;
 }
 
 .sms-icon {
   z-index: 2;
-  filter: drop-shadow(0 2px 4px rgba(126, 162, 212, 0.3));
+  filter: drop-shadow(0 2px 4px rgba(var(--primary-color-rgb), 0.3));
   animation: smsIconPulse 2s ease-in-out infinite;
 }
 
@@ -1452,7 +1452,7 @@ body {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  border: 2px solid #7ea2d4;
+  border: 2px solid var(--primary-color);
   border-radius: 50%;
   animation: smsPulse 2s ease-out infinite;
   opacity: 0;
@@ -1528,7 +1528,7 @@ body {
 
 .pricing-card {
   background: rgba(58, 56, 56, 0.2);
-  border: 1px #7ea2d4;
+  border: 1px var(--primary-color);
   border-radius: 20px;
   padding: 15px 12px;
   backdrop-filter: blur(20px);
@@ -1541,7 +1541,7 @@ body {
 
 .pricing-card:hover {
   background: rgba(58, 56, 56, 0.3);
-  border-color: #7ea2d4;
+  border-color: var(--primary-color);
   transform: translateY(-10px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
@@ -1619,7 +1619,7 @@ body {
 .btn-pricing {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
-  border: 1px solid rgba(126, 162, 212, 0.3);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
   padding: 10px 24px;
   border-radius: 15px;
   font-size: 13px;
@@ -1632,9 +1632,9 @@ body {
 
 .btn-pricing:hover {
   background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(126, 162, 212, 0.5);
+  border-color: rgba(var(--primary-color-rgb), 0.5);
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(126, 162, 212, 0.2);
+  box-shadow: 0 10px 30px rgba(var(--primary-color-rgb), 0.2);
 }
 
 /* Pricing Plan Colors */
@@ -1951,7 +1951,7 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-size: 10px;
 }
 
@@ -2400,7 +2400,7 @@ body {
 
 .transactions-section {
   background: rgba(20, 20, 20, 0.8);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 12px;
   padding: 25px;
 }
@@ -2428,7 +2428,7 @@ body {
 .transaction-search,
 .transaction-date-filter {
   background: rgba(10, 10, 10, 0.7);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   color: #ffffff;
   padding: 10px 15px;
   border-radius: 8px;
@@ -2453,7 +2453,7 @@ body {
 .transactions-table td {
   padding: 15px;
   text-align: left;
-  border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+  border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1);
   font-size: 14px;
   white-space: nowrap;
 }
@@ -2468,7 +2468,7 @@ body {
 }
 
 .transactions-table tbody tr:hover {
-  background: rgba(126, 162, 212, 0.05);
+  background: rgba(var(--primary-color-rgb), 0.05);
 }
 
 .amount.positive {
@@ -2525,7 +2525,7 @@ body {
   gap: 15px;
   padding: 15px;
   background: rgba(10, 10, 10, 0.5);
-  border: 1px solid rgba(126, 162, 212, 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.1);
   border-radius: 8px;
 }
 
@@ -2572,7 +2572,7 @@ body {
   justify-content: space-between;
   padding: 15px;
   background: rgba(10, 10, 10, 0.5);
-  border: 1px solid rgba(126, 162, 212, 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.1);
   border-radius: 8px;
 }
 
@@ -2594,9 +2594,9 @@ body {
 }
 
 .promo-code-btn {
-  background: rgba(126, 162, 212, 0.2);
-  color: #7ea2d4;
-  border: 1px solid rgba(126, 162, 212, 0.3);
+  background: rgba(var(--primary-color-rgb), 0.2);
+  color: var(--primary-color);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
   padding: 8px 16px;
   border-radius: 6px;
   font-size: 12px;
@@ -2606,7 +2606,7 @@ body {
 }
 
 .promo-code-btn:hover {
-  background: rgba(126, 162, 212, 0.3);
+  background: rgba(var(--primary-color-rgb), 0.3);
   color: #ffffff;
 }
 /* My Courses Page Styles */
@@ -2627,7 +2627,7 @@ body {
   display: flex;
   align-items: center;
   background: rgba(20, 20, 20, 0.8);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 8px;
   padding: 0 12px;
   flex-grow: 1;
@@ -2661,7 +2661,7 @@ body {
 
 .filter-select {
   background: rgba(20, 20, 20, 0.8);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   color: #ffffff;
   padding: 10px 15px;
   border-radius: 8px;
@@ -2671,7 +2671,7 @@ body {
 }
 
 .filter-select:hover {
-  border-color: rgba(126, 162, 212, 0.4);
+  border-color: rgba(var(--primary-color-rgb), 0.4);
 }
 
 .courses-grid {
@@ -2682,7 +2682,7 @@ body {
 
 .course-card-figma {
   background: rgba(20, 20, 20, 0.8);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;
@@ -2692,7 +2692,7 @@ body {
 
 .course-card-figma:hover {
   transform: translateY(-5px);
-  border-color: rgba(126, 162, 212, 0.4);
+  border-color: rgba(var(--primary-color-rgb), 0.4);
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
 }
 
@@ -2737,7 +2737,7 @@ body {
 
 .course-card-category {
   font-size: 12px;
-  color: #7ea2d4;
+  color: var(--primary-color);
   margin-bottom: 8px;
   font-weight: 500;
 }
@@ -2763,7 +2763,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top: 1px solid rgba(126, 162, 212, 0.1);
+  border-top: 1px solid rgba(var(--primary-color-rgb), 0.1);
   padding-top: 15px;
 }
 
@@ -2779,8 +2779,8 @@ body {
 }
 
 .action-btn-icon {
-  background: rgba(126, 162, 212, 0.1);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   color: rgba(255, 255, 255, 0.7);
   width: 32px;
   height: 32px;
@@ -2793,8 +2793,8 @@ body {
 }
 
 .action-btn-icon:hover {
-  background: rgba(126, 162, 212, 0.2);
-  border-color: rgba(126, 162, 212, 0.4);
+  background: rgba(var(--primary-color-rgb), 0.2);
+  border-color: rgba(var(--primary-color-rgb), 0.4);
   color: #ffffff;
 }
 
@@ -2903,13 +2903,13 @@ body {
     rgba(45, 45, 45, 0.95),
     rgba(35, 35, 35, 0.95)
   );
-  border: 1px solid rgba(126, 162, 212, 0.4);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.4);
   border-radius: 20px;
   padding: 40px;
   max-width: 600px;
   margin: 0 auto;
   backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px rgba(126, 162, 212, 0.3);
+  box-shadow: 0 20px 60px rgba(var(--primary-color-rgb), 0.3);
   position: relative;
 }
 
@@ -2967,7 +2967,7 @@ body {
 }
 
 .advice-submit {
-  background: linear-gradient(135deg, #7ea2d4, #9bb4dd);
+  background: linear-gradient(135deg, var(--primary-color), #9bb4dd);
   color: #ffffff;
   border: none;
   border-radius: 10px;
@@ -2982,9 +2982,9 @@ body {
 }
 
 .advice-submit:hover {
-  background: linear-gradient(135deg, #6b90c7, #7ea2d4);
+  background: linear-gradient(135deg, #6b90c7, var(--primary-color));
   transform: translateY(-2px);
-  box-shadow: 0 10px 30px rgba(126, 162, 212, 0.4);
+  box-shadow: 0 10px 30px rgba(var(--primary-color-rgb), 0.4);
 }
 
 /* Advice Glass Decoration */
@@ -3175,7 +3175,7 @@ body {
 }
 
 .footer-contact-item .contact-icon {
-  color: #7ea2d4;
+  color: var(--primary-color);
   width: 16px;
   height: 16px;
   flex-shrink: 0;
@@ -3294,7 +3294,7 @@ body:has(.figma-dashboard) {
 }
 
 .figma-logo span {
-  color: #7ea2d4;
+  color: var(--primary-color);
 }
 
 /* Title styling moved to desktop section */
@@ -3320,13 +3320,13 @@ body:has(.figma-dashboard) {
 }
 
 .figma-btn:hover {
-  border-color: #7ea2d4;
-  background: rgba(126, 162, 212, 0.1);
+  border-color: var(--primary-color);
+  background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 .figma-btn-primary {
-  background: #7ea2d4;
-  border-color: #7ea2d4;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
 }
 
 .figma-btn-primary:hover {
@@ -3359,7 +3359,7 @@ body:has(.figma-dashboard) {
 .figma-sidebar {
   width: 240px;
   flex-shrink: 0;
-  border-right: 1px solid rgba(126, 162, 212, 0.2);
+  border-right: 1px solid rgba(var(--primary-color-rgb), 0.2);
   padding-right: 20px;
   position: fixed;
   top: 90px;
@@ -3381,7 +3381,7 @@ body:has(.figma-dashboard) {
 /* Menu Parent (Clickable Headers) */
 .figma-menu-parent {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 15px;
   padding: 12px 16px;
   display: flex;
@@ -3398,18 +3398,18 @@ body:has(.figma-dashboard) {
 }
 
 .figma-menu-parent:hover {
-  background: rgba(126, 162, 212, 0.1);
-  border-color: #7ea2d4;
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border-color: var(--primary-color);
 }
 
 .figma-menu-title {
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-size: 14px;
   font-weight: 500;
 }
 
 .figma-menu-arrow {
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-size: 10px;
   transition: transform 0.3s ease;
 }
@@ -3422,9 +3422,9 @@ body:has(.figma-dashboard) {
   border-bottom-right-radius: 12px;
   margin-top: 0;
   padding: 8px 16px 12px 16px;
-  border-left: 0.5px solid rgba(126, 162, 212, 0.2);
-  border-right: 0.5px solid rgba(126, 162, 212, 0.2);
-  border-bottom: 0.5px solid rgba(126, 162, 212, 0.2);
+  border-left: 0.5px solid rgba(var(--primary-color-rgb), 0.2);
+  border-right: 0.5px solid rgba(var(--primary-color-rgb), 0.2);
+  border-bottom: 0.5px solid rgba(var(--primary-color-rgb), 0.2);
   max-height: 500px;
   opacity: 1;
   overflow: hidden;
@@ -3474,10 +3474,10 @@ body:has(.figma-dashboard) {
 .figma-single-link {
   display: block;
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 15px;
   padding: 12px 16px;
-  color: #7ea2d4;
+  color: var(--primary-color);
   text-decoration: none;
   font-size: 14px;
   font-weight: 400;
@@ -3485,31 +3485,31 @@ body:has(.figma-dashboard) {
 }
 
 .figma-single-link:hover {
-  background: rgba(126, 162, 212, 0.1);
-  border-color: #7ea2d4;
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border-color: var(--primary-color);
 }
 
 /* Subscription specific styling */
 .figma-subscription .figma-single-link {
-  background: linear-gradient(135deg, rgba(126, 162, 212, 0.15), rgba(126, 162, 212, 0.05));
-  border: 1px solid rgba(126, 162, 212, 0.3);
+  background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.15), rgba(var(--primary-color-rgb), 0.05));
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
   font-weight: 500;
   text-align: center;
-  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.1);
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.1);
 }
 
 .figma-subscription .figma-single-link:hover {
-  background: linear-gradient(135deg, rgba(126, 162, 212, 0.25), rgba(126, 162, 212, 0.15));
-  border-color: #7ea2d4;
+  background: linear-gradient(135deg, rgba(var(--primary-color-rgb), 0.25), rgba(var(--primary-color-rgb), 0.15));
+  border-color: var(--primary-color);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.2);
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.2);
 }
 
 .figma-subscription {
   margin-top: auto;
   width: 220px;
   padding-top: 20px;
-  border-top: 1px solid rgba(126, 162, 212, 0.2);
+  border-top: 1px solid rgba(var(--primary-color-rgb), 0.2);
 }
 
 /* Content Area */
@@ -3524,7 +3524,7 @@ body:has(.figma-dashboard) {
 /* Profile Section */
 .figma-profile-section {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 20px;
   padding: 30px;
   margin-bottom: 30px;
@@ -3543,13 +3543,13 @@ body:has(.figma-dashboard) {
   height: 100px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
-  border: 3px solid #7ea2d4;
+  border: 3px solid var(--primary-color);
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 0 0 2px rgba(126, 162, 212, 0.3);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.3);
 }
 
 .figma-avatar-circle::before {
@@ -3637,8 +3637,8 @@ body:has(.figma-dashboard) {
 }
 
 .figma-profile-btn:hover {
-  border-color: #7ea2d4;
-  background: rgba(126, 162, 212, 0.1);
+  border-color: var(--primary-color);
+  background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 /* Stats Grid */
@@ -3650,7 +3650,7 @@ body:has(.figma-dashboard) {
 
 .figma-stats-card {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 20px;
   padding: 20px;
 }
@@ -3658,7 +3658,7 @@ body:has(.figma-dashboard) {
 .figma-stats-title {
   font-size: 16px;
   font-weight: 500;
-  color: #7ea2d4;
+  color: var(--primary-color);
   margin: 0 0 16px 0;
 }
 
@@ -3787,7 +3787,7 @@ body:has(.figma-dashboard) {
 
 .messages-welcome {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 20px;
   height: 100%;
   display: flex;
@@ -3799,7 +3799,7 @@ body:has(.figma-dashboard) {
   align-items: center;
   justify-content: space-between;
   padding: 30px;
-  border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+  border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.2);
 }
 
 .messages-header h3 {
@@ -3813,7 +3813,7 @@ body:has(.figma-dashboard) {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #7ea2d4;
+  background: var(--primary-color);
   color: white;
   border: none;
   border-radius: 12px;
@@ -3848,7 +3848,7 @@ body:has(.figma-dashboard) {
 }
 
 .placeholder-icon svg {
-  color: #7ea2d4;
+  color: var(--primary-color);
 }
 
 .messages-placeholder h3 {
@@ -3874,21 +3874,21 @@ body:has(.figma-dashboard) {
 
 .course-section {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 20px;
   padding: 30px;
   margin-bottom: 25px;
 }
 
 .course-section-title {
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 25px;
 }
 
 .upload-area {
-  border: 2px dashed rgba(126, 162, 212, 0.3);
+  border: 2px dashed rgba(var(--primary-color-rgb), 0.3);
   border-radius: 12px;
   padding: 40px 20px;
   text-align: center;
@@ -3898,12 +3898,12 @@ body:has(.figma-dashboard) {
 }
 
 .upload-area:hover {
-  border-color: #7ea2d4;
-  background: rgba(126, 162, 212, 0.1);
+  border-color: var(--primary-color);
+  background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 .upload-icon {
-  color: #7ea2d4;
+  color: var(--primary-color);
   margin-bottom: 15px;
 }
 
@@ -4004,15 +4004,15 @@ body:has(.figma-dashboard) {
 .radio-custom {
   width: 18px;
   height: 18px;
-  border: 2px solid rgba(126, 162, 212, 0.5);
+  border: 2px solid rgba(var(--primary-color-rgb), 0.5);
   border-radius: 50%;
   position: relative;
   transition: all 0.3s ease;
 }
 
 .radio-option input[type="radio"]:checked + .radio-custom {
-  border-color: #7ea2d4;
-  background: #7ea2d4;
+  border-color: var(--primary-color);
+  background: var(--primary-color);
 }
 
 .radio-option input[type="radio"]:checked + .radio-custom::after {
@@ -4028,20 +4028,20 @@ body:has(.figma-dashboard) {
 }
 
 .info-tip {
-  background: rgba(126, 162, 212, 0.1);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 8px;
   padding: 12px 16px;
   display: flex;
   align-items: flex-start;
   gap: 10px;
   margin-bottom: 25px;
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-size: 13px;
 }
 
 .info-tip svg {
-  color: #7ea2d4;
+  color: var(--primary-color);
   flex-shrink: 0;
   margin-top: 1px;
 }
@@ -4053,7 +4053,7 @@ body:has(.figma-dashboard) {
 
 .module-item {
   background: rgba(40, 40, 40, 0.5);
-  border: 1px solid rgba(126, 162, 212, 0.15);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.15);
   border-radius: 12px;
   margin-bottom: 80px;
   overflow: visible;
@@ -4065,7 +4065,7 @@ body:has(.figma-dashboard) {
   justify-content: space-between;
   align-items: center;
   padding: 20px 25px;
-  background: rgba(126, 162, 212, 0.05);
+  background: rgba(var(--primary-color-rgb), 0.05);
 }
 
 .module-info h4 {
@@ -4087,8 +4087,8 @@ body:has(.figma-dashboard) {
 
 .action-btn {
   background: transparent;
-  border: 1px solid rgba(126, 162, 212, 0.3);
-  color: #7ea2d4;
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+  color: var(--primary-color);
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 12px;
@@ -4097,7 +4097,7 @@ body:has(.figma-dashboard) {
 }
 
 .action-btn:hover {
-  background: rgba(126, 162, 212, 0.1);
+  background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 .action-btn.delete {
@@ -4138,7 +4138,7 @@ body:has(.figma-dashboard) {
 }
 
 .add-btn {
-  background: #7ea2d4;
+  background: var(--primary-color);
   color: white;
   border: none;
   padding: 8px 16px;
@@ -4158,7 +4158,7 @@ body:has(.figma-dashboard) {
   left: 50%;
   transform: translateX(-50%);
   background: rgba(40, 40, 40, 0.98);
-  border: 1px solid rgba(126, 162, 212, 0.3);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
   border-radius: 8px;
   padding: 6px 0;
   min-width: 150px;
@@ -4178,7 +4178,7 @@ body:has(.figma-dashboard) {
   align-items: center;
   gap: 10px;
   padding: 10px 16px;
-  color: #7ea2d4;
+  color: var(--primary-color);
   text-decoration: none;
   font-size: 13px;
   transition: all 0.2s ease;
@@ -4186,7 +4186,7 @@ body:has(.figma-dashboard) {
 }
 
 .dropdown-menu a:hover {
-  background: rgba(126, 162, 212, 0.15);
+  background: rgba(var(--primary-color-rgb), 0.15);
   color: #ffffff;
 }
 
@@ -4199,19 +4199,19 @@ body:has(.figma-dashboard) {
 /* Lesson Form Styles */
 .lesson-form {
   background: rgba(30, 30, 30, 0.8);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 12px;
   padding: 20px;
   margin-bottom: 15px;
 }
 
 .lesson-form h5 {
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 20px;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+  border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.2);
 }
 
 .lesson-form .form-group {
@@ -4230,7 +4230,7 @@ body:has(.figma-dashboard) {
 .lesson-form .form-group textarea {
   width: 100%;
   background: rgba(20, 20, 20, 0.8);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 8px;
   padding: 12px 16px;
   color: #ffffff;
@@ -4241,7 +4241,7 @@ body:has(.figma-dashboard) {
 .lesson-form .form-group input:focus,
 .lesson-form .form-group textarea:focus {
   outline: none;
-  border-color: #7ea2d4;
+  border-color: var(--primary-color);
 }
 
 .lesson-form .form-group textarea {
@@ -4254,7 +4254,7 @@ body:has(.figma-dashboard) {
   gap: 12px;
   margin-top: 20px;
   padding-top: 15px;
-  border-top: 1px solid rgba(126, 162, 212, 0.1);
+  border-top: 1px solid rgba(var(--primary-color-rgb), 0.1);
 }
 
 /* Assignment Content Type Selector */
@@ -4413,7 +4413,7 @@ body:has(.figma-dashboard) {
 }
 
 .save-lesson-btn {
-  background: #7ea2d4;
+  background: var(--primary-color);
   color: #ffffff;
   border: none;
   border-radius: 8px;
@@ -4445,7 +4445,7 @@ body:has(.figma-dashboard) {
 .answer-radio {
   width: 24px;
   height: 24px;
-  border: 2px solid rgba(126, 162, 212, 0.5);
+  border: 2px solid rgba(var(--primary-color-rgb), 0.5);
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -4463,32 +4463,32 @@ body:has(.figma-dashboard) {
 
 .answer-checkbox:hover,
 .answer-radio:hover {
-  border-color: rgba(126, 162, 212, 0.8);
-  background: rgba(126, 162, 212, 0.1);
+  border-color: rgba(var(--primary-color-rgb), 0.8);
+  background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 .answer-checkbox.checked {
-  background: rgba(126, 162, 212, 0.2);
-  border-color: #7ea2d4;
+  background: rgba(var(--primary-color-rgb), 0.2);
+  border-color: var(--primary-color);
 }
 
 .answer-checkbox.checked::before {
   content: '✓';
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-weight: bold;
   font-size: 16px;
 }
 
 .answer-radio.checked {
-  background: rgba(126, 162, 212, 0.2);
-  border-color: #7ea2d4;
+  background: rgba(var(--primary-color-rgb), 0.2);
+  border-color: var(--primary-color);
 }
 
 .answer-radio.checked::before {
   content: '';
   width: 10px;
   height: 10px;
-  background: #7ea2d4;
+  background: var(--primary-color);
   border-radius: 50%;
 }
 
@@ -4500,13 +4500,13 @@ body:has(.figma-dashboard) {
 
 /* Module header expanded state */
 .module-header.expanded {
-  border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+  border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.2);
 }
 
 .add-module-btn {
   background: transparent;
-  border: 2px dashed rgba(126, 162, 212, 0.3);
-  color: #7ea2d4;
+  border: 2px dashed rgba(var(--primary-color-rgb), 0.3);
+  color: var(--primary-color);
   padding: 20px;
   border-radius: 12px;
   font-size: 14px;
@@ -4518,8 +4518,8 @@ body:has(.figma-dashboard) {
 }
 
 .add-module-btn:hover {
-  border-color: #7ea2d4;
-  background: rgba(126, 162, 212, 0.05);
+  border-color: var(--primary-color);
+  background: rgba(var(--primary-color-rgb), 0.05);
 }
 
 .settings-list {
@@ -4588,7 +4588,7 @@ body:has(.figma-dashboard) {
 }
 
 input:checked + .toggle-slider {
-  background-color: #7ea2d4;
+  background-color: var(--primary-color);
 }
 
 input:checked + .toggle-slider:before {
@@ -4612,14 +4612,14 @@ input:checked + .toggle-slider:before {
 
 .profile-section {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 20px;
   padding: 25px;
   margin-bottom: 25px;
 }
 
 .section-title {
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-size: 18px;
   font-weight: 600;
   margin: 0 0 20px 0;
@@ -4638,7 +4638,7 @@ input:checked + .toggle-slider:before {
 }
 
 .profile-picture-upload {
-  border: 2px dashed rgba(126, 162, 212, 0.3);
+  border: 2px dashed rgba(var(--primary-color-rgb), 0.3);
   border-radius: 12px;
   padding: 30px;
   text-align: center;
@@ -4647,8 +4647,8 @@ input:checked + .toggle-slider:before {
 }
 
 .profile-picture-upload:hover {
-  border-color: #7ea2d4;
-  background: rgba(126, 162, 212, 0.05);
+  border-color: var(--primary-color);
+  background: rgba(var(--primary-color-rgb), 0.05);
 }
 
 .profile-picture-preview {
@@ -4705,7 +4705,7 @@ input:checked + .toggle-slider:before {
 .form-input:focus,
 .form-textarea:focus {
   outline: none;
-  border-color: #7ea2d4;
+  border-color: var(--primary-color);
   background: rgba(255, 255, 255, 0.15);
 }
 
@@ -4731,7 +4731,7 @@ input:checked + .toggle-slider:before {
 .btn-cancel,
 .btn-cancel-profile {
   background: rgba(58, 56, 56, 0.5);
-  border: 1px solid rgba(126, 162, 212, 0.3);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
   color: rgba(255, 255, 255, 0.9);
   padding: 12px 32px;
   border-radius: 10px;
@@ -4744,16 +4744,16 @@ input:checked + .toggle-slider:before {
 
 .btn-cancel:hover,
 .btn-cancel-profile:hover {
-  border-color: rgba(126, 162, 212, 0.6);
-  background: rgba(126, 162, 212, 0.15);
+  border-color: rgba(var(--primary-color-rgb), 0.6);
+  background: rgba(var(--primary-color-rgb), 0.15);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .btn-save,
 .btn-save-profile {
-  background: linear-gradient(135deg, #7ea2d4 0%, #5a8bc4 100%);
-  border: 1px solid rgba(126, 162, 212, 0.5);
+  background: linear-gradient(135deg, var(--primary-color) 0%, #5a8bc4 100%);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.5);
   color: #ffffff;
   padding: 12px 32px;
   border-radius: 10px;
@@ -4761,7 +4761,7 @@ input:checked + .toggle-slider:before {
   transition: all 0.3s ease;
   font-size: 15px;
   font-weight: 600;
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3);
   position: relative;
   overflow: hidden;
 }
@@ -4787,13 +4787,13 @@ input:checked + .toggle-slider:before {
 .btn-save-profile:hover {
   background: linear-gradient(135deg, #6a92c4 0%, #4a7bb4 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(126, 162, 212, 0.4);
+  box-shadow: 0 6px 16px rgba(var(--primary-color-rgb), 0.4);
 }
 
 .btn-save:active,
 .btn-save-profile:active {
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.3);
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.3);
 }
 
 /* Responsive for edit profile */
@@ -4846,13 +4846,13 @@ input:checked + .toggle-slider:before {
 }
 
 .dashboard-logo .brand-highlight {
-  color: #7ea2d4;
+  color: var(--primary-color);
 }
 
 .dashboard-title h2 {
   font-size: 32px;
   font-weight: 600;
-  color: #7ea2d4;
+  color: var(--primary-color);
   margin: 0;
 }
 
@@ -4874,13 +4874,13 @@ input:checked + .toggle-slider:before {
 }
 
 .dash-btn:hover {
-  border-color: #7ea2d4;
-  background: rgba(126, 162, 212, 0.1);
+  border-color: var(--primary-color);
+  background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 .dash-btn-primary {
-  background: #7ea2d4;
-  border-color: #7ea2d4;
+  background: var(--primary-color);
+  border-color: var(--primary-color);
   color: #ffffff;
 }
 
@@ -4907,7 +4907,7 @@ input:checked + .toggle-slider:before {
 }
 
 .sidebar-section-title {
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 15px;
@@ -4915,7 +4915,7 @@ input:checked + .toggle-slider:before {
 
 .sidebar-menu {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 15px;
   padding: 15px;
 }
@@ -4947,10 +4947,10 @@ input:checked + .toggle-slider:before {
 .sidebar-section-link {
   display: block;
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 15px;
   padding: 15px 20px;
-  color: #7ea2d4;
+  color: var(--primary-color);
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -4958,8 +4958,8 @@ input:checked + .toggle-slider:before {
 }
 
 .sidebar-section-link:hover {
-  background: rgba(126, 162, 212, 0.1);
-  border-color: #7ea2d4;
+  background: rgba(var(--primary-color-rgb), 0.1);
+  border-color: var(--primary-color);
 }
 
 /* Main Content Area */
@@ -4970,7 +4970,7 @@ input:checked + .toggle-slider:before {
 /* Profile Card */
 .profile-card {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 20px;
   padding: 30px;
   margin-bottom: 30px;
@@ -5034,7 +5034,7 @@ input:checked + .toggle-slider:before {
 }
 
 .rating-text {
-  color: #7ea2d4;
+  color: var(--primary-color);
   font-weight: 500;
 }
 
@@ -5061,8 +5061,8 @@ input:checked + .toggle-slider:before {
 }
 
 .profile-btn:hover {
-  border-color: #7ea2d4;
-  background: rgba(126, 162, 212, 0.1);
+  border-color: var(--primary-color);
+  background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 /* Statistics Cards Grid */
@@ -5074,7 +5074,7 @@ input:checked + .toggle-slider:before {
 
 .stat-card {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 20px;
   padding: 25px;
 }
@@ -5082,7 +5082,7 @@ input:checked + .toggle-slider:before {
 .stat-title {
   font-size: 18px;
   font-weight: 600;
-  color: #7ea2d4;
+  color: var(--primary-color);
   margin: 0 0 20px 0;
 }
 
@@ -5157,7 +5157,7 @@ input:checked + .toggle-slider:before {
 
 .modal-content {
   background: rgba(58, 56, 56, 0.95);
-  border: 1px solid rgba(126, 162, 212, 0.3);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
   border-radius: 20px;
   padding: 30px;
   max-width: 500px;
@@ -5225,7 +5225,7 @@ input:checked + .toggle-slider:before {
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #7ea2d4;
+  border-color: var(--primary-color);
   background: rgba(255, 255, 255, 0.15);
 }
 
@@ -5257,13 +5257,13 @@ input:checked + .toggle-slider:before {
 }
 
 .btn-cancel:hover {
-  border-color: #7ea2d4;
-  background: rgba(126, 162, 212, 0.1);
+  border-color: var(--primary-color);
+  background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 .btn-submit {
-  background: #7ea2d4;
-  border: 1px solid #7ea2d4;
+  background: var(--primary-color);
+  border: 1px solid var(--primary-color);
   color: #ffffff;
   padding: 12px 24px;
   border-radius: 8px;
@@ -5443,7 +5443,7 @@ input:checked + .toggle-slider:before {
 #courseSearchInput {
   width: 100%;
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 8px;
   padding: 12px 12px 12px 40px;
   color: rgba(255, 255, 255, 0.9);
@@ -5453,7 +5453,7 @@ input:checked + .toggle-slider:before {
 
 #courseSearchInput:focus {
   outline: none;
-  border-color: rgba(126, 162, 212, 0.5);
+  border-color: rgba(var(--primary-color-rgb), 0.5);
   background: rgba(58, 56, 56, 0.5);
 }
 
@@ -5467,7 +5467,7 @@ input:checked + .toggle-slider:before {
 
 #courseSortSelect {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 8px;
   padding: 12px 16px;
   color: rgba(255, 255, 255, 0.9);
@@ -5478,7 +5478,7 @@ input:checked + .toggle-slider:before {
 
 #courseSortSelect:focus {
   outline: none;
-  border-color: rgba(126, 162, 212, 0.5);
+  border-color: rgba(var(--primary-color-rgb), 0.5);
 }
 
 #courseSortSelect option {
@@ -5518,7 +5518,7 @@ input:checked + .toggle-slider:before {
 
 .stats-modal-content {
   background: #232323;
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 16px;
   width: 90%;
   max-width: 600px;
@@ -5543,7 +5543,7 @@ input:checked + .toggle-slider:before {
   justify-content: space-between;
   align-items: center;
   padding: 20px 25px;
-  border-bottom: 1px solid rgba(126, 162, 212, 0.1);
+  border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.1);
 }
 
 .stats-modal-header h3 {
@@ -5586,7 +5586,7 @@ input:checked + .toggle-slider:before {
 
 .stat-item {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.1);
   border-radius: 12px;
   padding: 16px;
   text-align: center;
@@ -5595,7 +5595,7 @@ input:checked + .toggle-slider:before {
 .stat-value {
   font-size: 24px;
   font-weight: 600;
-  color: rgba(126, 162, 212, 1);
+  color: rgba(var(--primary-color-rgb), 1);
   margin-bottom: 4px;
 }
 
@@ -5606,7 +5606,7 @@ input:checked + .toggle-slider:before {
 
 .stats-details {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.1);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.1);
   border-radius: 12px;
   padding: 20px;
 }
@@ -5624,7 +5624,7 @@ input:checked + .toggle-slider:before {
 }
 
 .stats-details strong {
-  color: rgba(126, 162, 212, 0.8);
+  color: rgba(var(--primary-color-rgb), 0.8);
 }
 
 /* Message Toast */
@@ -5633,7 +5633,7 @@ input:checked + .toggle-slider:before {
   top: 20px;
   right: 20px;
   background: rgba(58, 56, 56, 0.95);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 8px;
   padding: 12px 16px;
   color: rgba(255, 255, 255, 0.9);
@@ -5670,14 +5670,14 @@ input:checked + .toggle-slider:before {
 
 .stat-card-my-courses {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 16px;
   padding: 20px;
   text-align: center;
 }
 
 .stat-card-my-courses h3 {
-  color: rgba(126, 162, 212, 0.8);
+  color: rgba(var(--primary-color-rgb), 0.8);
   font-size: 14px;
   font-weight: 500;
   margin: 0 0 8px 0;
@@ -5685,7 +5685,7 @@ input:checked + .toggle-slider:before {
 }
 
 .stat-number {
-  color: rgba(126, 162, 212, 1);
+  color: rgba(var(--primary-color-rgb), 1);
   font-size: 28px;
   font-weight: 600;
   margin: 5px 0;
@@ -5708,7 +5708,7 @@ input:checked + .toggle-slider:before {
   background: rgba(58, 56, 56, 0.3);
   border-radius: 12px;
   padding: 4px;
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
 }
 
 /* Old filter-tab CSS - removed, using new version below */
@@ -5723,7 +5723,7 @@ input:checked + .toggle-slider:before {
 
 .my-course-card {
   background: rgba(58, 56, 56, 0.3);
-  border: 1px solid rgba(126, 162, 212, 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.2);
   border-radius: 16px;
   padding: 0;
   position: relative;
@@ -5733,7 +5733,7 @@ input:checked + .toggle-slider:before {
 
 .my-course-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(126, 162, 212, 0.4);
+  border-color: rgba(var(--primary-color-rgb), 0.4);
 }
 
 .course-thumbnail {
@@ -5817,7 +5817,7 @@ input:checked + .toggle-slider:before {
   align-items: center;
   margin: 16px 0;
   padding: 8px 0;
-  border-top: 1px solid rgba(126, 162, 212, 0.1);
+  border-top: 1px solid rgba(var(--primary-color-rgb), 0.1);
 }
 
 .revenue-label {
@@ -5826,7 +5826,7 @@ input:checked + .toggle-slider:before {
 }
 
 .revenue-amount {
-  color: rgba(126, 162, 212, 1);
+  color: rgba(var(--primary-color-rgb), 1);
   font-size: 16px;
   font-weight: 600;
 }
@@ -5838,9 +5838,9 @@ input:checked + .toggle-slider:before {
 
 .course-btn {
   flex: 1;
-  background: rgba(126, 162, 212, 0.2);
-  border: 1px solid rgba(126, 162, 212, 0.3);
-  color: rgba(126, 162, 212, 1);
+  background: rgba(var(--primary-color-rgb), 0.2);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+  color: rgba(var(--primary-color-rgb), 1);
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 12px;
@@ -5849,8 +5849,8 @@ input:checked + .toggle-slider:before {
 }
 
 .course-btn:hover {
-  background: rgba(126, 162, 212, 0.3);
-  border-color: rgba(126, 162, 212, 0.5);
+  background: rgba(var(--primary-color-rgb), 0.3);
+  border-color: rgba(var(--primary-color-rgb), 0.5);
 }
 
 .course-btn-delete {
@@ -5871,7 +5871,7 @@ input:checked + .toggle-slider:before {
 
 .add-course-card {
   background: rgba(58, 56, 56, 0.3);
-  border: 2px dashed rgba(126, 162, 212, 0.3);
+  border: 2px dashed rgba(var(--primary-color-rgb), 0.3);
   border-radius: 16px;
   padding: 40px;
   text-align: center;
@@ -5880,7 +5880,7 @@ input:checked + .toggle-slider:before {
 }
 
 .add-course-card:hover {
-  border-color: rgba(126, 162, 212, 0.5);
+  border-color: rgba(var(--primary-color-rgb), 0.5);
   background: rgba(58, 56, 56, 0.4);
 }
 
@@ -5892,14 +5892,14 @@ input:checked + .toggle-slider:before {
 }
 
 .add-course-text {
-  color: rgba(126, 162, 212, 1);
+  color: rgba(var(--primary-color-rgb), 1);
   font-size: 18px;
   font-weight: 600;
   letter-spacing: 1px;
 }
 
 .add-course-icon {
-  color: rgba(126, 162, 212, 1);
+  color: rgba(var(--primary-color-rgb), 1);
   font-size: 24px;
   font-weight: 300;
 }
@@ -6016,7 +6016,7 @@ input:checked + .toggle-slider:before {
 
 .figma-menu-child:hover {
   transform: translateX(4px);
-  background: rgba(126, 162, 212, 0.1);
+  background: rgba(var(--primary-color-rgb), 0.1);
 }
 
 /* Smooth content area transitions */
@@ -6041,13 +6041,13 @@ input:checked + .toggle-slider:before {
 }
 
 .figma-menu-parent:hover {
-  background: rgba(126, 162, 212, 0.05);
+  background: rgba(var(--primary-color-rgb), 0.05);
 }
 
 
 /* Figma Dashboard Global Styles with Theme Support */
 .figma-dashboard {
-  background: var(--bg-primary);
+  background: #232323;
   min-height: 100vh;
   color: var(--text-primary);
 }
@@ -6060,7 +6060,7 @@ input:checked + .toggle-slider:before {
 }
 
 .figma-sidebar {
-  background: var(--bg-primary);
+  background: #232323;
   border-right: 1px solid var(--border-color);
   transition: all 0.3s ease;
 }
@@ -6096,7 +6096,7 @@ input:checked + .toggle-slider:before {
 }
 
 .figma-content-area {
-  background: var(--bg-primary);
+  background: #232323;
   color: var(--text-primary);
 }
 
@@ -6401,7 +6401,7 @@ input:checked + .toggle-slider:before {
 /* Additional Light Mode Overrides */
 body.light-mode .btn-save,
 body.light-mode .btn-save-profile {
-  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.25);
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.25);
 }
 
 body.light-mode .btn-cancel,
@@ -6882,7 +6882,7 @@ body.light-mode .course-card-stats {
 
 /* Light mode AI Assistant page overrides */
 body.light-mode .figma-content-area.ai-assistant-page {
-  background: var(--bg-primary) !important;
+  background: #232323 !important;
 }
 
 body.light-mode .ai-status-card {
@@ -7204,7 +7204,7 @@ body.light-mode .student-tab.active {
 }
 
 body.light-mode .students-list {
-  background: var(--bg-primary) !important;
+  background: #232323 !important;
 }
 
 body.light-mode .student-item {
@@ -7372,7 +7372,7 @@ body.light-mode .rating-count {
 
 /* Light mode Messages page - make it lighter and prettier */
 body.light-mode .messages-container {
-  background: var(--bg-primary) !important;
+  background: #232323 !important;
 }
 
 body.light-mode .messages-welcome {
@@ -7457,7 +7457,7 @@ body.light-mode .chat-time {
 }
 
 body.light-mode .chat-area {
-  background: var(--bg-primary) !important;
+  background: #232323 !important;
 }
 
 body.light-mode .chat-header {
@@ -7539,8 +7539,8 @@ body.light-mode .stat-card-my-courses {
 body.light-mode .stat-card-my-courses:hover {
   transform: translateY(-4px);
   background: #f9fafb !important;
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
-  border-color: #7ea2d4 !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.12) !important;
+  border-color: var(--primary-color) !important;
 }
 
 body.light-mode .stat-card-my-courses h3 {
@@ -7590,7 +7590,7 @@ body.light-mode .filter-tab.active {
 }
 
 body.light-mode .my-courses-grid {
-  background: var(--bg-primary) !important;
+  background: #232323 !important;
   padding: 24px;
 }
 
@@ -7812,7 +7812,7 @@ body.light-mode .course-btn-delete:hover {
 
 /* Light mode Finance page - make it lighter and prettier */
 body.light-mode .figma-content-area.finance-page {
-  background: var(--bg-primary) !important;
+  background: #232323 !important;
 }
 
 body.light-mode .figma-content-area.finance-page .finance-card {
@@ -7823,8 +7823,8 @@ body.light-mode .figma-content-area.finance-page .finance-card {
 
 body.light-mode .figma-content-area.finance-page .finance-card:hover {
   background: #f9fafb !important;
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.15) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.15) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .finance-section {
@@ -7841,8 +7841,8 @@ body.light-mode .figma-content-area.finance-page .payment-method-card {
 
 body.light-mode .figma-content-area.finance-page .payment-method-card:hover {
   background: #f9fafb !important;
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.12) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .promo-code-card {
@@ -7867,9 +7867,9 @@ body.light-mode .figma-content-area.finance-page .transaction-type-filter {
 body.light-mode .figma-content-area.finance-page .transaction-search:focus,
 body.light-mode .figma-content-area.finance-page .transaction-date-filter:focus,
 body.light-mode .figma-content-area.finance-page .transaction-type-filter:focus {
-  border-color: #7ea2d4 !important;
+  border-color: var(--primary-color) !important;
   background: #ffffff !important;
-  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .finance-transactions-table th {
@@ -7889,7 +7889,7 @@ body.light-mode .figma-content-area.finance-page .payment-method-options-btn {
 
 body.light-mode .figma-content-area.finance-page .payment-method-options-btn:hover {
   background: #f9fafb !important;
-  border-color: #7ea2d4 !important;
+  border-color: var(--primary-color) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .three-dots {
@@ -7911,11 +7911,11 @@ body.light-mode .figma-content-area.finance-page .dropdown-item:hover {
 }
 
 body.light-mode .figma-content-area.finance-page .dropdown-item.edit {
-  color: #7ea2d4 !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .dropdown-item.edit:hover {
-  background: rgba(126, 162, 212, 0.1) !important;
+  background: rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .section-title {
@@ -7923,7 +7923,7 @@ body.light-mode .figma-content-area.finance-page .section-title {
 }
 
 body.light-mode .figma-content-area.finance-page .finance-card-title {
-  color: #7ea2d4 !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .finance-card-amount {
@@ -7952,7 +7952,7 @@ body.light-mode .figma-content-area.finance-page .promo-code-usage {
 
 /* Light mode Assignments page - make it white and clean */
 body.light-mode .figma-content-area.assignments-page {
-  background: var(--bg-primary) !important;
+  background: #232323 !important;
 }
 
 body.light-mode .course-assignment-banner {
@@ -7983,8 +7983,8 @@ body.light-mode .course-select {
 
 body.light-mode .course-select:hover,
 body.light-mode .course-select:focus {
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 body.light-mode .course-select option {
@@ -7993,9 +7993,9 @@ body.light-mode .course-select option {
 }
 
 body.light-mode .assignment-counter {
-  background: rgba(126, 162, 212, 0.1) !important;
-  border: 1px solid rgba(126, 162, 212, 0.3) !important;
-  color: #7ea2d4 !important;
+  background: rgba(var(--primary-color-rgb), 0.1) !important;
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .assignments-card {
@@ -8006,12 +8006,12 @@ body.light-mode .assignments-card {
 
 body.light-mode .assignments-card:hover {
   background: #f9fafb !important;
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.15) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.15) !important;
 }
 
 body.light-mode .assignments-card-title {
-  color: #7ea2d4 !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .assignments-card-amount {
@@ -8025,9 +8025,9 @@ body.light-mode .assignment-tab {
 }
 
 body.light-mode .assignment-tab.active {
-  background: rgba(126, 162, 212, 0.1) !important;
-  color: #7ea2d4 !important;
-  border-color: #7ea2d4 !important;
+  background: rgba(var(--primary-color-rgb), 0.1) !important;
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
 }
 
 body.light-mode .assignments-section {
@@ -8048,8 +8048,8 @@ body.light-mode .assignment-item {
 
 body.light-mode .assignment-item:hover {
   background: #f9fafb !important;
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.12) !important;
 }
 
 body.light-mode .assignment-title {
@@ -8086,7 +8086,7 @@ body.light-mode .view-file-btn:hover {
 
 /* Light mode Quiz Analytics page - make it white and clean */
 body.light-mode .figma-content-area.quiz-analytics-page {
-  background: var(--bg-primary) !important;
+  background: #232323 !important;
 }
 
 body.light-mode .quiz-stat-card {
@@ -8097,8 +8097,8 @@ body.light-mode .quiz-stat-card {
 
 body.light-mode .quiz-stat-card:hover {
   background: #f9fafb !important;
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.12) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.12) !important;
 }
 
 body.light-mode .quiz-stat-title {
@@ -8120,8 +8120,8 @@ body.light-mode .quiz-tab {
 }
 
 body.light-mode .quiz-tab.active {
-  background: rgba(126, 162, 212, 0.1) !important;
-  color: #7ea2d4 !important;
+  background: rgba(var(--primary-color-rgb), 0.1) !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .quiz-content-section {
@@ -8142,8 +8142,8 @@ body.light-mode .quiz-item {
 
 body.light-mode .quiz-item:hover {
   background: #ffffff !important;
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.1) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 body.light-mode .quiz-title {
@@ -8160,18 +8160,18 @@ body.light-mode .quiz-description {
 
 body.light-mode .quiz-action-btn {
   background: #ffffff !important;
-  border: 1px solid #7ea2d4 !important;
-  color: #7ea2d4 !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .quiz-action-btn:hover {
-  background: rgba(126, 162, 212, 0.1) !important;
-  border-color: #7ea2d4 !important;
+  background: rgba(var(--primary-color-rgb), 0.1) !important;
+  border-color: var(--primary-color) !important;
 }
 
 /* Light mode Progress page - make it white and clean */
 body.light-mode .progress-page {
-  background: var(--bg-primary) !important;
+  background: #232323 !important;
 }
 
 body.light-mode .progress-stat-card {
@@ -8182,12 +8182,12 @@ body.light-mode .progress-stat-card {
 
 body.light-mode .progress-stat-card:hover {
   background: #f9fafb !important;
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.15) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.15) !important;
 }
 
 body.light-mode .progress-stat-title {
-  color: #7ea2d4 !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .progress-stat-value {
@@ -8201,13 +8201,13 @@ body.light-mode .filter-btn {
 }
 
 body.light-mode .filter-btn.active {
-  background: rgba(126, 162, 212, 0.1) !important;
-  border-color: #7ea2d4 !important;
-  color: #7ea2d4 !important;
+  background: rgba(var(--primary-color-rgb), 0.1) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .filter-btn:hover {
-  border-color: #7ea2d4 !important;
+  border-color: var(--primary-color) !important;
   color: #1a1a1a !important;
 }
 
@@ -8228,13 +8228,13 @@ body.light-mode .student-progress-card {
 
 body.light-mode .student-progress-card:hover {
   background: #ffffff !important;
-  border-color: #7ea2d4 !important;
-  box-shadow: 0 2px 8px rgba(126, 162, 212, 0.1) !important;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 2px 8px rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 body.light-mode .student-avatar-progress {
-  background: rgba(126, 162, 212, 0.15) !important;
-  color: #7ea2d4 !important;
+  background: rgba(var(--primary-color-rgb), 0.15) !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .student-name-email h4 {
@@ -8247,13 +8247,13 @@ body.light-mode .student-name-email p {
 
 body.light-mode .action-btn {
   background: #ffffff !important;
-  border: 1px solid #7ea2d4 !important;
-  color: #7ea2d4 !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .action-btn:hover {
-  background: rgba(126, 162, 212, 0.1) !important;
-  border-color: #7ea2d4 !important;
+  background: rgba(var(--primary-color-rgb), 0.1) !important;
+  border-color: var(--primary-color) !important;
 }
 
 body.light-mode .current-lesson {
@@ -8287,12 +8287,12 @@ body.light-mode .stat-value {
 
 body.light-mode .show-more-progress-btn {
   background: #ffffff !important;
-  border: 1px solid #7ea2d4 !important;
-  color: #7ea2d4 !important;
+  border: 1px solid var(--primary-color) !important;
+  color: var(--primary-color) !important;
 }
 
 body.light-mode .show-more-progress-btn:hover {
-  background: rgba(126, 162, 212, 0.1) !important;
+  background: rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 body.light-mode .progress-stats-row {
@@ -8634,9 +8634,9 @@ body.light-mode .modal-input {
 body.light-mode .form-group input:focus,
 body.light-mode .modal-input:focus {
   outline: none !important;
-  border-color: #7ea2d4 !important;
+  border-color: var(--primary-color) !important;
   background: #ffffff !important;
-  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 body.light-mode .checkbox-wrapper,
@@ -8659,8 +8659,8 @@ body.light-mode .modal-checkbox {
 
 body.light-mode input[type="checkbox"]:checked,
 body.light-mode .modal-checkbox:checked {
-  background: #7ea2d4 !important;
-  border-color: #7ea2d4 !important;
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
 }
 
 body.light-mode .checkbox-wrapper label,
@@ -8707,7 +8707,7 @@ body.light-mode .modal-btn-cancel:hover {
 
 body.light-mode .save-btn,
 body.light-mode .modal-btn-primary {
-  background: #7ea2d4 !important;
+  background: var(--primary-color) !important;
   color: white !important;
 }
 
@@ -8715,7 +8715,7 @@ body.light-mode .save-btn:hover,
 body.light-mode .modal-btn-primary:hover {
   background: #6a92c4 !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3) !important;
 }
 
 body.light-mode .delete-btn,
@@ -8761,11 +8761,11 @@ body.light-mode .figma-content-area.finance-page .card-action-btn {
 }
 
 body.light-mode .figma-content-area.finance-page .card-action-btn.edit-btn:hover {
-  background: rgba(126, 162, 212, 0.15) !important;
-  border-color: #7ea2d4 !important;
-  color: #7ea2d4 !important;
+  background: rgba(var(--primary-color-rgb), 0.15) !important;
+  border-color: var(--primary-color) !important;
+  color: var(--primary-color) !important;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.3) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .card-action-btn.delete-btn {
@@ -8833,9 +8833,9 @@ body.light-mode .figma-content-area.finance-page .form-group input {
 
 body.light-mode .figma-content-area.finance-page .form-group input:focus {
   outline: none !important;
-  border-color: #7ea2d4 !important;
+  border-color: var(--primary-color) !important;
   background: #ffffff !important;
-  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .checkbox-wrapper {
@@ -8855,8 +8855,8 @@ body.light-mode .figma-content-area.finance-page .checkbox-wrapper input[type="c
 }
 
 body.light-mode .figma-content-area.finance-page .checkbox-wrapper input[type="checkbox"]:checked {
-  background: #7ea2d4 !important;
-  border-color: #7ea2d4 !important;
+  background: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
 }
 
 body.light-mode .figma-content-area.finance-page .checkbox-wrapper label {
@@ -8896,7 +8896,7 @@ body.light-mode .figma-content-area.finance-page .cancel-btn:hover {
 }
 
 body.light-mode .figma-content-area.finance-page .save-btn {
-  background: #7ea2d4 !important;
+  background: var(--primary-color) !important;
   color: #ffffff !important;
 }
 
@@ -8934,7 +8934,7 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
   opacity: 0;
   transition: all 0.3s ease;
   z-index: 10000;
-  border: 1px solid rgba(126, 162, 212, 0.3);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.3);
 }
 
 .toast-notification.show {
@@ -8992,7 +8992,7 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
 }
 
 .profile-picture-upload:hover {
-  background: rgba(126, 162, 212, 0.05);
+  background: rgba(var(--primary-color-rgb), 0.05);
   transform: translateY(-2px);
 }
 
@@ -9005,15 +9005,15 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
 }
 
 .profile-picture-upload:hover .profile-picture-preview {
-  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.3);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.3);
 }
 
 
 /* Certificate Upload Button */
 .btn-upload-cert {
-  background: rgba(126, 162, 212, 0.2);
-  color: #7ea2d4;
-  border: 1px solid rgba(126, 162, 212, 0.5);
+  background: rgba(var(--primary-color-rgb), 0.2);
+  color: var(--primary-color);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.5);
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
@@ -9023,8 +9023,8 @@ body.light-mode .figma-content-area.finance-page .delete-confirm-btn:hover {
 }
 
 .btn-upload-cert:hover {
-  background: rgba(126, 162, 212, 0.3);
-  border-color: #7ea2d4;
+  background: rgba(var(--primary-color-rgb), 0.3);
+  border-color: var(--primary-color);
   transform: translateY(-1px);
 }
 
@@ -9921,7 +9921,7 @@ button.filter-tab.active {
 }
 
 .video-modal-content {
-  background: var(--bg-primary);
+  background: #232323;
   border-radius: 12px;
   overflow: hidden;
   max-width: 90vw;
@@ -9963,7 +9963,7 @@ button.filter-tab.active {
 
 .video-container {
   padding: 24px;
-  background: var(--bg-primary);
+  background: #232323;
 }
 
 .video-container video {
@@ -10023,7 +10023,7 @@ button.filter-tab.active {
 
 .question-item:hover {
   border-color: var(--primary-color);
-  box-shadow: 0 4px 12px rgba(126, 162, 212, 0.1);
+  box-shadow: 0 4px 12px rgba(var(--primary-color-rgb), 0.1);
 }
 
 .question-header {
@@ -10046,7 +10046,7 @@ button.filter-tab.active {
 .question-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.1);
 }
 
 .remove-question-btn {
@@ -10086,7 +10086,7 @@ button.filter-tab.active {
 .answer-input:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(126, 162, 212, 0.1);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.1);
 }
 
 .answer-checkbox {
@@ -10290,7 +10290,7 @@ button.filter-tab.active {
     width: 35px;
     height: 35px;
     background: rgba(58, 56, 56, 0.3);
-    border: 1px solid #7ea2d4;
+    border: 1px solid var(--primary-color);
     border-radius: 6px;
     cursor: pointer;
     align-items: center;
@@ -10356,7 +10356,7 @@ button.filter-tab.active {
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     background: rgba(35, 35, 35, 0.98) !important;
     backdrop-filter: blur(30px) !important;
-    border-right: 1px solid rgba(126, 162, 212, 0.3) !important;
+    border-right: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
     overflow-y: auto !important;
     box-sizing: border-box !important;
   }
@@ -10397,7 +10397,7 @@ button.filter-tab.active {
     padding: 15px !important;
     width: 100% !important;
     min-height: calc(100vh - 60px) !important;
-    background: var(--bg-primary) !important;
+    background: #232323 !important;
     overflow-x: hidden !important;
     box-sizing: border-box !important;
     position: relative !important;
@@ -10415,14 +10415,16 @@ button.filter-tab.active {
   /* Dashboard Profile Section Mobile */
   .figma-profile-section {
     flex-direction: column !important;
-    gap: 15px !important;
-    padding: 15px !important;
-    border-radius: 12px !important;
-    margin: 0 0 20px 0 !important;
-    background: rgba(58, 56, 56, 0.3) !important;
-    border: 1px solid rgba(126, 162, 212, 0.2) !important;
+    gap: 20px !important;
+    padding: 20px 15px !important;
+    border-radius: 16px !important;
+    margin: 0 0 25px 0 !important;
+    background: rgba(58, 56, 56, 0.4) !important;
+    border: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
     width: 100% !important;
     box-sizing: border-box !important;
+    text-align: center !important;
+    align-items: center !important;
   }
   
   .figma-profile-left {
@@ -10435,7 +10437,7 @@ button.filter-tab.active {
     height: 100px !important;
     margin: 0 auto 15px !important;
     border-radius: 50% !important;
-    border: 3px solid #7ea2d4 !important;
+    border: 3px solid var(--primary-color) !important;
   }
   
   .figma-profile-info h2 {
@@ -10482,14 +10484,14 @@ button.filter-tab.active {
     padding: 12px 20px !important;
     font-size: 14px !important;
     border-radius: 8px !important;
-    background: rgba(126, 162, 212, 0.2) !important;
-    border: 1px solid #7ea2d4 !important;
+    background: rgba(var(--primary-color-rgb), 0.2) !important;
+    border: 1px solid var(--primary-color) !important;
     color: #ffffff !important;
     transition: all 0.3s ease !important;
   }
   
   .figma-profile-btn:hover {
-    background: rgba(126, 162, 212, 0.3) !important;
+    background: rgba(var(--primary-color-rgb), 0.3) !important;
     transform: translateY(-1px) !important;
   }
   
@@ -10506,7 +10508,7 @@ button.filter-tab.active {
     padding: 20px 15px !important;
     border-radius: 12px !important;
     background: rgba(58, 56, 56, 0.3) !important;
-    border: 1px solid rgba(126, 162, 212, 0.2) !important;
+    border: 1px solid rgba(var(--primary-color-rgb), 0.2) !important;
     transition: all 0.3s ease !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -10514,7 +10516,7 @@ button.filter-tab.active {
   
   .figma-stats-card:hover {
     background: rgba(58, 56, 56, 0.4) !important;
-    border-color: #7ea2d4 !important;
+    border-color: var(--primary-color) !important;
     transform: translateY(-2px) !important;
   }
   
@@ -10535,7 +10537,7 @@ button.filter-tab.active {
   
   .figma-stats-label {
     font-size: 10px !important;
-    color: #7ea2d4 !important;
+    color: var(--primary-color) !important;
   }
   
   /* Special styling for revenue and balance */
@@ -10550,7 +10552,7 @@ button.filter-tab.active {
     border-radius: 12px !important;
     margin: 20px 0 !important;
     background: rgba(58, 56, 56, 0.3) !important;
-    border: 1px solid rgba(126, 162, 212, 0.2) !important;
+    border: 1px solid rgba(var(--primary-color-rgb), 0.2) !important;
   }
   
   .figma-bio-header {
@@ -10581,15 +10583,15 @@ button.filter-tab.active {
   .figma-bio-edit-btn {
     padding: 8px 16px !important;
     font-size: 12px !important;
-    background: rgba(126, 162, 212, 0.2) !important;
-    border: 1px solid #7ea2d4 !important;
-    color: #7ea2d4 !important;
+    background: rgba(var(--primary-color-rgb), 0.2) !important;
+    border: 1px solid var(--primary-color) !important;
+    color: var(--primary-color) !important;
     border-radius: 6px !important;
     transition: all 0.3s ease !important;
   }
   
   .figma-bio-edit-btn:hover {
-    background: rgba(126, 162, 212, 0.3) !important;
+    background: rgba(var(--primary-color-rgb), 0.3) !important;
     color: #ffffff !important;
   }
   
@@ -10896,8 +10898,8 @@ button.filter-tab.active {
   .figma-avatar-circle {
     width: 80px !important;
     height: 80px !important;
-    border: 2px solid #7ea2d4 !important;
-    box-shadow: 0 0 0 1px rgba(126, 162, 212, 0.3) !important;
+    border: 2px solid var(--primary-color) !important;
+    box-shadow: 0 0 0 1px rgba(var(--primary-color-rgb), 0.3) !important;
   }
   
   .figma-avatar-circle svg {
@@ -11046,7 +11048,7 @@ button.filter-tab.active {
     z-index: 1000 !important;
     background: rgba(35, 35, 35, 0.95) !important;
     backdrop-filter: blur(20px) !important;
-    border-bottom: 1px solid rgba(126, 162, 212, 0.2) !important;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.2) !important;
     box-sizing: border-box !important;
   }
   
@@ -11069,7 +11071,7 @@ button.filter-tab.active {
     width: 40px !important;
     height: 40px !important;
     background: rgba(58, 56, 56, 0.3) !important;
-    border: 1px solid #7ea2d4 !important;
+    border: 1px solid var(--primary-color) !important;
     border-radius: 8px !important;
     cursor: pointer !important;
     align-items: center !important;
@@ -11108,7 +11110,7 @@ button.filter-tab.active {
     width: 40px;
     height: 40px;
     background: rgba(58, 56, 56, 0.3);
-    border: 1px solid #7ea2d4;
+    border: 1px solid var(--primary-color);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -11121,12 +11123,12 @@ button.filter-tab.active {
   
   .figma-mobile-menu-btn:hover {
     background: rgba(58, 56, 56, 0.5);
-    border-color: #7ea2d4;
+    border-color: var(--primary-color);
   }
   
   .figma-mobile-menu-btn.active {
-    background: rgba(126, 162, 212, 0.3);
-    border-color: #7ea2d4;
+    background: rgba(var(--primary-color-rgb), 0.3);
+    border-color: var(--primary-color);
   }
   
   /* Mobile Dropdown Menu */
@@ -11138,7 +11140,7 @@ button.filter-tab.active {
     max-width: 90vw !important;
     background: rgba(35, 35, 35, 0.98) !important;
     backdrop-filter: blur(30px) !important;
-    border: 1px solid rgba(126, 162, 212, 0.3) !important;
+    border: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
     border-radius: 12px !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
     margin-top: 8px !important;
@@ -11178,18 +11180,18 @@ button.filter-tab.active {
   }
   
   .figma-mobile-dropdown-item:hover {
-    background: rgba(126, 162, 212, 0.2);
+    background: rgba(var(--primary-color-rgb), 0.2);
     color: #ffffff;
   }
   
   .figma-mobile-dropdown-item.primary {
-    background: rgba(126, 162, 212, 0.2);
-    color: #7ea2d4;
+    background: rgba(var(--primary-color-rgb), 0.2);
+    color: var(--primary-color);
     font-weight: 600;
   }
   
   .figma-mobile-dropdown-item.primary:hover {
-    background: rgba(126, 162, 212, 0.3);
+    background: rgba(var(--primary-color-rgb), 0.3);
     color: #ffffff;
   }
   
@@ -11365,13 +11367,13 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
   /* Focus states for keyboard navigation */
   .figma-mobile-toggle:focus,
   .figma-mobile-menu-btn:focus {
-    outline: 2px solid #7ea2d4 !important;
+    outline: 2px solid var(--primary-color) !important;
     outline-offset: 2px !important;
   }
   
   .figma-menu-child:focus,
   .figma-single-link:focus {
-    outline: 1px solid #7ea2d4 !important;
+    outline: 1px solid var(--primary-color) !important;
     outline-offset: 1px !important;
   }
   
@@ -11633,7 +11635,7 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
     z-index: 1000 !important;
     background: rgba(35, 35, 35, 0.95) !important;
     backdrop-filter: blur(20px) !important;
-    border-bottom: 1px solid rgba(126, 162, 212, 0.2) !important;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.2) !important;
   }
   
   .figma-header-left {
@@ -11657,7 +11659,7 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
     width: 40px !important;
     height: 40px !important;
     background: rgba(58, 56, 56, 0.3) !important;
-    border: 1px solid #7ea2d4 !important;
+    border: 1px solid var(--primary-color) !important;
     border-radius: 8px !important;
     cursor: pointer !important;
     align-items: center !important;
@@ -11670,7 +11672,7 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
   
   .figma-mobile-toggle:hover {
     background: rgba(58, 56, 56, 0.5) !important;
-    border-color: #7ea2d4 !important;
+    border-color: var(--primary-color) !important;
   }
   
   .figma-mobile-toggle span {
@@ -11746,7 +11748,7 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
     width: 40px !important;
     height: 40px !important;
     background: rgba(58, 56, 56, 0.3) !important;
-    border: 1px solid #7ea2d4 !important;
+    border: 1px solid var(--primary-color) !important;
     border-radius: 8px !important;
     cursor: pointer !important;
     transition: all 0.3s ease !important;
@@ -11760,12 +11762,12 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
   
   .figma-mobile-menu-btn:hover {
     background: rgba(58, 56, 56, 0.5) !important;
-    border-color: #7ea2d4 !important;
+    border-color: var(--primary-color) !important;
   }
   
   .figma-mobile-menu-btn.active {
-    background: rgba(126, 162, 212, 0.3) !important;
-    border-color: #7ea2d4 !important;
+    background: rgba(var(--primary-color-rgb), 0.3) !important;
+    border-color: var(--primary-color) !important;
   }
   
   /* Sidebar mobile */
@@ -11780,7 +11782,7 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
     transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
     background: rgba(35, 35, 35, 0.98) !important;
     backdrop-filter: blur(30px) !important;
-    border-right: 1px solid rgba(126, 162, 212, 0.3) !important;
+    border-right: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
     overflow-y: auto !important;
     box-sizing: border-box !important;
     padding: 20px 15px !important;
@@ -11807,7 +11809,7 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
     padding: 15px !important;
     width: 100% !important;
     min-height: calc(100vh - 60px) !important;
-    background: var(--bg-primary) !important;
+    background: #232323 !important;
     overflow-x: hidden !important;
     box-sizing: border-box !important;
     position: relative !important;
@@ -11841,7 +11843,7 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
     max-width: 90vw !important;
     background: rgba(35, 35, 35, 0.98) !important;
     backdrop-filter: blur(30px) !important;
-    border: 1px solid rgba(126, 162, 212, 0.3) !important;
+    border: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
     border-radius: 12px !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
     margin-top: 8px !important;
@@ -11882,18 +11884,18 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
   }
   
   .figma-mobile-dropdown-item:hover {
-    background: rgba(126, 162, 212, 0.2) !important;
+    background: rgba(var(--primary-color-rgb), 0.2) !important;
     color: #ffffff !important;
   }
   
   .figma-mobile-dropdown-item.primary {
-    background: rgba(126, 162, 212, 0.2) !important;
-    color: #7ea2d4 !important;
+    background: rgba(var(--primary-color-rgb), 0.2) !important;
+    color: var(--primary-color) !important;
     font-weight: 600 !important;
   }
   
   .figma-mobile-dropdown-item.primary:hover {
-    background: rgba(126, 162, 212, 0.3) !important;
+    background: rgba(var(--primary-color-rgb), 0.3) !important;
     color: #ffffff !important;
   }
   
@@ -11927,7 +11929,7 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
   }
 }
 
-/* Mobile visibility */
+/* Mobile visibility and layout fixes */
 @media (max-width: 768px) {
   .desktop-only {
     display: none !important;
@@ -11951,6 +11953,19 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
   
   .figma-mobile-menu-btn.mobile-only {
     display: flex !important;
+  }
+  
+  /* Fix mobile header height and positioning */
+  .figma-header {
+    height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important;
   }
 }
 
@@ -11981,32 +11996,36 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
 /* Avatar improvements for all screen sizes */
 .figma-avatar-circle {
   position: relative;
-  background: linear-gradient(135deg, rgba(126, 162, 212, 0.1), rgba(126, 162, 212, 0.05));
-  border: 3px solid transparent;
-  background-clip: padding-box;
+  background: rgba(35, 35, 35, 0.8);
+  border: 3px solid var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(var(--primary-color-rgb), 0.3), 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .figma-avatar-circle::before {
-  content: '';
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  right: -3px;
-  bottom: -3px;
-  background: linear-gradient(135deg, #7ea2d4, #5a8bc4, #7ea2d4);
-  border-radius: 50%;
-  z-index: -1;
-  animation: avatarGlow 3s ease-in-out infinite;
+  display: none;
 }
 
-@keyframes avatarGlow {
-  0%, 100% {
-    background: linear-gradient(135deg, #7ea2d4, #5a8bc4, #7ea2d4);
-    box-shadow: 0 0 20px rgba(126, 162, 212, 0.3);
+/* Mobile avatar specific fixes */
+@media (max-width: 768px) {
+  .figma-avatar-circle {
+    width: 100px !important;
+    height: 100px !important;
+    border: 2px solid var(--primary-color) !important;
+    box-shadow: 0 0 0 1px rgba(var(--primary-color-rgb), 0.3), 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+    margin: 0 auto !important;
   }
-  50% {
-    background: linear-gradient(135deg, #5a8bc4, #7ea2d4, #5a8bc4);
-    box-shadow: 0 0 30px rgba(126, 162, 212, 0.5);
+  
+  .figma-avatar-circle svg {
+    width: 40px !important;
+    height: 40px !important;
+    color: var(--primary-color) !important;
+  }
+  
+  .figma-avatar-circle img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
   }
 }
 
@@ -12078,11 +12097,11 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
   /* Mobile toggle button (first) */
   .figma-mobile-toggle.mobile-only {
     display: flex !important;
-    width: 40px !important;
-    height: 40px !important;
-    background: rgba(58, 56, 56, 0.3) !important;
-    border: 1px solid #7ea2d4 !important;
-    border-radius: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(58, 56, 56, 0.5) !important;
+    border: 1px solid var(--primary-color) !important;
+    border-radius: 6px !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
@@ -12090,11 +12109,13 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
     flex-shrink: 0 !important;
   }
   
-  /* Logo (second) */
+  /* Logo (center) */
   .figma-logo {
-    flex: 1 !important;
-    text-align: left !important;
-    margin-left: 0 !important;
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    text-align: center !important;
+    margin: 0 !important;
   }
   
   .figma-logo h1 {
@@ -12104,17 +12125,17 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
   }
   
   .figma-logo span {
-    color: #7ea2d4 !important;
+    color: var(--primary-color) !important;
   }
   
   /* Mobile menu button (third) */
   .figma-mobile-menu-btn.mobile-only {
     display: flex !important;
-    width: 40px !important;
-    height: 40px !important;
-    background: rgba(58, 56, 56, 0.3) !important;
-    border: 1px solid #7ea2d4 !important;
-    border-radius: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(58, 56, 56, 0.5) !important;
+    border: 1px solid var(--primary-color) !important;
+    border-radius: 6px !important;
     align-items: center !important;
     justify-content: center !important;
     cursor: pointer !important;
@@ -12178,14 +12199,14 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
 @media (min-width: 769px) {
   .figma-notification-btn {
     position: relative;
-    background: rgba(126, 162, 212, 0.1);
-    border-color: rgba(126, 162, 212, 0.3);
-    color: #7ea2d4;
+    background: rgba(var(--primary-color-rgb), 0.1);
+    border-color: rgba(var(--primary-color-rgb), 0.3);
+    color: var(--primary-color);
   }
   
   .figma-notification-btn:hover {
-    background: rgba(126, 162, 212, 0.2);
-    border-color: #7ea2d4;
+    background: rgba(var(--primary-color-rgb), 0.2);
+    border-color: var(--primary-color);
     color: #ffffff;
   }
   
@@ -12247,7 +12268,7 @@ OBILE RESPONSIVE IMPROVEMENTS ===== */
 /* Clean desktop header */
 @media (min-width: 769px) {
   .figma-header {
-    border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.2);
     background: rgba(35, 35, 35, 0.98);
     backdrop-filter: blur(20px);
   }
@@ -12277,20 +12298,13 @@ EAN DESKTOP HEADER ===== */
     height: 70px;
     background: rgba(35, 35, 35, 0.98);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+    border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.2);
   }
   
   .figma-header-left {
     display: flex;
     align-items: center;
-    gap: 40px;
-    flex: 1;
-  }
-  
-  .figma-header-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    gap: 60px;
     flex: 1;
   }
   
@@ -12298,7 +12312,6 @@ EAN DESKTOP HEADER ===== */
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    flex: 1;
   }
   
   /* Desktop logo styling */
@@ -12312,14 +12325,14 @@ EAN DESKTOP HEADER ===== */
   }
   
   .figma-logo span {
-    color: #7ea2d4;
+    color: var(--primary-color);
   }
   
   /* Desktop title styling */
   .figma-header-center .figma-title h2 {
     font-size: 28px;
     font-weight: 600;
-    color: #7ea2d4;
+    color: var(--primary-color);
     margin: 0;
     text-align: center;
     white-space: nowrap;
@@ -12335,9 +12348,9 @@ EAN DESKTOP HEADER ===== */
   /* Desktop notification button */
   .figma-notification-btn {
     position: relative;
-    background: rgba(126, 162, 212, 0.1);
-    border: 1px solid rgba(126, 162, 212, 0.3);
-    color: #7ea2d4;
+    background: rgba(var(--primary-color-rgb), 0.1);
+    border: 1px solid rgba(var(--primary-color-rgb), 0.3);
+    color: var(--primary-color);
     padding: 10px 18px;
     border-radius: 8px;
     font-size: 14px;
@@ -12350,8 +12363,8 @@ EAN DESKTOP HEADER ===== */
   }
   
   .figma-notification-btn:hover {
-    background: rgba(126, 162, 212, 0.2);
-    border-color: #7ea2d4;
+    background: rgba(var(--primary-color-rgb), 0.2);
+    border-color: var(--primary-color);
     color: #ffffff;
     transform: translateY(-1px);
   }
@@ -12378,8 +12391,8 @@ EAN DESKTOP HEADER ===== */
   
   /* Desktop primary button (New Course) */
   .figma-btn-primary {
-    background: #7ea2d4;
-    border-color: #7ea2d4;
+    background: var(--primary-color);
+    border-color: var(--primary-color);
     color: #ffffff;
   }
   
@@ -12496,7 +12509,7 @@ EAN DESKTOP HEADER ===== */
     font-size: 28px;
   }
   
-  .figma-title h2 {
+  .figma-header-center .figma-title h2 {
     font-size: 22px;
   }
   
@@ -12610,14 +12623,14 @@ EAN DESKTOP HEADER ===== */
   
   /* Notification button special styling */
   .figma-notification-btn {
-    background: rgba(126, 162, 212, 0.1) !important;
-    border: 1px solid rgba(126, 162, 212, 0.3) !important;
-    color: #7ea2d4 !important;
+    background: rgba(var(--primary-color-rgb), 0.1) !important;
+    border: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
+    color: var(--primary-color) !important;
   }
   
   .figma-notification-btn:hover {
-    background: rgba(126, 162, 212, 0.2) !important;
-    border-color: #7ea2d4 !important;
+    background: rgba(var(--primary-color-rgb), 0.2) !important;
+    border-color: var(--primary-color) !important;
     color: #ffffff !important;
   }
   
@@ -12635,8 +12648,8 @@ EAN DESKTOP HEADER ===== */
   
   /* Primary button (New Course) */
   .figma-btn-primary {
-    background: #7ea2d4 !important;
-    border-color: #7ea2d4 !important;
+    background: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
     color: #ffffff !important;
   }
   
@@ -12696,5 +12709,541 @@ EAN DESKTOP HEADER ===== */
   .figma-header-buttons .figma-btn {
     padding: 10px 18px;
     font-size: 14px;
+  }
+}/* ==
+=== MOBILE LAYOUT FINAL FIXES ===== */
+
+@media (max-width: 768px) {
+  
+  /* Ensure proper mobile layout */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  /* Dashboard container mobile */
+  .figma-dashboard {
+    width: 100% !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Mobile header final fixes */
+  .figma-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 15px !important;
+    height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100vw !important;
+    z-index: 1000 !important;
+    background: #232323 !important;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    flex: 1 !important;
+    justify-content: flex-start !important;
+  }
+  
+  .figma-header-right {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    justify-content: flex-end !important;
+  }
+  
+  /* Mobile logo */
+  .figma-logo h1 {
+    font-size: 20px !important;
+    margin: 0 !important;
+    color: #ffffff !important;
+  }
+  
+  .figma-logo span {
+    color: var(--primary-color) !important;
+  }
+  
+  /* Mobile main layout */
+  .figma-main-layout {
+    margin-top: 56px !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: calc(100vh - 56px) !important;
+  }
+  
+  /* Mobile content area */
+  .figma-content-area {
+    padding: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-height: calc(100vh - 56px) !important;
+  }
+  
+  /* Mobile profile section improvements */
+  .figma-profile-section {
+    background: rgba(58, 56, 56, 0.6) !important;
+    border: 1px solid rgba(var(--primary-color-rgb), 0.4) !important;
+    border-radius: 20px !important;
+    padding: 25px 20px !important;
+    margin-bottom: 20px !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  /* Mobile profile info */
+  .figma-profile-name {
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    margin-bottom: 8px !important;
+    text-align: center !important;
+  }
+  
+  .figma-profile-title,
+  .figma-profile-location {
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-align: center !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .figma-profile-rating {
+    justify-content: center !important;
+    margin: 12px 0 !important;
+    gap: 8px !important;
+  }
+  
+  /* Mobile profile buttons */
+  .figma-profile-buttons {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 12px !important;
+    justify-content: center !important;
+    width: 100% !important;
+    margin-top: 15px !important;
+  }
+  
+  .figma-profile-btn {
+    flex: 1 !important;
+    max-width: 140px !important;
+    padding: 12px 16px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    border-radius: 8px !important;
+    background: rgba(var(--primary-color-rgb), 0.2) !important;
+    border: 1px solid var(--primary-color) !important;
+    color: #ffffff !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-profile-btn:hover {
+    background: rgba(var(--primary-color-rgb), 0.3) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Mobile sidebar positioning */
+  .figma-sidebar {
+    top: 56px !important;
+    height: calc(100vh - 56px) !important;
+  }
+  
+  /* Mobile overlay positioning */
+  .figma-mobile-overlay {
+    top: 56px !important;
+    height: calc(100vh - 56px) !important;
+  }
+}
+
+/* Very small mobile screens */
+@media (max-width: 480px) {
+  .figma-header {
+    padding: 6px 10px !important;
+    height: 52px !important;
+    min-height: 52px !important;
+    max-height: 52px !important;
+  }
+  
+  .figma-main-layout {
+    margin-top: 52px !important;
+  }
+  
+  .figma-sidebar {
+    top: 52px !important;
+    height: calc(100vh - 52px) !important;
+  }
+  
+  .figma-mobile-overlay {
+    top: 52px !important;
+    height: calc(100vh - 52px) !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 18px !important;
+  }
+  
+  .figma-mobile-toggle.mobile-only,
+  .figma-mobile-menu-btn.mobile-only {
+    width: 32px !important;
+    height: 32px !important;
+  }
+}/* ===== M
+OBILE HEADER PERFECT LAYOUT ===== */
+
+@media (max-width: 768px) {
+  
+  /* Mobile header container */
+  .figma-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 8px 12px !important;
+    height: 56px !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important;
+    background: rgba(35, 35, 35, 0.98) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.2) !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+  
+  /* Left side - Sidebar toggle */
+  .figma-header-left {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 60px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Center - Logo */
+  .figma-logo {
+    position: absolute !important;
+    left: 50% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    text-align: center !important;
+    margin: 0 !important;
+    z-index: 1 !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 20px !important;
+    margin: 0 !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+  }
+  
+  .figma-logo span {
+    color: var(--primary-color) !important;
+  }
+  
+  /* Right side - Menu button */
+  .figma-header-right {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    width: 60px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Mobile toggle button (left) */
+  .figma-mobile-toggle.mobile-only {
+    display: flex !important;
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(58, 56, 56, 0.5) !important;
+    border: 1px solid var(--primary-color) !important;
+    border-radius: 6px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .figma-mobile-toggle:hover {
+    background: rgba(58, 56, 56, 0.7) !important;
+    border-color: var(--primary-color) !important;
+  }
+  
+  /* Mobile menu button (right) */
+  .figma-mobile-menu-btn.mobile-only {
+    display: flex !important;
+    width: 36px !important;
+    height: 36px !important;
+    background: rgba(58, 56, 56, 0.5) !important;
+    border: 1px solid var(--primary-color) !important;
+    border-radius: 6px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    color: #ffffff !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .figma-mobile-menu-btn:hover {
+    background: rgba(58, 56, 56, 0.7) !important;
+    border-color: var(--primary-color) !important;
+  }
+  
+  .figma-mobile-menu-btn.active {
+    background: rgba(var(--primary-color-rgb), 0.3) !important;
+    border-color: var(--primary-color) !important;
+  }
+  
+  /* Mobile toggle button animation */
+  .figma-mobile-toggle span {
+    width: 16px !important;
+    height: 2px !important;
+    background: #ffffff !important;
+    display: block !important;
+    position: relative !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-mobile-toggle span::before,
+  .figma-mobile-toggle span::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 16px !important;
+    height: 2px !important;
+    background: #ffffff !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-mobile-toggle span::before {
+    top: -5px !important;
+  }
+  
+  .figma-mobile-toggle span::after {
+    top: 5px !important;
+  }
+  
+  .figma-mobile-toggle.active span {
+    background: transparent !important;
+  }
+  
+  .figma-mobile-toggle.active span::before {
+    transform: rotate(45deg) !important;
+    top: 0 !important;
+  }
+  
+  .figma-mobile-toggle.active span::after {
+    transform: rotate(-45deg) !important;
+    top: 0 !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .figma-header {
+    padding: 6px 10px !important;
+    height: 52px !important;
+  }
+  
+  .figma-header-left,
+  .figma-header-right {
+    width: 50px !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 18px !important;
+  }
+  
+  .figma-mobile-toggle.mobile-only,
+  .figma-mobile-menu-btn.mobile-only {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  .figma-mobile-toggle span {
+    width: 14px !important;
+  }
+  
+  .figma-mobile-toggle span::before,
+  .figma-mobile-toggle span::after {
+    width: 14px !important;
+  }
+}/* =
+==== MOBILE HEADER COMPLETE FIX ===== */
+
+@media (max-width: 768px) {
+  
+  /* Override all previous mobile header styles */
+  .figma-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 12px 15px !important;
+    height: 60px !important;
+    min-height: 60px !important;
+    max-height: 60px !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important;
+    background: #232323 !important;
+    border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.3) !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Left section: Toggle + Logo */
+  .figma-header .figma-header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    flex: 1 !important;
+    justify-content: flex-start !important;
+  }
+  
+  /* Right section: Menu button */
+  .figma-header .figma-header-right {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+    justify-content: flex-end !important;
+  }
+  
+  /* Mobile toggle button */
+  .figma-header .figma-mobile-toggle.mobile-only {
+    display: flex !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(58, 56, 56, 0.5) !important;
+    border: 1px solid var(--primary-color) !important;
+    border-radius: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .figma-header .figma-mobile-toggle.mobile-only:hover {
+    background: rgba(58, 56, 56, 0.7) !important;
+    border-color: var(--primary-color) !important;
+  }
+  
+  /* Mobile logo */
+  .figma-header .figma-logo {
+    flex: 1 !important;
+    text-align: left !important;
+  }
+  
+  .figma-header .figma-logo h1 {
+    font-size: 22px !important;
+    margin: 0 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+  }
+  
+  .figma-header .figma-logo span {
+    color: var(--primary-color) !important;
+  }
+  
+  /* Mobile menu button */
+  .figma-header .figma-mobile-menu-btn.mobile-only {
+    display: flex !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(58, 56, 56, 0.5) !important;
+    border: 1px solid var(--primary-color) !important;
+    border-radius: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    color: #ffffff !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .figma-header .figma-mobile-menu-btn.mobile-only:hover {
+    background: rgba(58, 56, 56, 0.7) !important;
+    border-color: var(--primary-color) !important;
+  }
+  
+  /* Hide desktop elements completely */
+  .figma-header .desktop-only {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Show mobile elements */
+  .figma-header .mobile-only {
+    display: flex !important;
+    visibility: visible !important;
+  }
+  
+  /* Update main layout margin */
+  .figma-main-layout {
+    margin-top: 60px !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: calc(100vh - 60px) !important;
+  }
+  
+  /* Update sidebar positioning */
+  .figma-sidebar {
+    top: 60px !important;
+    height: calc(100vh - 60px) !important;
+  }
+  
+  /* Update overlay positioning */
+  .figma-mobile-overlay {
+    top: 60px !important;
+    height: calc(100vh - 60px) !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .figma-header {
+    padding: 10px 12px !important;
+    height: 56px !important;
+    min-height: 56px !important;
+    max-height: 56px !important;
+  }
+  
+  .figma-header .figma-logo h1 {
+    font-size: 20px !important;
+  }
+  
+  .figma-header .figma-mobile-toggle.mobile-only,
+  .figma-header .figma-mobile-menu-btn.mobile-only {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .figma-main-layout {
+    margin-top: 56px !important;
+  }
+  
+  .figma-sidebar {
+    top: 56px !important;
+    height: calc(100vh - 56px) !important;
+  }
+  
+  .figma-mobile-overlay {
+    top: 56px !important;
+    height: calc(100vh - 56px) !important;
   }
 }
