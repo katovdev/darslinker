@@ -9899,6 +9899,27 @@ function getStudentsAnalyticsHTML() {
           background: rgba(58, 56, 56, 0.7);
           transform: translateX(4px);
         }
+        
+        /* Mobile Student Item */
+        @media (max-width: 768px) {
+          .student-item {
+            padding: 12px !important;
+            margin-bottom: 10px !important;
+            border-radius: 8px !important;
+            align-items: flex-start !important;
+          }
+          
+          .student-item:hover {
+            transform: none !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .student-item {
+            padding: 10px !important;
+            margin-bottom: 8px !important;
+          }
+        }
         .student-info {
           display: flex;
           align-items: center;
@@ -9942,6 +9963,40 @@ function getStudentsAnalyticsHTML() {
           color: rgba(156, 163, 175, 1);
           font-size: 12px;
           min-width: 100px;
+        }
+        
+        /* Mobile Student Meta - Vertical Layout */
+        @media (max-width: 768px) {
+          .student-meta {
+            flex-direction: column !important;
+            align-items: flex-end !important;
+            gap: 4px !important;
+            text-align: right !important;
+          }
+          
+          .student-id {
+            font-size: 13px !important;
+            min-width: auto !important;
+          }
+          
+          .registration-date {
+            font-size: 11px !important;
+            min-width: auto !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .student-meta {
+            gap: 2px !important;
+          }
+          
+          .student-id {
+            font-size: 12px !important;
+          }
+          
+          .registration-date {
+            font-size: 10px !important;
+          }
         }
         .loading-spinner {
           display: flex;
