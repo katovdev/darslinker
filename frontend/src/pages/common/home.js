@@ -22,12 +22,55 @@ export function initHomePage() {
           <img src="/images/darslinker.png" alt="Dars Linker" class="logo" />
         </div>
 
-        <nav class="nav-menu">
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+
+        <nav class="nav-menu" id="navMenu">
           <a href="#" class="nav-item">Asosiy</a>
           <a href="#" class="nav-item">Ma'lumot</a>
           <a href="#" class="nav-item">Tariflar</a>
           <a href="#" class="nav-item">Bloglar</a>
           <a href="#" class="nav-item">Aloqa</a>
+
+          <!-- Mobile-only header actions in menu -->
+          <div class="mobile-header-actions">
+            <div class="mobile-language-selector">
+              <div class="mobile-lang-dropdown">
+                <div class="mobile-lang-selected" id="mobileLangSelected">
+                  <img src="/images/uz-flag.jpg" alt="UZ" class="mobile-flag-img" />
+                  <span>UZ</span>
+                  <span class="mobile-dropdown-arrow">▼</span>
+                </div>
+                <div class="mobile-lang-options" id="mobileLangOptions">
+                  <div class="mobile-lang-option" data-lang="en" data-flag="/images/us-flag.png">
+                    <img src="/images/us-flag.png" alt="EN" class="mobile-flag-img" />
+                    <span>EN</span>
+                  </div>
+                  <div class="mobile-lang-option" data-lang="ru" data-flag="/images/ru-flag.jpg">
+                    <img src="/images/ru-flag.jpg" alt="RU" class="mobile-flag-img" />
+                    <span>RU</span>
+                  </div>
+                  <div class="mobile-lang-option active" data-lang="uz" data-flag="/images/uz-flag.jpg">
+                    <img src="/images/uz-flag.jpg" alt="UZ" class="mobile-flag-img" />
+                    <span>UZ</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mobile-theme-toggle" id="mobileThemeToggle">
+              <span class="mobile-theme-text">Dark Mode</span>
+              <div class="mobile-toggle-switch">
+                <div class="mobile-toggle-slider"></div>
+              </div>
+            </div>
+
+            <button class="mobile-login-btn" onclick="router.navigate('/login'); return false;">Kirish</button>
+          </div>
         </nav>
 
         <div class="header-actions">
@@ -755,6 +798,15 @@ export function initHomePage() {
   // Initialize navigation
   initNavigation();
 
+  // Initialize mobile menu
+  initMobileMenu();
+
+  // Initialize mobile language dropdown
+  initMobileLanguageDropdown();
+
+  // Initialize mobile theme toggle
+  initMobileThemeToggle();
+
   // Update store
   store.setState({ currentPage: 'home' });
 }
@@ -1470,5 +1522,782 @@ function initFooterNavigation() {
         }
       }, 100);
     });
+  });
+}
+
+// Initialize mobile menu functionality
+function initMobileMenu() {
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const navMenu = document.getElementById('navMenu');
+  const header = document.querySelector('.header');
+
+  if (!mobileMenuBtn || !navMenu || !header) {
+    console.log('Mobile menu elements not found');
+    return;
+  }
+
+  // Toggle mobile menu
+  mobileMenuBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+
+    // Toggle active states
+    mobileMenuBtn.classList.toggle('active');
+    navMenu.classList.toggle('mobile-active');
+    header.classList.toggle('menu-open');
+
+    // Prevent body scroll when menu is open
+    if (navMenu.classList.contains('mobile-active')) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Close menu when clicking nav items or mobile login button
+  const navItems = navMenu.querySelectorAll('.nav-item');
+  const mobileLoginBtn = navMenu.querySelector('.mobile-login-btn');
+
+  [...navItems, mobileLoginBtn].forEach(item => {
+    if (item) {
+      item.addEventListener('click', function() {
+        // Close mobile menu
+        mobileMenuBtn.classList.remove('active');
+        navMenu.classList.remove('mobile-active');
+        header.classList.remove('menu-open');
+        document.body.style.overflow = '';
+      });
+    }
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!header.contains(e.target)) {
+      mobileMenuBtn.classList.remove('active');
+      navMenu.classList.remove('mobile-active');
+      header.classList.remove('menu-open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Close menu on window resize if screen becomes large
+  window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+      mobileMenuBtn.classList.remove('active');
+      navMenu.classList.remove('mobile-active');
+      header.classList.remove('menu-open');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Add mobile menu styles
+  addMobileMenuStyles();
+}
+
+// Add comprehensive mobile menu and responsive styles
+function addMobileMenuStyles() {
+  if (document.querySelector('#mobile-responsive-styles')) return;
+
+  const style = document.createElement('style');
+  style.id = 'mobile-responsive-styles';
+  style.textContent = `
+    /* Mobile Menu Button - Hidden by default */
+    .mobile-menu-btn {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 30px;
+      height: 24px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 1001;
+      transition: all 0.3s ease;
+    }
+
+    .hamburger-line {
+      width: 100%;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+      transform-origin: center;
+    }
+
+    .mobile-menu-btn.active .hamburger-line:nth-child(1) {
+      transform: translateY(10.5px) rotate(45deg);
+    }
+
+    .mobile-menu-btn.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .mobile-menu-btn.active .hamburger-line:nth-child(3) {
+      transform: translateY(-10.5px) rotate(-45deg);
+    }
+
+    /* Hide mobile-only elements on desktop */
+    .mobile-header-actions {
+      display: none;
+    }
+
+    /* Tablet and Mobile Responsive Styles */
+    @media (max-width: 1024px) {
+      /* Header responsive adjustments for tablet */
+      .header .container {
+        padding: 0 20px;
+      }
+
+      .nav-menu {
+        gap: 20px;
+      }
+
+      .nav-item {
+        font-size: 14px;
+      }
+
+      .login-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+      }
+
+      .lang-dropdown {
+        font-size: 13px;
+      }
+
+      .logo {
+        height: 40px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      /* Show mobile menu button */
+      .mobile-menu-btn {
+        display: flex;
+        order: 3;
+      }
+
+      /* Header layout for mobile */
+      .header .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 16px;
+        position: relative;
+      }
+
+      .nav-brand {
+        order: 1;
+        z-index: 1001;
+      }
+
+      .logo {
+        height: 28px;
+        width: auto;
+      }
+
+      /* Hide desktop navigation and create dropdown menu */
+      .nav-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        padding: 80px 20px 40px;
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease;
+        z-index: 1000;
+        max-height: 100vh;
+        overflow-y: auto;
+      }
+
+      .nav-menu.mobile-active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .nav-item {
+        font-size: 20px;
+        font-weight: 500;
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        text-align: center;
+        width: auto;
+      }
+
+      .nav-item:hover,
+      .nav-item.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        transform: translateY(-2px);
+      }
+
+      /* Mobile header actions in menu */
+      .mobile-header-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+        max-width: 280px;
+        margin-top: 20px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      /* Mobile language selector */
+      .mobile-language-selector {
+        width: 100%;
+      }
+
+      .mobile-lang-dropdown {
+        position: relative;
+        width: 100%;
+      }
+
+      .mobile-lang-selected {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+        font-size: 16px;
+      }
+
+      .mobile-lang-selected:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .mobile-flag-img {
+        width: 24px;
+        height: 16px;
+        object-fit: cover;
+        border-radius: 2px;
+      }
+
+      .mobile-dropdown-arrow {
+        transition: transform 0.3s ease;
+        font-size: 12px;
+      }
+
+      .mobile-lang-dropdown.open .mobile-dropdown-arrow {
+        transform: rotate(180deg);
+      }
+
+      .mobile-lang-options {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        border-radius: 12px;
+        margin-top: 8px;
+        overflow: hidden;
+        transform: translateY(-10px);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 100;
+      }
+
+      .mobile-lang-dropdown.open .mobile-lang-options {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .mobile-lang-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 16px;
+        color: rgba(255, 255, 255, 0.8);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 16px;
+      }
+
+      .mobile-lang-option:hover,
+      .mobile-lang-option.active {
+        background: rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+      }
+
+      /* Mobile theme toggle */
+      .mobile-theme-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        cursor: pointer;
+        color: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+        font-size: 16px;
+      }
+
+      .mobile-theme-toggle:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      .mobile-toggle-switch {
+        width: 48px;
+        height: 24px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .mobile-toggle-slider {
+        width: 18px;
+        height: 18px;
+        background: #ffffff;
+        border-radius: 50%;
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        transition: all 0.3s ease;
+      }
+
+      .mobile-toggle-slider.active {
+        transform: translateX(24px);
+      }
+
+      /* Mobile login button */
+      .mobile-login-btn {
+        width: 100%;
+        padding: 14px 16px;
+        background: linear-gradient(135deg, #7EA2D4, #5A8BC7);
+        color: #ffffff;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .mobile-login-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(126, 162, 212, 0.3);
+      }
+
+      /* Hide desktop header actions on mobile */
+      .header-actions {
+        display: none;
+      }
+
+      /* Hero section mobile - further reduced padding */
+      .hero {
+        padding-top: 50px !important; /* Further reduced top padding */
+        padding-bottom: 50px !important; /* Ensure consistent bottom padding */
+      }
+
+      .hero .container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      /* Hero features grid mobile - improved layout */
+      .hero-features-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+        max-width: 600px !important; /* Increase max width */
+        margin: 0 auto !important; /* Center the grid */
+        justify-items: center !important; /* Center grid items */
+      }
+
+      .hero-feature-card {
+        width: 100% !important;
+        max-width: 480px !important; /* Wider cards */
+        padding: 24px !important;
+        margin: 0 auto !important; /* Center each card */
+        box-sizing: border-box;
+      }
+
+      .hero-feature-card h3 {
+        font-size: 18px !important;
+        margin-bottom: 12px !important;
+      }
+
+      .hero-feature-card p {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+      }
+
+      /* Hero video section mobile - add top padding */
+      .hero-video-section {
+        padding-top: 30px !important;
+        margin-top: 20px !important;
+      }
+
+      /* Platform features mobile - improved layout */
+      .platform-features .container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .platform-features-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+        max-width: 600px !important; /* Increase max width */
+        margin: 0 auto !important; /* Center the grid */
+        justify-items: center !important; /* Center grid items */
+      }
+
+      .platform-feature-card {
+        width: 100% !important;
+        max-width: 480px !important; /* Wider cards */
+        padding: 24px !important;
+        margin: 0 auto !important; /* Center each card */
+        box-sizing: border-box;
+      }
+
+      .platform-feature-card h4 {
+        font-size: 18px !important;
+        margin-bottom: 12px !important;
+      }
+
+      /* Platform actions mobile - add top padding */
+      .platform-actions {
+        padding-top: 40px !important;
+        margin-top: 30px !important;
+      }
+
+      /* Pricing section mobile - improved layout */
+      .pricing-section .container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .pricing-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+        max-width: 480px !important; /* Optimized width for pricing cards */
+        margin: 0 auto !important; /* Center the grid */
+        justify-items: center !important; /* Center grid items */
+      }
+
+      .pricing-card {
+        width: 100% !important;
+        margin: 0 auto !important; /* Center each card */
+        box-sizing: border-box;
+      }
+
+      /* Pricing action mobile - add top padding */
+      .pricing-action {
+        padding-top: 40px !important;
+        margin-top: 30px !important;
+      }
+
+      /* Articles section mobile - improved layout */
+      .articles-section .container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .articles-grid {
+        grid-template-columns: 1fr !important;
+        gap: 24px !important;
+        max-width: 600px !important; /* Increase max width */
+        margin: 0 auto !important; /* Center the grid */
+        justify-items: center !important; /* Center grid items */
+      }
+
+      .article-card {
+        width: 100% !important;
+        max-width: 480px !important; /* Wider cards */
+        padding: 24px !important;
+        margin: 0 auto !important; /* Center each card */
+        box-sizing: border-box;
+      }
+
+      .article-card h3 {
+        font-size: 18px !important;
+        margin-bottom: 12px !important;
+      }
+
+      .article-card p {
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+      }
+
+      /* Articles action mobile - add top padding */
+      .articles-action {
+        padding-top: 40px !important;
+        margin-top: 30px !important;
+      }
+
+      /* Advice section mobile - minimal changes */
+      .advice-section .container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .form-input {
+        font-size: 16px; /* Prevent zoom on iOS */
+      }
+
+      /* Login section mobile - add top padding */
+      .login-section {
+        padding-top: 40px !important;
+        margin-top: 30px !important;
+      }
+
+      /* Footer mobile - minimal changes */
+      .footer .container {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      /* SMS Contact button mobile - minimal changes */
+      .sms-contact {
+        bottom: 20px;
+        right: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      /* Extra small mobile adjustments - minimal changes */
+      .logo {
+        height: 26px;
+      }
+
+      .mobile-menu-btn {
+        width: 25px;
+        height: 20px;
+      }
+
+      .hamburger-line {
+        height: 2px;
+      }
+
+      .mobile-menu-btn.active .hamburger-line:nth-child(1) {
+        transform: translateY(9px) rotate(45deg);
+      }
+
+      .mobile-menu-btn.active .hamburger-line:nth-child(3) {
+        transform: translateY(-9px) rotate(-45deg);
+      }
+    }
+
+    /* Hide all 3D elements on mobile and tablet */
+    @media (max-width: 1024px) {
+      .play-button-3d,
+      .analytics-3d-icon,
+      .analytics-outside,
+      .course-3d-icon,
+      .glass-decoration,
+      .minimal-glass-decoration,
+      .korporativ-glass-decoration,
+      .samarali-dars-decoration,
+      .oxirgi-dars-decoration,
+      .theme-toggle .moon-icon,
+      .theme-toggle .sun-icon {
+        display: none !important;
+      }
+
+      /* Keep only basic theme toggle on mobile */
+      .theme-toggle {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .theme-toggle::after {
+        content: '🌙';
+        font-size: 16px;
+        filter: grayscale(0.3);
+      }
+
+      .theme-toggle.active::after {
+        content: '☀️';
+      }
+
+      /* Remove neon dots on mobile */
+      .neon-dots-container {
+        display: none !important;
+      }
+
+      /* Simplify cards without 3D elements */
+      .hero-feature-card.analytics-card,
+      .platform-feature-card.course-card,
+      .platform-feature-card.brending-card,
+      .pricing-card.minimal-card,
+      .pricing-card.korporativ-card,
+      .article-card.samarali-dars-card,
+      .article-card.oxirgi-dars-card {
+        position: relative;
+      }
+
+      /* Clean up positioning without 3D elements */
+      .hero-features-grid,
+      .platform-features-grid,
+      .pricing-grid,
+      .articles-grid {
+        position: static;
+      }
+    }
+
+    /* Ensure smooth animations */
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Prevent horizontal scroll on mobile */
+    @media (max-width: 768px) {
+      body {
+        overflow-x: hidden;
+      }
+
+      .container {
+        max-width: 100%;
+        overflow: hidden;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+}
+
+// Initialize mobile language dropdown
+function initMobileLanguageDropdown() {
+  const mobileLangSelected = document.getElementById('mobileLangSelected');
+  const mobileLangOptions = document.getElementById('mobileLangOptions');
+  const mobileLangDropdown = document.querySelector('.mobile-lang-dropdown');
+
+  if (!mobileLangSelected || !mobileLangOptions || !mobileLangDropdown) {
+    return;
+  }
+
+  // Toggle dropdown
+  mobileLangSelected.addEventListener('click', (e) => {
+    e.stopPropagation();
+    mobileLangDropdown.classList.toggle('open');
+  });
+
+  // Handle language selection
+  mobileLangOptions.addEventListener('click', (e) => {
+    const langOption = e.target.closest('.mobile-lang-option');
+    if (!langOption) return;
+
+    // Remove active class from all options
+    mobileLangOptions.querySelectorAll('.mobile-lang-option').forEach(option => {
+      option.classList.remove('active');
+    });
+
+    // Add active class to selected option
+    langOption.classList.add('active');
+
+    // Update selected display
+    const flag = langOption.querySelector('.mobile-flag-img').src;
+    const text = langOption.querySelector('span').textContent;
+    const lang = langOption.dataset.lang;
+
+    mobileLangSelected.querySelector('.mobile-flag-img').src = flag;
+    mobileLangSelected.querySelector('span').textContent = text;
+
+    // Store selected language
+    localStorage.setItem('selectedLanguage', lang);
+
+    // Close dropdown
+    mobileLangDropdown.classList.remove('open');
+
+    // Update page language attribute
+    document.documentElement.lang = lang;
+
+    // Also update desktop language selector
+    const desktopLangSelected = document.getElementById('langSelected');
+    if (desktopLangSelected) {
+      desktopLangSelected.querySelector('.flag-img').src = flag;
+      desktopLangSelected.querySelector('span').textContent = text;
+    }
+
+    console.log('Mobile language changed to:', lang);
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!mobileLangDropdown.contains(e.target)) {
+      mobileLangDropdown.classList.remove('open');
+    }
+  });
+}
+
+// Initialize mobile theme toggle
+function initMobileThemeToggle() {
+  const mobileThemeToggle = document.getElementById('mobileThemeToggle');
+  const mobileThemeText = mobileThemeToggle?.querySelector('.mobile-theme-text');
+  const mobileToggleSlider = mobileThemeToggle?.querySelector('.mobile-toggle-slider');
+
+  if (!mobileThemeToggle || !mobileThemeText || !mobileToggleSlider) {
+    return;
+  }
+
+  // Check for saved theme preference
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  let isDark = savedTheme === 'dark';
+
+  // Set initial state
+  if (isDark) {
+    mobileToggleSlider.classList.add('active');
+    mobileThemeText.textContent = 'Light Mode';
+  }
+
+  mobileThemeToggle.addEventListener('click', function() {
+    // Toggle theme
+    isDark = !isDark;
+
+    // Save preference
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+
+    // Update mobile toggle appearance
+    if (isDark) {
+      mobileToggleSlider.classList.add('active');
+      mobileThemeText.textContent = 'Light Mode';
+    } else {
+      mobileToggleSlider.classList.remove('active');
+      mobileThemeText.textContent = 'Dark Mode';
+    }
+
+    // Also update desktop theme toggle if it exists
+    const desktopThemeToggle = document.getElementById('themeToggle');
+    if (desktopThemeToggle) {
+      const sunIcon = desktopThemeToggle.querySelector('.sun-icon');
+      const moonIcon = desktopThemeToggle.querySelector('.moon-icon');
+
+      if (sunIcon && moonIcon) {
+        if (isDark) {
+          sunIcon.classList.remove('active');
+          moonIcon.classList.add('active');
+        } else {
+          moonIcon.classList.remove('active');
+          sunIcon.classList.add('active');
+        }
+      }
+    }
+
+    console.log(`Mobile theme switched to: ${isDark ? 'dark' : 'light'} mode`);
   });
 }
