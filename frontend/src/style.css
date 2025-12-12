@@ -3297,31 +3297,26 @@ body:has(.figma-dashboard) {
   color: #7ea2d4;
 }
 
-.figma-title h2 {
-  font-size: 30px;
-  font-weight: 600;
-  color: #7ea2d4;
-  margin: 0;
-  position: absolute;
-  left: 40px;
-  margin-left: 270px;
-  margin-top: -25px;
-}
+/* Title styling moved to desktop section */
 
 .figma-header-buttons {
   display: flex;
-  gap: 12px;
+  gap: 15px;
+  align-items: center;
 }
 
 .figma-btn {
   background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #ffffff;
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .figma-btn:hover {
@@ -3336,6 +3331,18 @@ body:has(.figma-dashboard) {
 
 .figma-btn-primary:hover {
   background: #6b90c7;
+}
+
+.figma-btn-logout {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.figma-btn-logout:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  color: #ffffff;
 }
 
 /* Main Layout */
@@ -3536,12 +3543,13 @@ body:has(.figma-dashboard) {
   height: 100px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+  border: 3px solid #7ea2d4;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 0 0 2px rgba(126, 162, 212, 0.3);
 }
 
 .figma-avatar-circle::before {
@@ -10216,4 +10224,2477 @@ button.filter-tab.active {
   align-items: center;
   justify-content: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* ===== DASHBOARD RESPONSIVE STYLES ===== */
+
+/* Mobile Dashboard Styles */
+@media (max-width: 768px) {
+  
+  /* Dashboard Body Adjustments */
+  body:has(.figma-dashboard) {
+    padding-top: 0 !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Figma Dashboard Mobile */
+  .figma-dashboard {
+    width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Figma Header Mobile */
+  .figma-header {
+    padding: 10px 15px !important;
+    height: 60px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-header .container {
+    padding: 0 !important;
+  }
+  
+  .figma-header-left {
+    gap: 10px !important;
+  }
+  
+  .figma-logo {
+    height: 25px !important;
+  }
+  
+  .figma-page-title {
+    font-size: 18px !important;
+    display: none; /* Hide page title on very small screens */
+  }
+  
+  .figma-header-right {
+    gap: 8px !important;
+  }
+  
+  .figma-header-btn {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    border-radius: 6px !important;
+  }
+  
+  .figma-notification-btn,
+  .figma-profile-btn {
+    width: 35px !important;
+    height: 35px !important;
+  }
+  
+  /* Mobile Sidebar Toggle */
+  .figma-mobile-toggle {
+    display: flex !important;
+    width: 35px;
+    height: 35px;
+    background: rgba(58, 56, 56, 0.3);
+    border: 1px solid #7ea2d4;
+    border-radius: 6px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+  }
+  
+  .figma-mobile-toggle:hover {
+    background: rgba(58, 56, 56, 0.5);
+  }
+  
+  .figma-mobile-toggle span {
+    width: 18px;
+    height: 2px;
+    background: #ffffff;
+    display: block;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  
+  .figma-mobile-toggle span::before,
+  .figma-mobile-toggle span::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 2px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+  }
+  
+  .figma-mobile-toggle span::before {
+    top: -6px;
+  }
+  
+  .figma-mobile-toggle span::after {
+    top: 6px;
+  }
+  
+  .figma-mobile-toggle.active span {
+    background: transparent;
+  }
+  
+  .figma-mobile-toggle.active span::before {
+    transform: rotate(45deg);
+    top: 0;
+  }
+  
+  .figma-mobile-toggle.active span::after {
+    transform: rotate(-45deg);
+    top: 0;
+  }
+  
+  /* Sidebar Mobile */
+  .figma-sidebar {
+    position: fixed !important;
+    left: -100% !important;
+    top: 60px !important;
+    width: 280px !important;
+    max-width: 85vw !important;
+    height: calc(100vh - 60px) !important;
+    z-index: 999 !important;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: rgba(35, 35, 35, 0.98) !important;
+    backdrop-filter: blur(30px) !important;
+    border-right: 1px solid rgba(126, 162, 212, 0.3) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-sidebar.mobile-open {
+    left: 0 !important;
+  }
+  
+  .figma-sidebar-content {
+    padding: 20px 15px !important;
+  }
+  
+  .figma-menu-parent {
+    margin-bottom: 8px !important;
+    padding: 12px 15px !important;
+    font-size: 14px !important;
+  }
+  
+  .figma-menu-child,
+  .figma-single-link {
+    padding: 10px 20px !important;
+    font-size: 13px !important;
+  }
+  
+  /* Main Layout Mobile */
+  .figma-main-layout {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 60px !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    min-height: calc(100vh - 60px) !important;
+  }
+  
+  /* Content Area Mobile */
+  .figma-content-area {
+    margin-left: 0 !important;
+    padding: 15px !important;
+    width: 100% !important;
+    min-height: calc(100vh - 60px) !important;
+    background: var(--bg-primary) !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  /* Content wrapper */
+  .figma-content-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
+  /* Dashboard Profile Section Mobile */
+  .figma-profile-section {
+    flex-direction: column !important;
+    gap: 15px !important;
+    padding: 15px !important;
+    border-radius: 12px !important;
+    margin: 0 0 20px 0 !important;
+    background: rgba(58, 56, 56, 0.3) !important;
+    border: 1px solid rgba(126, 162, 212, 0.2) !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-profile-left {
+    text-align: center !important;
+    width: 100% !important;
+  }
+  
+  .figma-profile-avatar {
+    width: 100px !important;
+    height: 100px !important;
+    margin: 0 auto 15px !important;
+    border-radius: 50% !important;
+    border: 3px solid #7ea2d4 !important;
+  }
+  
+  .figma-profile-info h2 {
+    font-size: 22px !important;
+    margin-bottom: 8px !important;
+    color: #ffffff !important;
+  }
+  
+  .figma-profile-info p {
+    font-size: 14px !important;
+    margin-bottom: 5px !important;
+    color: #a0a0a0 !important;
+  }
+  
+  .figma-profile-rating {
+    justify-content: center !important;
+    margin: 10px 0 !important;
+    gap: 5px !important;
+  }
+  
+  .figma-profile-rating .star {
+    color: #fbbf24 !important;
+    font-size: 16px !important;
+  }
+  
+  .figma-profile-rating .rating-text {
+    color: #a0a0a0 !important;
+    font-size: 12px !important;
+    margin-left: 8px !important;
+  }
+  
+  .figma-profile-right {
+    width: 100% !important;
+  }
+  
+  .figma-profile-actions {
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+  
+  .figma-profile-btn {
+    width: 100% !important;
+    padding: 12px 20px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    background: rgba(126, 162, 212, 0.2) !important;
+    border: 1px solid #7ea2d4 !important;
+    color: #ffffff !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-profile-btn:hover {
+    background: rgba(126, 162, 212, 0.3) !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  /* Stats Cards Mobile */
+  .figma-stats-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+    margin: 0 !important;
+    width: 100% !important;
+  }
+  
+  .figma-stats-card {
+    padding: 20px 15px !important;
+    border-radius: 12px !important;
+    background: rgba(58, 56, 56, 0.3) !important;
+    border: 1px solid rgba(126, 162, 212, 0.2) !important;
+    transition: all 0.3s ease !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-stats-card:hover {
+    background: rgba(58, 56, 56, 0.4) !important;
+    border-color: #7ea2d4 !important;
+    transform: translateY(-2px) !important;
+  }
+  
+  .figma-stats-title {
+    font-size: 11px !important;
+    margin-bottom: 8px !important;
+    color: #a0a0a0 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+  }
+  
+  .figma-stats-value {
+    font-size: 24px !important;
+    font-weight: bold !important;
+    color: #ffffff !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .figma-stats-label {
+    font-size: 10px !important;
+    color: #7ea2d4 !important;
+  }
+  
+  /* Special styling for revenue and balance */
+  .figma-stats-card .revenue-value,
+  .figma-stats-card .balance-value {
+    color: #10b981 !important;
+  }
+  
+  /* Bio Section Mobile */
+  .figma-bio-section {
+    padding: 15px !important;
+    border-radius: 12px !important;
+    margin: 20px 0 !important;
+    background: rgba(58, 56, 56, 0.3) !important;
+    border: 1px solid rgba(126, 162, 212, 0.2) !important;
+  }
+  
+  .figma-bio-header {
+    flex-direction: column !important;
+    gap: 12px !important;
+    align-items: flex-start !important;
+    margin-bottom: 15px !important;
+  }
+  
+  .figma-bio-title {
+    font-size: 18px !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+  }
+  
+  .figma-bio-actions {
+    width: 100% !important;
+    justify-content: flex-end !important;
+  }
+  
+  .figma-bio-text {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+    color: #a0a0a0 !important;
+    margin: 0 !important;
+  }
+  
+  .figma-bio-edit-btn {
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+    background: rgba(126, 162, 212, 0.2) !important;
+    border: 1px solid #7ea2d4 !important;
+    color: #7ea2d4 !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-bio-edit-btn:hover {
+    background: rgba(126, 162, 212, 0.3) !important;
+    color: #ffffff !important;
+  }
+  
+  /* Mobile Overlay for Sidebar */
+  .figma-mobile-overlay {
+    display: none !important;
+    position: fixed !important;
+    top: 60px !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 60px) !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    z-index: 998 !important;
+    backdrop-filter: blur(3px) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-mobile-overlay.active {
+    display: block !important;
+  }
+  
+  /* Form Elements Mobile */
+  .figma-form-group {
+    margin-bottom: 15px !important;
+  }
+  
+  .figma-form-label {
+    font-size: 13px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  .figma-form-input,
+  .figma-form-textarea {
+    padding: 10px 12px !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+  }
+  
+  .figma-form-textarea {
+    min-height: 100px !important;
+  }
+  
+  /* Buttons Mobile */
+  .figma-btn {
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+  }
+  
+  .figma-btn-primary {
+    width: 100% !important;
+  }
+  
+  .figma-btn-secondary {
+    width: 100% !important;
+  }
+  
+  /* Modal Mobile */
+  .figma-modal-content {
+    width: 95% !important;
+    max-width: 400px !important;
+    margin: 20px auto !important;
+    border-radius: 12px !important;
+  }
+  
+  .figma-modal-header {
+    padding: 15px 20px !important;
+  }
+  
+  .figma-modal-title {
+    font-size: 18px !important;
+  }
+  
+  .figma-modal-body {
+    padding: 20px !important;
+  }
+  
+  .figma-modal-footer {
+    padding: 15px 20px !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+  
+  /* Certificates Section Mobile */
+  .figma-certificates-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  .figma-certificate-card {
+    padding: 15px !important;
+    border-radius: 10px !important;
+  }
+  
+  .figma-certificate-title {
+    font-size: 14px !important;
+  }
+  
+  .figma-certificate-org {
+    font-size: 12px !important;
+  }
+  
+  /* Achievements Mobile */
+  .figma-achievements-list {
+    gap: 12px !important;
+  }
+  
+  .figma-achievement-item {
+    padding: 12px 15px !important;
+    border-radius: 8px !important;
+  }
+  
+  .figma-achievement-text {
+    font-size: 13px !important;
+  }
+  
+  /* Subscription Section Mobile */
+  .figma-subscription-card {
+    padding: 20px 15px !important;
+    border-radius: 12px !important;
+    margin: 20px 0 !important;
+  }
+  
+  .figma-subscription-title {
+    font-size: 18px !important;
+    margin-bottom: 15px !important;
+  }
+  
+  .figma-subscription-status {
+    font-size: 14px !important;
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+  }
+  
+  /* Hide desktop-only elements on mobile */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Show mobile-only elements */
+  .mobile-only {
+    display: block !important;
+  }
+  
+  /* Responsive Tables */
+  .figma-table-responsive {
+    overflow-x: auto !important;
+  }
+  
+  .figma-table {
+    min-width: 600px !important;
+  }
+  
+  .figma-table th,
+  .figma-table td {
+    padding: 8px 10px !important;
+    font-size: 12px !important;
+  }
+  
+  /* Toast Messages Mobile */
+  .figma-toast {
+    bottom: 20px !important;
+    left: 15px !important;
+    right: 15px !important;
+    width: auto !important;
+    border-radius: 10px !important;
+  }
+  
+  /* Loading States Mobile */
+  .figma-loading-spinner {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  
+  /* Course Cards Mobile */
+  .figma-course-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+  
+  .figma-course-card {
+    padding: 15px !important;
+    border-radius: 10px !important;
+  }
+  
+  .figma-course-title {
+    font-size: 16px !important;
+  }
+  
+  .figma-course-description {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+  }
+  
+  /* Student List Mobile */
+  .figma-student-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+  
+  .figma-student-card {
+    padding: 12px !important;
+    border-radius: 8px !important;
+  }
+  
+  /* Analytics Charts Mobile */
+  .figma-chart-container {
+    height: 250px !important;
+    margin: 15px 0 !important;
+  }
+  
+  /* Settings Mobile */
+  .figma-settings-section {
+    padding: 20px 15px !important;
+    margin-bottom: 15px !important;
+    border-radius: 10px !important;
+  }
+  
+  .figma-settings-title {
+    font-size: 16px !important;
+    margin-bottom: 15px !important;
+  }
+  
+  /* File Upload Mobile */
+  .figma-file-upload {
+    padding: 30px 15px !important;
+    border-radius: 10px !important;
+  }
+  
+  .figma-upload-text {
+    font-size: 14px !important;
+  }
+  
+  /* Progress Bars Mobile */
+  .figma-progress-bar {
+    height: 6px !important;
+    border-radius: 3px !important;
+  }
+  
+  /* Badges Mobile */
+  .figma-badge {
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    border-radius: 4px !important;
+  }
+  
+  /* Dropdown Mobile */
+  .figma-dropdown-menu {
+    width: 100% !important;
+    max-width: none !important;
+    left: 0 !important;
+    right: 0 !important;
+  }
+  
+  .figma-dropdown-item {
+    padding: 12px 15px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Tablet Responsive Styles */
+@media (max-width: 1024px) and (min-width: 769px) {
+  
+  .figma-sidebar {
+    width: 220px !important;
+  }
+  
+  .figma-main-content {
+    margin-left: 220px !important;
+    padding: 30px 25px !important;
+  }
+  
+  .figma-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px !important;
+  }
+  
+  .figma-profile-section {
+    padding: 25px 20px !important;
+  }
+  
+  .figma-course-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .figma-certificates-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Additional Mobile Responsive Rules */
+@media (max-width: 768px) {
+  
+  /* Ensure sidebar starts hidden */
+  .figma-sidebar:not(.mobile-open) {
+    left: -100% !important;
+  }
+  
+  .figma-sidebar.mobile-open {
+    left: 0 !important;
+  }
+  
+  /* Profile Avatar Mobile */
+  .figma-avatar-circle {
+    width: 80px !important;
+    height: 80px !important;
+    border: 2px solid #7ea2d4 !important;
+    box-shadow: 0 0 0 1px rgba(126, 162, 212, 0.3) !important;
+  }
+  
+  .figma-avatar-circle svg {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  /* Profile Name Mobile */
+  .figma-profile-name {
+    font-size: 20px !important;
+    text-align: center !important;
+  }
+  
+  .figma-profile-title,
+  .figma-profile-location {
+    text-align: center !important;
+    font-size: 13px !important;
+  }
+  
+  .figma-profile-rating {
+    justify-content: center !important;
+  }
+  
+  /* Profile Buttons Mobile */
+  .figma-profile-buttons {
+    flex-direction: row !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+  
+  .figma-profile-btn {
+    flex: 1 !important;
+    min-width: auto !important;
+    padding: 10px 16px !important;
+    font-size: 12px !important;
+  }
+  
+  /* Stats Cards Mobile Layout */
+  .figma-stat-row {
+    padding: 6px 0 !important;
+  }
+  
+  .figma-stat-label {
+    font-size: 12px !important;
+  }
+  
+  .figma-stat-value {
+    font-size: 13px !important;
+  }
+  
+  /* Achievement Items Mobile */
+  .figma-achievement-item {
+    padding: 6px 0 !important;
+  }
+  
+  .figma-achievement-text {
+    font-size: 12px !important;
+  }
+  
+  /* Bio Text Mobile */
+  .figma-bio-text {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+  
+  /* Menu Items Mobile */
+  .figma-menu-parent {
+    padding: 10px 12px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .figma-menu-title {
+    font-size: 13px !important;
+  }
+  
+  .figma-menu-child {
+    padding: 8px 16px !important;
+    font-size: 12px !important;
+  }
+  
+  .figma-single-link {
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+  }
+  
+  /* Subscription Mobile */
+  .figma-subscription {
+    margin-top: 15px !important;
+    padding-top: 15px !important;
+  }
+}/* 
+===== DASHBOARD HEADER LAYOUT FIXES ===== */
+
+/* Desktop Header Layout */
+@media (min-width: 769px) {
+  .figma-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 30px;
+  }
+  
+  .figma-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  
+  .figma-header-right {
+    display: flex;
+    align-items: center;
+  }
+  
+  .figma-mobile-toggle {
+    display: none !important;
+  }
+  
+  .figma-title {
+    display: block;
+  }
+  
+  /* Hide mobile elements on desktop */
+  .mobile-only {
+    display: none !important;
+  }
+  
+  /* Show desktop elements */
+  .desktop-only {
+    display: flex !important;
+  }
+}
+
+/* Mobile Header Layout */
+@media (max-width: 768px) {
+  .figma-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 15px !important;
+    height: 60px !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important;
+    background: rgba(35, 35, 35, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(126, 162, 212, 0.2) !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    flex: 1 !important;
+  }
+  
+  .figma-header-right {
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+  }
+  
+  .figma-mobile-toggle {
+    display: flex !important;
+    order: 1 !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(58, 56, 56, 0.3) !important;
+    border: 1px solid #7ea2d4 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(20px) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-logo {
+    order: 2 !important;
+    flex: 1 !important;
+    text-align: center !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 24px !important;
+    margin: 0 !important;
+  }
+  
+  .figma-title {
+    display: none !important; /* Hide page title on mobile */
+  }
+  
+  /* Hide desktop buttons on mobile */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Show mobile elements */
+  .mobile-only {
+    display: flex !important;
+  }
+  
+  /* Mobile Menu Button */
+  .figma-mobile-menu-btn {
+    width: 40px;
+    height: 40px;
+    background: rgba(58, 56, 56, 0.3);
+    border: 1px solid #7ea2d4;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+  }
+  
+  .figma-mobile-menu-btn:hover {
+    background: rgba(58, 56, 56, 0.5);
+    border-color: #7ea2d4;
+  }
+  
+  .figma-mobile-menu-btn.active {
+    background: rgba(126, 162, 212, 0.3);
+    border-color: #7ea2d4;
+  }
+  
+  /* Mobile Dropdown Menu */
+  .figma-mobile-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    width: 280px !important;
+    max-width: 90vw !important;
+    background: rgba(35, 35, 35, 0.98) !important;
+    backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(126, 162, 212, 0.3) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    margin-top: 8px !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(-10px) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 1001 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-mobile-dropdown.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+  }
+  
+  .figma-mobile-dropdown-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px;
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+  }
+  
+  .figma-mobile-dropdown-item:last-child {
+    border-bottom: none;
+  }
+  
+  .figma-mobile-dropdown-item:hover {
+    background: rgba(126, 162, 212, 0.2);
+    color: #ffffff;
+  }
+  
+  .figma-mobile-dropdown-item.primary {
+    background: rgba(126, 162, 212, 0.2);
+    color: #7ea2d4;
+    font-weight: 600;
+  }
+  
+  .figma-mobile-dropdown-item.primary:hover {
+    background: rgba(126, 162, 212, 0.3);
+    color: #ffffff;
+  }
+  
+  .figma-mobile-dropdown-item.logout {
+    color: #ef4444;
+  }
+  
+  .figma-mobile-dropdown-item.logout:hover {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ffffff;
+  }
+  
+  .figma-mobile-dropdown-item svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  
+  .figma-mobile-dropdown-item span {
+    flex: 1;
+    text-align: left;
+  }
+  
+  /* Mobile notification badge */
+  .notification-badge-mobile {
+    background: #ef4444;
+    color: #ffffff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+  }
+}
+/* ===== M
+OBILE RESPONSIVE IMPROVEMENTS ===== */
+
+/* Very Small Mobile Devices */
+@media (max-width: 480px) {
+  
+  .figma-header {
+    padding: 8px 12px !important;
+  }
+  
+  .figma-mobile-toggle {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 20px !important;
+  }
+  
+  .figma-sidebar {
+    width: 260px !important;
+    max-width: 90vw !important;
+  }
+  
+  .figma-content-area {
+    padding: 12px !important;
+  }
+  
+  .figma-profile-section {
+    padding: 12px !important;
+  }
+  
+  .figma-stats-card {
+    padding: 15px 12px !important;
+  }
+  
+  .figma-mobile-dropdown {
+    width: 260px !important;
+    max-width: 95vw !important;
+  }
+}
+
+/* Landscape Mobile Orientation */
+@media (max-width: 768px) and (orientation: landscape) {
+  
+  .figma-header {
+    height: 50px !important;
+  }
+  
+  .figma-sidebar {
+    top: 50px !important;
+    height: calc(100vh - 50px) !important;
+  }
+  
+  .figma-main-layout {
+    margin-top: 50px !important;
+  }
+  
+  .figma-mobile-overlay {
+    top: 50px !important;
+    height: calc(100vh - 50px) !important;
+  }
+  
+  .figma-stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* Touch Device Improvements */
+@media (hover: none) and (pointer: coarse) {
+  
+  .figma-mobile-toggle {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  .figma-mobile-menu-btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  .figma-profile-btn {
+    min-height: 44px !important;
+  }
+  
+  .figma-menu-parent {
+    min-height: 44px !important;
+  }
+  
+  .figma-menu-child {
+    min-height: 40px !important;
+  }
+  
+  .figma-mobile-dropdown-item {
+    min-height: 48px !important;
+    padding: 12px 20px !important;
+  }
+}
+
+/* High DPI Mobile Displays */
+@media (max-width: 768px) and (-webkit-min-device-pixel-ratio: 2) {
+  
+  .figma-header {
+    border-bottom-width: 0.5px !important;
+  }
+  
+  .figma-sidebar {
+    border-right-width: 0.5px !important;
+  }
+  
+  .figma-stats-card,
+  .figma-profile-section {
+    border-width: 0.5px !important;
+  }
+}
+
+/* Mobile Dark Mode Adjustments */
+@media (max-width: 768px) and (prefers-color-scheme: dark) {
+  
+  .figma-mobile-overlay {
+    background: rgba(0, 0, 0, 0.7) !important;
+  }
+  
+  .figma-sidebar {
+    background: rgba(20, 20, 20, 0.98) !important;
+  }
+  
+  .figma-mobile-dropdown {
+    background: rgba(20, 20, 20, 0.98) !important;
+  }
+}
+
+/* Accessibility Improvements for Mobile */
+@media (max-width: 768px) {
+  
+  /* Focus states for keyboard navigation */
+  .figma-mobile-toggle:focus,
+  .figma-mobile-menu-btn:focus {
+    outline: 2px solid #7ea2d4 !important;
+    outline-offset: 2px !important;
+  }
+  
+  .figma-menu-child:focus,
+  .figma-single-link:focus {
+    outline: 1px solid #7ea2d4 !important;
+    outline-offset: 1px !important;
+  }
+  
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .figma-sidebar,
+    .figma-mobile-overlay,
+    .figma-mobile-dropdown {
+      transition: none !important;
+    }
+  }
+}
+
+/* Mobile Menu Animation Improvements */
+@media (max-width: 768px) {
+  
+  .figma-sidebar {
+    will-change: left !important;
+  }
+  
+  .figma-mobile-overlay {
+    will-change: opacity !important;
+  }
+  
+  .figma-mobile-dropdown {
+    will-change: opacity, transform !important;
+  }
+  
+  /* Smooth scrolling for sidebar */
+  .figma-sidebar {
+    scroll-behavior: smooth !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}/* =
+==== MOBILE LAYOUT FIXES ===== */
+
+/* Ensure proper mobile layout */
+@media (max-width: 768px) {
+  
+  /* Fix viewport and scrolling issues */
+  html {
+    overflow-x: hidden !important;
+    width: 100% !important;
+  }
+  
+  body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    position: relative !important;
+  }
+  
+  /* Dashboard container fixes */
+  .figma-dashboard {
+    width: 100% !important;
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    position: relative !important;
+  }
+  
+  /* Header positioning fixes */
+  .figma-header {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Sidebar positioning fixes */
+  .figma-sidebar {
+    position: fixed !important;
+    top: 60px !important;
+    left: -100% !important;
+    width: 280px !important;
+    max-width: 85vw !important;
+    height: calc(100vh - 60px) !important;
+    z-index: 999 !important;
+    box-sizing: border-box !important;
+    transform: translateZ(0) !important;
+  }
+  
+  .figma-sidebar.mobile-open {
+    left: 0 !important;
+  }
+  
+  /* Content area positioning fixes */
+  .figma-content-area {
+    margin-left: 0 !important;
+    margin-top: 0 !important;
+    padding: 15px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-height: calc(100vh - 60px) !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  /* Main layout fixes */
+  .figma-main-layout {
+    margin-top: 60px !important;
+    padding: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Profile section mobile fixes */
+  .figma-profile-section {
+    margin: 0 0 20px 0 !important;
+    padding: 15px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Stats grid mobile fixes */
+  .figma-stats-grid {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+  }
+  
+  .figma-stats-card {
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Mobile overlay fixes */
+  .figma-mobile-overlay {
+    position: fixed !important;
+    top: 60px !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 60px) !important;
+    z-index: 998 !important;
+  }
+  
+  /* Mobile dropdown fixes */
+  .figma-mobile-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    z-index: 1001 !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Prevent horizontal scroll */
+  * {
+    max-width: 100% !important;
+  }
+  
+  /* Fix any overflowing elements */
+  .figma-header-left,
+  .figma-header-right {
+    overflow: visible !important;
+  }
+  
+  /* Logo text size fix */
+  .figma-logo h1 {
+    font-size: 22px !important;
+    white-space: nowrap !important;
+  }
+  
+  /* Mobile toggle button improvements */
+  .figma-mobile-toggle {
+    flex-shrink: 0 !important;
+  }
+  
+  .figma-mobile-menu-btn {
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Very small screens additional fixes */
+@media (max-width: 480px) {
+  
+  .figma-header {
+    padding: 8px 10px !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 18px !important;
+  }
+  
+  .figma-sidebar {
+    width: 260px !important;
+    max-width: 90vw !important;
+  }
+  
+  .figma-content-area {
+    padding: 10px !important;
+  }
+  
+  .figma-mobile-dropdown {
+    width: 250px !important;
+    max-width: 95vw !important;
+    right: 5px !important;
+  }
+}
+
+/* Landscape orientation fixes */
+@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
+  
+  .figma-header {
+    height: 50px !important;
+    padding: 5px 15px !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 18px !important;
+  }
+  
+  .figma-sidebar {
+    top: 50px !important;
+    height: calc(100vh - 50px) !important;
+  }
+  
+  .figma-main-layout {
+    margin-top: 50px !important;
+  }
+  
+  .figma-mobile-overlay {
+    top: 50px !important;
+    height: calc(100vh - 50px) !important;
+  }
+}/* ===
+== MOBILE RESPONSIVE FINAL FIXES ===== */
+
+/* Mobile-first approach for dashboard */
+@media (max-width: 768px) {
+  
+  /* Ensure no horizontal scrolling */
+  html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  
+  /* Dashboard wrapper */
+  .figma-dashboard {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: hidden !important;
+  }
+  
+  /* Header mobile layout */
+  .figma-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 15px !important;
+    height: 60px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1000 !important;
+    background: rgba(35, 35, 35, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    border-bottom: 1px solid rgba(126, 162, 212, 0.2) !important;
+  }
+  
+  .figma-header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+  
+  .figma-header-right {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Mobile toggle button */
+  .figma-mobile-toggle {
+    display: flex !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(58, 56, 56, 0.3) !important;
+    border: 1px solid #7ea2d4 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    align-items: center !important;
+    justify-content: center !important;
+    backdrop-filter: blur(20px) !important;
+    transition: all 0.3s ease !important;
+    flex-shrink: 0 !important;
+    order: 1 !important;
+  }
+  
+  .figma-mobile-toggle:hover {
+    background: rgba(58, 56, 56, 0.5) !important;
+    border-color: #7ea2d4 !important;
+  }
+  
+  .figma-mobile-toggle span {
+    width: 18px !important;
+    height: 2px !important;
+    background: #ffffff !important;
+    display: block !important;
+    position: relative !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-mobile-toggle span::before,
+  .figma-mobile-toggle span::after {
+    content: '' !important;
+    position: absolute !important;
+    width: 18px !important;
+    height: 2px !important;
+    background: #ffffff !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-mobile-toggle span::before {
+    top: -6px !important;
+  }
+  
+  .figma-mobile-toggle span::after {
+    top: 6px !important;
+  }
+  
+  .figma-mobile-toggle.active span {
+    background: transparent !important;
+  }
+  
+  .figma-mobile-toggle.active span::before {
+    transform: rotate(45deg) !important;
+    top: 0 !important;
+  }
+  
+  .figma-mobile-toggle.active span::after {
+    transform: rotate(-45deg) !important;
+    top: 0 !important;
+  }
+  
+  /* Logo mobile */
+  .figma-logo {
+    flex: 1 !important;
+    text-align: left !important;
+    min-width: 0 !important;
+    order: 2 !important;
+    margin-left: 10px !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 22px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  /* Hide desktop elements */
+  .desktop-only {
+    display: none !important;
+  }
+  
+  /* Show mobile elements */
+  .mobile-only {
+    display: flex !important;
+  }
+  
+  /* Mobile menu button */
+  .figma-mobile-menu-btn {
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(58, 56, 56, 0.3) !important;
+    border: 1px solid #7ea2d4 !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    backdrop-filter: blur(20px) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: #ffffff !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .figma-mobile-menu-btn:hover {
+    background: rgba(58, 56, 56, 0.5) !important;
+    border-color: #7ea2d4 !important;
+  }
+  
+  .figma-mobile-menu-btn.active {
+    background: rgba(126, 162, 212, 0.3) !important;
+    border-color: #7ea2d4 !important;
+  }
+  
+  /* Sidebar mobile */
+  .figma-sidebar {
+    position: fixed !important;
+    top: 60px !important;
+    left: -100% !important;
+    width: 280px !important;
+    max-width: 85vw !important;
+    height: calc(100vh - 60px) !important;
+    z-index: 999 !important;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    background: rgba(35, 35, 35, 0.98) !important;
+    backdrop-filter: blur(30px) !important;
+    border-right: 1px solid rgba(126, 162, 212, 0.3) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
+    padding: 20px 15px !important;
+  }
+  
+  .figma-sidebar.mobile-open {
+    left: 0 !important;
+  }
+  
+  /* Main layout mobile */
+  .figma-main-layout {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 60px !important;
+    padding: 0 !important;
+    gap: 0 !important;
+    min-height: calc(100vh - 60px) !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Content area mobile */
+  .figma-content-area {
+    margin-left: 0 !important;
+    padding: 15px !important;
+    width: 100% !important;
+    min-height: calc(100vh - 60px) !important;
+    background: var(--bg-primary) !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  /* Mobile overlay */
+  .figma-mobile-overlay {
+    display: none !important;
+    position: fixed !important;
+    top: 60px !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 60px) !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    z-index: 998 !important;
+    backdrop-filter: blur(3px) !important;
+    transition: all 0.3s ease !important;
+  }
+  
+  .figma-mobile-overlay.active {
+    display: block !important;
+  }
+  
+  /* Mobile dropdown */
+  .figma-mobile-dropdown {
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    width: 280px !important;
+    max-width: 90vw !important;
+    background: rgba(35, 35, 35, 0.98) !important;
+    backdrop-filter: blur(30px) !important;
+    border: 1px solid rgba(126, 162, 212, 0.3) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4) !important;
+    margin-top: 8px !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(-10px) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 1001 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-mobile-dropdown.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+  }
+  
+  .figma-mobile-dropdown-item {
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+    padding: 15px 20px !important;
+    background: transparent !important;
+    border: none !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-mobile-dropdown-item:last-child {
+    border-bottom: none !important;
+  }
+  
+  .figma-mobile-dropdown-item:hover {
+    background: rgba(126, 162, 212, 0.2) !important;
+    color: #ffffff !important;
+  }
+  
+  .figma-mobile-dropdown-item.primary {
+    background: rgba(126, 162, 212, 0.2) !important;
+    color: #7ea2d4 !important;
+    font-weight: 600 !important;
+  }
+  
+  .figma-mobile-dropdown-item.primary:hover {
+    background: rgba(126, 162, 212, 0.3) !important;
+    color: #ffffff !important;
+  }
+  
+  .figma-mobile-dropdown-item.logout {
+    color: #ef4444 !important;
+  }
+  
+  .figma-mobile-dropdown-item.logout:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+    color: #ffffff !important;
+  }
+}/* =====
+ DESKTOP/MOBILE VISIBILITY CONTROLS ===== */
+
+/* Desktop default visibility */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+  }
+  
+  .desktop-only {
+    display: block !important;
+  }
+  
+  .figma-header-buttons.desktop-only {
+    display: flex !important;
+  }
+  
+  .figma-title.desktop-only {
+    display: block !important;
+  }
+}
+
+/* Mobile visibility */
+@media (max-width: 768px) {
+  .desktop-only {
+    display: none !important;
+  }
+  
+  .mobile-only {
+    display: flex !important;
+  }
+  
+  .figma-header-buttons.desktop-only {
+    display: none !important;
+  }
+  
+  .figma-title.desktop-only {
+    display: none !important;
+  }
+  
+  .figma-mobile-toggle.mobile-only {
+    display: flex !important;
+  }
+  
+  .figma-mobile-menu-btn.mobile-only {
+    display: flex !important;
+  }
+}
+
+/* Header layout improvements */
+@media (max-width: 768px) {
+  .figma-header-left {
+    justify-content: flex-start !important;
+  }
+  
+  .figma-header-right {
+    justify-content: flex-end !important;
+  }
+  
+  /* Ensure proper order */
+  .figma-mobile-toggle {
+    order: 1 !important;
+  }
+  
+  .figma-logo {
+    order: 2 !important;
+  }
+  
+  .figma-mobile-menu-btn {
+    order: 3 !important;
+  }
+}
+
+/* Avatar improvements for all screen sizes */
+.figma-avatar-circle {
+  position: relative;
+  background: linear-gradient(135deg, rgba(126, 162, 212, 0.1), rgba(126, 162, 212, 0.05));
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+.figma-avatar-circle::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(135deg, #7ea2d4, #5a8bc4, #7ea2d4);
+  border-radius: 50%;
+  z-index: -1;
+  animation: avatarGlow 3s ease-in-out infinite;
+}
+
+@keyframes avatarGlow {
+  0%, 100% {
+    background: linear-gradient(135deg, #7ea2d4, #5a8bc4, #7ea2d4);
+    box-shadow: 0 0 20px rgba(126, 162, 212, 0.3);
+  }
+  50% {
+    background: linear-gradient(135deg, #5a8bc4, #7ea2d4, #5a8bc4);
+    box-shadow: 0 0 30px rgba(126, 162, 212, 0.5);
+  }
+}
+
+.figma-avatar-circle img {
+  border-radius: 50%;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* Profile section mobile improvements */
+@media (max-width: 768px) {
+  .figma-profile-section {
+    text-align: center !important;
+    align-items: center !important;
+  }
+  
+  .figma-profile-info {
+    text-align: center !important;
+  }
+  
+  .figma-profile-name {
+    text-align: center !important;
+  }
+  
+  .figma-profile-title,
+  .figma-profile-location {
+    text-align: center !important;
+  }
+  
+  .figma-profile-rating {
+    justify-content: center !important;
+  }
+  
+  .figma-profile-buttons {
+    justify-content: center !important;
+    width: 100% !important;
+  }
+}/* 
+===== MOBILE HEADER FINAL LAYOUT ===== */
+
+@media (max-width: 768px) {
+  /* Header container */
+  .figma-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 15px !important;
+    height: 60px !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* Left side: Toggle + Logo */
+  .figma-header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    flex: 1 !important;
+    justify-content: flex-start !important;
+  }
+  
+  /* Right side: Menu button */
+  .figma-header-right {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Mobile toggle button (first) */
+  .figma-mobile-toggle.mobile-only {
+    display: flex !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(58, 56, 56, 0.3) !important;
+    border: 1px solid #7ea2d4 !important;
+    border-radius: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Logo (second) */
+  .figma-logo {
+    flex: 1 !important;
+    text-align: left !important;
+    margin-left: 0 !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 22px !important;
+    margin: 0 !important;
+    color: #ffffff !important;
+  }
+  
+  .figma-logo span {
+    color: #7ea2d4 !important;
+  }
+  
+  /* Mobile menu button (third) */
+  .figma-mobile-menu-btn.mobile-only {
+    display: flex !important;
+    width: 40px !important;
+    height: 40px !important;
+    background: rgba(58, 56, 56, 0.3) !important;
+    border: 1px solid #7ea2d4 !important;
+    border-radius: 8px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    color: #ffffff !important;
+  }
+  
+  /* Hide desktop elements completely */
+  .desktop-only {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Show mobile elements */
+  .mobile-only {
+    display: flex !important;
+    visibility: visible !important;
+  }
+}
+
+/* Very small screens */
+@media (max-width: 480px) {
+  .figma-header {
+    padding: 8px 12px !important;
+  }
+  
+  .figma-header-left {
+    gap: 12px !important;
+  }
+  
+  .figma-mobile-toggle.mobile-only,
+  .figma-mobile-menu-btn.mobile-only {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 20px !important;
+  }
+}
+
+/* Desktop - ensure mobile elements are hidden */
+@media (min-width: 769px) {
+  .mobile-only {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  .desktop-only {
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  .figma-header-buttons.desktop-only {
+    display: flex !important;
+  }
+}/* ====
+= DESKTOP HEADER IMPROVEMENTS ===== */
+
+/* Desktop notification button */
+@media (min-width: 769px) {
+  .figma-notification-btn {
+    position: relative;
+    background: rgba(126, 162, 212, 0.1);
+    border-color: rgba(126, 162, 212, 0.3);
+    color: #7ea2d4;
+  }
+  
+  .figma-notification-btn:hover {
+    background: rgba(126, 162, 212, 0.2);
+    border-color: #7ea2d4;
+    color: #ffffff;
+  }
+  
+  .figma-notification-btn .notification-text {
+    font-weight: 500;
+  }
+  
+  /* Desktop header buttons spacing */
+  .figma-header-buttons.desktop-only {
+    gap: 20px;
+  }
+  
+  /* Desktop header layout */
+  .figma-header {
+    padding: 15px 40px;
+  }
+  
+  .figma-header-left {
+    gap: 30px;
+  }
+  
+  /* Desktop logo */
+  .figma-logo h1 {
+    font-size: 32px;
+    margin-left: 0;
+  }
+  
+  /* Desktop title */
+  .figma-title h2 {
+    font-size: 28px;
+    margin-left: 40px;
+  }
+}
+
+/* Notification badge desktop */
+@media (min-width: 769px) {
+  .notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 1px solid #232323;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 10;
+  }
+}
+
+/* Clean desktop header */
+@media (min-width: 769px) {
+  .figma-header {
+    border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+    background: rgba(35, 35, 35, 0.98);
+    backdrop-filter: blur(20px);
+  }
+  
+  .figma-header-buttons {
+    align-items: center;
+  }
+  
+  .figma-btn {
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  
+  .figma-btn svg {
+    flex-shrink: 0;
+  }
+}/* ===== CL
+EAN DESKTOP HEADER ===== */
+
+@media (min-width: 769px) {
+  /* Desktop header clean layout */
+  .figma-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 40px;
+    height: 70px;
+    background: rgba(35, 35, 35, 0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(126, 162, 212, 0.2);
+  }
+  
+  .figma-header-left {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex: 1;
+  }
+  
+  .figma-header-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+  }
+  
+  .figma-header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+  }
+  
+  /* Desktop logo styling */
+  .figma-logo h1 {
+    font-family: 'League Spartan', sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    letter-spacing: -0.5px;
+  }
+  
+  .figma-logo span {
+    color: #7ea2d4;
+  }
+  
+  /* Desktop title styling */
+  .figma-header-center .figma-title h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #7ea2d4;
+    margin: 0;
+    text-align: center;
+    white-space: nowrap;
+  }
+  
+  /* Desktop buttons container */
+  .figma-header-buttons.desktop-only {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  /* Desktop notification button */
+  .figma-notification-btn {
+    position: relative;
+    background: rgba(126, 162, 212, 0.1);
+    border: 1px solid rgba(126, 162, 212, 0.3);
+    color: #7ea2d4;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .figma-notification-btn:hover {
+    background: rgba(126, 162, 212, 0.2);
+    border-color: #7ea2d4;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+  
+  /* Desktop regular buttons */
+  .figma-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  
+  .figma-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-1px);
+  }
+  
+  /* Desktop primary button (New Course) */
+  .figma-btn-primary {
+    background: #7ea2d4;
+    border-color: #7ea2d4;
+    color: #ffffff;
+  }
+  
+  .figma-btn-primary:hover {
+    background: #6b90c7;
+    border-color: #6b90c7;
+    transform: translateY(-1px);
+  }
+  
+  /* Desktop logout button */
+  .figma-btn-logout {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .figma-btn-logout:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+    color: #ffffff;
+    transform: translateY(-1px);
+  }
+  
+  /* Desktop notification badge */
+  .notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 1px solid #232323;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    z-index: 10;
+  }
+  
+  /* Hide mobile elements completely on desktop */
+  .mobile-only {
+    display: none !important;
+    visibility: hidden !important;
+  }
+  
+  /* Show desktop elements */
+  .desktop-only {
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  .figma-header-buttons.desktop-only {
+    display: flex !important;
+  }
+}
+
+/* Ensure mobile elements are properly hidden on desktop */
+@media (min-width: 769px) {
+  .figma-mobile-toggle,
+  .figma-mobile-menu-btn,
+  .figma-mobile-dropdown,
+  .figma-mobile-overlay {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}/* ====
+= RESPONSIVE HEADER FINAL ===== */
+
+/* Large desktop screens */
+@media (min-width: 1200px) {
+  .figma-header {
+    padding: 15px 60px;
+  }
+  
+  .figma-header-left {
+    gap: 50px;
+  }
+  
+  .figma-header-buttons.desktop-only {
+    gap: 25px;
+  }
+}
+
+/* Medium desktop screens */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .figma-header {
+    padding: 15px 30px;
+  }
+  
+  .figma-header-left {
+    gap: 30px;
+  }
+  
+  .figma-header-center .figma-title h2 {
+    font-size: 24px;
+  }
+}
+
+/* Tablet landscape */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .figma-logo h1 {
+    font-size: 28px;
+  }
+  
+  .figma-title h2 {
+    font-size: 22px;
+  }
+  
+  .figma-notification-btn .notification-text {
+    display: none;
+  }
+  
+  .figma-notification-btn {
+    padding: 10px 12px;
+  }
+  
+  .figma-header-buttons.desktop-only {
+    gap: 12px;
+  }
+  
+  .figma-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  
+  .figma-btn-logout {
+    padding: 8px 14px;
+  }
+}
+
+/* Mobile portrait and landscape */
+@media (max-width: 768px) {
+  /* Ensure desktop elements are completely hidden */
+  .desktop-only {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  
+  /* Ensure mobile elements are visible */
+  .mobile-only {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  
+  /* Mobile header layout */
+  .figma-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 10px 15px !important;
+    height: 60px !important;
+    box-sizing: border-box !important;
+  }
+  
+  .figma-header-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+    flex: 1 !important;
+  }
+  
+  .figma-header-right {
+    display: flex !important;
+    align-items: center !important;
+    flex-shrink: 0 !important;
+  }
+}
+
+/* Very small mobile screens */
+@media (max-width: 480px) {
+  .figma-header {
+    padding: 8px 12px !important;
+  }
+  
+  .figma-header-left {
+    gap: 12px !important;
+  }
+  
+  .figma-logo h1 {
+    font-size: 20px !important;
+  }
+}
+
+/* High DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .figma-header {
+    border-bottom-width: 0.5px;
+  }
+  
+  .figma-notification-btn,
+  .figma-btn-logout {
+    border-width: 0.5px;
+  }
+}/*
+ ===== DESKTOP HEADER BUTTONS STYLING ===== */
+
+@media (min-width: 769px) {
+  /* All desktop buttons base styling */
+  .figma-header-buttons .figma-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    text-decoration: none;
+  }
+  
+  /* Notification button special styling */
+  .figma-notification-btn {
+    background: rgba(126, 162, 212, 0.1) !important;
+    border: 1px solid rgba(126, 162, 212, 0.3) !important;
+    color: #7ea2d4 !important;
+  }
+  
+  .figma-notification-btn:hover {
+    background: rgba(126, 162, 212, 0.2) !important;
+    border-color: #7ea2d4 !important;
+    color: #ffffff !important;
+  }
+  
+  /* Regular buttons */
+  .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout) {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
+  
+  .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout):hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  
+  /* Primary button (New Course) */
+  .figma-btn-primary {
+    background: #7ea2d4 !important;
+    border-color: #7ea2d4 !important;
+    color: #ffffff !important;
+  }
+  
+  .figma-btn-primary:hover {
+    background: #6b90c7 !important;
+    border-color: #6b90c7 !important;
+  }
+  
+  /* Logout button */
+  .figma-btn-logout {
+    background: rgba(239, 68, 68, 0.1) !important;
+    border: 1px solid rgba(239, 68, 68, 0.3) !important;
+    color: #ef4444 !important;
+  }
+  
+  .figma-btn-logout:hover {
+    background: rgba(239, 68, 68, 0.2) !important;
+    border-color: #ef4444 !important;
+    color: #ffffff !important;
+  }
+  
+  /* Button hover effects */
+  .figma-header-buttons .figma-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Button active states */
+  .figma-header-buttons .figma-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Medium desktop adjustments */
+@media (min-width: 769px) and (max-width: 1199px) {
+  .figma-header-buttons.desktop-only {
+    gap: 12px;
+  }
+  
+  .figma-header-buttons .figma-btn {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  
+  .figma-notification-btn .notification-text {
+    display: none;
+  }
+}
+
+/* Large desktop */
+@media (min-width: 1200px) {
+  .figma-header-buttons.desktop-only {
+    gap: 18px;
+  }
+  
+  .figma-header-buttons .figma-btn {
+    padding: 10px 18px;
+    font-size: 14px;
+  }
 }

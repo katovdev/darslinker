@@ -185,31 +185,90 @@ async function renderTeacherDashboard(user) {
     <div class="figma-dashboard">
       <!-- Top Header exactly like Figma -->
       <div class="figma-header">
-        <div class="figma-logo">
-          <h1>dars<span>linker</span></h1>
-        </div>
-        <div class="figma-title">
-          <h2 id="page-title">${t('dashboard.title')}</h2>
-        </div>
-        <div class="figma-header-buttons">
-          <button class="figma-btn figma-notification-btn" onclick="openNotificationsPage()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
-            </svg>
-            <span class="notification-text">Notification</span>
-            <span class="notification-badge" id="notification-badge" style="display: none;"></span>
+        <div class="figma-header-left">
+          <!-- Mobile Sidebar Toggle -->
+          <button class="figma-mobile-toggle mobile-only" id="mobileMenuToggle" onclick="toggleMobileSidebar()" 
+                  aria-label="Toggle sidebar menu" aria-expanded="false" aria-controls="dashboardSidebar">
+            <span></span>
           </button>
-          <button class="figma-btn" onclick="startNewMeeting()">${t('header.newMeeting')}</button>
-          <button class="figma-btn" onclick="openTelegramBot()">${t('header.telegramBot')}</button>
-          <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">${t('header.newCourse')}</button>
-          <button class="figma-btn figma-btn-logout" onclick="handleLogout()">Chiqish</button>
+          <div class="figma-logo">
+            <h1>dars<span>linker</span></h1>
+          </div>
+          <div class="figma-title desktop-only">
+            <h2 id="page-title">${t('dashboard.title')}</h2>
+          </div>
+        </div>
+        <div class="figma-header-right">
+          <!-- Desktop Buttons -->
+          <div class="figma-header-buttons desktop-only">
+            <button class="figma-btn figma-notification-btn" onclick="openNotificationsPage()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+              </svg>
+              <span class="notification-text">Notifications</span>
+              <span class="notification-badge" id="notification-badge" style="display: none;"></span>
+            </button>
+            <button class="figma-btn" onclick="startNewMeeting()">${t('header.newMeeting')}</button>
+            <button class="figma-btn" onclick="openTelegramBot()">${t('header.telegramBot')}</button>
+            <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">${t('header.newCourse')}</button>
+            <button class="figma-btn figma-btn-logout" onclick="handleLogout()">Chiqish</button>
+          </div>
+          
+          <!-- Mobile Menu Button -->
+          <button class="figma-mobile-menu-btn mobile-only" id="mobileHeaderMenu" onclick="toggleMobileHeaderMenu()"
+                  aria-label="Toggle header menu" aria-expanded="false" aria-controls="mobileHeaderDropdown">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <circle cx="12" cy="5" r="2"/>
+              <circle cx="12" cy="12" r="2"/>
+              <circle cx="12" cy="19" r="2"/>
+            </svg>
+          </button>
+          
+          <!-- Mobile Dropdown Menu -->
+          <div class="figma-mobile-dropdown" id="mobileHeaderDropdown" aria-hidden="true" role="menu">
+            <button class="figma-mobile-dropdown-item" onclick="openNotificationsPage(); closeMobileHeaderMenu()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
+              </svg>
+              <span>Notifications</span>
+              <span class="notification-badge-mobile" id="notification-badge-mobile" style="display: none;"></span>
+            </button>
+            <button class="figma-mobile-dropdown-item" onclick="startNewMeeting(); closeMobileHeaderMenu()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+              </svg>
+              <span>${t('header.newMeeting')}</span>
+            </button>
+            <button class="figma-mobile-dropdown-item" onclick="openTelegramBot(); closeMobileHeaderMenu()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              </svg>
+              <span>${t('header.telegramBot')}</span>
+            </button>
+            <button class="figma-mobile-dropdown-item primary" onclick="openCreateCourse(); closeMobileHeaderMenu()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+              </svg>
+              <span>${t('header.newCourse')}</span>
+            </button>
+            <button class="figma-mobile-dropdown-item logout" onclick="handleLogout(); closeMobileHeaderMenu()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+              </svg>
+              <span>Chiqish</span>
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- Mobile Overlay -->
+      <div class="figma-mobile-overlay" id="mobileOverlay" onclick="closeMobileSidebar()" 
+           aria-hidden="true" role="button" aria-label="Close sidebar"></div>
 
       <!-- Main Layout with Sidebar + Content -->
       <div class="figma-main-layout">
         <!-- Left Sidebar -->
-        <div class="figma-sidebar">
+        <div class="figma-sidebar" id="dashboardSidebar" aria-hidden="true" role="navigation" aria-label="Main navigation">
           <!-- General Menu (Expandable) -->
           <div class="figma-menu-section">
             <div class="figma-menu-parent" onclick="toggleMenu('general')">
@@ -20996,3 +21055,302 @@ setInterval(() => {
     loadNotificationCount();
   }
 }, 30000);
+
+// ===== MOBILE SIDEBAR FUNCTIONALITY =====
+
+// Toggle mobile sidebar
+window.toggleMobileSidebar = function() {
+  const sidebar = document.getElementById('dashboardSidebar');
+  const overlay = document.getElementById('mobileOverlay');
+  const toggleBtn = document.getElementById('mobileMenuToggle');
+  
+  if (!sidebar || !overlay || !toggleBtn) {
+    console.warn('Mobile sidebar elements not found');
+    return;
+  }
+  
+  const isOpen = sidebar.classList.contains('mobile-open');
+  
+  if (isOpen) {
+    closeMobileSidebar();
+  } else {
+    openMobileSidebar();
+  }
+};
+
+// Open mobile sidebar
+window.openMobileSidebar = function() {
+  const sidebar = document.getElementById('dashboardSidebar');
+  const overlay = document.getElementById('mobileOverlay');
+  const toggleBtn = document.getElementById('mobileMenuToggle');
+  
+  if (!sidebar || !overlay || !toggleBtn) {
+    console.warn('Mobile sidebar elements not found');
+    return;
+  }
+  
+  // Close mobile header menu if open
+  closeMobileHeaderMenu();
+  
+  sidebar.classList.add('mobile-open');
+  overlay.classList.add('active');
+  toggleBtn.classList.add('active');
+  
+  // Prevent body scroll when sidebar is open
+  document.body.style.overflow = 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+  
+  // Add accessibility
+  sidebar.setAttribute('aria-hidden', 'false');
+  toggleBtn.setAttribute('aria-expanded', 'true');
+};
+
+// Close mobile sidebar
+window.closeMobileSidebar = function() {
+  const sidebar = document.getElementById('dashboardSidebar');
+  const overlay = document.getElementById('mobileOverlay');
+  const toggleBtn = document.getElementById('mobileMenuToggle');
+  
+  if (!sidebar || !overlay || !toggleBtn) {
+    console.warn('Mobile sidebar elements not found');
+    return;
+  }
+  
+  sidebar.classList.remove('mobile-open');
+  overlay.classList.remove('active');
+  toggleBtn.classList.remove('active');
+  
+  // Restore body scroll
+  document.body.style.overflow = '';
+  document.documentElement.style.overflow = '';
+  
+  // Add accessibility
+  sidebar.setAttribute('aria-hidden', 'true');
+  toggleBtn.setAttribute('aria-expanded', 'false');
+};
+
+// Close sidebar when clicking on menu items (mobile)
+window.handleMobileMenuClick = function(callback) {
+  // Execute the original callback
+  if (typeof callback === 'function') {
+    callback();
+  }
+  
+  // Close mobile sidebar on mobile devices
+  if (window.innerWidth <= 768) {
+    closeMobileSidebar();
+  }
+};
+
+// Handle window resize
+window.addEventListener('resize', function() {
+  if (window.innerWidth > 768) {
+    // Close mobile sidebar on desktop
+    closeMobileSidebar();
+  }
+});
+
+// Initialize mobile sidebar functionality
+function initMobileSidebar() {
+  // Add click handlers to all menu items to close sidebar on mobile
+  const menuItems = document.querySelectorAll('.figma-menu-child, .figma-single-link');
+  
+  menuItems.forEach(item => {
+    const originalOnclick = item.getAttribute('onclick');
+    if (originalOnclick) {
+      // Wrap the original onclick with mobile handler
+      item.setAttribute('onclick', `handleMobileMenuClick(() => { ${originalOnclick} })`);
+    }
+  });
+  
+  // Close sidebar when clicking outside on mobile
+  document.addEventListener('click', function(e) {
+    if (window.innerWidth <= 768) {
+      const sidebar = document.getElementById('dashboardSidebar');
+      const toggleBtn = document.getElementById('mobileMenuToggle');
+      
+      if (sidebar && toggleBtn && 
+          !sidebar.contains(e.target) && 
+          !toggleBtn.contains(e.target) && 
+          sidebar.classList.contains('mobile-open')) {
+        closeMobileSidebar();
+      }
+    }
+  });
+}
+
+// Initialize mobile functionality
+function initMobileFunctionality() {
+  // Initialize mobile sidebar
+  initMobileSidebar();
+  
+  // Add touch event listeners for better mobile experience
+  if ('ontouchstart' in window) {
+    const sidebar = document.getElementById('dashboardSidebar');
+    if (sidebar) {
+      let startX = 0;
+      let currentX = 0;
+      let isDragging = false;
+      
+      sidebar.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        isDragging = true;
+      });
+      
+      sidebar.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        currentX = e.touches[0].clientX;
+        const diffX = startX - currentX;
+        
+        // If swiping left and distance > 50px, close sidebar
+        if (diffX > 50 && sidebar.classList.contains('mobile-open')) {
+          closeMobileSidebar();
+          isDragging = false;
+        }
+      });
+      
+      sidebar.addEventListener('touchend', () => {
+        isDragging = false;
+      });
+    }
+  }
+  
+  // Add keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeMobileSidebar();
+      closeMobileHeaderMenu();
+    }
+  });
+}
+
+// Call initMobileFunctionality after dashboard is loaded
+setTimeout(initMobileFunctionality, 500);
+
+// ===== MOBILE HEADER MENU FUNCTIONALITY =====
+
+// Toggle mobile header menu
+window.toggleMobileHeaderMenu = function() {
+  const dropdown = document.getElementById('mobileHeaderDropdown');
+  const menuBtn = document.getElementById('mobileHeaderMenu');
+  
+  if (!dropdown || !menuBtn) {
+    console.warn('Mobile header menu elements not found');
+    return;
+  }
+  
+  const isOpen = dropdown.classList.contains('active');
+  
+  if (isOpen) {
+    closeMobileHeaderMenu();
+  } else {
+    openMobileHeaderMenu();
+  }
+};
+
+// Open mobile header menu
+window.openMobileHeaderMenu = function() {
+  const dropdown = document.getElementById('mobileHeaderDropdown');
+  const menuBtn = document.getElementById('mobileHeaderMenu');
+  
+  if (!dropdown || !menuBtn) {
+    console.warn('Mobile header menu elements not found');
+    return;
+  }
+  
+  dropdown.classList.add('active');
+  menuBtn.classList.add('active');
+  
+  // Close sidebar if open
+  closeMobileSidebar();
+  
+  // Add accessibility
+  dropdown.setAttribute('aria-hidden', 'false');
+  menuBtn.setAttribute('aria-expanded', 'true');
+};
+
+// Close mobile header menu
+window.closeMobileHeaderMenu = function() {
+  const dropdown = document.getElementById('mobileHeaderDropdown');
+  const menuBtn = document.getElementById('mobileHeaderMenu');
+  
+  if (!dropdown || !menuBtn) {
+    console.warn('Mobile header menu elements not found');
+    return;
+  }
+  
+  dropdown.classList.remove('active');
+  menuBtn.classList.remove('active');
+  
+  // Add accessibility
+  dropdown.setAttribute('aria-hidden', 'true');
+  menuBtn.setAttribute('aria-expanded', 'false');
+};
+
+// Close header menu when clicking outside
+document.addEventListener('click', function(e) {
+  if (window.innerWidth <= 768) {
+    const dropdown = document.getElementById('mobileHeaderDropdown');
+    const menuBtn = document.getElementById('mobileHeaderMenu');
+    
+    if (dropdown && menuBtn && 
+        !dropdown.contains(e.target) && 
+        !menuBtn.contains(e.target) && 
+        dropdown.classList.contains('active')) {
+      closeMobileHeaderMenu();
+    }
+  }
+});
+
+// Update notification badges for mobile
+function updateMobileNotificationBadge(count) {
+  const mobileBadge = document.getElementById('notification-badge-mobile');
+  if (mobileBadge) {
+    if (count > 0) {
+      mobileBadge.textContent = count > 99 ? '99+' : count;
+      mobileBadge.style.display = 'flex';
+    } else {
+      mobileBadge.style.display = 'none';
+    }
+  }
+}
+
+// Sync notification badges
+function syncNotificationBadges() {
+  const desktopBadge = document.getElementById('notification-badge');
+  const mobileBadge = document.getElementById('notification-badge-mobile');
+  
+  if (desktopBadge && mobileBadge) {
+    const count = desktopBadge.textContent;
+    const isVisible = desktopBadge.style.display !== 'none';
+    
+    if (isVisible && count) {
+      mobileBadge.textContent = count;
+      mobileBadge.style.display = 'flex';
+    } else {
+      mobileBadge.style.display = 'none';
+    }
+  }
+}
+
+// Call sync function periodically
+setInterval(syncNotificationBadges, 1000);
+
+// ===== HEADER BUTTON FUNCTIONS =====
+
+// Start new meeting function
+window.startNewMeeting = function() {
+  showSuccessToast('New meeting feature coming soon!');
+};
+
+// Open Telegram bot function
+window.openTelegramBot = function() {
+  showSuccessToast('Telegram Bot integration coming soon!');
+};
+
+// Open create course function (if not already defined)
+if (typeof window.openCreateCourse === 'undefined') {
+  window.openCreateCourse = function() {
+    showSuccessToast('Create course feature coming soon!');
+  };
+}
