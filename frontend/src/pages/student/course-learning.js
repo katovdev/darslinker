@@ -704,36 +704,161 @@ async function renderCourseLearningPage(course) {
         }
       }
 
+      /* Mobile Menu Toggle Button */
+      .course-mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: 22px;
+        left: 18px;
+        z-index: 1001;
+        background: transparent;
+        border: none;
+        color: var(--primary-color);
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .course-mobile-menu-toggle:hover {
+        opacity: 0.8;
+        transform: scale(1.1);
+      }
+
+      /* Mobile Sidebar Overlay */
+      .course-sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .course-sidebar-overlay.active {
+        opacity: 1;
+        display: block;
+      }
+
       /* Responsive */
-      @media (max-width: 768px) {
+      @media (max-width: 968px) {
+        .course-mobile-menu-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         .course-learning-header {
-          padding: 16px 20px;
-        }
-
-        .header-actions {
-          gap: 8px;
-        }
-
-        .logout-text {
-          display: none;
+          padding: 16px 20px 16px 60px;
         }
 
         .course-learning-content {
-          padding: 40px 20px;
+          padding: 30px 20px;
         }
 
         .course-title {
-          font-size: 32px;
+          font-size: 28px;
         }
 
         .course-info {
           flex-direction: column;
           gap: 16px;
         }
+
+        .modules-list {
+          gap: 12px;
+        }
+
+        .module-header {
+          padding: 20px;
+        }
+
+        .module-title {
+          font-size: 16px;
+        }
+
+        .lesson-item {
+          padding: 14px 20px;
+        }
+
+        .lesson-icon {
+          width: 36px;
+          height: 36px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .course-learning-header {
+          padding: 15px 15px 15px 55px;
+        }
+
+        .course-learning-content {
+          padding: 20px 15px;
+        }
+
+        .course-title {
+          font-size: 24px;
+        }
+
+        .welcome-card {
+          padding: 20px;
+        }
+
+        .module-header {
+          padding: 16px;
+        }
+
+        .lesson-item {
+          padding: 12px 16px;
+        }
+
+        .lesson-icon {
+          width: 32px;
+          height: 32px;
+        }
+
+        .header-actions {
+          gap: 6px;
+        }
+
+        .logout-text {
+          display: none;
+        }
+
+        .logout-btn {
+          width: 40px !important;
+          padding: 0 !important;
+        }
+
+        /* Make video play button even smaller on small mobile */
+        .video-play-button {
+          width: 50px !important;
+          height: 50px !important;
+        }
+
+        .video-play-button svg {
+          width: 25px !important;
+          height: 25px !important;
+        }
       }
     </style>
 
     <div class="course-learning-page">
+      <!-- Mobile Menu Toggle -->
+      <button class="course-mobile-menu-toggle" onclick="toggleCourseMobileSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Sidebar Overlay -->
+      <div class="course-sidebar-overlay" onclick="closeCourseMobileSidebar()"></div>
+
       <!-- Header -->
       <header class="course-learning-header">
         <div class="header-logo">
@@ -964,6 +1089,62 @@ function attachEventListeners(course, currentLesson = null) {
       lessonsList.classList.toggle('expanded');
       arrow.classList.toggle('rotated');
       card.classList.toggle('expanded');
+    }
+  };
+
+  // Mobile sidebar functions for course overview
+  window.toggleCourseMobileSidebar = function() {
+    // This function is for the course overview page (not the lesson player)
+    showToast('Mobile sidebar for course overview - coming soon!');
+  };
+
+  window.closeCourseMobileSidebar = function() {
+    // This function is for the course overview page (not the lesson player)
+  };
+
+  // Mobile sidebar functions for lesson player
+  window.togglePlayerSidebar = function() {
+    const sidebar = document.getElementById('lessonSidebar');
+    const overlay = document.querySelector('.course-sidebar-overlay');
+    
+    if (sidebar && overlay) {
+      // Check if we're on mobile
+      if (window.innerWidth <= 968) {
+        sidebar.classList.toggle('mobile-open');
+        overlay.classList.toggle('active');
+        
+        if (sidebar.classList.contains('mobile-open')) {
+          overlay.style.display = 'block';
+          document.body.style.overflow = 'hidden';
+        } else {
+          setTimeout(() => {
+            overlay.style.display = 'none';
+          }, 300);
+          document.body.style.overflow = 'auto';
+        }
+      } else {
+        // Desktop behavior
+        sidebar.classList.toggle('collapsed');
+        const openBtn = document.getElementById('openSidebarBtn');
+        if (openBtn) {
+          openBtn.style.display = sidebar.classList.contains('collapsed') ? 'flex' : 'none';
+        }
+      }
+    }
+  };
+
+  window.closePlayerSidebar = function() {
+    const sidebar = document.getElementById('lessonSidebar');
+    const overlay = document.querySelector('.course-sidebar-overlay');
+    
+    if (sidebar && overlay) {
+      sidebar.classList.remove('mobile-open');
+      overlay.classList.remove('active');
+      
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 300);
+      document.body.style.overflow = 'auto';
     }
   };
   
@@ -1252,6 +1433,52 @@ async function renderUnifiedPlayerLayout(mainContent, course, lesson) {
         border-right: none;
       }
 
+      /* Mobile responsive for lesson sidebar */
+      @media (max-width: 968px) {
+        .lesson-sidebar {
+          position: fixed;
+          top: 0;
+          left: 0;
+          height: 100vh;
+          z-index: 1000;
+          transform: translateX(-100%);
+          background: #2a2a2a;
+          box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .lesson-sidebar.mobile-open {
+          transform: translateX(0);
+        }
+
+        .lesson-content-area {
+          width: 100%;
+        }
+
+        .open-sidebar-btn {
+          display: none !important;
+        }
+
+        /* Ensure sidebar overlay covers everything */
+        .course-sidebar-overlay {
+          z-index: 999;
+        }
+
+        .course-sidebar-overlay.active {
+          display: block;
+        }
+
+        /* Make video play button smaller on mobile */
+        .video-play-button {
+          width: 60px !important;
+          height: 60px !important;
+        }
+
+        .video-play-button svg {
+          width: 30px !important;
+          height: 30px !important;
+        }
+      }
+
       .lesson-sidebar::-webkit-scrollbar {
         width: 6px;
       }
@@ -1461,6 +1688,18 @@ async function renderUnifiedPlayerLayout(mainContent, course, lesson) {
       }
     </style>
 
+    <!-- Mobile Menu Toggle for Lesson Player -->
+    <button class="course-mobile-menu-toggle" onclick="togglePlayerSidebar()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Sidebar Overlay for Lesson Player -->
+    <div class="course-sidebar-overlay" onclick="closePlayerSidebar()"></div>
+
     <!-- Header stays the same -->
     <header class="course-learning-header">
       <div class="header-logo">
@@ -1578,8 +1817,8 @@ async function loadVideoContent(contentArea, lesson) {
       <div style="width: 100%; max-height: 600px; background: #000000; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); position: relative; display: flex; align-items: center; justify-content: center;">
         ${videoUrl
           ? `<!-- Play Button -->
-             <div id="video-play-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 1000; transition: background 0.3s ease;" onclick="startProtectedVideo()">
-               <div style="width: 80px; height: 80px; background: color-mix(in srgb, var(--primary-color) 90%, transparent); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+             <div id="video-play-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 100; transition: background 0.3s ease;" onclick="startProtectedVideo()">
+               <div class="video-play-button" style="width: 80px; height: 80px; background: color-mix(in srgb, var(--primary-color) 90%, transparent); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                  <svg width="40" height="40" viewBox="0 0 24 24" fill="white" style="margin-left: 5px;">
                    <path d="M8 5v14l11-7z"/>
                  </svg>
