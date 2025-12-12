@@ -6841,7 +6841,7 @@ window.openSubAdmin = function() {
   if (contentArea) {
     updatePageTitle(t('subAdmin.title'));
     contentArea.innerHTML = getSubAdminHTML();
-    updateActiveMenuItem('Sub Admin');
+    updateActiveMenuItem(t('subAdmin.title'));
     
     // Apply saved primary color to Sub Admin page
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
@@ -7147,13 +7147,13 @@ function getSubAdminHTML() {
             <circle cx="11" cy="11" r="8" stroke="currentColor" stroke-width="2"/>
             <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <input type="text" class="search-admin" placeholder="Search sub admins..." oninput="searchSubAdmins(this.value)">
+          <input type="text" class="search-admin" placeholder="${t('subAdmin.search')}" oninput="searchSubAdmins(this.value)">
         </div>
         <button class="add-admin-btn" onclick="openAddAdminModal()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          Add Subadmin
+${t('subAdmin.addSubadmin')}
         </button>
       </div>
 
@@ -7169,11 +7169,11 @@ function getSubAdminHTML() {
           </div>
           <div class="admin-meta">
             <div class="meta-item">
-              <span class="meta-label">Telephone</span>
+              <span class="meta-label">${t('subAdmin.telephone')}</span>
               <span class="meta-value">+1 (555) 123-4567</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Added</span>
+              <span class="meta-label">${t('subAdmin.added')}</span>
               <span class="meta-value">2025-01-15</span>
             </div>
           </div>
@@ -7194,11 +7194,11 @@ function getSubAdminHTML() {
           </div>
           <div class="admin-meta">
             <div class="meta-item">
-              <span class="meta-label">Telephone</span>
+              <span class="meta-label">${t('subAdmin.telephone')}</span>
               <span class="meta-value">+1 (555) 987-6543</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Added</span>
+              <span class="meta-label">${t('subAdmin.added')}</span>
               <span class="meta-value">2025-01-10</span>
             </div>
           </div>
@@ -7219,11 +7219,11 @@ function getSubAdminHTML() {
           </div>
           <div class="admin-meta">
             <div class="meta-item">
-              <span class="meta-label">Telephone</span>
+              <span class="meta-label">${t('subAdmin.telephone')}</span>
               <span class="meta-value">+1 (555) 456-7890</span>
             </div>
             <div class="meta-item">
-              <span class="meta-label">Added</span>
+              <span class="meta-label">${t('subAdmin.added')}</span>
               <span class="meta-value">2025-01-05</span>
             </div>
           </div>
@@ -7239,29 +7239,29 @@ function getSubAdminHTML() {
       <div class="add-admin-modal hidden" id="addAdminModal">
         <div class="modal-content">
           <div class="modal-header">
-            <h3 class="modal-title">Add New Sub Admin</h3>
+            <h3 class="modal-title">${t('subAdmin.addNew')}</h3>
             <button class="close-modal-btn" onclick="closeAddAdminModal()">×</button>
           </div>
           
           <form onsubmit="submitNewAdmin(event)">
             <div class="form-group">
-              <label class="form-label">Full Name</label>
-              <input type="text" class="form-input-admin" id="adminName" placeholder="Enter full name" required>
+              <label class="form-label">${t('subAdmin.fullName')}</label>
+              <input type="text" class="form-input-admin" id="adminName" placeholder="${t('subAdmin.fullName')}" required>
             </div>
             
             <div class="form-group">
-              <label class="form-label">Email Address</label>
+              <label class="form-label">${t('subAdmin.email')}</label>
               <input type="email" class="form-input-admin" id="adminEmail" placeholder="admin@darslinker.com" required>
             </div>
             
             <div class="form-group">
-              <label class="form-label">Telephone</label>
+              <label class="form-label">${t('subAdmin.phone')}</label>
               <input type="tel" class="form-input-admin" id="adminPhone" placeholder="+1 (555) 000-0000" required>
             </div>
             
             <div class="modal-actions">
-              <button type="button" class="btn-cancel" onclick="closeAddAdminModal()">Cancel</button>
-              <button type="submit" class="btn-submit">Add Admin</button>
+              <button type="button" class="btn-cancel" onclick="closeAddAdminModal()">${t('subAdmin.cancel')}</button>
+              <button type="submit" class="btn-submit">${t('subAdmin.addAdmin')}</button>
             </div>
           </form>
         </div>
@@ -7316,11 +7316,11 @@ window.submitNewAdmin = function(event) {
       </div>
       <div class="admin-meta">
         <div class="meta-item">
-          <span class="meta-label">Telephone</span>
+          <span class="meta-label">${t('subAdmin.telephone')}</span>
           <span class="meta-value">${phone}</span>
         </div>
         <div class="meta-item">
-          <span class="meta-label">Added</span>
+          <span class="meta-label">${t('subAdmin.added')}</span>
           <span class="meta-value">${today}</span>
         </div>
       </div>
@@ -7358,11 +7358,11 @@ window.deleteSubAdmin = function(button, name) {
           <path d="M12 8v4M12 16h.01" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/>
         </svg>
       </div>
-      <h3 class="delete-confirm-title">Remove Sub Admin?</h3>
-      <p class="delete-confirm-message">Are you sure you want to remove <strong>${name}</strong> as sub admin? This action cannot be undone.</p>
+      <h3 class="delete-confirm-title">${t('subAdmin.deleteConfirm')}</h3>
+      <p class="delete-confirm-message">${t('subAdmin.deleteMessage')} <strong>${name}</strong> ${t('subAdmin.deleteMessageEnd')}</p>
       <div class="delete-confirm-actions">
-        <button class="delete-confirm-cancel" onclick="closeDeleteConfirm()">Cancel</button>
-        <button class="delete-confirm-delete" onclick="confirmDeleteSubAdmin(this)">Remove</button>
+        <button class="delete-confirm-cancel" onclick="closeDeleteConfirm()">${t('subAdmin.cancel')}</button>
+        <button class="delete-confirm-delete" onclick="confirmDeleteSubAdmin(this)">${t('subAdmin.remove')}</button>
       </div>
     </div>
     <style>
@@ -19894,7 +19894,7 @@ function handleLanguageChange() {
       'Dashboard': () => initDashboard(),
       'Profile': () => openEditProfile(),
       'Messages': () => openMessagesPage(),
-      'Sub Admin': () => openSubAdmin(),
+      [t('subAdmin.title')]: () => openSubAdmin(),
       'Language': () => openLanguagePage(),
       'Customize UI': () => openCustomizeUI(),
       'My Subscription': () => openMySubscription(),
