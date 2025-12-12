@@ -491,13 +491,12 @@ async function renderTeacherDashboard(user) {
         border-radius: 10px !important;
         min-width: 16px !important;
         height: 16px !important;
-        display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        line-height: 1 !important;
-        border: 1px solid #232323 !important;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
-        z-index: 10 !important;
+      }
+
+      .notification-badge:empty {
+        display: none !important;
       }
 
       .notification-text {
@@ -21125,6 +21124,7 @@ window.updateNotificationBadge = function(count) {
       badge.style.display = 'flex';
       console.log('✅ Badge updated - showing count:', badge.textContent);
     } else {
+      badge.textContent = '';
       badge.style.display = 'none';
       console.log('❌ Badge hidden (count is 0)');
     }
