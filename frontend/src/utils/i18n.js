@@ -6,6 +6,8 @@ const translations = {
     'header.newMeeting': 'New meeting',
     'header.telegramBot': 'Telegram Bot',
     'header.newCourse': 'New Course',
+    'header.logout': 'Logout',
+    'header.notifications': 'Notifications',
     
     // Dashboard
     'dashboard.title': 'Teacher dashboard',
@@ -52,6 +54,8 @@ const translations = {
     'stats.revenue10k': '$10K+ Revenue',
     'stats.highRating': 'High Rating',
     'stats.bioSpecialties': 'Bio & Specialties',
+    'stats.bioAbout': 'Bio & About Me',
+    'stats.currentBalance': 'Current Balance',
     'stats.edit': 'Edit',
     'stats.save': 'Save',
     'stats.cancel': 'Cancel',
@@ -62,6 +66,7 @@ const translations = {
     'profile.rating': '4.9 (324 reviews)',
     'profile.joined': '• Joined 2025',
     'profile.bioDefault': '8+ years web development experience. Expert in React, UI/UX design, and teaching modern web technologies.',
+    'profile.bioPlaceholder': 'No bio added yet. Click Edit to add your bio.',
     
     // Sub Admin
     'subAdmin.title': 'Sub admins',
@@ -134,6 +139,7 @@ const translations = {
     // Finance
     'finance.title': 'Finance',
     'finance.totalRevenue': 'Total revenue',
+    'finance.availableBalance': 'Available balance',
     'finance.pendingPayouts': 'Pending payouts',
     'finance.completedPayouts': 'Completed payouts',
     'finance.refunds': 'Refunds',
@@ -259,6 +265,8 @@ const translations = {
     'header.newMeeting': 'Yangi uchrashuv',
     'header.telegramBot': 'Telegram Bot',
     'header.newCourse': 'Yangi Kurs',
+    'header.logout': 'Chiqish',
+    'header.notifications': 'Bildirishnomalar',
     
     // Dashboard
     'dashboard.title': "O'qituvchi paneli",
@@ -305,6 +313,8 @@ const translations = {
     'stats.revenue10k': '$10K+ daromad',
     'stats.highRating': 'Yuqori reyting',
     'stats.bioSpecialties': 'Bio va mutaxassislik',
+    'stats.bioAbout': 'Bio va men haqimda',
+    'stats.currentBalance': 'Joriy balans',
     'stats.edit': 'Tahrirlash',
     'stats.save': 'Saqlash',
     'stats.cancel': 'Bekor qilish',
@@ -315,6 +325,7 @@ const translations = {
     'profile.rating': '4.9 (324 sharh)',
     'profile.joined': '• 2025 yilda qo\'shildi',
     'profile.bioDefault': '8+ yillik web dasturlash tajribasi. React, UI/UX dizayn va zamonaviy web texnologiyalarini o\'rgatish bo\'yicha mutaxassis.',
+    'profile.bioPlaceholder': 'Hali bio qo\'shilmagan. Tahrirlash tugmasini bosib bio qo\'shing.',
     
     // Sub Admin
     'subAdmin.title': 'Yordamchi adminlar',
@@ -387,6 +398,7 @@ const translations = {
     // Finance
     'finance.title': 'Moliya',
     'finance.totalRevenue': 'Jami daromad',
+    'finance.availableBalance': 'Mavjud balans',
     'finance.pendingPayouts': 'Kutilayotgan to\'lovlar',
     'finance.completedPayouts': 'Bajarilgan to\'lovlar',
     'finance.refunds': 'Qaytarilgan to\'lovlar',
@@ -512,6 +524,8 @@ const translations = {
     'header.newMeeting': 'Новая встреча',
     'header.telegramBot': 'Telegram Бот',
     'header.newCourse': 'Новый курс',
+    'header.logout': 'Выйти',
+    'header.notifications': 'Уведомления',
     
     // Dashboard
     'dashboard.title': 'Панель учителя',
@@ -558,6 +572,8 @@ const translations = {
     'stats.revenue10k': '$10K+ дохода',
     'stats.highRating': 'Высокий рейтинг',
     'stats.bioSpecialties': 'Био и специализация',
+    'stats.bioAbout': 'Био и обо мне',
+    'stats.currentBalance': 'Текущий баланс',
     'stats.edit': 'Редактировать',
     'stats.save': 'Сохранить',
     'stats.cancel': 'Отмена',
@@ -568,6 +584,7 @@ const translations = {
     'profile.rating': '4.9 (324 отзыва)',
     'profile.joined': '• Присоединился в 2025',
     'profile.bioDefault': '8+ лет опыта веб-разработки. Эксперт в React, UI/UX дизайне и обучении современным веб-технологиям.',
+    'profile.bioPlaceholder': 'Биография не добавлена. Нажмите Редактировать, чтобы добавить биографию.',
     
     // Sub Admin
     'subAdmin.title': 'Помощники админа',
@@ -640,6 +657,7 @@ const translations = {
     // Finance
     'finance.title': 'Финансы',
     'finance.totalRevenue': 'Общий доход',
+    'finance.availableBalance': 'Доступный баланс',
     'finance.pendingPayouts': 'Ожидающие выплаты',
     'finance.completedPayouts': 'Завершенные выплаты',
     'finance.refunds': 'Возвраты',

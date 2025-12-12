@@ -215,7 +215,7 @@ async function renderTeacherDashboard(user) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
           </svg>
-          <span>Notifications</span>
+          <span>${t('header.notifications')}</span>
         </button>
         <button onclick="startNewMeeting(); closeMobileMenu()" style="width: 100%; background: none; border: none; color: #fff; text-align: left; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -240,7 +240,7 @@ async function renderTeacherDashboard(user) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
           </svg>
-          <span>Logout</span>
+          <span>${t('header.logout')}</span>
         </button>
       </div>
 
@@ -260,7 +260,7 @@ async function renderTeacherDashboard(user) {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z"/>
               </svg>
-              <span class="notification-text">Notifications</span>
+              <span class="notification-text">${t('header.notifications')}</span>
               <span class="notification-badge" id="notification-badge" style="display: none;"></span>
             </button>
             <button class="figma-btn" onclick="startNewMeeting()">
@@ -285,7 +285,7 @@ async function renderTeacherDashboard(user) {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 6px;">
                 <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
               </svg>
-              Chiqish
+              ${t('header.logout')}
             </button>
           </div>
         </div>
@@ -473,10 +473,10 @@ async function renderTeacherDashboard(user) {
             <!-- Bio & Specialties Card -->
             <div class="figma-stats-card">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h3 class="figma-stats-title">Bio & About Me</h3>
+                <h3 class="figma-stats-title">${t('stats.bioAbout')}</h3>
                 <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
               </div>
-              <p class="figma-bio-text" id="bioText" style="color: rgba(255,255,255,0.5); font-style: italic;">${user.bio || 'No bio added yet. Click Edit to add your bio.'}</p>
+              <p class="figma-bio-text" id="bioText" style="color: rgba(255,255,255,0.5); font-style: italic;">${user.bio || t('profile.bioPlaceholder')}</p>
               <div id="bioEditor" style="display: none;">
                 <textarea id="bioTextarea" style="width: 100%; background: rgba(20, 20, 20, 0.8); border-radius: 8px; padding: 12px; color: #ffffff; font-family: inherit; font-size: 14px; line-height: 1.5; resize: vertical;" rows="4"></textarea>
                 <div style="margin-top: 10px; display: flex; gap: 8px;">
@@ -745,7 +745,7 @@ function renderStudentDashboard(user) {
             </div>
             <div class="nav-actions">
               <span class="user-welcome">Salom, ${user.firstName} ${user.lastName}</span>
-              <button class="btn-logout" onclick="handleLogout()">Chiqish</button>
+              <button class="btn-logout" onclick="handleLogout()">${t('header.logout')}</button>
             </div>
           </div>
         </div>
@@ -11579,7 +11579,7 @@ window.loadMainDashboard = async function() {
         <!-- Bio & Specialties Card -->
         <div class="figma-stats-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 class="figma-stats-title">Bio & About Me</h3>
+            <h3 class="figma-stats-title">${t('stats.bioAbout')}</h3>
             <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
           </div>
           <p class="figma-bio-text" id="bioText">${t('profile.bioDefault')}</p>
@@ -11741,7 +11741,7 @@ window.loadMainDashboard = async function() {
                 <span class="figma-stat-value">${(overview.averageRating || 0).toFixed(1)}/5</span>
               </div>
               <div class="figma-stat-row">
-                <span class="figma-stat-label">Current Balance</span>
+                <span class="figma-stat-label">${t('stats.currentBalance')}</span>
                 <span class="figma-stat-value" style="color: #4ade80;">${formatCurrency(overview.currentBalance || 0)}</span>
               </div>
             </div>
@@ -11750,7 +11750,7 @@ window.loadMainDashboard = async function() {
           <!-- Bio & About Me Card -->
           <div class="figma-stats-card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-              <h3 class="figma-stats-title">Bio & About Me</h3>
+              <h3 class="figma-stats-title">${t('stats.bioAbout')}</h3>
               <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
             </div>
             <p class="figma-bio-text" id="bioText">${teacher.bio || ''}</p>
@@ -11913,7 +11913,7 @@ window.loadMainDashboard = async function() {
         <!-- Bio & Specialties Card -->
         <div class="figma-stats-card">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h3 class="figma-stats-title">Bio & About Me</h3>
+            <h3 class="figma-stats-title">${t('stats.bioAbout')}</h3>
             <button class="edit-bio-btn" onclick="editBio()" style="background: none; border: 1px solid #7ea2d4; color: #7ea2d4; padding: 6px 12px; border-radius: 6px; font-size: 12px; cursor: pointer;">${t('stats.edit')}</button>
           </div>
           <p class="figma-bio-text" id="bioText">${t('profile.bioDefault')}</p>
@@ -12002,7 +12002,7 @@ window.saveBio = async function() {
       });
 
       // Update UI
-      bioText.textContent = newBio || 'No bio added yet. Click Edit to add your bio.';
+      bioText.textContent = newBio || t('profile.bioPlaceholder');
       bioText.style.display = 'block';
       bioEditor.style.display = 'none';
 
@@ -14764,7 +14764,7 @@ window.openMyCourses = async function() {
               <div class="stat-card-value" id="totalEnrolledCount">0</div>
             </div>
             <div class="stat-card">
-              <div class="stat-card-label">Total revenue</div>
+              <div class="stat-card-label">${t('finance.totalRevenue')}</div>
               <div class="stat-card-value" id="totalRevenueAmount">$0</div>
             </div>
             <div class="stat-card">
@@ -15434,7 +15434,7 @@ window.openFinancePage = function() {
           <div class="finance-stats-grid">
             <div class="finance-card" onclick="showFinanceDetails('revenue')">
               <div class="finance-card-header">
-                <h3 class="finance-card-title">Total revenue</h3>
+                <h3 class="finance-card-title">${t('finance.totalRevenue')}</h3>
               </div>
               <div class="finance-card-amount">$12,450</div>
               <div class="finance-card-subtitle">+ $1,200 this month</div>
@@ -15448,7 +15448,7 @@ window.openFinancePage = function() {
             </div>
             <div class="finance-card" onclick="showFinanceDetails('balance')">
               <div class="finance-card-header">
-                <h3 class="finance-card-title">Available balance</h3>
+                <h3 class="finance-card-title">${t('finance.availableBalance')}</h3>
               </div>
               <div class="finance-card-amount">$1,250</div>
               <div class="finance-card-subtitle">Ready to withdraw</div>
@@ -21591,7 +21591,7 @@ window.openNotifications = async function() {
       </style>
     `;
 
-    showModal('Notifications', modalContent);
+    showModal(t('header.notifications'), modalContent);
     
     // Update badge count
     updateNotificationBadge(unreadCount);
