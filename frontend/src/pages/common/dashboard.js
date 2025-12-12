@@ -233,7 +233,7 @@ async function renderTeacherDashboard(user) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
           </svg>
-          <span>New Course</span>
+          <span>${t('header.newCourse')}</span>
         </button>
         <hr style="border: none; border-top: 1px solid #444; margin: 8px 0;">
         <button onclick="handleLogout(); closeMobileMenu()" style="width: 100%; background: none; border: none; color: #ef4444; text-align: left; padding: 12px 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; transition: background 0.2s;">
@@ -12603,7 +12603,7 @@ window.addLesson = function(type, dropdownLink, event) {
           }
         </style>
         <div class="lesson-form">
-          <h5>Add Video Lesson ${lessonNumber}</h5>
+          <h5>${t('createCourse.addVideoLesson')} ${lessonNumber}</h5>
           <div class="form-group">
             <label>Lesson Title</label>
             <input type="text" class="lesson-title-input" placeholder="Enter lesson title" required />
@@ -12655,8 +12655,8 @@ window.addLesson = function(type, dropdownLink, event) {
             </div>
           </div>
           <div class="form-actions">
-            <button type="button" class="save-lesson-btn" onclick="saveLesson(this, 'video')">Save Lesson</button>
-            <button type="button" class="cancel-lesson-btn" onclick="cancelLesson(this)">Cancel</button>
+            <button type="button" class="save-lesson-btn" onclick="saveLesson(this, 'video')">${t('createCourse.saveLesson')}</button>
+            <button type="button" class="cancel-lesson-btn" onclick="cancelLesson(this)">${t('createCourse.cancel')}</button>
           </div>
         </div>
       `;
@@ -12921,7 +12921,7 @@ window.addLesson = function(type, dropdownLink, event) {
           }
         </style>
         <div class="lesson-form" data-quiz-type="multiple-choice">
-          <h5>Add Quiz ${lessonNumber}</h5>
+          <h5>${t('createCourse.addQuiz')} ${lessonNumber}</h5>
           <div class="form-group">
             <label>Quiz Title</label>
             <input type="text" class="quiz-title-input" placeholder="Enter quiz title" />
@@ -12977,8 +12977,8 @@ window.addLesson = function(type, dropdownLink, event) {
             </div>
           </div>
           <div class="form-actions">
-            <button type="button" class="save-lesson-btn" onclick="saveLesson(this, 'quiz')">Save Quiz</button>
-            <button type="button" class="cancel-lesson-btn" onclick="cancelLesson(this)">Cancel</button>
+            <button type="button" class="save-lesson-btn" onclick="saveLesson(this, 'quiz')">${t('createCourse.saveQuiz')}</button>
+            <button type="button" class="cancel-lesson-btn" onclick="cancelLesson(this)">${t('createCourse.cancel')}</button>
           </div>
         </div>
       `;
@@ -13066,7 +13066,7 @@ window.addLesson = function(type, dropdownLink, event) {
           }
         </style>
         <div class="lesson-form">
-          <h5>Add Assignment ${lessonNumber}</h5>
+          <h5>${t('createCourse.addAssignment')} ${lessonNumber}</h5>
           <div class="form-group">
             <label>Assignment Title</label>
             <input type="text" placeholder="Enter assignment title" class="assignment-title" />
@@ -13132,8 +13132,8 @@ window.addLesson = function(type, dropdownLink, event) {
           </div>
 
           <div class="form-actions">
-            <button type="button" class="save-lesson-btn" onclick="saveLesson(this, 'assignment')">Save Assignment</button>
-            <button type="button" class="cancel-lesson-btn" onclick="cancelLesson(this)">Cancel</button>
+            <button type="button" class="save-lesson-btn" onclick="saveLesson(this, 'assignment')">${t('createCourse.saveAssignment')}</button>
+            <button type="button" class="cancel-lesson-btn" onclick="cancelLesson(this)">${t('createCourse.cancel')}</button>
           </div>
         </div>
       `;
@@ -13221,7 +13221,7 @@ window.addLesson = function(type, dropdownLink, event) {
           }
         </style>
         <div class="lesson-form">
-          <h5>Add File Lesson ${lessonNumber}</h5>
+          <h5>${t('createCourse.addFileLesson')} ${lessonNumber}</h5>
           <div class="form-group">
             <label>Lesson Title</label>
             <input type="text" placeholder="Enter lesson title" />
@@ -14465,20 +14465,20 @@ window.addNewModule = function() {
           <p>0 lessons • 0 hours</p>
         </div>
         <div class="module-actions" onclick="event.stopPropagation()">
-          <button type="button" class="action-btn" onclick="editModule(this, event)">Edit</button>
-          <button type="button" class="action-btn delete" onclick="deleteModule(this, event)">Delete</button>
+          <button type="button" class="action-btn" onclick="editModule(this, event)">${t('createCourse.edit')}</button>
+          <button type="button" class="action-btn delete" onclick="deleteModule(this, event)">${t('createCourse.delete')}</button>
         </div>
       </div>
       <div class="lessons-list" style="display: block;">
         <div class="add-lesson-dropdown">
-          <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ Add</button>
+          <button type="button" class="add-btn dropdown-toggle" onclick="toggleLessonDropdown(this, event)">+ ${t('createCourse.addLesson')}</button>
         <div class="dropdown-menu">
           <a href="#" onclick="addLesson('video', this, event)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2"/>
               <rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
             </svg>
-            Video
+            ${t('createCourse.video')}
           </a>
           <a href="#" onclick="addLesson('quiz', this, event)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -14486,7 +14486,7 @@ window.addNewModule = function() {
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2"/>
               <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
             </svg>
-            Quiz
+            ${t('createCourse.quiz')}
           </a>
           <a href="#" onclick="addLesson('assignment', this, event)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -14496,14 +14496,14 @@ window.addNewModule = function() {
               <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
               <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
             </svg>
-            Assignment
+            ${t('createCourse.assignment')}
           </a>
           <a href="#" onclick="addLesson('file', this, event)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" stroke-width="2"/>
               <polyline points="13,2 13,9 20,9" stroke="currentColor" stroke-width="2"/>
             </svg>
-            File
+            ${t('createCourse.file')}
           </a>
         </div>
       </div>
@@ -14727,7 +14727,7 @@ window.openMyCourses = async function() {
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
-    pageTitle.textContent = 'My Courses';
+    pageTitle.textContent = t('sidebar.myCourses');
   }
 
   // Update content area only
@@ -19143,7 +19143,7 @@ window.openCreateCourse = async function() {
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
-    pageTitle.textContent = 'Create Course';
+    pageTitle.textContent = t('sidebar.createCourse');
   }
   
   // Update content area only
@@ -19285,30 +19285,30 @@ window.openCreateCourse = async function() {
                   <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                   <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-                <span>Organize your course into modules (sections) and lessons. You can add videos, files, quizzes, and assignments.</span>
+                <span>${t('createCourse.structureTip')}</span>
               </div>
 
               <div class="modules-container" id="modulesContainer">
                 <!-- Modules will be added here -->
-                <button type="button" class="add-module-btn" onclick="addNewModule()">+ Add New Module</button>
+                <button type="button" class="add-module-btn" onclick="addNewModule()">+ ${t('createCourse.addModule')}</button>
               </div>
             </div>
 
             <!-- Additional Settings Section -->
             <div class="course-section">
-              <h3 class="course-section-title">Additional Settings</h3>
+              <h3 class="course-section-title">${t('createCourse.additionalSettings')}</h3>
 
               <div class="settings-list">
                 <div class="setting-item disabled">
                   <div class="setting-info">
                     <div class="setting-header">
-                      <h4>Enable Q&A for students</h4>
+                      <h4>${t('createCourse.enableQA')}</h4>
                       <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                       </svg>
                     </div>
-                    <p>Students can ask questions under lessons</p>
+                    <p>${t('createCourse.enableQADesc')}</p>
                   </div>
                   <label class="toggle-switch disabled">
                     <input type="checkbox" disabled />
@@ -19319,13 +19319,13 @@ window.openCreateCourse = async function() {
                 <div class="setting-item disabled">
                   <div class="setting-info">
                     <div class="setting-header">
-                      <h4>Enable AI auto-responses</h4>
+                      <h4>${t('createCourse.enableAI')}</h4>
                       <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                       </svg>
                     </div>
-                    <p>AI will automatically answer common student questions</p>
+                    <p>${t('createCourse.enableAIDesc')}</p>
                   </div>
                   <label class="toggle-switch disabled">
                     <input type="checkbox" disabled />
@@ -19336,13 +19336,13 @@ window.openCreateCourse = async function() {
                 <div class="setting-item disabled">
                   <div class="setting-info">
                     <div class="setting-header">
-                      <h4>Issue certificate upon completion</h4>
+                      <h4>${t('createCourse.issueCertificate')}</h4>
                       <svg class="lock-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                         <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                       </svg>
                     </div>
-                    <p>Students receive a certificate when they finish the course</p>
+                    <p>${t('createCourse.issueCertificateDesc')}</p>
                   </div>
                   <label class="toggle-switch disabled">
                     <input type="checkbox" disabled />
@@ -19354,7 +19354,7 @@ window.openCreateCourse = async function() {
 
             <!-- Form Actions -->
             <div class="form-actions course-actions">
-              <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
+              <button type="button" class="btn-cancel" onclick="backToDashboard()">${t('createCourse.cancel')}</button>
               <button type="submit" class="btn-secondary" name="action" value="draft">${t('createCourse.saveAsDraft')}</button>
               <button type="submit" class="btn-save" name="action" value="publish">${t('createCourse.publishCourse')}</button>
             </div>
@@ -19628,14 +19628,14 @@ window.filterCoursesByTab = function(tabElement, filter) {
   const titleElement = document.querySelector('.figma-title h2');
   if (titleElement && document.getElementById('myCoursesGrid')) {
     const filterTitles = {
-      all: 'My courses',
-      active: 'My Courses - Active',
-      draft: 'My Courses - Drafts',
-      archived: 'My Courses - Archived',
-      free: 'My Courses - Free',
-      paid: 'My Courses - Paid'
+      all: t('sidebar.myCourses'),
+      active: t('sidebar.myCourses') + ' - Active',
+      draft: t('sidebar.myCourses') + ' - Drafts',
+      archived: t('sidebar.myCourses') + ' - Archived',
+      free: t('sidebar.myCourses') + ' - Free',
+      paid: t('sidebar.myCourses') + ' - Paid'
     };
-    titleElement.textContent = filterTitles[filter] || 'My courses';
+    titleElement.textContent = filterTitles[filter] || t('sidebar.myCourses');
   }
 };
 
@@ -19804,10 +19804,10 @@ function applyFilterFromSidebar(filterType) {
   const titleElement = document.querySelector('.figma-title h2');
   if (titleElement) {
     const filterTitles = {
-      draft: 'My Courses - Drafts',
-      archived: 'My Courses - Archived'
+      draft: t('sidebar.myCourses') + ' - Drafts',
+      archived: t('sidebar.myCourses') + ' - Archived'
     };
-    titleElement.textContent = filterTitles[filterType] || 'My courses';
+    titleElement.textContent = filterTitles[filterType] || t('sidebar.myCourses');
   }
 
   // Update header button text to match current filter
@@ -20200,7 +20200,7 @@ function renderMyCoursesCards(courses) {
         </svg>
         <h3 style="margin-bottom: 12px; font-size: 20px; font-weight: 600; color: var(--text-primary);">No courses yet</h3>
         <p style="margin-bottom: 24px; opacity: 0.7; font-size: 15px;">Create your first course to get started</p>
-        <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">Create Course</button>
+        <button class="figma-btn figma-btn-primary" onclick="openCreateCourse()">${t('sidebar.createCourse')}</button>
       </div>
     `;
     return;
@@ -20455,7 +20455,7 @@ function openCourseEditPage(courseData) {
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
-    pageTitle.textContent = 'Edit Course';
+    pageTitle.textContent = t('createCourse.editCourse');
   }
   
   // Use the same layout as create course page, but with pre-filled data
@@ -20600,7 +20600,7 @@ function openCourseEditPage(courseData) {
                   <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
                   <path d="M12 16v-4M12 8h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
-                <span>Organize your course into modules (sections) and lessons. You can add videos, files, quizzes, and assignments.</span>
+                <span>${t('createCourse.structureTip')}</span>
               </div>
 
               <div class="modules-container" id="modulesContainer">
@@ -20665,7 +20665,7 @@ window.addModule = function() {
               <path d="M23 7l-7 5 7 5V7z" stroke="currentColor" stroke-width="2"/>
               <rect x="1" y="5" width="15" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
             </svg>
-            Video
+            ${t('createCourse.video')}
           </a>
           <a href="#" onclick="addLesson('quiz', this, event)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -20673,7 +20673,7 @@ window.addModule = function() {
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke="currentColor" stroke-width="2"/>
               <circle cx="12" cy="17" r="0.5" fill="currentColor"/>
             </svg>
-            Quiz
+            ${t('createCourse.quiz')}
           </a>
           <a href="#" onclick="addLesson('assignment', this, event)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
@@ -20683,14 +20683,14 @@ window.addModule = function() {
               <line x1="16" y1="17" x2="8" y2="17" stroke="currentColor" stroke-width="2"/>
               <polyline points="10,9 9,9 8,9" stroke="currentColor" stroke-width="2"/>
             </svg>
-            Assignment
+            ${t('createCourse.assignment')}
           </a>
           <a href="#" onclick="addLesson('file', this, event)">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" stroke="currentColor" stroke-width="2"/>
               <polyline points="13,2 13,9 20,9" stroke="currentColor" stroke-width="2"/>
             </svg>
-            File
+            ${t('createCourse.file')}
           </a>
         </div>
       </div>
