@@ -18123,6 +18123,22 @@ window.openQuizAnalytics = async function() {
           gap: 20px !important;
           margin-bottom: 32px !important;
         }
+        
+        /* Mobile Quiz Stats Grid */
+        @media (max-width: 1024px) {
+          .quiz-stats-grid {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: 16px !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .quiz-stats-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+            margin-bottom: 20px !important;
+          }
+        }
         .quiz-stat-card {
           background: rgba(58, 56, 56, 0.3) !important;
           border: 1px solid var(--primary-border) !important;
@@ -18130,6 +18146,20 @@ window.openQuizAnalytics = async function() {
           padding: 24px !important;
           text-align: center !important;
           transition: all 0.3s ease !important;
+        }
+        
+        /* Mobile Quiz Stat Cards */
+        @media (max-width: 768px) {
+          .quiz-stat-card {
+            padding: 16px !important;
+            border-radius: 8px !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .quiz-stat-card {
+            padding: 12px !important;
+          }
         }
         .quiz-stat-card:hover {
           background: var(--primary-light) !important;
@@ -18151,6 +18181,27 @@ window.openQuizAnalytics = async function() {
           font-weight: 700 !important;
           margin-bottom: 0 !important;
           line-height: 1.2 !important;
+        }
+        
+        /* Mobile Quiz Stat Text */
+        @media (max-width: 768px) {
+          .quiz-stat-title {
+            font-size: 12px !important;
+            margin-bottom: 8px !important;
+          }
+          .quiz-stat-value {
+            font-size: 24px !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .quiz-stat-title {
+            font-size: 11px !important;
+            margin-bottom: 6px !important;
+          }
+          .quiz-stat-value {
+            font-size: 20px !important;
+          }
         }
         .quiz-content-section {
           background: rgba(58, 56, 56, 0.3) !important;
