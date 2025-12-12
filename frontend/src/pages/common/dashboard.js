@@ -16013,6 +16013,25 @@ window.openAssignmentsPage = async function() {
               background: rgba(var(--primary-color-rgb), 0.2) !important;
               border-color: var(--primary-color) !important;
             }
+            
+            /* Mobile Grade Buttons */
+            @media (max-width: 768px) {
+              .grade-btn, .view-file-btn {
+                padding: 8px 12px !important;
+                font-size: 11px !important;
+                height: auto !important;
+                min-height: 36px !important;
+              }
+            }
+            
+            @media (max-width: 480px) {
+              .grade-btn, .view-file-btn {
+                width: 100% !important;
+                justify-content: center !important;
+                padding: 10px 12px !important;
+                margin-bottom: 4px !important;
+              }
+            }
             .view-file-btn {
               display: inline-flex !important;
               align-items: center !important;
