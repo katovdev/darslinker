@@ -723,6 +723,44 @@ export function renderLandingStudentDashboard() {
         100% { transform: rotate(360deg); }
       }
 
+      /* Mobile Menu Toggle Button */
+      .landing-mobile-menu-toggle {
+        display: none;
+        position: fixed;
+        top: 22px;
+        left: 18px;
+        z-index: 1001;
+        background: transparent;
+        border: none;
+        color: var(--primary-color);
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .landing-mobile-menu-toggle:hover {
+        opacity: 0.8;
+        transform: scale(1.1);
+      }
+
+      /* Mobile Sidebar Overlay */
+      .landing-sidebar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .landing-sidebar-overlay.active {
+        opacity: 1;
+      }
+
       /* Responsive Design */
       @media (max-width: 1200px) {
         .landing-courses-grid {
@@ -730,13 +768,29 @@ export function renderLandingStudentDashboard() {
         }
       }
 
-      @media (max-width: 768px) {
+      @media (max-width: 968px) {
+        .landing-mobile-menu-toggle {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
         .landing-sidebar {
-          width: 200px;
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+          z-index: 1000;
+        }
+
+        .landing-sidebar.mobile-open {
+          transform: translateX(0);
         }
 
         .landing-main-content {
-          margin-left: 200px;
+          margin-left: 0;
+        }
+
+        .landing-header {
+          padding: 20px 20px 20px 70px;
         }
 
         .landing-stats-grid,
@@ -745,14 +799,77 @@ export function renderLandingStudentDashboard() {
         }
 
         .landing-dashboard-content {
+          padding: 24px 20px;
+        }
+
+        .landing-welcome-card {
           padding: 24px;
+        }
+
+        .landing-welcome-title {
+          font-size: 24px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .landing-header {
+          padding: 15px 15px 15px 60px;
+        }
+
+        .landing-dashboard-content {
+          padding: 20px 15px;
+        }
+
+        .landing-welcome-card {
+          padding: 20px;
+        }
+
+        .landing-welcome-title {
+          font-size: 20px;
+        }
+
+        .landing-welcome-subtitle {
+          font-size: 14px;
+        }
+
+        .landing-stat-card {
+          padding: 24px;
+        }
+
+        .landing-stat-value {
+          font-size: 36px;
+        }
+
+        .landing-header-actions {
+          gap: 8px;
+        }
+
+        .landing-logout-btn .landing-logout-text {
+          display: none;
+        }
+
+        .landing-logout-btn {
+          width: 40px !important;
+          padding: 0 !important;
         }
       }
     </style>
 
     <div class="landing-dashboard-container">
+      <!-- Mobile Menu Toggle -->
+      <button class="landing-mobile-menu-toggle" onclick="toggleMobileSidebar()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Sidebar Overlay -->
+      <div class="landing-sidebar-overlay" onclick="closeMobileSidebar()"></div>
+
       <!-- Sidebar -->
-      <aside class="landing-sidebar">
+      <aside class="landing-sidebar" id="landing-sidebar">
         <!-- Profile Section -->
         <div class="landing-profile-section">
           <div class="landing-profile-avatar">
@@ -895,6 +1012,42 @@ window.toggleLandingMenu = function(menuId) {
   }
 };
 
+// Mobile sidebar functions
+window.toggleMobileSidebar = function() {
+  const sidebar = document.getElementById('landing-sidebar');
+  const overlay = document.querySelector('.landing-sidebar-overlay');
+  
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('mobile-open');
+    overlay.classList.toggle('active');
+    
+    if (sidebar.classList.contains('mobile-open')) {
+      overlay.style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    } else {
+      setTimeout(() => {
+        overlay.style.display = 'none';
+      }, 300);
+      document.body.style.overflow = 'auto';
+    }
+  }
+};
+
+window.closeMobileSidebar = function() {
+  const sidebar = document.getElementById('landing-sidebar');
+  const overlay = document.querySelector('.landing-sidebar-overlay');
+  
+  if (sidebar && overlay) {
+    sidebar.classList.remove('mobile-open');
+    overlay.classList.remove('active');
+    
+    setTimeout(() => {
+      overlay.style.display = 'none';
+    }, 300);
+    document.body.style.overflow = 'auto';
+  }
+};
+
 function attachEventListeners() {
   // Navigation items
   document.querySelectorAll('.landing-nav-item').forEach(item => {
@@ -905,6 +1058,9 @@ function attachEventListeners() {
       
       const page = item.dataset.page;
       handleNavigation(page);
+      
+      // Close mobile sidebar on navigation
+      closeMobileSidebar();
     });
   });
 
