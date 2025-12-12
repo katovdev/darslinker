@@ -2,6 +2,416 @@ import { router } from '../../utils/router.js';
 import { store } from '../../utils/store.js';
 import { cleanupPricingStyles } from '../pricing.js';
 
+// Home page translations - separate from other pages
+const homeTranslations = {
+  uz: {
+    // Navigation
+    home: 'Asosiy',
+    about: 'Ma\'lumot',
+    pricing: 'Tariflar',
+    blog: 'Bloglar',
+    contact: 'Aloqa',
+    login: 'Kirish',
+    
+    // Hero Section
+    heroTitle: 'Online Ta\'limni Biz Bilan Boshlang',
+    heroButton: 'BEPUL SINAB KO\'RISH',
+    statsText: 'O\'quv markazlari bizga ishonch bildiradi!',
+    
+    // Hero Features
+    aiTitle: 'Sun\'iy intellekt (AI)',
+    aiDescription: 'O\'quvchi savollarga avtomatik javob berish, darslarni puylash va ta\'lim vazifasi mavzularini aniqlash va yecha maslahat data. Test topshiriqlarida yordam berish.',
+    paymentTitle: 'To\'lov integratsiyasi',
+    paymentDescription: 'Uzcard, Humo, Visa, Mastercard, Payme, Click bo\'yicha to\'lov o\'quvchi harid qilganiga integratsiya qilinb. Ixtisoriga nark tushinadi.',
+    analyticsTitle: 'O\'quvchilar tahlili',
+    analyticsDescription: 'O\'quvchilar faoliyatin real vaqt rejimida kuzatish, test, topshiriq natijalarini grafik va diagrammalarga qo\'shish, individual kurslarni O\'quvchilarga avtomatik tavsiyalanib.',
+    videoGuide: 'Video qo\'llanmani ko\'rish',
+    
+    // Platform Features
+    platformTitle: 'Platformaning Asosiy Imkoniyatlari',
+    feature1: '1. Tez va oson kurs joylash',
+    feature2: '2. O\'quvchilar Nazorati',
+    feature3: '3. To\'lov tizimi integratsiya',
+    feature4: '4. Onlayn uchrashuvlar',
+    feature5: '5. Sun\'iy intellekt',
+    feature6: '6. Brendaga moslash',
+    feature7: '7. Qo\'llab quvvatlash',
+    feature8: '8. Ma\'lumotlar xavfsizligi',
+    feature9: '9. Moliyaviy analitika',
+    useButton: 'Foydalanish',
+    detailsButton: 'Batafsil',
+    
+    // Pricing Section
+    pricingTitle: 'Tariflar & Narxlar',
+    minimal: 'Minimal',
+    standard: 'Standard',
+    pro: 'Pro',
+    corporate: 'Korporativ',
+    recommended: 'Tavsiya',
+    specialPrice: 'Maxsus narx',
+    
+    // Pricing Features
+    courseLimit: 'Kurs joylash soni',
+    adminAdd: 'Admin qo\'shish',
+    studentBase: 'O\'quvchilar bazasi',
+    support: 'Qo\'llab-quvvatlash',
+    analytics: 'O\'quvchilar analitikasi',
+    onlineMeeting: 'Onlayn uchrashuv',
+    certificate: 'Sertifikat generatsiyasi',
+    chat: 'O\'quvchilar bilan chat',
+    paymentIntegration: 'To\'lov tizimi integratsyasi',
+    ai: 'Sun\'iy intellekt',
+    contentSecurity: 'Kontent xavfsizligi',
+    brandDesign: 'Brendga mos dizayn',
+    personalDomain: 'Shaxsiy Domein',
+    proFeatures: 'Pro tarif imkoniyatlari',
+    seo: 'SEO - Google\'da qidiruv',
+    pricingInfo: 'Ta\'riflar bo\'yicha to\'liq ma\'lumot',
+    
+    // Articles Section
+    articlesTitle: 'O\'qituvchilar uchun ma\'qolalar',
+    articleTitle: 'Samarali Dars',
+    articleDescription: 'Samarali dars o\'tish uchun qaysi usullar haqida batafsil ma\'lumot berigan ma\'qola',
+    blogButton: 'BLOG BO\'LIMIGA O\'TISH',
+    
+    // Advice Section
+    adviceTitle: 'Maslahat olish',
+    namePlaceholder: 'Ismingiz',
+    phonePlaceholder: 'Raqamingiz',
+    commentPlaceholder: 'Izoh',
+    submitButton: 'Yuborish',
+    
+    // Login Section
+    systemLogin: 'Tizimga Kirish',
+    
+    // Footer
+    mainPage: 'Asosiy sahifa',
+    publicOffer: 'Ommaviy oferta',
+    rightsReserved: 'Barcha huquqlar himoyalangan',
+    
+    // Contact Info
+    address: 'Toshkent shahar, Chilonzor tumani, 12-kvartal',
+    
+    // Theme
+    darkMode: 'Dark Mode',
+    lightMode: 'Light Mode'
+  },
+  
+  ru: {
+    // Navigation
+    home: 'Главная',
+    about: 'Информация',
+    pricing: 'Тарифы',
+    blog: 'Блоги',
+    contact: 'Контакты',
+    login: 'Войти',
+    
+    // Hero Section
+    heroTitle: 'Начните Онлайн Обучение с Нами',
+    heroButton: 'ПОПРОБОВАТЬ БЕСПЛАТНО',
+    statsText: 'учебных центров доверяют нам!',
+    
+    // Hero Features
+    aiTitle: 'Искусственный интеллект (ИИ)',
+    aiDescription: 'Автоматические ответы на вопросы студентов, распределение уроков и определение учебных задач с советами. Помощь в тестовых заданиях.',
+    paymentTitle: 'Интеграция платежей',
+    paymentDescription: 'Интеграция платежей через Uzcard, Humo, Visa, Mastercard, Payme, Click для покупок студентов. Цена соответствует специализации.',
+    analyticsTitle: 'Аналитика студентов',
+    analyticsDescription: 'Мониторинг активности студентов в реальном времени, добавление результатов тестов и заданий в графики и диаграммы, автоматические рекомендации индивидуальных курсов студентам.',
+    videoGuide: 'Посмотреть видео руководство',
+    
+    // Platform Features
+    platformTitle: 'Основные Возможности Платформы',
+    feature1: '1. Быстрое и простое размещение курсов',
+    feature2: '2. Контроль студентов',
+    feature3: '3. Интеграция платежной системы',
+    feature4: '4. Онлайн встречи',
+    feature5: '5. Искусственный интеллект',
+    feature6: '6. Адаптация к бренду',
+    feature7: '7. Поддержка',
+    feature8: '8. Безопасность данных',
+    feature9: '9. Финансовая аналитика',
+    useButton: 'Использовать',
+    detailsButton: 'Подробнее',
+    
+    // Pricing Section
+    pricingTitle: 'Тарифы и Цены',
+    minimal: 'Минимальный',
+    standard: 'Стандартный',
+    pro: 'Про',
+    corporate: 'Корпоративный',
+    recommended: 'Рекомендуем',
+    specialPrice: 'Специальная цена',
+    
+    // Pricing Features
+    courseLimit: 'Количество курсов',
+    adminAdd: 'Добавление админов',
+    studentBase: 'База студентов',
+    support: 'Поддержка',
+    analytics: 'Аналитика студентов',
+    onlineMeeting: 'Онлайн встречи',
+    certificate: 'Генерация сертификатов',
+    chat: 'Чат со студентами',
+    paymentIntegration: 'Интеграция платежной системы',
+    ai: 'Искусственный интеллект',
+    contentSecurity: 'Безопасность контента',
+    brandDesign: 'Дизайн под бренд',
+    personalDomain: 'Личный домен',
+    proFeatures: 'Возможности Pro тарифа',
+    seo: 'SEO - поиск в Google',
+    pricingInfo: 'Полная информация о тарифах',
+    
+    // Articles Section
+    articlesTitle: 'Статьи для преподавателей',
+    articleTitle: 'Эффективный урок',
+    articleDescription: 'Статья с подробной информацией о методах проведения эффективных уроков',
+    blogButton: 'ПЕРЕЙТИ В РАЗДЕЛ БЛОГА',
+    
+    // Advice Section
+    adviceTitle: 'Получить консультацию',
+    namePlaceholder: 'Ваше имя',
+    phonePlaceholder: 'Ваш номер',
+    commentPlaceholder: 'Комментарий',
+    submitButton: 'Отправить',
+    
+    // Login Section
+    systemLogin: 'Войти в систему',
+    
+    // Footer
+    mainPage: 'Главная страница',
+    publicOffer: 'Публичная оферта',
+    rightsReserved: 'Все права защищены',
+    
+    // Contact Info
+    address: 'г. Ташкент, Чиланзарский район, 12-квартал',
+    
+    // Theme
+    darkMode: 'Темная тема',
+    lightMode: 'Светлая тема'
+  },
+  
+  en: {
+    // Navigation
+    home: 'Home',
+    about: 'About',
+    pricing: 'Pricing',
+    blog: 'Blog',
+    contact: 'Contact',
+    login: 'Login',
+    
+    // Hero Section
+    heroTitle: 'Start Online Learning with Us',
+    heroButton: 'TRY FOR FREE',
+    statsText: 'educational centers trust us!',
+    
+    // Hero Features
+    aiTitle: 'Artificial Intelligence (AI)',
+    aiDescription: 'Automatic answers to student questions, lesson distribution and identification of educational tasks with advice. Assistance in test assignments.',
+    paymentTitle: 'Payment Integration',
+    paymentDescription: 'Payment integration through Uzcard, Humo, Visa, Mastercard, Payme, Click for student purchases. Price matches specialization.',
+    analyticsTitle: 'Student Analytics',
+    analyticsDescription: 'Real-time monitoring of student activity, adding test and assignment results to graphs and charts, automatic recommendations of individual courses to students.',
+    videoGuide: 'Watch video guide',
+    
+    // Platform Features
+    platformTitle: 'Main Platform Features',
+    feature1: '1. Fast and easy course placement',
+    feature2: '2. Student Control',
+    feature3: '3. Payment system integration',
+    feature4: '4. Online meetings',
+    feature5: '5. Artificial Intelligence',
+    feature6: '6. Brand adaptation',
+    feature7: '7. Support',
+    feature8: '8. Data security',
+    feature9: '9. Financial analytics',
+    useButton: 'Use',
+    detailsButton: 'Details',
+    
+    // Pricing Section
+    pricingTitle: 'Pricing & Plans',
+    minimal: 'Minimal',
+    standard: 'Standard',
+    pro: 'Pro',
+    corporate: 'Corporate',
+    recommended: 'Recommended',
+    specialPrice: 'Special price',
+    
+    // Pricing Features
+    courseLimit: 'Course limit',
+    adminAdd: 'Admin addition',
+    studentBase: 'Student base',
+    support: 'Support',
+    analytics: 'Student analytics',
+    onlineMeeting: 'Online meetings',
+    certificate: 'Certificate generation',
+    chat: 'Student chat',
+    paymentIntegration: 'Payment system integration',
+    ai: 'Artificial Intelligence',
+    contentSecurity: 'Content security',
+    brandDesign: 'Brand design',
+    personalDomain: 'Personal domain',
+    proFeatures: 'Pro plan features',
+    seo: 'SEO - Google search',
+    pricingInfo: 'Complete pricing information',
+    
+    // Articles Section
+    articlesTitle: 'Articles for Teachers',
+    articleTitle: 'Effective Lesson',
+    articleDescription: 'Article with detailed information about methods for conducting effective lessons',
+    blogButton: 'GO TO BLOG SECTION',
+    
+    // Advice Section
+    adviceTitle: 'Get Advice',
+    namePlaceholder: 'Your name',
+    phonePlaceholder: 'Your number',
+    commentPlaceholder: 'Comment',
+    submitButton: 'Submit',
+    
+    // Login Section
+    systemLogin: 'Login to System',
+    
+    // Footer
+    mainPage: 'Home page',
+    publicOffer: 'Public offer',
+    rightsReserved: 'All rights reserved',
+    
+    // Contact Info
+    address: 'Tashkent city, Chilanzar district, 12th quarter',
+    
+    // Theme
+    darkMode: 'Dark Mode',
+    lightMode: 'Light Mode'
+  }
+};
+
+// Current language for home page
+let currentHomeLanguage = localStorage.getItem('homeLanguage') || 'uz';
+
+// Translation function for home page
+function t(key) {
+  try {
+    return homeTranslations[currentHomeLanguage]?.[key] || homeTranslations.uz[key] || key;
+  } catch (error) {
+    console.error('Translation error for key:', key, error);
+    return key; // Return the key itself as fallback
+  }
+}
+
+// Update page content with translations
+function updateHomeTranslations() {
+  try {
+    // Navigation
+    document.querySelectorAll('[data-home-i18n="home"]').forEach(el => el.textContent = t('home'));
+    document.querySelectorAll('[data-home-i18n="about"]').forEach(el => el.textContent = t('about'));
+    document.querySelectorAll('[data-home-i18n="pricing"]').forEach(el => el.textContent = t('pricing'));
+    document.querySelectorAll('[data-home-i18n="blog"]').forEach(el => el.textContent = t('blog'));
+    document.querySelectorAll('[data-home-i18n="contact"]').forEach(el => el.textContent = t('contact'));
+    document.querySelectorAll('[data-home-i18n="login"]').forEach(el => el.textContent = t('login'));
+  
+  // Hero Section
+  document.querySelectorAll('[data-home-i18n="heroTitle"]').forEach(el => el.textContent = t('heroTitle'));
+  document.querySelectorAll('[data-home-i18n="heroButton"]').forEach(el => el.textContent = t('heroButton'));
+  document.querySelectorAll('[data-home-i18n="statsText"]').forEach(el => el.textContent = t('statsText'));
+  
+  // Hero Features
+  document.querySelectorAll('[data-home-i18n="aiTitle"]').forEach(el => el.textContent = t('aiTitle'));
+  document.querySelectorAll('[data-home-i18n="aiDescription"]').forEach(el => el.textContent = t('aiDescription'));
+  document.querySelectorAll('[data-home-i18n="paymentTitle"]').forEach(el => el.textContent = t('paymentTitle'));
+  document.querySelectorAll('[data-home-i18n="paymentDescription"]').forEach(el => el.textContent = t('paymentDescription'));
+  document.querySelectorAll('[data-home-i18n="analyticsTitle"]').forEach(el => el.textContent = t('analyticsTitle'));
+  document.querySelectorAll('[data-home-i18n="analyticsDescription"]').forEach(el => el.textContent = t('analyticsDescription'));
+  document.querySelectorAll('[data-home-i18n="videoGuide"]').forEach(el => el.textContent = t('videoGuide'));
+  
+  // Platform Features
+  document.querySelectorAll('[data-home-i18n="platformTitle"]').forEach(el => el.textContent = t('platformTitle'));
+  document.querySelectorAll('[data-home-i18n="feature1"]').forEach(el => el.textContent = t('feature1'));
+  document.querySelectorAll('[data-home-i18n="feature2"]').forEach(el => el.textContent = t('feature2'));
+  document.querySelectorAll('[data-home-i18n="feature3"]').forEach(el => el.textContent = t('feature3'));
+  document.querySelectorAll('[data-home-i18n="feature4"]').forEach(el => el.textContent = t('feature4'));
+  document.querySelectorAll('[data-home-i18n="feature5"]').forEach(el => el.textContent = t('feature5'));
+  document.querySelectorAll('[data-home-i18n="feature6"]').forEach(el => el.textContent = t('feature6'));
+  document.querySelectorAll('[data-home-i18n="feature7"]').forEach(el => el.textContent = t('feature7'));
+  document.querySelectorAll('[data-home-i18n="feature8"]').forEach(el => el.textContent = t('feature8'));
+  document.querySelectorAll('[data-home-i18n="feature9"]').forEach(el => el.textContent = t('feature9'));
+  document.querySelectorAll('[data-home-i18n="useButton"]').forEach(el => el.textContent = t('useButton'));
+  document.querySelectorAll('[data-home-i18n="detailsButton"]').forEach(el => el.textContent = t('detailsButton'));
+  
+  // Pricing Section
+  document.querySelectorAll('[data-home-i18n="pricingTitle"]').forEach(el => el.textContent = t('pricingTitle'));
+  document.querySelectorAll('[data-home-i18n="minimal"]').forEach(el => el.textContent = t('minimal'));
+  document.querySelectorAll('[data-home-i18n="standard"]').forEach(el => el.textContent = t('standard'));
+  document.querySelectorAll('[data-home-i18n="pro"]').forEach(el => el.textContent = t('pro'));
+  document.querySelectorAll('[data-home-i18n="corporate"]').forEach(el => el.textContent = t('corporate'));
+  document.querySelectorAll('[data-home-i18n="recommended"]').forEach(el => el.textContent = t('recommended'));
+  document.querySelectorAll('[data-home-i18n="specialPrice"]').forEach(el => el.textContent = t('specialPrice'));
+  
+  // Pricing Features
+  document.querySelectorAll('[data-home-i18n="courseLimit"]').forEach(el => el.textContent = t('courseLimit'));
+  document.querySelectorAll('[data-home-i18n="adminAdd"]').forEach(el => el.textContent = t('adminAdd'));
+  document.querySelectorAll('[data-home-i18n="studentBase"]').forEach(el => el.textContent = t('studentBase'));
+  document.querySelectorAll('[data-home-i18n="support"]').forEach(el => el.textContent = t('support'));
+  document.querySelectorAll('[data-home-i18n="analytics"]').forEach(el => el.textContent = t('analytics'));
+  document.querySelectorAll('[data-home-i18n="onlineMeeting"]').forEach(el => el.textContent = t('onlineMeeting'));
+  document.querySelectorAll('[data-home-i18n="certificate"]').forEach(el => el.textContent = t('certificate'));
+  document.querySelectorAll('[data-home-i18n="chat"]').forEach(el => el.textContent = t('chat'));
+  document.querySelectorAll('[data-home-i18n="paymentIntegration"]').forEach(el => el.textContent = t('paymentIntegration'));
+  document.querySelectorAll('[data-home-i18n="ai"]').forEach(el => el.textContent = t('ai'));
+  document.querySelectorAll('[data-home-i18n="contentSecurity"]').forEach(el => el.textContent = t('contentSecurity'));
+  document.querySelectorAll('[data-home-i18n="brandDesign"]').forEach(el => el.textContent = t('brandDesign'));
+  document.querySelectorAll('[data-home-i18n="personalDomain"]').forEach(el => el.textContent = t('personalDomain'));
+  document.querySelectorAll('[data-home-i18n="proFeatures"]').forEach(el => el.textContent = t('proFeatures'));
+  document.querySelectorAll('[data-home-i18n="seo"]').forEach(el => el.textContent = t('seo'));
+  document.querySelectorAll('[data-home-i18n="pricingInfo"]').forEach(el => el.textContent = t('pricingInfo'));
+  
+  // Articles Section
+  document.querySelectorAll('[data-home-i18n="articlesTitle"]').forEach(el => el.textContent = t('articlesTitle'));
+  document.querySelectorAll('[data-home-i18n="articleTitle"]').forEach(el => el.textContent = t('articleTitle'));
+  document.querySelectorAll('[data-home-i18n="articleDescription"]').forEach(el => el.textContent = t('articleDescription'));
+  document.querySelectorAll('[data-home-i18n="blogButton"]').forEach(el => el.textContent = t('blogButton'));
+  
+  // Advice Section
+  document.querySelectorAll('[data-home-i18n="adviceTitle"]').forEach(el => el.textContent = t('adviceTitle'));
+  document.querySelectorAll('[data-home-i18n="namePlaceholder"]').forEach(el => {
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = t('namePlaceholder');
+    } else {
+      el.textContent = t('namePlaceholder');
+    }
+  });
+  document.querySelectorAll('[data-home-i18n="phonePlaceholder"]').forEach(el => {
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = t('phonePlaceholder');
+    } else {
+      el.textContent = t('phonePlaceholder');
+    }
+  });
+  document.querySelectorAll('[data-home-i18n="commentPlaceholder"]').forEach(el => {
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+      el.placeholder = t('commentPlaceholder');
+    } else {
+      el.textContent = t('commentPlaceholder');
+    }
+  });
+  document.querySelectorAll('[data-home-i18n="submitButton"]').forEach(el => el.textContent = t('submitButton'));
+  
+  // Login Section
+  document.querySelectorAll('[data-home-i18n="systemLogin"]').forEach(el => el.textContent = t('systemLogin'));
+  
+  // Footer
+  document.querySelectorAll('[data-home-i18n="mainPage"]').forEach(el => el.textContent = t('mainPage'));
+  document.querySelectorAll('[data-home-i18n="publicOffer"]').forEach(el => el.textContent = t('publicOffer'));
+  document.querySelectorAll('[data-home-i18n="rightsReserved"]').forEach(el => el.textContent = t('rightsReserved'));
+  document.querySelectorAll('[data-home-i18n="address"]').forEach(el => el.textContent = t('address'));
+  
+  // Theme
+  document.querySelectorAll('[data-home-i18n="darkMode"]').forEach(el => el.textContent = t('darkMode'));
+  document.querySelectorAll('[data-home-i18n="lightMode"]').forEach(el => el.textContent = t('lightMode'));
+  
+  } catch (error) {
+    console.error('Error updating home translations:', error);
+  }
+}
+
 export function initHomePage() {
   // Clean up pricing page styles when returning to home
   cleanupPricingStyles();
@@ -30,11 +440,11 @@ export function initHomePage() {
         </button>
 
         <nav class="nav-menu" id="navMenu">
-          <a href="#" class="nav-item">Asosiy</a>
-          <a href="#" class="nav-item">Ma'lumot</a>
-          <a href="#" class="nav-item">Tariflar</a>
-          <a href="#" class="nav-item">Bloglar</a>
-          <a href="#" class="nav-item">Aloqa</a>
+          <a href="#" class="nav-item" data-home-i18n="home">Asosiy</a>
+          <a href="#" class="nav-item" data-home-i18n="about">Ma'lumot</a>
+          <a href="#" class="nav-item" data-home-i18n="pricing">Tariflar</a>
+          <a href="#" class="nav-item" data-home-i18n="blog">Bloglar</a>
+          <a href="#" class="nav-item" data-home-i18n="contact">Aloqa</a>
 
           <!-- Mobile-only header actions in menu -->
           <div class="mobile-header-actions">
@@ -63,13 +473,13 @@ export function initHomePage() {
             </div>
 
             <div class="mobile-theme-toggle" id="mobileThemeToggle">
-              <span class="mobile-theme-text">Dark Mode</span>
+              <span class="mobile-theme-text" data-home-i18n="darkMode">Dark Mode</span>
               <div class="mobile-toggle-switch">
                 <div class="mobile-toggle-slider"></div>
               </div>
             </div>
 
-            <button class="mobile-login-btn" onclick="router.navigate('/login'); return false;">Kirish</button>
+            <button class="mobile-login-btn" onclick="router.navigate('/login'); return false;" data-home-i18n="login">Kirish</button>
           </div>
         </nav>
 
@@ -114,7 +524,7 @@ export function initHomePage() {
             </div>
           </div>
 
-          <button class="login-btn" onclick="router.navigate('/login'); return false;">Kirish</button>
+          <button class="login-btn" onclick="router.navigate('/login'); return false;" data-home-i18n="login">Kirish</button>
         </div>
       </div>
     </header>
@@ -124,31 +534,31 @@ export function initHomePage() {
       <div class="container">
         <div class="hero-content">
           <div class="hero-header-container">
-            <h1 class="hero-title">Online Ta'limni Biz Bilan Boshlang</h1>
+            <h1 class="hero-title" data-home-i18n="heroTitle">Online Ta'limni Biz Bilan Boshlang</h1>
 
             <div class="hero-actions">
-              <button class="btn-primary" onclick="router.navigate('/register'); return false;">BEPUL SINAB KO'RISH</button>
+              <button class="btn-primary" onclick="router.navigate('/register'); return false;" data-home-i18n="heroButton">BEPUL SINAB KO'RISH</button>
               <div class="stats-badge">
                 <span class="stats-number">70+</span>
-                <span class="stats-text">O'quv markazlari bizga ishonch bildiradi!</span>
+                <span class="stats-text" data-home-i18n="statsText">O'quv markazlari bizga ishonch bildiradi!</span>
               </div>
             </div>
           </div>
 
           <div class="hero-features-grid">
             <div class="hero-feature-card">
-              <h3>Sun'iy intellekt (AI)</h3>
-              <p>O'quvchi savollarga avtomatik javob berish, darslarni puylash va ta'lim vazifasi mavzularini aniqlash va yecha maslahat data. Test topshiriqlarida yordam berish.</p>
+              <h3 data-home-i18n="aiTitle">Sun'iy intellekt (AI)</h3>
+              <p data-home-i18n="aiDescription">O'quvchi savollarga avtomatik javob berish, darslarni puylash va ta'lim vazifasi mavzularini aniqlash va yecha maslahat data. Test topshiriqlarida yordam berish.</p>
             </div>
 
             <div class="hero-feature-card">
-              <h3>To'lov integratsiyasi</h3>
-              <p>Uzcard, Humo, Visa, Mastercard, Payme, Click bo'yicha to'lov o'quvchi harid qilganiga integratsiya qilinb. Ixtisoriga nark tushinadi.</p>
+              <h3 data-home-i18n="paymentTitle">To'lov integratsiyasi</h3>
+              <p data-home-i18n="paymentDescription">Uzcard, Humo, Visa, Mastercard, Payme, Click bo'yicha to'lov o'quvchi harid qilganiga integratsiya qilinb. Ixtisoriga nark tushinadi.</p>
             </div>
 
             <div class="hero-feature-card analytics-card">
-              <h3>O'quvchilar tahlili</h3>
-              <p>O'quvchilar faoliyatin real vaqt rejimida kuzatish, test, topshiriq natijalarini grafik va diagrammalarga qo'shish, individual kurslarni O'quvchilarga avtomatik tavsiyalanib.</p>
+              <h3 data-home-i18n="analyticsTitle">O'quvchilar tahlili</h3>
+              <p data-home-i18n="analyticsDescription">O'quvchilar faoliyatin real vaqt rejimida kuzatish, test, topshiriq natijalarini grafik va diagrammalarga qo'shish, individual kurslarni O'quvchilarga avtomatik tavsiyalanib.</p>
             </div>
 <!-- 3D Analytics Icon - Outside card (clear) -->
               <div class="analytics-3d-icon analytics-outside">
@@ -164,7 +574,7 @@ export function initHomePage() {
                   <polygon points="10,8 16,12 10,16" fill="currentColor"/>
                 </svg>
               </div>
-              <span class="video-text">Video qo'llanmani ko'rish</span>
+              <span class="video-text" data-home-i18n="videoGuide">Video qo'llanmani ko'rish</span>
             </button>
           </div>
         </div>
@@ -179,55 +589,55 @@ export function initHomePage() {
     <!-- Platform Features Section -->
     <section class="platform-features">
       <div class="container">
-        <h2 class="section-title">Platformaning Asosiy Imkoniyatlari</h2>
+        <h2 class="section-title" data-home-i18n="platformTitle">Platformaning Asosiy Imkoniyatlari</h2>
 
         <div class="platform-features-grid">
          <div class="course-3d-icon">
               <img src="/images/3D Black Chrome Shape (3) 1.png" alt="3D Course Icon" class="course-icon-image" />
             </div>
           <div class="platform-feature-card course-card">
-            <h4>1. Tez va oson kurs joylash</h4>
+            <h4 data-home-i18n="feature1">1. Tez va oson kurs joylash</h4>
 
             <!-- 3D Course Icon on left side -->
            
           </div>
           <div class="platform-feature-card">
-            <h4>2. O'quvchilar Nazorati</h4>
+            <h4 data-home-i18n="feature2">2. O'quvchilar Nazorati</h4>
           </div>
           <div class="platform-feature-card">
-            <h4>3. To'lov tizimi integratsiya</h4>
+            <h4 data-home-i18n="feature3">3. To'lov tizimi integratsiya</h4>
           </div>
 
           <div class="platform-feature-card">
-            <h4>4. Onlayn uchrashuvlar</h4>
+            <h4 data-home-i18n="feature4">4. Onlayn uchrashuvlar</h4>
           </div>
           <div class="platform-feature-card">
-            <h4>5. Sun'iy intellekt</h4>
+            <h4 data-home-i18n="feature5">5. Sun'iy intellekt</h4>
           </div>
           <div class="glass-decoration">
               <img src="/images/gradient glass (20) 1 (1).png" alt="Glass Decoration" class="glass-deco-image" />
             </div>
           <div class="platform-feature-card brending-card">
-            <h4>6. Brendaga moslash</h4>
+            <h4 data-home-i18n="feature6">6. Brendaga moslash</h4>
 
             <!-- Decorative Glass Element next to card -->
             
           </div>
 
           <div class="platform-feature-card">
-            <h4>7. Qo'llab quvvatlash</h4>
+            <h4 data-home-i18n="feature7">7. Qo'llab quvvatlash</h4>
           </div>
           <div class="platform-feature-card">
-            <h4>8. Ma'lumotlar xavfsizligi</h4>
+            <h4 data-home-i18n="feature8">8. Ma'lumotlar xavfsizligi</h4>
           </div>
           <div class="platform-feature-card">
-            <h4>9. Moliyaviy analitika</h4>
+            <h4 data-home-i18n="feature9">9. Moliyaviy analitika</h4>
           </div>
         </div>
 
         <div class="platform-actions">
-          <button class="btn-outline" onclick="router.navigate('/register'); return false;">Foydalanish</button>
-          <button class="btn-outline">Batafsil</button>
+          <button class="btn-outline" onclick="router.navigate('/register'); return false;" data-home-i18n="useButton">Foydalanish</button>
+          <button class="btn-outline" data-home-i18n="detailsButton">Batafsil</button>
         </div>
       </div>
     </section>
@@ -235,7 +645,7 @@ export function initHomePage() {
     <!-- Pricing Section -->
     <section class="pricing-section">
       <div class="container">
-        <h2 class="section-title">Tariflar & Narxlar</h2>
+        <h2 class="section-title" data-home-i18n="pricingTitle">Tariflar & Narxlar</h2>
 
         <div class="pricing-grid">
         <div class="minimal-glass-decoration">
@@ -245,55 +655,55 @@ export function initHomePage() {
           <div class="pricing-card minimal-card">
 
             <div class="pricing-header minimal">
-              <h3>Minimal</h3>
+              <h3 data-home-i18n="minimal">Minimal</h3>
             </div>
             <div class="pricing-features">
               <div class="feature-item">
-                <span>Kurs joylash soni</span>
+                <span data-home-i18n="courseLimit">Kurs joylash soni</span>
                 <span class="feature-value">2</span>
               </div>
               <div class="feature-item">
-                <span>Admin qo'shish</span>
+                <span data-home-i18n="adminAdd">Admin qo'shish</span>
                 <span class="feature-value">3</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar bazasi</span>
+                <span data-home-i18n="studentBase">O'quvchilar bazasi</span>
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Qo'llab-quvvatlash</span>
+                <span data-home-i18n="support">Qo'llab-quvvatlash</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar analitikasi</span>
+                <span data-home-i18n="analytics">O'quvchilar analitikasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item disabled">
-                <span>Onlayn uchrashuv</span>
+                <span data-home-i18n="onlineMeeting">Onlayn uchrashuv</span>
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>Sertifikat generatsiyasi</span>
+                <span data-home-i18n="certificate">Sertifikat generatsiyasi</span>
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>O'quvchilar bilan chat</span>
+                <span data-home-i18n="chat">O'quvchilar bilan chat</span>
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>To'lov tizimi integratsyasi</span>
+                <span data-home-i18n="paymentIntegration">To'lov tizimi integratsyasi</span>
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>Sun'iy intellekt</span>
+                <span data-home-i18n="ai">Sun'iy intellekt</span>
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>Kontent xavfsizligi</span>
+                <span data-home-i18n="contentSecurity">Kontent xavfsizligi</span>
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>Brendga mos dizayn</span>
+                <span data-home-i18n="brandDesign">Brendga mos dizayn</span>
                 <span class="feature-check">✗</span>
               </div>
             </div>
@@ -302,57 +712,57 @@ export function initHomePage() {
 
           <!-- Standard Plan -->
           <div class="pricing-card">
-            <span class="tavsiya-badge">Tavsiya</span>
+            <span class="tavsiya-badge" data-home-i18n="recommended">Tavsiya</span>
             <div class="pricing-header standard">
-              <h3>Standard</h3>
+              <h3 data-home-i18n="standard">Standard</h3>
             </div>
             <div class="pricing-features">
               <div class="feature-item">
-                <span>Kurs joylash soni</span>
+                <span data-home-i18n="courseLimit">Kurs joylash soni</span>
                 <span class="feature-value">4</span>
               </div>
               <div class="feature-item">
-                <span>Admin qo'shish</span>
+                <span data-home-i18n="adminAdd">Admin qo'shish</span>
                 <span class="feature-value">6</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar bazasi</span>
+                <span data-home-i18n="studentBase">O'quvchilar bazasi</span>
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Qo'llab-quvvatlash</span>
+                <span data-home-i18n="support">Qo'llab-quvvatlash</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar analitikasi</span>
+                <span data-home-i18n="analytics">O'quvchilar analitikasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Onlayn uchrashuv</span>
+                <span data-home-i18n="onlineMeeting">Onlayn uchrashuv</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Sertifikat generatsiyasi</span>
+                <span data-home-i18n="certificate">Sertifikat generatsiyasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar bilan chat</span>
+                <span data-home-i18n="chat">O'quvchilar bilan chat</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>To'lov tizimi integratsyasi</span>
+                <span data-home-i18n="paymentIntegration">To'lov tizimi integratsyasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Sun'iy intellekt</span>
+                <span data-home-i18n="ai">Sun'iy intellekt</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item disabled">
-                <span>Kontent xavfsizligi</span>
+                <span data-home-i18n="contentSecurity">Kontent xavfsizligi</span>
                 <span class="feature-check">✗</span>
               </div>
               <div class="feature-item disabled">
-                <span>Brendga mos dizayn</span>
+                <span data-home-i18n="brandDesign">Brendga mos dizayn</span>
                 <span class="feature-check">✗</span>
               </div>
             </div>
@@ -362,55 +772,55 @@ export function initHomePage() {
           <!-- Pro Plan -->
           <div class="pricing-card">
             <div class="pricing-header pro">
-              <h3>Pro</h3>
+              <h3 data-home-i18n="pro">Pro</h3>
             </div>
             <div class="pricing-features">
               <div class="feature-item">
-                <span>Kurs joylash soni</span>
+                <span data-home-i18n="courseLimit">Kurs joylash soni</span>
                 <span class="feature-value">8</span>
               </div>
               <div class="feature-item">
-                <span>Admin qo'shish</span>
+                <span data-home-i18n="adminAdd">Admin qo'shish</span>
                 <span class="feature-value">12</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar bazasi</span>
+                <span data-home-i18n="studentBase">O'quvchilar bazasi</span>
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Qo'llab-quvvatlash</span>
+                <span data-home-i18n="support">Qo'llab-quvvatlash</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar analitikasi</span>
+                <span data-home-i18n="analytics">O'quvchilar analitikasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Onlayn uchrashuv</span>
+                <span data-home-i18n="onlineMeeting">Onlayn uchrashuv</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Sertifikat generatsiyasi</span>
+                <span data-home-i18n="certificate">Sertifikat generatsiyasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar bilan chat</span>
+                <span data-home-i18n="chat">O'quvchilar bilan chat</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>To'lov tizimi integratsyasi</span>
+                <span data-home-i18n="paymentIntegration">To'lov tizimi integratsyasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Sun'iy intellekt</span>
+                <span data-home-i18n="ai">Sun'iy intellekt</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Kontent xavfsizligi</span>
+                <span data-home-i18n="contentSecurity">Kontent xavfsizligi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Brendga mos dizayn</span>
+                <span data-home-i18n="brandDesign">Brendga mos dizayn</span>
                 <span class="feature-check">✓</span>
               </div>
             </div>
@@ -424,64 +834,64 @@ export function initHomePage() {
           <div class="pricing-card korporativ-card">
        
             <div class="pricing-header korporativ">
-              <h3>Korporativ</h3>
+              <h3 data-home-i18n="corporate">Korporativ</h3>
             </div>
             <div class="pricing-features">
               <div class="feature-item">
-                <span>Kurs joylash soni</span>
+                <span data-home-i18n="courseLimit">Kurs joylash soni</span>
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Admin qo'shish</span>
+                <span data-home-i18n="adminAdd">Admin qo'shish</span>
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar bazasi</span>
+                <span data-home-i18n="studentBase">O'quvchilar bazasi</span>
                 <span class="feature-value">∞</span>
               </div>
               <div class="feature-item">
-                <span>Qo'llab-quvvatlash</span>
+                <span data-home-i18n="support">Qo'llab-quvvatlash</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Shaxsiy Domein</span>
+                <span data-home-i18n="personalDomain">Shaxsiy Domein</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Onlayn uchrashuv</span>
+                <span data-home-i18n="onlineMeeting">Onlayn uchrashuv</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Pro tarif imkoniyatlari</span>
+                <span data-home-i18n="proFeatures">Pro tarif imkoniyatlari</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>SEO - Google'da qidiruv</span>
+                <span data-home-i18n="seo">SEO - Google'da qidiruv</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>O'quvchilar bilan chat</span>
+                <span data-home-i18n="chat">O'quvchilar bilan chat</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>To'lov tizimi integratsyasi</span>
+                <span data-home-i18n="paymentIntegration">To'lov tizimi integratsyasi</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Sun'iy intellekt</span>
+                <span data-home-i18n="ai">Sun'iy intellekt</span>
                 <span class="feature-check">✓</span>
               </div>
               <div class="feature-item">
-                <span>Kontent xavfsizligi</span>
+                <span data-home-i18n="contentSecurity">Kontent xavfsizligi</span>
                 <span class="feature-check">✓</span>
               </div>
             </div>
-            <div class="pricing-price korporativ">Maxsus narx</div>
+            <div class="pricing-price korporativ" data-home-i18n="specialPrice">Maxsus narx</div>
           </div>
         </div>
 
         <div class="pricing-action">
-          <button class="btn-pricing" onclick="router.navigate('/pricing'); return false;">Ta'riflar bo'yicha to'liq ma'lumot</button>
+          <button class="btn-pricing" onclick="router.navigate('/pricing'); return false;" data-home-i18n="pricingInfo">Ta'riflar bo'yicha to'liq ma'lumot</button>
         </div>
       </div>
     </section>
@@ -489,7 +899,7 @@ export function initHomePage() {
     <!-- Course Articles Section -->
     <section class="articles-section">
       <div class="container">
-        <h2 class="section-title">O'qituvchilar uchun ma'qolalar</h2>
+        <h2 class="section-title" data-home-i18n="articlesTitle">O'qituvchilar uchun ma'qolalar</h2>
 
         <div class="articles-grid">
          <div class="samarali-dars-decoration">
@@ -499,10 +909,10 @@ export function initHomePage() {
           <div class="article-card samarali-dars-card">
            
             <div class="article-header">
-              <h3>Samarali Dars</h3>
+              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
             </div>
             <div class="article-content">
-              <p>Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
+              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
             </div>
             <div class="article-meta">
               <div class="article-stats">
@@ -520,10 +930,10 @@ export function initHomePage() {
           <!-- Article Card 2 -->
           <div class="article-card">
             <div class="article-header">
-              <h3>Samarali Dars</h3>
+              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
             </div>
             <div class="article-content">
-              <p>Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
+              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
             </div>
             <div class="article-meta">
               <div class="article-stats">
@@ -541,10 +951,10 @@ export function initHomePage() {
           <!-- Article Card 3 -->
           <div class="article-card">
             <div class="article-header">
-              <h3>Samarali Dars</h3>
+              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
             </div>
             <div class="article-content">
-              <p>Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
+              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
             </div>
             <div class="article-meta">
               <div class="article-stats">
@@ -562,10 +972,10 @@ export function initHomePage() {
           <!-- Article Card 4 -->
           <div class="article-card">
             <div class="article-header">
-              <h3>Samarali Dars</h3>
+              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
             </div>
             <div class="article-content">
-              <p>Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
+              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
             </div>
             <div class="article-meta">
               <div class="article-stats">
@@ -583,10 +993,10 @@ export function initHomePage() {
           <!-- Article Card 5 -->
           <div class="article-card">
             <div class="article-header">
-              <h3>Samarali Dars</h3>
+              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
             </div>
             <div class="article-content">
-              <p>Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
+              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
             </div>
             <div class="article-meta">
               <div class="article-stats">
@@ -607,10 +1017,10 @@ export function initHomePage() {
           <div class="article-card oxirgi-dars-card">
            
             <div class="article-header">
-              <h3>Samarali Dars</h3>
+              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
             </div>
             <div class="article-content">
-              <p>Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
+              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
             </div>
             <div class="article-meta">
               <div class="article-stats">
@@ -627,7 +1037,7 @@ export function initHomePage() {
         </div>
 
         <div class="articles-action">
-          <button class="btn-blog">BLOG BO'LIMIGA O'TISH</button>
+          <button class="btn-blog" data-home-i18n="blogButton">BLOG BO'LIMIGA O'TISH</button>
         </div>
       </div>
     </section>
@@ -638,13 +1048,14 @@ export function initHomePage() {
         <div class="advice-card">
 
 
-          <h2 class="advice-title">Maslahat olish</h2>
+          <h2 class="advice-title" data-home-i18n="adviceTitle">Maslahat olish</h2>
           <form class="advice-form" onsubmit="submitAdviceForm(event)">
             <div class="form-row">
               <div class="form-group">
                 <input
                   type="text"
                   class="form-input"
+                  data-home-i18n="namePlaceholder"
                   placeholder="Ismingiz"
                   required
                   id="adviceName"
@@ -654,6 +1065,7 @@ export function initHomePage() {
                 <input
                   type="tel"
                   class="form-input"
+                  data-home-i18n="phonePlaceholder"
                   placeholder="Raqamingiz"
                   required
                   id="advicePhone"
@@ -663,11 +1075,12 @@ export function initHomePage() {
             <div class="form-group">
               <textarea
                 class="form-input form-textarea"
+                data-home-i18n="commentPlaceholder"
                 placeholder="Izoh"
                 id="adviceComment"
               ></textarea>
             </div>
-            <button type="submit" class="advice-submit">Yuborish</button>
+            <button type="submit" class="advice-submit" data-home-i18n="submitButton">Yuborish</button>
           </form>
         </div>
       </div>
@@ -676,7 +1089,7 @@ export function initHomePage() {
     <!-- Login Section -->
     <section class="login-section">
       <div class="container">
-        <button class="btn-login-main" onclick="router.navigate('/login'); return false;">Tizimga Kirish</button>
+        <button class="btn-login-main" onclick="router.navigate('/login'); return false;" data-home-i18n="systemLogin">Tizimga Kirish</button>
       </div>
     </section>
 
@@ -691,12 +1104,12 @@ export function initHomePage() {
 
           <!-- Navigation -->
           <nav class="footer-nav">
-            <a href="#" class="footer-nav-item">Asosiy sahifa</a>
-            <a href="#" class="footer-nav-item">Ma'lumot</a>
-            <a href="#" class="footer-nav-item">Tariflar</a>
-            <a href="#" class="footer-nav-item">Aloqa</a>
-            <a href="#" class="footer-nav-item">Ommaviy oferta</a>
-            <a href="#" class="footer-nav-item" onclick="router.navigate('/login'); return false;">Kirish</a>
+            <a href="#" class="footer-nav-item" data-home-i18n="mainPage">Asosiy sahifa</a>
+            <a href="#" class="footer-nav-item" data-home-i18n="about">Ma'lumot</a>
+            <a href="#" class="footer-nav-item" data-home-i18n="pricing">Tariflar</a>
+            <a href="#" class="footer-nav-item" data-home-i18n="contact">Aloqa</a>
+            <a href="#" class="footer-nav-item" data-home-i18n="publicOffer">Ommaviy oferta</a>
+            <a href="#" class="footer-nav-item" onclick="router.navigate('/login'); return false;" data-home-i18n="login">Kirish</a>
           </nav>
 
           <!-- Payment Methods -->
@@ -714,7 +1127,7 @@ export function initHomePage() {
               <svg class="contact-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
               </svg>
-              <span>Toshkent shahar, Chilonzor tumani, 12-kvartal</span>
+              <span data-home-i18n="address">Toshkent shahar, Chilonzor tumani, 12-kvartal</span>
             </div>
             <div class="footer-contact-item">
               <svg class="contact-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -754,7 +1167,7 @@ export function initHomePage() {
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2025 Darslinker. Barcha huquqlar himoyalangan</p>
+          <p>&copy; 2025 Darslinker. <span data-home-i18n="rightsReserved">Barcha huquqlar himoyalangan</span></p>
         </div>
       </div>
     </footer>
@@ -807,8 +1220,75 @@ export function initHomePage() {
   // Initialize mobile theme toggle
   initMobileThemeToggle();
 
+  // Initialize home page translations
+  initHomeTranslations();
+
   // Update store
   store.setState({ currentPage: 'home' });
+}
+
+// Initialize home page translations
+function initHomeTranslations() {
+  try {
+    // Load saved language
+    const savedLang = localStorage.getItem('homeLanguage');
+    if (savedLang && homeTranslations[savedLang]) {
+      currentHomeLanguage = savedLang;
+    }
+    
+    // Update all translations
+    updateHomeTranslations();
+    
+    // Update language selector UI
+    updateLanguageSelectorUI();
+  } catch (error) {
+    console.error('Error initializing home translations:', error);
+  }
+}
+
+// Update language selector UI to match current language
+function updateLanguageSelectorUI() {
+  try {
+    const langFlags = {
+      uz: '/images/uz-flag.jpg',
+      ru: '/images/ru-flag.jpg', 
+      en: '/images/us-flag.png'
+    };
+    
+    const langNames = {
+      uz: 'UZ',
+      ru: 'RU',
+      en: 'EN'
+    };
+    
+    // Update desktop selector
+    const desktopSelected = document.getElementById('langSelected');
+    if (desktopSelected) {
+      const flagImg = desktopSelected.querySelector('.flag-img');
+      const span = desktopSelected.querySelector('span');
+      if (flagImg) flagImg.src = langFlags[currentHomeLanguage];
+      if (span) span.textContent = langNames[currentHomeLanguage];
+    }
+    
+    // Update mobile selector
+    const mobileSelected = document.getElementById('mobileLangSelected');
+    if (mobileSelected) {
+      const flagImg = mobileSelected.querySelector('.mobile-flag-img');
+      const span = mobileSelected.querySelector('span');
+      if (flagImg) flagImg.src = langFlags[currentHomeLanguage];
+      if (span) span.textContent = langNames[currentHomeLanguage];
+    }
+    
+    // Update active states
+    document.querySelectorAll('.lang-option, .mobile-lang-option').forEach(option => {
+      option.classList.remove('active');
+      if (option.dataset.lang === currentHomeLanguage) {
+        option.classList.add('active');
+      }
+    });
+  } catch (error) {
+    console.error('Error updating language selector UI:', error);
+  }
 }
 
 function initHomePageEffects() {
@@ -932,6 +1412,28 @@ function initHomePageEffects() {
           opacity: 0;
         }
       }
+
+      /* Language dropdown fix */
+      .lang-dropdown {
+        position: relative;
+        z-index: 1001;
+      }
+
+      .lang-options {
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1002 !important;
+        min-width: 100px !important;
+      }
+
+      .lang-dropdown.open .lang-options {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: translateY(0) !important;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -951,7 +1453,15 @@ function initLanguageDropdown() {
   // Toggle dropdown
   langSelected.addEventListener('click', (e) => {
     e.stopPropagation();
+    console.log('Language dropdown clicked');
     langDropdown.classList.toggle('open');
+    
+    // Debug: check if dropdown is open
+    if (langDropdown.classList.contains('open')) {
+      console.log('Language dropdown opened');
+    } else {
+      console.log('Language dropdown closed');
+    }
   });
 
   // Handle language selection
@@ -975,15 +1485,20 @@ function initLanguageDropdown() {
     langSelected.querySelector('.flag-img').src = flag;
     langSelected.querySelector('span').textContent = text;
 
-    // Store selected language
-    localStorage.setItem('selectedLanguage', lang);
+    // Store selected language for home page
+    localStorage.setItem('homeLanguage', lang);
+    currentHomeLanguage = lang;
 
     // Close dropdown
     langDropdown.classList.remove('open');
 
     // Update page language attribute
     document.documentElement.lang = lang;
-    console.log('Language changed to:', lang);
+    
+    // Update all translations on the page
+    updateHomeTranslations();
+    
+    console.log('Home page language changed to:', lang);
   });
 
   // Close dropdown when clicking outside
@@ -997,7 +1512,7 @@ function initLanguageDropdown() {
 
 // Load saved language preference
 function loadSavedLanguage() {
-  const savedLang = localStorage.getItem('selectedLanguage');
+  const savedLang = localStorage.getItem('homeLanguage');
   if (!savedLang) return;
 
   const langOption = document.querySelector(`[data-lang="${savedLang}"]`);
@@ -1005,11 +1520,18 @@ function loadSavedLanguage() {
 
   // Update UI to match saved language
   const langSelected = document.getElementById('langSelected');
-  const flag = langOption.querySelector('.flag-img').src;
-  const text = langOption.querySelector('span').textContent;
+  if (!langSelected) return;
+  
+  const flag = langOption.querySelector('.flag-img')?.src;
+  const text = langOption.querySelector('span')?.textContent;
 
-  langSelected.querySelector('.flag-img').src = flag;
-  langSelected.querySelector('span').textContent = text;
+  if (flag && text) {
+    const selectedFlag = langSelected.querySelector('.flag-img');
+    const selectedText = langSelected.querySelector('span');
+    
+    if (selectedFlag) selectedFlag.src = flag;
+    if (selectedText) selectedText.textContent = text;
+  }
 
   // Update active state
   document.querySelectorAll('.lang-option').forEach(option => {
@@ -2218,8 +2740,9 @@ function initMobileLanguageDropdown() {
     mobileLangSelected.querySelector('.mobile-flag-img').src = flag;
     mobileLangSelected.querySelector('span').textContent = text;
 
-    // Store selected language
-    localStorage.setItem('selectedLanguage', lang);
+    // Store selected language for home page
+    localStorage.setItem('homeLanguage', lang);
+    currentHomeLanguage = lang;
 
     // Close dropdown
     mobileLangDropdown.classList.remove('open');
@@ -2234,7 +2757,10 @@ function initMobileLanguageDropdown() {
       desktopLangSelected.querySelector('span').textContent = text;
     }
 
-    console.log('Mobile language changed to:', lang);
+    // Update all translations on the page
+    updateHomeTranslations();
+
+    console.log('Mobile home page language changed to:', lang);
   });
 
   // Close dropdown when clicking outside
