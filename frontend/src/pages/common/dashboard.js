@@ -348,7 +348,7 @@ async function renderTeacherDashboard(user) {
             <div class="figma-menu-children hidden" id="analytics-children">
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">Students</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.students')}</a>
               <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
             </div>
           </div>
@@ -18389,7 +18389,7 @@ window.openQuizAnalytics = async function() {
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
-    pageTitle.textContent = 'Quiz Analytics';
+    pageTitle.textContent = t('quizAnalytics.title');
   }
   
   // Get teacher ID - try multiple sources
@@ -18428,8 +18428,8 @@ window.openQuizAnalytics = async function() {
   if (!teacherId) {
     contentArea.innerHTML = `
       <div style="padding: 40px; text-align: center; color: #EF4444;">
-        <p style="font-size: 18px; margin-bottom: 8px;">Teacher ID topilmadi</p>
-        <p style="color: #9CA3AF;">Iltimos, qaytadan login qiling</p>
+        <p style="font-size: 18px; margin-bottom: 8px;">${t('quizAnalytics.teacherNotFound')}</p>
+        <p style="color: #9CA3AF;">${t('quizAnalytics.pleaseLogin')}</p>
       </div>
     `;
     return;
@@ -18440,7 +18440,7 @@ window.openQuizAnalytics = async function() {
     <div style="display: flex; justify-content: center; align-items: center; min-height: 400px; color: #9CA3AF;">
       <div style="text-align: center;">
         <div style="width: 40px; height: 40px; border: 4px solid rgba(126, 162, 212, 0.2); border-top-color: #7ea2d4; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 16px;"></div>
-        <p>Yuklanmoqda...</p>
+        <p>${t('quizAnalytics.loading')}</p>
       </div>
     </div>
     <style>
@@ -18657,15 +18657,15 @@ window.openQuizAnalytics = async function() {
       <!-- Stats Cards -->
       <div class="quiz-stats-grid">
         <div class="quiz-stat-card">
-          <div class="quiz-stat-title">Jami urinishlar</div>
+          <div class="quiz-stat-title">${t('quizAnalytics.totalAttempts')}</div>
           <div class="quiz-stat-value">${summary.totalAttempts} ta</div>
         </div>
         <div class="quiz-stat-card">
-          <div class="quiz-stat-title">Studentlar soni</div>
+          <div class="quiz-stat-title">${t('quizAnalytics.studentsCount')}</div>
           <div class="quiz-stat-value">${summary.uniqueStudents} ta</div>
         </div>
         <div class="quiz-stat-card">
-          <div class="quiz-stat-title">O'rtacha foiz</div>
+          <div class="quiz-stat-title">${t('quizAnalytics.averageScore')}</div>
           <div class="quiz-stat-value">${summary.averageScore}%</div>
         </div>
       </div>
@@ -18673,11 +18673,11 @@ window.openQuizAnalytics = async function() {
       <!-- Quiz Results Table -->
       <div class="quiz-content-section">
         <div style="padding: 20px 24px; border-bottom: 1px solid var(--primary-border); display: flex; justify-content: space-between; align-items: center;">
-          <h3 style="color: #ffffff; font-size: 18px; font-weight: 600; margin: 0;">Quiz natijalari (eng oxirgi urinish)</h3>
+          <h3 style="color: #ffffff; font-size: 18px; font-weight: 600; margin: 0;">${t('quizAnalytics.quizResults')}</h3>
           <input 
             type="text" 
             id="quizSearchInput" 
-            placeholder="ID yoki ism bo'yicha qidirish..." 
+            placeholder="${t('quizAnalytics.searchPlaceholder')}" 
             style="padding: 8px 16px; background: rgba(58, 56, 56, 0.5); border: 1px solid var(--primary-border); border-radius: 8px; color: #ffffff; font-size: 14px; width: 300px; outline: none;"
             onkeyup="filterQuizResults()"
           />
@@ -18685,29 +18685,29 @@ window.openQuizAnalytics = async function() {
         <div class="quiz-table-container">
           ${analytics.length === 0 ? `
             <div class="empty-state">
-              <p>Hozircha quiz natijalari yo'q</p>
+              <p>${t('quizAnalytics.noResults')}</p>
             </div>
           ` : `
             <table class="quiz-table" id="quizResultsTable">
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Student</th>
-                  <th>Kurs</th>
-                  <th>Urinish</th>
-                  <th>Ball</th>
-                  <th>To'g'ri javoblar</th>
-                  <th>Holat</th>
-                  <th>Vaqt</th>
-                  <th>Sana</th>
+                  <th>${t('quizAnalytics.id')}</th>
+                  <th>${t('quizAnalytics.student')}</th>
+                  <th>${t('quizAnalytics.course')}</th>
+                  <th>${t('quizAnalytics.attempt')}</th>
+                  <th>${t('quizAnalytics.score')}</th>
+                  <th>${t('quizAnalytics.correctAnswers')}</th>
+                  <th>${t('quizAnalytics.status')}</th>
+                  <th>${t('quizAnalytics.time')}</th>
+                  <th>${t('quizAnalytics.date')}</th>
                 </tr>
               </thead>
               <tbody>
                 ${analytics.map(item => {
                   const course = courses.find(c => c._id === item.courseId.toString());
-                  const courseName = course ? course.title : 'Unknown Course';
+                  const courseName = course ? course.title : t('quizAnalytics.unknownCourse');
                   const statusClass = item.passed ? 'status-passed' : 'status-failed';
-                  const statusText = item.passed ? 'O\'tdi' : 'O\'tmadi';
+                  const statusText = item.passed ? t('quizAnalytics.passed') : t('quizAnalytics.failed');
                   const scoreClass = item.passed ? 'score-pass' : 'score-fail';
                   
                   // Format date as DD/MM/YYYY
@@ -18767,7 +18767,7 @@ window.openQuizAnalytics = async function() {
     console.error('Error loading quiz analytics:', error);
     contentArea.innerHTML = `
       <div style="padding: 40px; text-align: center; color: #EF4444;">
-        <p style="font-size: 18px; margin-bottom: 8px;">Xatolik yuz berdi</p>
+        <p style="font-size: 18px; margin-bottom: 8px;">${t('quizAnalytics.errorOccurred')}</p>
         <p style="color: #9CA3AF;">${error.message}</p>
       </div>
     `;
@@ -18782,12 +18782,12 @@ window.formatQuizTime = function(seconds) {
   const secs = seconds % 60;
   
   if (hours > 0) {
-    return `${hours} soat ${minutes} daq`;
+    return `${hours} ${t('quizAnalytics.hours')} ${minutes} ${t('quizAnalytics.minutes')}`;
   }
   if (minutes > 0) {
-    return `${minutes} daq ${secs} sek`;
+    return `${minutes} ${t('quizAnalytics.minutes')} ${secs} ${t('quizAnalytics.seconds')}`;
   }
-  return `${secs} sek`;
+  return `${secs} ${t('quizAnalytics.seconds')}`;
 };
 
 // Filter quiz results by ID or name
