@@ -382,10 +382,10 @@ function addLoginPageStyles() {
     .country-selector {
       display: flex;
       align-items: center;
-      padding: 12px 20px;
+      padding: 12px 24px 12px 20px;
       background: rgba(70, 70, 90, 0.5);
       border-right: 1px solid #7EA2D4;
-      min-width: 95px;
+      min-width: 110px;
     }
 
     .country-flag {
@@ -399,6 +399,7 @@ function addLoginPageStyles() {
       color: #ffffff;
       font-size: 0.95rem;
       font-weight: 500;
+      margin-right: 12px;
     }
 
     .phone-number-input {
@@ -492,6 +493,17 @@ function addLoginPageStyles() {
 
     /* Responsive Design */
     @media (max-width: 768px) {
+      /* Hide all 3D elements */
+      .neon-dots-container {
+        display: none !important;
+      }
+
+      .moon-decoration,
+      .moon-top-right,
+      .moon-bottom-left {
+        display: none !important;
+      }
+
       .login-card {
         width: 90vw;
         max-width: 450px;
@@ -503,21 +515,6 @@ function addLoginPageStyles() {
       }
 
       .login-modal {
-      }
-
-      .moon-top-right {
-        top: 55px;
-        right: 40px;
-      }
-
-      .moon-bottom-left {
-        bottom: 40px;
-        left: 40px;
-      }
-
-      .moon-image {
-        width: 80px;
-        height: 80px;
       }
 
       .login-logo h1 {
@@ -538,8 +535,8 @@ function addLoginPageStyles() {
       }
 
       .country-selector {
-        min-width: 80px;
-        padding: 14px 16px;
+        min-width: 95px;
+        padding: 14px 20px 14px 16px;
       }
 
       .phone-number-input {

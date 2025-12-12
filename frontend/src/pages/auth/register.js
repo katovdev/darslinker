@@ -546,10 +546,10 @@ function addRegisterPageStyles() {
     .country-selector {
       display: flex;
       align-items: center;
-      padding: 10px 14px;
+      padding: 10px 20px 10px 14px;
       background: rgba(70, 70, 90, 0.5);
       border-right: 1px solid #7EA2D4;
-      min-width: 80px;
+      min-width: 95px;
     }
 
     .country-flag {
@@ -563,6 +563,7 @@ function addRegisterPageStyles() {
       color: #ffffff;
       font-size: 0.85rem;
       font-weight: 500;
+      margin-right: 12px;
     }
 
     .phone-number-input {
@@ -665,6 +666,17 @@ function addRegisterPageStyles() {
 
     /* Responsive Design */
     @media (max-width: 768px) {
+      /* Hide all 3D elements */
+      .neon-dots-container {
+        display: none !important;
+      }
+
+      .moon-decoration,
+      .moon-top-right,
+      .moon-bottom-left {
+        display: none !important;
+      }
+
       .register-card {
         width: 90vw;
         max-width: 450px;
@@ -679,21 +691,6 @@ function addRegisterPageStyles() {
 
       .register-modal {
         transform: translateY(-20px);
-      }
-
-      .moon-top-right {
-        top: 60px;
-        right: 40px;
-      }
-
-      .moon-bottom-left {
-        bottom: 40px;
-        left: 40px;
-      }
-
-      .moon-image {
-        width: 80px;
-        height: 80px;
       }
 
       .register-logo h1 {
@@ -721,8 +718,8 @@ function addRegisterPageStyles() {
       }
 
       .country-selector {
-        min-width: 80px;
-        padding: 14px 16px;
+        min-width: 90px;
+        padding: 14px 18px 14px 16px;
       }
     }
   `;

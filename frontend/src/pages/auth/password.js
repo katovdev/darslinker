@@ -390,6 +390,13 @@ function addPasswordPageStyles() {
 
     /* Responsive Design */
     @media (max-width: 768px) {
+      /* Hide all 3D elements */
+      .moon-decoration,
+      .moon-top-right,
+      .moon-bottom-left {
+        display: none !important;
+      }
+
       .password-card {
         width: 90vw;
         max-width: 450px;
@@ -403,21 +410,6 @@ function addPasswordPageStyles() {
 
       .password-modal {
         transform: translateY(-20px);
-      }
-
-      .moon-top-right {
-        top: 60px;
-        right: 40px;
-      }
-
-      .moon-bottom-left {
-        bottom: 40px;
-        left: 40px;
-      }
-
-      .moon-image {
-        width: 80px;
-        height: 80px;
       }
 
       .password-logo h1 {
