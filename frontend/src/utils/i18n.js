@@ -433,6 +433,25 @@ const translations = {
     'studentsAnalytics.noStudentsDesc': 'Students who register through your landing page will appear here',
     'studentsAnalytics.errorLoading': 'Error loading students',
     'studentsAnalytics.failedToLoad': 'Failed to load students data',
+
+    // Progress Analytics
+    'progress.title': 'Progress',
+    'progress.loading': 'Loading...',
+    'progress.teacherNotFound': 'Teacher ID not found. Please login again.',
+    'progress.errorLoading': 'Error loading progress data',
+    'progress.completed': 'Completed',
+    'progress.completedDesc': '100% completed students',
+    'progress.currentlyLearning': 'Currently Learning',
+    'progress.currentlyLearningDesc': '● In Progress',
+    'progress.totalStudents': 'Total Students',
+    'progress.totalStudentsDesc': 'All courses',
+    'progress.searchPlaceholder': 'Search students (name, surname, ID)...',
+    'progress.allCourses': 'All Courses',
+    'progress.mostActiveStudents': 'Most Active Students',
+    'progress.studentsList': 'Students List',
+    'progress.progressLabel': 'Progress',
+    'progress.courseName': 'Course Name',
+    'progress.completed': 'Completed',
   },
   
   uz: {
@@ -867,6 +886,25 @@ const translations = {
     'studentsAnalytics.noStudentsDesc': "Sizning landing sahifangiz orqali ro'yxatdan o'tgan o'quvchilar bu yerda ko'rinadi",
     'studentsAnalytics.errorLoading': "O'quvchilarni yuklashda xatolik",
     'studentsAnalytics.failedToLoad': "O'quvchilar ma'lumotlarini yuklashda xatolik",
+
+    // Progress Analytics
+    'progress.title': 'Jarayon',
+    'progress.loading': 'Yuklanmoqda...',
+    'progress.teacherNotFound': "O'qituvchi ID topilmadi. Iltimos, qaytadan login qiling.",
+    'progress.errorLoading': 'Jarayon ma\'lumotlarini yuklashda xatolik',
+    'progress.completed': 'Tugallangan',
+    'progress.completedDesc': "100% tugatgan o'quvchilar",
+    'progress.currentlyLearning': "Hozirda o'qiyotganlar",
+    'progress.currentlyLearningDesc': '● Jarayonda',
+    'progress.totalStudents': "Jami o'quvchilar",
+    'progress.totalStudentsDesc': 'Barcha kurslar',
+    'progress.searchPlaceholder': "O'quvchi qidirish (ism, familya, ID)...",
+    'progress.allCourses': 'Barcha kurslar',
+    'progress.mostActiveStudents': "Eng faol o'quvchilar",
+    'progress.studentsList': "O'quvchilar ro'yxati",
+    'progress.progressLabel': 'Jarayon',
+    'progress.courseName': 'Kurs nomi',
+    'progress.completed': 'Bajarilgan',
   },
   
   ru: {
@@ -1275,6 +1313,25 @@ const translations = {
     'studentsAnalytics.noStudentsDesc': 'Студенты, которые зарегистрируются через вашу целевую страницу, появятся здесь',
     'studentsAnalytics.errorLoading': 'Ошибка загрузки студентов',
     'studentsAnalytics.failedToLoad': 'Не удалось загрузить данные студентов',
+
+    // Progress Analytics
+    'progress.title': 'Прогресс',
+    'progress.loading': 'Загрузка...',
+    'progress.teacherNotFound': 'ID учителя не найден. Пожалуйста, войдите снова.',
+    'progress.errorLoading': 'Ошибка загрузки данных прогресса',
+    'progress.completed': 'Завершено',
+    'progress.completedDesc': '100% завершивших студентов',
+    'progress.currentlyLearning': 'Сейчас изучают',
+    'progress.currentlyLearningDesc': '● В процессе',
+    'progress.totalStudents': 'Всего студентов',
+    'progress.totalStudentsDesc': 'Все курсы',
+    'progress.searchPlaceholder': 'Поиск студентов (имя, фамилия, ID)...',
+    'progress.allCourses': 'Все курсы',
+    'progress.mostActiveStudents': 'Самые активные студенты',
+    'progress.studentsList': 'Список студентов',
+    'progress.progressLabel': 'Прогресс',
+    'progress.courseName': 'Название курса',
+    'progress.completed': 'Завершено',
   }
 };
 

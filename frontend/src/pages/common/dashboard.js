@@ -9049,8 +9049,8 @@ window.openProgress = async function() {
   
   if (contentArea) {
     updatePageTitle(t('pages.progress'));
-    contentArea.innerHTML = '<div style="padding: 40px; text-align: center; color: #9CA3AF;">Loading...</div>';
-    updateActiveMenuItem('Progress');
+    contentArea.innerHTML = `<div style="padding: 40px; text-align: center; color: #9CA3AF;">${t('progress.loading')}</div>`;
+    updateActiveMenuItem(t('progress.title'));
     
     // Load real data
     await loadProgressData();
@@ -9078,7 +9078,7 @@ async function loadProgressData() {
     if (!teacherId) {
       console.error('Teacher ID not found');
       const contentArea = document.querySelector('.figma-content-area');
-      contentArea.innerHTML = '<div style="padding: 40px; text-align: center; color: #EF4444;">Teacher ID not found. Please login again.</div>';
+      contentArea.innerHTML = `<div style="padding: 40px; text-align: center; color: #EF4444;">${t('progress.teacherNotFound')}</div>`;
       return;
     }
     
@@ -9148,7 +9148,7 @@ async function loadProgressData() {
   } catch (error) {
     console.error('Error loading progress data:', error);
     const contentArea = document.querySelector('.figma-content-area');
-    contentArea.innerHTML = '<div style="padding: 40px; text-align: center; color: #EF4444;">Error loading progress data</div>';
+    contentArea.innerHTML = `<div style="padding: 40px; text-align: center; color: #EF4444;">${t('progress.errorLoading')}</div>`;
   }
 }
 
@@ -9661,32 +9661,32 @@ function getProgressHTML(courses = [], studentsData = []) {
 
       <div class="progress-stats-grid">
         <div class="progress-stat-card">
-          <div class="progress-stat-title">Tugallangan</div>
+          <div class="progress-stat-title">${t('progress.completed')}</div>
           <div class="progress-stat-value">${totalCompleted}</div>
-          <div class="progress-stat-subtitle">100% tugatgan o'quvchilar</div>
+          <div class="progress-stat-subtitle">${t('progress.completedDesc')}</div>
         </div>
         <div class="progress-stat-card">
-          <div class="progress-stat-title">Hozirda o'qiyotganlar</div>
+          <div class="progress-stat-title">${t('progress.currentlyLearning')}</div>
           <div class="progress-stat-value">${currentlyLearning}</div>
-          <div class="progress-stat-subtitle">● Jarayonda</div>
+          <div class="progress-stat-subtitle">${t('progress.currentlyLearningDesc')}</div>
         </div>
         <div class="progress-stat-card">
-          <div class="progress-stat-title">Jami o'quvchilar</div>
+          <div class="progress-stat-title">${t('progress.totalStudents')}</div>
           <div class="progress-stat-value">${allStudents.length}</div>
-          <div class="progress-stat-subtitle">Barcha kurslar</div>
+          <div class="progress-stat-subtitle">${t('progress.totalStudentsDesc')}</div>
         </div>
       </div>
 
       <!-- Search Section -->
       <div class="search-section">
         <div class="search-container">
-          <input type="text" id="studentSearchInput" placeholder="O'quvchi qidirish (ism, familya, ID)..." class="search-input">
+          <input type="text" id="studentSearchInput" placeholder="${t('progress.searchPlaceholder')}" class="search-input">
         </div>
       </div>
 
       <div class="course-filters">
-        <button class="filter-btn active" data-course-id="all">Barcha kurslar (${courses.length})</button>
-        <button class="filter-btn" data-course-id="active">Eng faol o'quvchilar</button>
+        <button class="filter-btn active" data-course-id="all">${t('progress.allCourses')} (${courses.length})</button>
+        <button class="filter-btn" data-course-id="active">${t('progress.mostActiveStudents')}</button>
         ${courses.map(course => `
           <button class="filter-btn" data-course-id="${course._id}">${course.title}</button>
         `).join('')}
@@ -9694,7 +9694,7 @@ function getProgressHTML(courses = [], studentsData = []) {
 
       <!-- Student Progress Overview -->
       <div class="students-progress-section">
-        <h3 class="section-header">O'quvchilar ro'yxati</h3>
+        <h3 class="section-header">${t('progress.studentsList')}</h3>
         
         ${allStudents.map((student, index) => {
           const firstName = student.studentInfo?.firstName || 'Student';
@@ -9723,15 +9723,15 @@ function getProgressHTML(courses = [], studentsData = []) {
           
           <div class="progress-stats-row">
             <div class="stat-item">
-              <div class="stat-label">Jarayon</div>
+              <div class="stat-label">${t('progress.progressLabel')}</div>
               <div class="stat-value">${progressPercent}%</div>
             </div>
             <div class="stat-item">
-              <div class="stat-label">Kurs nomi</div>
+              <div class="stat-label">${t('progress.courseName')}</div>
               <div class="stat-value">${student.courseName}</div>
             </div>
             <div class="stat-item">
-              <div class="stat-label">Bajarilgan</div>
+              <div class="stat-label">${t('progress.completed')}</div>
               <div class="stat-value">${completedLessons} ta</div>
             </div>
           </div>
