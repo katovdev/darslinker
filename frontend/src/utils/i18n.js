@@ -143,6 +143,31 @@ const translations = {
     'common.cancel': 'Cancel',
     'common.comingSoon': 'Coming soon!',
     'common.fillRequiredFields': 'Please fill in all required fields',
+
+    // Notifications
+    'notifications.title': 'Notifications',
+    'notifications.loading': 'Loading notifications...',
+    'notifications.back': '← Back',
+    'notifications.unreadCount': '{count} unread notification{plural}',
+    'notifications.allCaughtUp': 'All caught up!',
+    'notifications.noNotificationsYet': 'No notifications yet',
+    'notifications.errorLoading': 'Error loading notifications',
+    'notifications.justNow': 'Just now',
+    'notifications.minuteAgo': '{count} minute{plural} ago',
+    'notifications.hourAgo': '{count} hour{plural} ago',
+    'notifications.dayAgo': '{count} day{plural} ago',
+
+    // Notification Messages
+    'notifications.assignmentGraded': 'Assignment Graded',
+    'notifications.assignmentGradedMessage': 'Your assignment has been graded',
+    'notifications.newAssignment': 'New Assignment',
+    'notifications.newAssignmentMessage': 'A new assignment has been posted',
+    'notifications.courseUpdate': 'Course Update',
+    'notifications.courseUpdateMessage': 'Course has been updated',
+    'notifications.newLesson': 'New Lesson',
+    'notifications.newLessonMessage': 'A new lesson has been added',
+    'notifications.certificateEarned': 'Certificate Earned',
+    'notifications.certificateEarnedMessage': 'You have earned a certificate',
     
     // Page Titles
     'pages.messages': 'Messages',
@@ -644,6 +669,19 @@ const translations = {
     'common.cancel': 'Bekor qilish',
     'common.comingSoon': 'Tez orada!',
     'common.fillRequiredFields': 'Iltimos, barcha majburiy maydonlarni to\'ldiring',
+
+    // Notifications
+    'notifications.title': 'Bildirishnomalar',
+    'notifications.loading': 'Bildirishnomalar yuklanmoqda...',
+    'notifications.back': '← Orqaga',
+    'notifications.unreadCount': '{count} o\'qilmagan bildirishnoma{plural}',
+    'notifications.allCaughtUp': 'Hammasi o\'qildi!',
+    'notifications.noNotificationsYet': 'Hali bildirishnomalar yo\'q',
+    'notifications.errorLoading': 'Bildirishnomalarni yuklashda xatolik',
+    'notifications.justNow': 'Hozirgina',
+    'notifications.minuteAgo': '{count} daqiqa{plural} oldin',
+    'notifications.hourAgo': '{count} soat{plural} oldin',
+    'notifications.dayAgo': '{count} kun{plural} oldin',
     
     // Page Titles
     'pages.messages': 'Xabarlar',
@@ -1145,6 +1183,19 @@ const translations = {
     'common.cancel': 'Отмена',
     'common.comingSoon': 'Скоро!',
     'common.fillRequiredFields': 'Пожалуйста, заполните все обязательные поля',
+
+    // Notifications
+    'notifications.title': 'Уведомления',
+    'notifications.loading': 'Загрузка уведомлений...',
+    'notifications.back': '← Назад',
+    'notifications.unreadCount': '{count} непрочитанн{plural} уведомлени{plural2}',
+    'notifications.allCaughtUp': 'Все прочитано!',
+    'notifications.noNotificationsYet': 'Пока нет уведомлений',
+    'notifications.errorLoading': 'Ошибка загрузки уведомлений',
+    'notifications.justNow': 'Только что',
+    'notifications.minuteAgo': '{count} минут{plural} назад',
+    'notifications.hourAgo': '{count} час{plural} назад',
+    'notifications.dayAgo': '{count} д{plural} назад',
     
     // Page Titles
     'pages.messages': 'Сообщения',
@@ -1481,7 +1532,7 @@ const translations = {
 
 // Get current language from localStorage or default to 'en'
 export function getCurrentLanguage() {
-  return localStorage.getItem('appLanguage') || 'en';
+  return localStorage.getItem('appLanguage') || localStorage.getItem('language') || 'en';
 }
 
 // Set language
@@ -1489,6 +1540,26 @@ export function setLanguage(lang) {
   localStorage.setItem('appLanguage', lang);
   // Trigger custom event for language change
   window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
+}
+
+// Helper function to handle plurals for different languages
+function getPluralForm(lang, count, singularKey = '', pluralKey = '') {
+  if (lang === 'en') {
+    return count === 1 ? '' : 's';
+  } else if (lang === 'uz') {
+    // Uzbek doesn't change word endings for plurals
+    return '';
+  } else if (lang === 'ru') {
+    // Russian has complex plural rules
+    if (count % 10 === 1 && count % 100 !== 11) {
+      return '';
+    } else if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) {
+      return 'ы';
+    } else {
+      return '';
+    }
+  }
+  return '';
 }
 
 // Get translation
@@ -1500,7 +1571,14 @@ export function t(key, params = {}) {
   if (params && typeof translation === 'string') {
     Object.keys(params).forEach(param => {
       const placeholder = `{${param}}`;
-      translation = translation.replace(new RegExp(placeholder, 'g'), params[param]);
+
+      // Handle special plural cases
+      if (param === 'plural' && params.count !== undefined) {
+        const pluralForm = getPluralForm(lang, params.count);
+        translation = translation.replace(new RegExp(placeholder, 'g'), pluralForm);
+      } else {
+        translation = translation.replace(new RegExp(placeholder, 'g'), params[param]);
+      }
     });
   }
 

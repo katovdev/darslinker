@@ -1663,7 +1663,7 @@ window.openStudentNotifications = async function() {
   }
   
   const content = document.querySelector('.landing-dashboard-content');
-  content.innerHTML = '<div style="padding: 40px; text-align: center; color: #7ea2d4; font-size: 18px;">Loading notifications...</div>';
+  content.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--primary-color); font-size: 18px;">${t('notifications.loading')}</div>`;
   
   try {
     const response = await fetch('http://localhost:8001/api/notifications/user/' + userId + '?userType=Student');
@@ -1672,7 +1672,7 @@ window.openStudentNotifications = async function() {
     if (data.success) {
       const notifs = data.notifications || [];
       const unreadCount = notifs.filter(n => !n.read).length;
-      
+
       let notificationCards = '';
       if (notifs.length > 0) {
         notificationCards = notifs.map(n => {
@@ -1683,14 +1683,23 @@ window.openStudentNotifications = async function() {
           const diffMins = Math.floor(diffMs / 60000);
           const diffHours = Math.floor(diffMs / 3600000);
           const diffDays = Math.floor(diffMs / 86400000);
-          
-          let timeAgo = 'Just now';
+
+          let timeAgo = t('notifications.justNow');
           if (diffMins >= 1 && diffMins < 60) {
-            timeAgo = diffMins + ' minute' + (diffMins > 1 ? 's' : '') + ' ago';
+            timeAgo = t('notifications.minuteAgo', {
+              count: diffMins,
+              plural: diffMins > 1 ? 's' : ''
+            });
           } else if (diffHours >= 1 && diffHours < 24) {
-            timeAgo = diffHours + ' hour' + (diffHours > 1 ? 's' : '') + ' ago';
+            timeAgo = t('notifications.hourAgo', {
+              count: diffHours,
+              plural: diffHours > 1 ? 's' : ''
+            });
           } else if (diffDays >= 1) {
-            timeAgo = diffDays + ' day' + (diffDays > 1 ? 's' : '') + ' ago';
+            timeAgo = t('notifications.dayAgo', {
+              count: diffDays,
+              plural: diffDays > 1 ? 's' : ''
+            });
           }
           
           return `
@@ -1716,22 +1725,31 @@ window.openStudentNotifications = async function() {
         }).join('');
       }
       
+      // Format unread count text
+      let unreadText = t('notifications.allCaughtUp');
+      if (unreadCount > 0) {
+        unreadText = t('notifications.unreadCount', {
+          count: unreadCount,
+          plural: unreadCount > 1 ? 's' : ''
+        });
+      }
+
       content.innerHTML = `
         <div style="padding: 30px; max-width: 1200px; margin: 0 auto; width: 100%;">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
             <div>
-              <h2 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">Notifications</h2>
+              <h2 style="color: white; margin: 0; font-size: 28px; font-weight: 700;">${t('notifications.title')}</h2>
               <p style="color: rgba(255,255,255,0.7); margin: 5px 0 0 0; font-size: 14px;">
-                ${unreadCount > 0 ? unreadCount + ' unread notification' + (unreadCount > 1 ? 's' : '') : 'All caught up!'}
+                ${unreadText}
               </p>
             </div>
-            <button onclick="location.reload()" style="background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">← Back</button>
+            <button onclick="location.reload()" style="background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">${t('notifications.back')}</button>
           </div>
-          ${notifs.length === 0 ? 
+          ${notifs.length === 0 ?
             `<div style="text-align: center; padding: 80px 20px; color: rgba(255,255,255,0.5);">
               <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;">🔔</div>
-              <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.7);">No notifications yet</div>
-            </div>` : 
+              <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.7);">${t('notifications.noNotificationsYet')}</div>
+            </div>` :
             `<div style="display: flex; flex-direction: column; gap: 15px;">${notificationCards}</div>`
           }
         </div>
@@ -1740,7 +1758,7 @@ window.openStudentNotifications = async function() {
       document.getElementById('notification-badge').style.display = 'none';
     }
   } catch (e) {
-    content.innerHTML = '<div style="padding: 40px; text-align: center; color: #EF4444;">Error loading notifications</div>';
+    content.innerHTML = `<div style="padding: 40px; text-align: center; color: #EF4444;">${t('notifications.errorLoading')}</div>`;
   }
 };
 
