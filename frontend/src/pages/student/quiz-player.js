@@ -1,3 +1,6 @@
+// Import i18n functions
+import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
+
 // Quiz player with 3 states: start, active, results
 let quizState = {
   state: 'start', // start, active, results
@@ -14,6 +17,9 @@ let quizState = {
 
 // DEPRECATED: Use renderQuizContent instead
 export async function loadQuizPlayer(course, lesson, sidebarHtml) {
+  // Initialize i18n
+  initI18n();
+  
   const mainContent = document.querySelector('.course-learning-page');
   if (!mainContent) return;
   
@@ -78,6 +84,9 @@ export async function loadQuizPlayer(course, lesson, sidebarHtml) {
   }
   
   renderQuizPage(course, lesson, sidebarHtml);
+  
+  // Add language change listener
+  addLanguageChangeListener();
 }
 
 // These functions are no longer needed - we use backend data
@@ -277,26 +286,26 @@ function renderQuizStart(mainContent, course, lesson, sidebarHtml, shouldUpdateO
           
           <div class="quiz-start-meta">
             <div class="quiz-meta-item">
-              <div class="quiz-meta-label">Savollar soni</div>
+              <div class="quiz-meta-label">${t('quiz.questionsCount')}</div>
               <div class="quiz-meta-value">${(lesson.questions || []).length}</div>
             </div>
             <div class="quiz-meta-item">
-              <div class="quiz-meta-label">Urinishlar</div>
+              <div class="quiz-meta-label">${t('quiz.attempts')}</div>
               <div class="quiz-meta-value" style="color: ${quizState.currentAttempt > quizState.maxAttempts ? '#EF4444' : 'var(--primary-color)'}">${quizState.currentAttempt > quizState.maxAttempts ? quizState.maxAttempts : quizState.currentAttempt}/${quizState.maxAttempts}</div>
             </div>
             <div class="quiz-meta-item">
-              <div class="quiz-meta-label">Timer</div>
-              <div class="quiz-meta-value">${lesson.timeLimit || 30} min</div>
+              <div class="quiz-meta-label">${t('quiz.timer')}</div>
+              <div class="quiz-meta-value">${lesson.timeLimit || 30} ${t('quiz.minutes')}</div>
             </div>
           </div>
           
           ${quizState.currentAttempt > quizState.maxAttempts ? `
             <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 12px; padding: 16px; margin-bottom: 24px;">
-              <p style="color: #EF4444; margin: 0; font-size: 14px;">⚠️ Siz barcha urinishlardan foydalandingiz (3/3)</p>
+              <p style="color: #EF4444; margin: 0; font-size: 14px;">${t('quiz.allAttemptsUsed')}</p>
             </div>
-            <button class="quiz-start-btn" disabled style="opacity: 0.5; cursor: not-allowed;">Urinishlar tugadi</button>
+            <button class="quiz-start-btn" disabled style="opacity: 0.5; cursor: not-allowed;">${t('quiz.attemptsFinished')}</button>
           ` : `
-            <button class="quiz-start-btn" onclick="startQuiz()">Boshlash</button>
+            <button class="quiz-start-btn" onclick="startQuiz()">${t('quiz.start')}</button>
           `}
         </div>
       </div>
@@ -318,20 +327,20 @@ function updateQuizStartContent(layout, lesson) {
       
       <div class="quiz-start-meta">
         <div class="quiz-meta-item">
-          <div class="quiz-meta-label">Savollar soni</div>
+          <div class="quiz-meta-label">${t('quiz.questionsCount')}</div>
           <div class="quiz-meta-value">${(lesson.questions || []).length}</div>
         </div>
         <div class="quiz-meta-item">
-          <div class="quiz-meta-label">Urinishlar</div>
+          <div class="quiz-meta-label">${t('quiz.attempts')}</div>
           <div class="quiz-meta-value">${quizState.currentAttempt}/${quizState.maxAttempts}</div>
         </div>
         <div class="quiz-meta-item">
-          <div class="quiz-meta-label">Timer</div>
-          <div class="quiz-meta-value">${lesson.timeLimit || 30} min</div>
+          <div class="quiz-meta-label">${t('quiz.timer')}</div>
+          <div class="quiz-meta-value">${lesson.timeLimit || 30} ${t('quiz.minutes')}</div>
         </div>
       </div>
       
-      <button class="quiz-start-btn" onclick="startQuiz()">Boshlash</button>
+      <button class="quiz-start-btn" onclick="startQuiz()">${t('quiz.start')}</button>
     </div>
   `;
   
@@ -424,7 +433,7 @@ function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions, 
       
       <div class="quiz-content">
         <div class="quiz-results-container">
-          <h1 class="results-title">Test natijalari</h1>
+          <h1 class="results-title">${t('quiz.results')}</h1>
           
           <div style="background: ${passed ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)'}; border: 1px solid ${passed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}; border-radius: 12px; padding: 20px; margin-bottom: 24px; display: flex; align-items: center; gap: 16px;">
             <div style="flex-shrink: 0;">
@@ -443,11 +452,11 @@ function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions, 
             </div>
             <div style="flex: 1; text-align: left;">
               <p style="color: ${passed ? '#10B981' : '#EF4444'}; margin: 0; font-size: 18px; font-weight: 600;">
-                ${passed ? 'Tabriklaymiz! Siz testdan o\'tdingiz' : 'Siz testdan o\'ta olmadingiz'}
+                ${passed ? t('quiz.congratulations') : t('quiz.failed')}
               </p>
               ${!passed ? `
                 <p style="color: #9CA3AF; margin: 4px 0 0 0; font-size: 14px;">
-                  O'tish uchun kamida 70% ball kerak
+                  ${t('quiz.passRequirement')}
                 </p>
               ` : ''}
             </div>
@@ -455,11 +464,11 @@ function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions, 
           
           <div class="results-stats">
             <div class="result-stat-card">
-              <div class="result-stat-label">Natijangiz</div>
+              <div class="result-stat-label">${t('quiz.yourResult')}</div>
               <div class="result-stat-value" style="color: ${percentage >= 70 ? '#10B981' : '#EF4444'}">${percentage}%</div>
             </div>
             <div class="result-stat-card">
-              <div class="result-stat-label">To'g'ri javoblar</div>
+              <div class="result-stat-label">${t('quiz.correctAnswers')}</div>
               <div class="result-stat-value">${correctAnswers}/${totalQuestions}</div>
             </div>
           </div>
@@ -469,14 +478,14 @@ function renderQuizResults(mainContent, course, lesson, sidebarHtml, questions, 
               class="quiz-btn quiz-btn-primary" 
               onclick="if(window.markCompleteAndGoNext && window.currentCourse && window.currentLesson) { window.markCompleteAndGoNext(window.currentCourse._id, window.currentLesson._id); }" 
               style="background: var(--primary-color);">
-              Keyingi dars →
+              ${t('quiz.nextLesson')}
             </button>
             <button 
               class="quiz-btn quiz-btn-secondary" 
               onclick="retryQuiz()" 
               ${quizState.currentAttempt >= quizState.maxAttempts ? 'disabled' : ''}
               style="background: rgba(58, 56, 56, 0.5); border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);">
-              Qayta urinish (${quizState.currentAttempt}/${quizState.maxAttempts})
+              ${t('quiz.retryAttempt').replace('{current}', quizState.currentAttempt).replace('{max}', quizState.maxAttempts)}
             </button>
           </div>
         </div>
@@ -1063,7 +1072,7 @@ function renderQuizQuestions(questions) {
   const q = questions[currentIndex];
   const totalQuestions = questions.length;
   
-  if (!q) return '<p style="color: #9CA3AF;">No questions available</p>';
+  if (!q) return `<p style="color: #9CA3AF;">${t('quiz.noQuestionsAvailable')}</p>`;
   
   // Check if this question was already answered
   const selectedAnswer = quizState.answers[currentIndex];
@@ -1071,7 +1080,7 @@ function renderQuizQuestions(questions) {
   return `
     <div class="quiz-question-container">
       <div class="question-progress">
-        <span class="progress-text">Savol ${currentIndex + 1} / ${totalQuestions}</span>
+        <span class="progress-text">${t('quiz.question')} ${currentIndex + 1} / ${totalQuestions}</span>
         <div class="progress-bar">
           <div class="progress-fill" style="width: ${((currentIndex + 1) / totalQuestions) * 100}%"></div>
         </div>
@@ -1102,18 +1111,18 @@ function renderQuizQuestions(questions) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 18l-6-6 6-6"/>
           </svg>
-          Oldingi
+          ${t('quiz.previous')}
         </button>
         
         ${currentIndex < totalQuestions - 1 
           ? `<button class="nav-btn nav-btn-next" onclick="nextQuestion()">
-               Keyingi
+               ${t('quiz.next')}
                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                  <path d="M9 18l6-6-6-6"/>
                </svg>
              </button>`
           : `<button class="nav-btn nav-btn-finish" onclick="finishQuiz()">
-               Tugatish
+               ${t('quiz.finish')}
              </button>`
         }
       </div>
@@ -1217,7 +1226,7 @@ function startQuizTimer() {
     // Auto-finish when time runs out
     if (quizState.timeRemaining <= 0) {
       clearInterval(quizState.timerInterval);
-      showToast('Vaqt tugadi! Quiz avtomatik tugatildi.');
+      showToast(t('quiz.timeUp'));
       setTimeout(() => {
         window.finishQuiz();
       }, 1000);
@@ -1371,12 +1380,12 @@ function attachQuizEventListeners(course, lesson, sidebarHtml) {
   // Header buttons
   const meetingBtn = document.querySelector('.meeting-btn');
   if (meetingBtn) {
-    meetingBtn.addEventListener('click', () => showToast('Coming soon'));
+    meetingBtn.addEventListener('click', () => showToast(t('courseLearning.comingSoon')));
   }
   
   const notificationBtn = document.querySelector('.notification-btn');
   if (notificationBtn) {
-    notificationBtn.addEventListener('click', () => showToast('Coming soon'));
+    notificationBtn.addEventListener('click', () => showToast(t('courseLearning.comingSoon')));
   }
   
   const logoutBtn = document.querySelector('.logout-btn');
@@ -1425,12 +1434,37 @@ function showToast(message) {
 // Handle logout
 function handleLogout() {
   sessionStorage.clear();
-  showToast('Logging out...');
+  showToast(t('courseLearning.loggingOut'));
   setTimeout(() => window.location.href = '/', 1000);
+}
+
+// Add language change listener for retranslation
+function addLanguageChangeListener() {
+  window.addEventListener('languageChanged', () => {
+    // Re-render current quiz state with new language
+    if (window.currentCourse && window.currentLesson) {
+      const course = window.currentCourse;
+      const lesson = window.currentLesson;
+      const sidebarHtml = window.currentSidebarHtml || '';
+      
+      // Check if we're in unified mode or full page mode
+      const contentArea = document.querySelector('.lesson-player-content');
+      if (contentArea) {
+        // Unified mode - re-render content only
+        renderQuizContentState(contentArea, course, lesson);
+      } else {
+        // Full page mode - re-render entire page
+        renderQuizPage(course, lesson, sidebarHtml);
+      }
+    }
+  });
 }
 
 // NEW: Content-only rendering for unified player
 export async function renderQuizContent(contentArea, course, lesson) {
+  // Initialize i18n
+  initI18n();
+  
   console.log('📝 Rendering quiz content only:', lesson.title);
 
   // Store global references for quiz functionality
@@ -1500,6 +1534,9 @@ export async function renderQuizContent(contentArea, course, lesson) {
 
   // Render the appropriate quiz state
   renderQuizContentState(contentArea, course, lesson);
+  
+  // Add language change listener
+  addLanguageChangeListener();
 }
 
 // Render quiz content based on current state
@@ -1618,26 +1655,26 @@ function renderQuizStartContent(contentArea, lesson) {
 
         <div class="quiz-start-meta">
           <div class="quiz-meta-item">
-            <div class="quiz-meta-label">Savollar soni</div>
+            <div class="quiz-meta-label">${t('quiz.questionsCount')}</div>
             <div class="quiz-meta-value">${(lesson.questions || []).length}</div>
           </div>
           <div class="quiz-meta-item">
-            <div class="quiz-meta-label">Urinishlar</div>
+            <div class="quiz-meta-label">${t('quiz.attempts')}</div>
             <div class="quiz-meta-value" style="color: ${quizState.currentAttempt > quizState.maxAttempts ? '#EF4444' : 'var(--primary-color)'}">${quizState.currentAttempt > quizState.maxAttempts ? quizState.maxAttempts : quizState.currentAttempt}/${quizState.maxAttempts}</div>
           </div>
           <div class="quiz-meta-item">
-            <div class="quiz-meta-label">Timer</div>
-            <div class="quiz-meta-value">${lesson.timeLimit || 30} min</div>
+            <div class="quiz-meta-label">${t('quiz.timer')}</div>
+            <div class="quiz-meta-value">${lesson.timeLimit || 30} ${t('quiz.minutes')}</div>
           </div>
         </div>
 
         ${quizState.currentAttempt > quizState.maxAttempts ? `
           <div class="quiz-warning">
-            ⚠️ Siz barcha urinishlardan foydalandingiz (3/3)
+            ${t('quiz.allAttemptsUsed')}
           </div>
-          <button class="quiz-start-btn" disabled>Urinishlar tugadi</button>
+          <button class="quiz-start-btn" disabled>${t('quiz.attemptsFinished')}</button>
         ` : `
-          <button class="quiz-start-btn" onclick="startQuiz()">Boshlash</button>
+          <button class="quiz-start-btn" onclick="startQuiz()">${t('quiz.start')}</button>
         `}
       </div>
     </div>
@@ -2021,7 +2058,7 @@ function renderQuizResultsContent(contentArea, lesson, questions) {
     </style>
 
     <div class="quiz-content-wrapper">
-      <h1 class="results-title">Test natijalari</h1>
+      <h1 class="results-title">${t('quiz.results')}</h1>
 
       <div class="results-message">
         <div class="results-icon">
@@ -2040,11 +2077,11 @@ function renderQuizResultsContent(contentArea, lesson, questions) {
         </div>
         <div>
           <p style="color: ${passed ? '#10B981' : '#EF4444'}; margin: 0; font-size: 18px; font-weight: 600;">
-            ${passed ? 'Tabriklaymiz! Siz testdan o\'tdingiz' : 'Siz testdan o\'ta olmadingiz'}
+            ${passed ? t('quiz.congratulations') : t('quiz.failed')}
           </p>
           ${!passed ? `
             <p style="color: #9CA3AF; margin: 4px 0 0 0; font-size: 14px;">
-              O'tish uchun kamida 70% ball kerak
+              ${t('quiz.passRequirement')}
             </p>
           ` : ''}
         </div>
@@ -2052,11 +2089,11 @@ function renderQuizResultsContent(contentArea, lesson, questions) {
 
       <div class="results-stats">
         <div class="result-stat-card">
-          <div class="result-stat-label">Natijangiz</div>
+          <div class="result-stat-label">${t('quiz.yourResult')}</div>
           <div class="result-stat-value" style="color: ${percentage >= 70 ? '#10B981' : '#EF4444'}">${percentage}%</div>
         </div>
         <div class="result-stat-card">
-          <div class="result-stat-label">To'g'ri javoblar</div>
+          <div class="result-stat-label">${t('quiz.correctAnswers')}</div>
           <div class="result-stat-value">${correctAnswers}/${totalQuestions}</div>
         </div>
       </div>
@@ -2066,14 +2103,14 @@ function renderQuizResultsContent(contentArea, lesson, questions) {
           class="quiz-btn quiz-btn-primary"
           onclick="if(window.markCompleteAndGoNext && window.currentCourse && window.currentLesson) { window.markCompleteAndGoNext(window.currentCourse._id, window.currentLesson._id); }"
           style="background: var(--primary-color);">
-          Keyingi dars →
+          ${t('quiz.nextLesson')}
         </button>
         <button
           class="quiz-btn quiz-btn-secondary"
           onclick="retryQuiz()"
           ${quizState.currentAttempt >= quizState.maxAttempts ? 'disabled' : ''}
           style="background: rgba(58, 56, 56, 0.5); border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);">
-          Qayta urinish (${quizState.currentAttempt}/${quizState.maxAttempts})
+          ${t('quiz.retryAttempt').replace('{current}', quizState.currentAttempt).replace('{max}', quizState.maxAttempts)}
         </button>
       </div>
     </div>
