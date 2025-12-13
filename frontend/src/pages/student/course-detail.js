@@ -1,7 +1,12 @@
 import { router } from '../../utils/router.js';
 
 // Initialize course detail page
+// Import i18n functions
+import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
+
 export async function initCourseDetailPage(courseId) {
+  // Initialize i18n
+  await initI18n();
   console.log('📚 Loading course detail for:', courseId);
   
   // Fetch course data
@@ -913,10 +918,10 @@ function renderCourseDetailPage(data) {
             <div class="course-detail-header-actions">
               <div class="course-detail-auth-buttons">
                 <a href="#" class="course-detail-btn course-detail-btn-login" onclick="openLoginModal(event)">
-                  Kirish
+                  ${t('courseDetail.login')}
                 </a>
                 <a href="#" class="course-detail-btn course-detail-btn-register" onclick="openRegistrationModal(event)">
-                  Ro'yxatdan o'tish
+                  ${t('courseDetail.register')}
                 </a>
               </div>
             </div>
@@ -931,7 +936,7 @@ function renderCourseDetailPage(data) {
             <h1>${course.title || 'Course Title'}</h1>
             <p>${course.description || 'Kurs haqida ma\'lumot...'}</p>
             <button class="course-detail-start-btn" onclick="openLoginModal()">
-              Boshlash
+              ${t('courseDetail.start')}
             </button>
           </div>
           <div class="course-detail-hero-right">
@@ -994,7 +999,7 @@ function renderCourseDetailPage(data) {
 
         <!-- Modules -->
         <div class="course-detail-modules">
-          <h2 class="course-detail-section-title">Kurs tarkibi</h2>
+          <h2 class="course-detail-section-title">${t('courseDetail.courseContent')}</h2>
           ${course.modules && course.modules.length > 0 
             ? (() => {
                 // Find first video lesson across all modules
@@ -1018,7 +1023,7 @@ function renderCourseDetailPage(data) {
                   <div class="course-detail-module">
                     <div class="course-detail-module-header" onclick="toggleModule(${index})">
                       <div class="course-detail-module-title">
-                        ${String(index + 1).padStart(2, '0')} ${module.title || `Module ${index + 1}`}
+                        ${String(index + 1).padStart(2, '0')} ${module.title || `${t('courseDetail.module')} ${index + 1}`}
                       </div>
                       <div class="course-detail-module-arrow" id="module-arrow-${index}">▶</div>
                     </div>
@@ -1046,24 +1051,24 @@ function renderCourseDetailPage(data) {
                                          </svg>
                                        </button>`
                                     : lesson.type === 'video'
-                                    ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">Ko'rish</button>`
+                                    ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">${t('courseDetail.view')}</button>`
                                     : lesson.type === 'quiz'
-                                    ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">Boshlash</button>`
+                                    ? `<button class="course-detail-view-btn" onclick="viewLesson('${lesson._id || ''}', '${lesson.type}')">${t('courseDetail.startQuiz')}</button>`
                                     : lesson.type === 'assignment'
-                                    ? `<button class="course-detail-view-btn" onclick="viewAssignment('${lesson._id || ''}', '${lesson.assignmentFile || ''}')">Ko'rish</button>`
+                                    ? `<button class="course-detail-view-btn" onclick="viewAssignment('${lesson._id || ''}', '${lesson.assignmentFile || ''}')}">${t('courseDetail.view')}</button>`
                                     : ''
                                   }
                                 </div>
                               </div>
                             `;
                           }).join('')
-                        : '<div class="course-detail-lesson">No lessons yet</div>'
+                        : `<div class="course-detail-lesson">${t('courseDetail.noLessons')}</div>`
                       }
                     </div>
                   </div>
                 `).join('');
               })()
-            : '<p style="color: #9CA3AF; text-align: center;">No modules available</p>'
+            : `<p style="color: #9CA3AF; text-align: center;">${t('courseDetail.noModules')}</p>`
           }
         </div>
       </section>
@@ -1221,7 +1226,7 @@ function openVideoModal(lesson) {
       lessonsListHtml += `
         <div class="video-modal-module">
           <div class="video-modal-module-header" onclick="toggleVideoModalModule(${moduleIndex})">
-            <span class="video-modal-module-title">${module.title || `Module ${moduleIndex + 1}`}</span>
+            <span class="video-modal-module-title">${module.title || `${t('courseDetail.module')} ${moduleIndex + 1}`}</span>
             <span class="video-modal-module-arrow" id="video-modal-arrow-${moduleIndex}">▼</span>
           </div>
           <div class="video-modal-module-lessons" id="video-modal-lessons-${moduleIndex}">
@@ -1233,12 +1238,12 @@ function openVideoModal(lesson) {
                       ${l.type === 'video' ? '▶' : l.type === 'quiz' ? '📝' : '📄'}
                     </div>
                     <div class="video-modal-lesson-info">
-                      <div class="video-modal-lesson-title">${l.title || `Lesson ${lessonIndex + 1}`}</div>
+                      <div class="video-modal-lesson-title">${l.title || `${t('courseDetail.lesson')} ${lessonIndex + 1}`}</div>
                       ${l.duration ? `<div class="video-modal-lesson-duration">${l.duration}</div>` : ''}
                     </div>
                   </div>
                 `).join('')
-              : '<div class="video-modal-no-lessons">No lessons</div>'
+              : `<div class="video-modal-no-lessons">${t('courseDetail.noLessonsInModal')}</div>`
             }
           </div>
         </div>

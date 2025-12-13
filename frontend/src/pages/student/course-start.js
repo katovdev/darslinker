@@ -1,5 +1,10 @@
+// Import i18n functions
+import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
+
 // Course start page - Simple page with course info and start button
 export async function initCourseStartPage(courseId) {
+  // Initialize i18n
+  await initI18n();
   console.log('📚 Loading course start page for:', courseId);
   
   // Fetch course data
@@ -166,8 +171,8 @@ async function renderCourseStartPage(course) {
     <div class="course-start-container">
       <div class="course-start-header">
         <div class="course-nav">
-          <span class="course-nav-item">Kurs nomi</span>
-          <span class="course-nav-item" style="color: var(--primary-color); font-weight: 600;">Bepul</span>
+          <span class="course-nav-item">${t('courseStart.courseName')}</span>
+          <span class="course-nav-item" style="color: var(--primary-color); font-weight: 600;">${t('courseStart.free')}</span>
         </div>
       </div>
 
@@ -175,8 +180,8 @@ async function renderCourseStartPage(course) {
       <p class="course-instructor">${teacherName}</p>
 
       <div class="course-actions">
-        <button class="btn btn-cancel" onclick="goBack()">Bekor qilish</button>
-        <button class="btn btn-start" onclick="startCourse()">Darsni boshlash</button>
+        <button class="btn btn-cancel" onclick="goBack()">${t('courseStart.cancel')}</button>
+        <button class="btn btn-start" onclick="startCourse()">${t('courseStart.startLesson')}</button>
       </div>
     </div>
   `;
@@ -248,9 +253,9 @@ async function renderCourseStartPage(course) {
 function showErrorPage() {
   document.body.innerHTML = `
     <div style="text-align: center; padding: 60px 20px;">
-      <h1 style="color: #ef4444; margin-bottom: 16px;">Error</h1>
-      <p style="color: #666; margin-bottom: 24px;">Failed to load course</p>
-      <button onclick="window.history.back()" style="padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer;">Go Back</button>
+      <h1 style="color: #ef4444; margin-bottom: 16px;">${t('courseStart.error')}</h1>
+      <p style="color: #666; margin-bottom: 24px;">${t('courseStart.failedToLoad')}</p>
+      <button onclick="window.history.back()" style="padding: 12px 24px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer;">${t('courseStart.goBack')}</button>
     </div>
   `;
 }

@@ -144,6 +144,30 @@ const translations = {
     'common.comingSoon': 'Coming soon!',
     'common.fillRequiredFields': 'Please fill in all required fields',
 
+    // Course Start Page
+    'courseStart.courseName': 'Course Name',
+    'courseStart.free': 'Free',
+    'courseStart.cancel': 'Cancel',
+    'courseStart.startLesson': 'Start Lesson',
+    'courseStart.error': 'Error',
+    'courseStart.failedToLoad': 'Failed to load course',
+    'courseStart.goBack': 'Go Back',
+
+    // Course Detail Page
+    'courseDetail.login': 'Login',
+    'courseDetail.register': 'Register',
+    'courseDetail.start': 'Start',
+    'courseDetail.courseContent': 'Course Content',
+    'courseDetail.module': 'Module',
+    'courseDetail.noLessons': 'No lessons yet',
+    'courseDetail.noModules': 'No modules available',
+    'courseDetail.view': 'View',
+    'courseDetail.startQuiz': 'Start',
+    'courseDetail.locked': 'Locked',
+    'courseDetail.lesson': 'Lesson',
+    'courseDetail.noLessonsInModal': 'No lessons',
+    'courseDetail.close': 'Close',
+
     // Notifications
     'notifications.title': 'Notifications',
     'notifications.loading': 'Loading notifications...',
@@ -671,6 +695,30 @@ const translations = {
     'common.comingSoon': 'Tez orada!',
     'common.fillRequiredFields': 'Iltimos, barcha majburiy maydonlarni to\'ldiring',
 
+    // Course Start Page
+    'courseStart.courseName': 'Kurs nomi',
+    'courseStart.free': 'Bepul',
+    'courseStart.cancel': 'Bekor qilish',
+    'courseStart.startLesson': 'Darsni boshlash',
+    'courseStart.error': 'Xatolik',
+    'courseStart.failedToLoad': 'Kursni yuklashda xatolik',
+    'courseStart.goBack': 'Orqaga',
+
+    // Course Detail Page
+    'courseDetail.login': 'Kirish',
+    'courseDetail.register': 'Ro\'yxatdan o\'tish',
+    'courseDetail.start': 'Boshlash',
+    'courseDetail.courseContent': 'Kurs tarkibi',
+    'courseDetail.module': 'Modul',
+    'courseDetail.noLessons': 'Hali darslar yo\'q',
+    'courseDetail.noModules': 'Modullar mavjud emas',
+    'courseDetail.view': 'Ko\'rish',
+    'courseDetail.startQuiz': 'Boshlash',
+    'courseDetail.locked': 'Yopiq',
+    'courseDetail.lesson': 'Dars',
+    'courseDetail.noLessonsInModal': 'Darslar yo\'q',
+    'courseDetail.close': 'Yopish',
+
     // Notifications
     'notifications.title': 'Bildirishnomalar',
     'notifications.loading': 'Bildirishnomalar yuklanmoqda...',
@@ -1197,6 +1245,30 @@ const translations = {
     'common.cancel': 'Отмена',
     'common.comingSoon': 'Скоро!',
     'common.fillRequiredFields': 'Пожалуйста, заполните все обязательные поля',
+
+    // Course Start Page
+    'courseStart.courseName': 'Название курса',
+    'courseStart.free': 'Бесплатно',
+    'courseStart.cancel': 'Отмена',
+    'courseStart.startLesson': 'Начать урок',
+    'courseStart.error': 'Ошибка',
+    'courseStart.failedToLoad': 'Не удалось загрузить курс',
+    'courseStart.goBack': 'Назад',
+
+    // Course Detail Page
+    'courseDetail.login': 'Войти',
+    'courseDetail.register': 'Регистрация',
+    'courseDetail.start': 'Начать',
+    'courseDetail.courseContent': 'Содержание курса',
+    'courseDetail.module': 'Модуль',
+    'courseDetail.noLessons': 'Пока нет уроков',
+    'courseDetail.noModules': 'Модули недоступны',
+    'courseDetail.view': 'Просмотр',
+    'courseDetail.startQuiz': 'Начать',
+    'courseDetail.locked': 'Заблокировано',
+    'courseDetail.lesson': 'Урок',
+    'courseDetail.noLessonsInModal': 'Нет уроков',
+    'courseDetail.close': 'Закрыть',
 
     // Notifications
     'notifications.title': 'Уведомления',
