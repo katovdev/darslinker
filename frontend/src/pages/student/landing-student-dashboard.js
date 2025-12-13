@@ -1,5 +1,10 @@
 // Import i18n functions
 import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
+import { logger } from '../../utils/logger.js';
+import { safeSetInnerHTML, validateInput, escapeHtml } from '../../utils/security.js';
+import { showToast, showErrorToast, showSuccessToast, showWarningToast } from '../../utils/toast.js';
+import { errorHandler, ErrorTypes, ErrorSeverity } from '../../utils/errorHandler.js';
+import { showLoading, hideLoading } from '../../utils/loading.js';
 
 // Initialize function called from dashboard.jsana
 export async function initLandingStudentDashboard() {
@@ -15,7 +20,7 @@ export async function initLandingStudentDashboard() {
 
   // Add language change listener
   window.addEventListener('languageChanged', () => {
-    console.log('Language changed, re-rendering dashboard...');
+    logger.debug('Language changed, re-rendering dashboard...');
     setTimeout(() => {
       renderLandingStudentDashboard();
     }, 100);
@@ -63,11 +68,11 @@ async function loadTeacherTheme() {
     const teacherId = sessionStorage.getItem('currentTeacherId');
 
     if (!teacherId) {
-      console.log('⚠️ No teacher ID found, using default theme');
+      logger.warn('No teacher ID found, using default theme');
       return;
     }
 
-    console.log('🎨 Loading teacher theme early for:', teacherId);
+    logger.debug('Loading teacher theme early for:', teacherId);
 
     // Get API base URL from env
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
@@ -77,7 +82,7 @@ async function loadTeacherTheme() {
     const landingResult = await landingResponse.json();
 
     if (landingResult.success && landingResult.landing) {
-      console.log('✅ Teacher theme loaded early:', landingResult.landing);
+      logger.debug('Teacher theme loaded early:', landingResult.landing);
       // Store theme globally
       teacherTheme = {
         primaryColor: landingResult.landing.primaryColor || '#7ea2d4',
@@ -87,10 +92,10 @@ async function loadTeacherTheme() {
       };
       applyLandingTheme(landingResult.landing);
     } else {
-      console.log('⚠️ No landing settings found, using default theme');
+      logger.warn('No landing settings found, using default theme');
     }
   } catch (error) {
-    console.error('⚠️ Could not load teacher theme early:', error);
+    logger.error('Could not load teacher theme early:', error);
   }
 }
 
@@ -104,23 +109,26 @@ export function renderLandingStudentDashboard() {
   const landingUser = sessionStorage.getItem("landingUser");
   const userData = landingUser ? JSON.parse(landingUser) : {};
   
-  // Check if _id exists, if not, clear sessionStorage and redirect to login
+  // Check if _id exists, if not, show error and redirect
   if (!userData._id) {
-    console.error('❌ No _id found in sessionStorage.');
-    console.error('📦 Current sessionStorage:', {
+    logger.error('No user ID found in sessionStorage', {
       landingUser: sessionStorage.getItem('landingUser'),
       currentTeacherId: sessionStorage.getItem('currentTeacherId')
     });
-    
-    // Don't clear sessionStorage yet, just redirect to landing page
+
+    showErrorToast(t('errors.authenticationError'));
+
+    // Don't clear sessionStorage yet, just redirect to landing page after delay
     const teacherId = sessionStorage.getItem('currentTeacherId');
-    if (teacherId) {
-      console.log('🔄 Redirecting to landing page:', `/teacher/${teacherId}`);
-      window.location.href = `/teacher/${teacherId}`;
-    } else {
-      console.log('🔄 Redirecting to home page');
-      window.location.href = '/';
-    }
+    setTimeout(() => {
+      if (teacherId) {
+        logger.debug('Redirecting to landing page:', `/teacher/${teacherId}`);
+        window.location.href = `/teacher/${teacherId}`;
+      } else {
+        logger.debug('Redirecting to home page');
+        window.location.href = '/';
+      }
+    }, 2000);
     return;
   }
   
@@ -1082,7 +1090,7 @@ function attachEventListeners() {
   const supportBtn = document.querySelector('.landing-support-btn');
   if (supportBtn) {
     supportBtn.addEventListener('click', () => {
-      alert(t('common.comingSoon'));
+      showInfoToast(t('common.comingSoon'));
     });
   }
 
@@ -1421,10 +1429,12 @@ async function loadTeacherCourses() {
       // Update stats
       updateStats(result.courses);
     } else {
-      console.error('❌ Failed to load courses:', result.message || 'No courses found');
+      logger.error('Failed to load courses:', result.message || 'No courses found');
+      showErrorToast(t('dashboard.noCoursesAvailable'));
     }
   } catch (error) {
-    console.error('❌ Error loading courses:', error);
+    logger.error('Error loading courses:', error);
+    showErrorToast(t('errors.networkError'));
   }
 }
 
@@ -1665,8 +1675,9 @@ setTimeout(() => {
 window.openStudentNotifications = async function() {
   const userId = JSON.parse(sessionStorage.getItem('landingUser') || '{}')._id;
   if (!userId) { 
-    alert('No user found'); 
-    return; 
+    showErrorToast(t('errors.authenticationError'));
+    logger.error('No user found for notifications');
+    return;
   }
   
   const content = document.querySelector('.landing-dashboard-content');

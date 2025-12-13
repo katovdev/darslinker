@@ -143,6 +143,26 @@ const translations = {
     'common.cancel': 'Cancel',
     'common.comingSoon': 'Coming soon!',
     'common.fillRequiredFields': 'Please fill in all required fields',
+    'common.retry': 'Retry',
+    'common.loading': 'Loading...',
+    'common.saving': 'Saving...',
+    'common.close': 'Close',
+
+    // Error Messages
+    'errors.generalError': 'An error occurred. Please try again.',
+    'errors.networkError': 'Network connection failed. Please check your internet connection.',
+    'errors.offline': 'You are currently offline. Some features may not be available.',
+    'errors.authenticationError': 'Authentication failed. Please log in again.',
+    'errors.accessDenied': 'Access denied. You do not have permission for this action.',
+    'errors.validationError': 'Please check your input and try again.',
+    'errors.notFound': 'The requested resource was not found.',
+    'errors.serverError': 'Server error occurred. Our team has been notified.',
+    'errors.temporaryError': 'Temporary error. Please try again in a moment.',
+    'errors.criticalError': 'A critical error occurred. The page will reload automatically.',
+
+    // Network Messages
+    'network.backOnline': 'Connection restored. You are back online!',
+    'network.offline': 'No internet connection. Please check your network.',
 
     // Course Start Page
     'courseStart.courseName': 'Course Name',
@@ -804,6 +824,26 @@ const translations = {
     'common.cancel': 'Bekor qilish',
     'common.comingSoon': 'Tez orada!',
     'common.fillRequiredFields': 'Iltimos, barcha majburiy maydonlarni to\'ldiring',
+    'common.retry': 'Qayta urinish',
+    'common.loading': 'Yuklanmoqda...',
+    'common.saving': 'Saqlanmoqda...',
+    'common.close': 'Yopish',
+
+    // Error Messages
+    'errors.generalError': 'Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.',
+    'errors.networkError': 'Internet aloqasi uzildi. Internetingizni tekshiring.',
+    'errors.offline': 'Siz hozir offline holatdasiz. Ba\'zi funksiyalar ishlamasligi mumkin.',
+    'errors.authenticationError': 'Autentifikatsiya xatosi. Iltimos, qaytadan kiring.',
+    'errors.accessDenied': 'Ruxsat yo\'q. Bu amal uchun sizda huquq mavjud emas.',
+    'errors.validationError': 'Iltimos, ma\'lumotlaringizni tekshirib qayta urinib ko\'ring.',
+    'errors.notFound': 'So\'ralgan resurs topilmadi.',
+    'errors.serverError': 'Server xatosi yuz berdi. Jamoamizga xabar yuborildi.',
+    'errors.temporaryError': 'Vaqtinchalik xatolik. Iltimos, bir ozdan keyin urinib ko\'ring.',
+    'errors.criticalError': 'Jiddiy xatolik yuz berdi. Sahifa avtomatik yangilanadi.',
+
+    // Network Messages
+    'network.backOnline': 'Internet aloqasi tiklandi. Siz yana onlinesiz!',
+    'network.offline': 'Internet aloqasi yo\'q. Tarmoqni tekshiring.',
 
     // Course Start Page
     'courseStart.courseName': 'Kurs nomi',
@@ -1465,6 +1505,26 @@ const translations = {
     'common.cancel': 'Отмена',
     'common.comingSoon': 'Скоро!',
     'common.fillRequiredFields': 'Пожалуйста, заполните все обязательные поля',
+    'common.retry': 'Повторить',
+    'common.loading': 'Загрузка...',
+    'common.saving': 'Сохранение...',
+    'common.close': 'Закрыть',
+
+    // Error Messages
+    'errors.generalError': 'Произошла ошибка. Пожалуйста, попробуйте снова.',
+    'errors.networkError': 'Ошибка подключения к сети. Проверьте интернет-соединение.',
+    'errors.offline': 'Вы сейчас офлайн. Некоторые функции могут быть недоступны.',
+    'errors.authenticationError': 'Ошибка аутентификации. Пожалуйста, войдите снова.',
+    'errors.accessDenied': 'Доступ запрещен. У вас нет прав на это действие.',
+    'errors.validationError': 'Пожалуйста, проверьте введенные данные и попробуйте снова.',
+    'errors.notFound': 'Запрашиваемый ресурс не найден.',
+    'errors.serverError': 'Произошла ошибка сервера. Наша команда уведомлена.',
+    'errors.temporaryError': 'Временная ошибка. Пожалуйста, попробуйте через момент.',
+    'errors.criticalError': 'Произошла критическая ошибка. Страница будет перезагружена автоматически.',
+
+    // Network Messages
+    'network.backOnline': 'Соединение восстановлено. Вы снова онлайн!',
+    'network.offline': 'Нет подключения к интернету. Проверьте сеть.',
 
     // Course Start Page
     'courseStart.courseName': 'Название курса',
