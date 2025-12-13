@@ -6368,6 +6368,11 @@ async function generateLandingPageHTML(teacher) {
                     e.target.value = e.target.value.replace(/[^a-zA-Zа-яА-ЯўғҳқўҒҲҚЎ\\s]/g, '');
                 });
                 
+                // Apply translations
+                setTimeout(() => {
+                    window.selectLanguage({ stopPropagation: () => {} }, currentLang);
+                }, 50);
+                
             } else if (step === 2) {
                 modalBody.innerHTML = \`
                     <h2 class="modal-title" data-i18n="phoneTitle">Telefon raqamingiz</h2>
