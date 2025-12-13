@@ -7234,6 +7234,9 @@ window.openSubAdmin = function() {
     // Apply saved primary color to Sub Admin page
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
     applyPrimaryColor(savedColor);
+    
+    // Load real sub-admin data
+    loadSubAdmins();
     return;
   }
 };
@@ -7526,6 +7529,10 @@ function getSubAdminHTML() {
           from { opacity: 1; }
           to { opacity: 0; }
         }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
       </style>
 
       <!-- Header with Search and Add Button -->
@@ -7547,79 +7554,25 @@ ${t('subAdmin.addSubadmin')}
 
       <!-- Admin Cards List -->
       <div class="admin-cards-list" id="adminCardsList">
-        <div class="admin-card">
-          <div class="admin-info">
-            <div class="admin-avatar">JD</div>
-            <div class="admin-details">
-              <h4>John Derting</h4>
-              <p>john.derting@darslinker.com</p>
-            </div>
-          </div>
-          <div class="admin-meta">
-            <div class="meta-item">
-              <span class="meta-label">${t('subAdmin.telephone')}</span>
-              <span class="meta-value">+1 (555) 123-4567</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">${t('subAdmin.added')}</span>
-              <span class="meta-value">2025-01-15</span>
-            </div>
-          </div>
-          <button class="delete-admin-btn" onclick="deleteSubAdmin(this, 'John Derting')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        <div class="loading-state" id="loadingState">
+          <div style="display: flex; align-items: center; justify-content: center; padding: 40px; color: rgba(156, 163, 175, 1);">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="animation: spin 1s linear infinite; margin-right: 12px;">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="31.416" stroke-dashoffset="31.416">
+                <animate attributeName="stroke-dasharray" dur="2s" values="0 31.416;15.708 15.708;0 31.416" repeatCount="indefinite"/>
+                <animate attributeName="stroke-dashoffset" dur="2s" values="0;-15.708;-31.416" repeatCount="indefinite"/>
+              </circle>
             </svg>
-          </button>
+            Loading sub-admins...
+          </div>
         </div>
-
-        <div class="admin-card">
-          <div class="admin-info">
-            <div class="admin-avatar">SK</div>
-            <div class="admin-details">
-              <h4>Sarah Kim</h4>
-              <p>sarah.kim@darslinker.com</p>
-            </div>
-          </div>
-          <div class="admin-meta">
-            <div class="meta-item">
-              <span class="meta-label">${t('subAdmin.telephone')}</span>
-              <span class="meta-value">+1 (555) 987-6543</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">${t('subAdmin.added')}</span>
-              <span class="meta-value">2025-01-10</span>
-            </div>
-          </div>
-          <button class="delete-admin-btn" onclick="deleteSubAdmin(this, 'Sarah Kim')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        <div class="empty-state" id="emptyState" style="display: none;">
+          <div style="text-align: center; padding: 60px 20px; color: rgba(156, 163, 175, 1);">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 16px; opacity: 0.5;">
+              <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke="currentColor" stroke-width="2"/>
             </svg>
-          </button>
-        </div>
-
-        <div class="admin-card">
-          <div class="admin-info">
-            <div class="admin-avatar">ML</div>
-            <div class="admin-details">
-              <h4>Mike Lee</h4>
-              <p>mike.lee@darslinker.com</p>
-            </div>
+            <h3 style="margin: 0 0 8px; font-size: 18px; color: #ffffff;">No sub-admins yet</h3>
+            <p style="margin: 0; font-size: 14px;">Add your first sub-admin to get started</p>
           </div>
-          <div class="admin-meta">
-            <div class="meta-item">
-              <span class="meta-label">${t('subAdmin.telephone')}</span>
-              <span class="meta-value">+1 (555) 456-7890</span>
-            </div>
-            <div class="meta-item">
-              <span class="meta-label">${t('subAdmin.added')}</span>
-              <span class="meta-value">2025-01-05</span>
-            </div>
-          </div>
-          <button class="delete-admin-btn" onclick="deleteSubAdmin(this, 'Mike Lee')">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-            </svg>
-          </button>
         </div>
       </div>
 
@@ -7644,12 +7597,17 @@ ${t('subAdmin.addSubadmin')}
             
             <div class="form-group">
               <label class="form-label">${t('subAdmin.phone')}</label>
-              <input type="tel" class="form-input-admin" id="adminPhone" placeholder="+1 (555) 000-0000" required>
+              <input type="tel" class="form-input-admin" id="adminPhone" placeholder="+998901234567" required>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">${t('subAdmin.password')}</label>
+              <input type="password" class="form-input-admin" id="adminPassword" placeholder="Minimum 6 characters" required minlength="6">
             </div>
             
             <div class="modal-actions">
               <button type="button" class="btn-cancel" onclick="closeAddAdminModal()">${t('subAdmin.cancel')}</button>
-              <button type="submit" class="btn-submit">${t('subAdmin.addAdmin')}</button>
+              <button type="submit" class="btn-submit" id="submitBtn">${t('subAdmin.addAdmin')}</button>
             </div>
           </form>
         </div>
@@ -7675,65 +7633,78 @@ window.closeAddAdminModal = function() {
     document.getElementById('adminName').value = '';
     document.getElementById('adminEmail').value = '';
     document.getElementById('adminPhone').value = '';
+    document.getElementById('adminPassword').value = '';
+    
+    // Reset submit button
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.disabled = false;
+    submitBtn.textContent = t('subAdmin.addAdmin');
   }
 };
 
 // Submit new admin
-window.submitNewAdmin = function(event) {
+window.submitNewAdmin = async function(event) {
   event.preventDefault();
   
-  const name = document.getElementById('adminName').value;
-  const email = document.getElementById('adminEmail').value;
-  const phone = document.getElementById('adminPhone').value;
+  const submitBtn = document.getElementById('submitBtn');
+  const originalText = submitBtn.textContent;
   
-  // Get initials
-  const initials = name.split(' ').map(n => n[0]).join('').toUpperCase();
-  
-  // Get today's date
-  const today = new Date().toISOString().split('T')[0];
-  
-  // Create new admin card
-  const newAdminHTML = `
-    <div class="admin-card" style="animation: slideIn 0.5s ease;">
-      <div class="admin-info">
-        <div class="admin-avatar">${initials}</div>
-        <div class="admin-details">
-          <h4>${name}</h4>
-          <p>${email}</p>
-        </div>
-      </div>
-      <div class="admin-meta">
-        <div class="meta-item">
-          <span class="meta-label">${t('subAdmin.telephone')}</span>
-          <span class="meta-value">${phone}</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">${t('subAdmin.added')}</span>
-          <span class="meta-value">${today}</span>
-        </div>
-      </div>
-      <button class="delete-admin-btn" onclick="deleteSubAdmin(this, '${name}')">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-        </svg>
-      </button>
-    </div>
-  `;
-  
-  // Add to list
-  const list = document.getElementById('adminCardsList');
-  list.insertAdjacentHTML('beforeend', newAdminHTML);
-  
-  // Update count in title
-  const count = list.querySelectorAll('.admin-card').length;
-  updatePageTitle(t('subAdmin.titleWithCount').replace('{count}', count));
-  
-  // Close modal
-  closeAddAdminModal();
+  try {
+    // Show loading state
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Adding...';
+    
+    const fullName = document.getElementById('adminName').value.trim();
+    const email = document.getElementById('adminEmail').value.trim();
+    const phone = document.getElementById('adminPhone').value.trim();
+    const password = document.getElementById('adminPassword').value;
+    
+    // Get current user data
+    const userData = JSON.parse(localStorage.getItem('currentUser'));
+    if (!userData || !userData._id) {
+      throw new Error('User data not found');
+    }
+    
+    // Create sub-admin
+    const response = await apiService.createSubAdmin(userData._id, {
+      fullName,
+      email,
+      phone,
+      password
+    });
+    
+    if (response.success) {
+      showSuccessToast('Sub-admin added successfully');
+      closeAddAdminModal();
+      loadSubAdmins(); // Reload the list
+    } else {
+      throw new Error(response.message || 'Failed to add sub-admin');
+    }
+    
+  } catch (error) {
+    console.error('Error adding sub-admin:', error);
+    let errorMessage = 'Failed to add sub-admin';
+    
+    if (error.message.includes('limit')) {
+      errorMessage = 'Maximum sub-admin limit reached (3 sub-admins allowed)';
+    } else if (error.message.includes('email')) {
+      errorMessage = 'A sub-admin with this email already exists';
+    } else if (error.message.includes('phone')) {
+      errorMessage = 'A sub-admin with this phone number already exists';
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    showErrorToast(errorMessage);
+  } finally {
+    // Reset button state
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+  }
 };
 
 // Delete sub admin
-window.deleteSubAdmin = function(button, name) {
+window.deleteSubAdmin = function(button, subAdminId, name) {
   // Create custom confirmation modal
   const modal = document.createElement('div');
   modal.className = 'delete-confirm-modal';
@@ -7750,7 +7721,7 @@ window.deleteSubAdmin = function(button, name) {
       <p class="delete-confirm-message">${t('subAdmin.deleteMessage')} <strong>${name}</strong> ${t('subAdmin.deleteMessageEnd')}</p>
       <div class="delete-confirm-actions">
         <button class="delete-confirm-cancel" onclick="closeDeleteConfirm()">${t('subAdmin.cancel')}</button>
-        <button class="delete-confirm-delete" onclick="confirmDeleteSubAdmin(this)">${t('subAdmin.remove')}</button>
+        <button class="delete-confirm-delete" onclick="confirmDeleteSubAdmin('${subAdminId}', this)">${t('subAdmin.remove')}</button>
       </div>
     </div>
     <style>
@@ -7890,27 +7861,31 @@ window.closeDeleteConfirm = function() {
 };
 
 // Confirm delete sub admin
-window.confirmDeleteSubAdmin = function(confirmButton) {
-  const modal = confirmButton.closest('.delete-confirm-modal');
-  const cardIndex = parseInt(modal.dataset.cardElement);
-  const cards = document.querySelectorAll('.admin-card');
-  const card = cards[cardIndex];
+window.confirmDeleteSubAdmin = async function(subAdminId, confirmButton) {
+  const originalText = confirmButton.textContent;
   
-  if (card) {
-    card.style.animation = 'slideOut 0.3s ease';
-    setTimeout(() => {
-      card.remove();
-      
-      // Update count
-      const list = document.getElementById('adminCardsList');
-      const count = list.querySelectorAll('.admin-card').length;
-      updatePageTitle(t('subAdmin.titleWithCount').replace('{count}', count));
-      
-      // Close modal
+  try {
+    // Show loading state
+    confirmButton.disabled = true;
+    confirmButton.textContent = 'Removing...';
+    
+    const response = await apiService.deleteSubAdmin(subAdminId);
+    
+    if (response.success) {
+      showSuccessToast('Sub-admin removed successfully');
       closeDeleteConfirm();
-    }, 300);
-  } else {
-    closeDeleteConfirm();
+      loadSubAdmins(); // Reload the list
+    } else {
+      throw new Error(response.message || 'Failed to remove sub-admin');
+    }
+    
+  } catch (error) {
+    console.error('Error removing sub-admin:', error);
+    showErrorToast(error.message || 'Failed to remove sub-admin');
+    
+    // Reset button state
+    confirmButton.disabled = false;
+    confirmButton.textContent = originalText;
   }
 };
 
@@ -7929,6 +7904,167 @@ window.searchSubAdmins = function(query) {
       card.style.display = 'none';
     }
   });
+};
+
+// Load sub-admins from API
+window.loadSubAdmins = async function loadSubAdmins() {
+  const loadingState = document.getElementById('loadingState');
+  const emptyState = document.getElementById('emptyState');
+  const adminCardsList = document.getElementById('adminCardsList');
+  
+  try {
+    // Show loading state
+    loadingState.style.display = 'block';
+    emptyState.style.display = 'none';
+    
+    // Remove existing admin cards
+    const existingCards = adminCardsList.querySelectorAll('.admin-card');
+    existingCards.forEach(card => card.remove());
+    
+    // Get current user data
+    const userData = JSON.parse(localStorage.getItem('currentUser'));
+    if (!userData || !userData._id) {
+      throw new Error('User data not found');
+    }
+    
+    // Fetch sub-admins
+    const response = await apiService.getTeacherSubAdmins(userData._id);
+    
+    if (response.success) {
+      const subAdmins = response.data.subAdmins;
+      
+      // Hide loading state
+      loadingState.style.display = 'none';
+      
+      if (subAdmins.length === 0) {
+        // Show empty state
+        emptyState.style.display = 'block';
+        updatePageTitle(t('subAdmin.title'));
+      } else {
+        // Hide empty state and render sub-admins
+        emptyState.style.display = 'none';
+        renderSubAdmins(subAdmins);
+        updatePageTitle(t('subAdmin.titleWithCount').replace('{count}', subAdmins.length));
+      }
+    } else {
+      throw new Error(response.message || 'Failed to load sub-admins');
+    }
+    
+  } catch (error) {
+    console.error('Error loading sub-admins:', error);
+    loadingState.style.display = 'none';
+    emptyState.style.display = 'block';
+    
+    // Update empty state to show error
+    const emptyStateDiv = document.getElementById('emptyState');
+    emptyStateDiv.innerHTML = `
+      <div style="text-align: center; padding: 60px 20px; color: rgba(156, 163, 175, 1);">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" style="margin: 0 auto 16px; opacity: 0.5;">
+          <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+          <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <h3 style="margin: 0 0 8px; font-size: 18px; color: #ffffff;">Failed to load sub-admins</h3>
+        <p style="margin: 0 0 16px; font-size: 14px;">${error.message}</p>
+        <button onclick="loadSubAdmins()" style="background: var(--primary-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Try Again</button>
+      </div>
+    `;
+    
+    updatePageTitle(t('subAdmin.title'));
+  }
+}
+
+// Render sub-admins list
+function renderSubAdmins(subAdmins) {
+  const adminCardsList = document.getElementById('adminCardsList');
+  
+  subAdmins.forEach(subAdmin => {
+    const adminCard = createSubAdminCard(subAdmin);
+    adminCardsList.appendChild(adminCard);
+  });
+}
+
+// Create sub-admin card element
+function createSubAdminCard(subAdmin) {
+  const card = document.createElement('div');
+  card.className = 'admin-card';
+  card.style.animation = 'slideIn 0.5s ease';
+  
+  // Get initials
+  const initials = subAdmin.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
+  
+  // Format date
+  const addedDate = new Date(subAdmin.createdAt).toLocaleDateString();
+  
+  // Status indicator
+  const statusClass = subAdmin.isActive ? 'active' : 'inactive';
+  const statusText = subAdmin.isActive ? 'Active' : 'Inactive';
+  
+  card.innerHTML = `
+    <div class="admin-info">
+      <div class="admin-avatar">${initials}</div>
+      <div class="admin-details">
+        <h4>${subAdmin.fullName}</h4>
+        <p>${subAdmin.email}</p>
+        <span class="status-badge ${statusClass}" style="
+          display: inline-block;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 600;
+          margin-top: 4px;
+          ${subAdmin.isActive 
+            ? 'background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3);'
+            : 'background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);'
+          }
+        ">${statusText}</span>
+      </div>
+    </div>
+    <div class="admin-meta">
+      <div class="meta-item">
+        <span class="meta-label">${t('subAdmin.telephone')}</span>
+        <span class="meta-value">${subAdmin.phone}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">${t('subAdmin.added')}</span>
+        <span class="meta-value">${addedDate}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Last Login</span>
+        <span class="meta-value">${subAdmin.lastLogin ? new Date(subAdmin.lastLogin).toLocaleDateString() : 'Never'}</span>
+      </div>
+    </div>
+    <div class="admin-actions" style="display: flex; gap: 8px; align-items: center;">
+      <button class="edit-admin-btn" onclick="editSubAdmin('${subAdmin._id}')" style="
+        width: 36px;
+        height: 36px;
+        background: rgba(126, 162, 212, 0.1);
+        border: 1px solid rgba(126, 162, 212, 0.2);
+        border-radius: 8px;
+        color: #7ea2d4;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      " onmouseover="this.style.background='rgba(126, 162, 212, 0.2)'; this.style.borderColor='rgba(126, 162, 212, 0.4)'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(126, 162, 212, 0.1)'; this.style.borderColor='rgba(126, 162, 212, 0.2)'; this.style.transform='scale(1)'">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+        </svg>
+      </button>
+      <button class="delete-admin-btn" onclick="deleteSubAdmin(this, '${subAdmin._id}', '${subAdmin.fullName}')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
+        </svg>
+      </button>
+    </div>
+  `;
+  
+  return card;
+}
+
+// Edit sub-admin (placeholder for future implementation)
+window.editSubAdmin = function(subAdminId) {
+  showInfoToast('Edit functionality coming soon');
 };
 
 // Open Language Page

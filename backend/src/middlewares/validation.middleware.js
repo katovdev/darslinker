@@ -25,7 +25,13 @@ export const validate = (schema, property = "body") => {
       });
     }
 
-    req[property] = value;
+    // Only set the property if it's not 'query' (which is read-only)
+    if (property !== 'query') {
+      req[property] = value;
+    } else {
+      // For query parameters, we can't reassign but validation passed
+      // The original req.query will be used
+    }
     next();
   };
 };
