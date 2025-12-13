@@ -1,5 +1,10 @@
+// Import i18n functions
+import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
+
 // Initialize function called from dashboard.jsana
 export async function initLandingStudentDashboard() {
+  // Initialize i18n
+  await initI18n();
   // Clear body and set up for dashboard
   document.body.style.padding = '0';
   document.body.style.margin = '0';
@@ -8,8 +13,16 @@ export async function initLandingStudentDashboard() {
   // Load teacher theme BEFORE rendering to prevent color flash
   await loadTeacherTheme();
 
+  // Add language change listener
+  window.addEventListener('languageChanged', () => {
+    console.log('Language changed, re-rendering dashboard...');
+    setTimeout(() => {
+      renderLandingStudentDashboard();
+    }, 100);
+  });
+
   renderLandingStudentDashboard();
-  
+
   // Load notification count in background (don't wait)
   loadNotificationCount();
 
@@ -891,12 +904,12 @@ export function renderLandingStudentDashboard() {
           <!-- General Section -->
           <div class="landing-nav-section">
             <div class="landing-nav-parent" onclick="toggleLandingMenu('general')">
-              <span class="landing-nav-title">General</span>
+              <span class="landing-nav-title">${t('sidebar.general')}</span>
               <span class="landing-nav-arrow" id="general-arrow">▶</span>
             </div>
             <div class="landing-nav-children hidden" id="general-children">
-              <a class="landing-nav-item active" data-page="home">Home</a>
-              <a class="landing-nav-item" data-page="messages">Messages</a>
+              <a class="landing-nav-item active" data-page="home">${t('sidebar.home')}</a>
+              <a class="landing-nav-item" data-page="messages">${t('sidebar.messages')}</a>
             </div>
           </div>
 
@@ -905,19 +918,19 @@ export function renderLandingStudentDashboard() {
           <!-- Account Section -->
           <div class="landing-nav-section">
             <div class="landing-nav-parent" onclick="toggleLandingMenu('account')">
-              <span class="landing-nav-title">Account</span>
+              <span class="landing-nav-title">${t('sidebar.account')}</span>
               <span class="landing-nav-arrow" id="account-arrow">▶</span>
             </div>
             <div class="landing-nav-children hidden" id="account-children">
-              <a class="landing-nav-item" data-page="language">Language</a>
-              <a class="landing-nav-item" data-page="edit-profile">Edit Profile</a>
+              <a class="landing-nav-item" data-page="language">${t('sidebar.language')}</a>
+              <a class="landing-nav-item" data-page="edit-profile">${t('sidebar.editProfile')}</a>
             </div>
           </div>
         </nav>
 
         <!-- Support Button -->
         <div class="landing-sidebar-footer">
-          <button class="landing-support-btn">Support</button>
+          <button class="landing-support-btn">${t('sidebar.support')}</button>
         </div>
       </aside>
 
@@ -945,11 +958,11 @@ export function renderLandingStudentDashboard() {
                 <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
               </svg>
             </button>
-            <button class="landing-icon-btn landing-logout-btn" title="Logout">
+            <button class="landing-icon-btn landing-logout-btn" title="${t('dashboard.logout')}">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
               </svg>
-              <span class="landing-logout-text">Log out</span>
+              <span class="landing-logout-text">${t('dashboard.logout')}</span>
             </button>
           </div>
         </header>
@@ -958,37 +971,37 @@ export function renderLandingStudentDashboard() {
         <div class="landing-dashboard-content">
           <!-- Welcome Section -->
           <div class="landing-welcome-card">
-            <h1 class="landing-welcome-title">Welcome back, ${firstName} !</h1>
-            <p class="landing-welcome-subtitle">Continue your learning journey and achieve your goals</p>
+            <h1 class="landing-welcome-title">${t('dashboard.welcomeBack', { name: firstName })}</h1>
+            <p class="landing-welcome-subtitle">${t('dashboard.continueJourney')}</p>
           </div>
 
           <!-- Stats Cards -->
           <div class="landing-stats-grid">
             <div class="landing-stat-card">
               <div class="landing-stat-value">0</div>
-              <div class="landing-stat-label">Active Courses</div>
+              <div class="landing-stat-label">${t('dashboard.activeCourses')}</div>
             </div>
             <div class="landing-stat-card">
               <div class="landing-stat-value">0</div>
-              <div class="landing-stat-label">Total Points</div>
+              <div class="landing-stat-label">${t('dashboard.totalPoints')}</div>
             </div>
             <div class="landing-stat-card">
               <div class="landing-stat-value">0</div>
-              <div class="landing-stat-label">Certificates</div>
+              <div class="landing-stat-label">${t('dashboard.certificates')}</div>
             </div>
           </div>
 
           <!-- Continue Learning Section -->
           <div class="landing-learning-section">
             <div class="landing-course-filters">
-              <button class="landing-filter-tab" data-filter="my-courses">My Courses</button>
-              <button class="landing-filter-tab active" data-filter="all-courses">All Courses</button>
+              <button class="landing-filter-tab" data-filter="my-courses">${t('dashboard.myCourses')}</button>
+              <button class="landing-filter-tab active" data-filter="all-courses">${t('dashboard.allCourses')}</button>
             </div>
             <div class="landing-courses-grid">
               <!-- Loading spinner will be shown here -->
               <div class="landing-courses-loading" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
                 <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid color-mix(in srgb, var(--primary-color) 20%, transparent); border-top: 4px solid var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite;"></div>
-                <p style="color: #9CA3AF; margin-top: 20px; font-size: 14px;">Loading courses...</p>
+                <p style="color: #9CA3AF; margin-top: 20px; font-size: 14px;">${t('dashboard.loadingCourses')}</p>
               </div>
             </div>
           </div>
@@ -1069,7 +1082,7 @@ function attachEventListeners() {
   const supportBtn = document.querySelector('.landing-support-btn');
   if (supportBtn) {
     supportBtn.addEventListener('click', () => {
-      alert('Support feature coming soon!');
+      alert(t('common.comingSoon'));
     });
   }
 
@@ -1077,7 +1090,7 @@ function attachEventListeners() {
   const meetingBtn = document.querySelector('.landing-meeting-btn');
   if (meetingBtn) {
     meetingBtn.addEventListener('click', () => {
-      showToast('Coming soon');
+      showToast(t('common.comingSoon'));
     });
   }
 
@@ -1143,7 +1156,7 @@ function handleLogout() {
   sessionStorage.removeItem('currentTeacherId');
   
   // Show toast
-  showToast('Logging out...');
+  showToast(t('dashboard.loggingOut'));
   
   // Redirect to login page after short delay
   setTimeout(() => {
@@ -1159,7 +1172,7 @@ function handleNavigation(page) {
     initLandingStudentDashboard();
   } else if (page === 'messages') {
     // Show coming soon for messages
-    showToast('Coming soon');
+    showToast(t('common.comingSoon'));
   } else if (page === 'language') {
     // Show language selection page
     showLanguagePage();
@@ -1261,8 +1274,8 @@ async function handleCourseFilter(filter) {
     } else {
       coursesGrid.innerHTML = `
         <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-          <p style="color: #9CA3AF; font-size: 16px; margin-bottom: 8px;">No enrolled courses yet</p>
-          <p style="color: #6B7280; font-size: 14px;">Browse all courses and start learning!</p>
+          <p style="color: #9CA3AF; font-size: 16px; margin-bottom: 8px;">${t('dashboard.noEnrolledCourses')}</p>
+          <p style="color: #6B7280; font-size: 14px;">${t('dashboard.browseAllCourses')}</p>
         </div>
       `;
     }
@@ -1420,7 +1433,7 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
   if (!courses || courses.length === 0) {
     coursesGrid.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #9CA3AF;">
-        <p>No courses available yet</p>
+        <p>${t('dashboard.noCoursesAvailable')}</p>
       </div>
     `;
     return;
@@ -1516,7 +1529,7 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
         ${hasStarted ? `
         <div class="landing-course-progress-bar">
           <div class="landing-course-progress-label">
-            <span>Progress</span>
+            <span>${t('dashboard.progress')}</span>
             <span>${progress}%</span>
           </div>
           <div class="landing-progress-track">
@@ -1528,12 +1541,12 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
         <div class="landing-course-info">
           <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 8px;">
             <h3 class="landing-course-title" style="margin-bottom: 0; flex: 1;">${course.title || 'Untitled Course'}</h3>
-            <span class="landing-course-price">${course.courseType === 'free' ? 'Bepul' : `${(course.price || 0).toLocaleString('uz-UZ')} so'm`}</span>
+            <span class="landing-course-price">${course.courseType === 'free' ? t('dashboard.free') : `${(course.price || 0).toLocaleString('uz-UZ')} ${t('dashboard.sum')}`}</span>
           </div>
           <p class="landing-course-instructor">${teacherName}</p>
-          <p class="landing-course-meta">${course.duration || 'Self-paced'} • ${course.level || 'All levels'} • ${course.totalStudents || 0} o'quvchi</p>
+          <p class="landing-course-meta">${course.duration || t('dashboard.selfPaced')} • ${course.level || t('dashboard.allLevels')} • ${course.totalStudents || 0} ${t('dashboard.students')}</p>
         </div>
-        <button class="landing-continue-btn" onclick="openCourse('${course._id}', '${course.courseType || 'free'}')">${course.isEnrolled ? 'Continue learning' : 'Start learning'}</button>
+        <button class="landing-continue-btn" onclick="openCourse('${course._id}', '${course.courseType || 'free'}')">${course.isEnrolled ? t('dashboard.continueLearning') : t('dashboard.startLearning')}</button>
       </div>
     `;
   }).join('');
@@ -1557,7 +1570,7 @@ window.openCourse = async function(courseId, courseType = 'free') {
   
   if (courseType !== 'free') {
     // For paid courses, show coming soon toast
-    showToast('Coming soon');
+    showToast(t('common.comingSoon'));
     return;
   }
 
@@ -1764,15 +1777,15 @@ function showLanguagePage() {
   content.innerHTML = `
     <div style="padding: 40px; max-width: 1000px; width: 100%; margin: 0 auto;">
       <div style="margin-bottom: 40px;">
-        <h2 style="color: white; font-size: 28px; font-weight: 700; margin-bottom: 10px;">Language Settings</h2>
-        <p style="color: rgba(255,255,255,0.7); font-size: 16px;">Choose your preferred language</p>
+        <h2 style="color: white; font-size: 28px; font-weight: 700; margin-bottom: 10px;">${t('language.settings')}</h2>
+        <p style="color: rgba(255,255,255,0.7); font-size: 16px;">${t('language.choosePreferred')}</p>
       </div>
 
       <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 40px;">
         <div onclick="selectLanguage('en')"
              style="display: flex; align-items: center; height: 70px; padding: 20px; background: rgba(58, 56, 56, 0.3); border: 2px solid ${currentLang === 'en' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)'}; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; outline: none; box-shadow: none;">
           <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; margin-right: 20px; flex-shrink: 0;">E</div>
-          <span style="font-size: 18px; font-weight: 600; color: white; flex: 1;">English</span>
+          <span style="font-size: 18px; font-weight: 600; color: white; flex: 1;">${t('language.english')}</span>
           <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${currentLang === 'en' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.3)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; ${currentLang === 'en' ? 'background: var(--primary-color);' : ''}">
             ${currentLang === 'en' ? '<span style="color: white; font-size: 12px; font-weight: 700;">✓</span>' : ''}
           </div>
@@ -1781,7 +1794,7 @@ function showLanguagePage() {
         <div onclick="selectLanguage('uz')"
              style="display: flex; align-items: center; height: 70px; padding: 20px; background: rgba(58, 56, 56, 0.3); border: 2px solid ${currentLang === 'uz' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)'}; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; outline: none; box-shadow: none;">
           <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; margin-right: 20px; flex-shrink: 0;">U</div>
-          <span style="font-size: 18px; font-weight: 600; color: white; flex: 1;">O'zbek</span>
+          <span style="font-size: 18px; font-weight: 600; color: white; flex: 1;">${t('language.uzbek')}</span>
           <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${currentLang === 'uz' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.3)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; ${currentLang === 'uz' ? 'background: var(--primary-color);' : ''}">
             ${currentLang === 'uz' ? '<span style="color: white; font-size: 12px; font-weight: 700;">✓</span>' : ''}
           </div>
@@ -1790,7 +1803,7 @@ function showLanguagePage() {
         <div onclick="selectLanguage('ru')"
              style="display: flex; align-items: center; height: 70px; padding: 20px; background: rgba(58, 56, 56, 0.3); border: 2px solid ${currentLang === 'ru' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)'}; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; outline: none; box-shadow: none;">
           <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; margin-right: 20px; flex-shrink: 0;">R</div>
-          <span style="font-size: 18px; font-weight: 600; color: white; flex: 1;">Русский</span>
+          <span style="font-size: 18px; font-weight: 600; color: white; flex: 1;">${t('language.russian')}</span>
           <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${currentLang === 'ru' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.3)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; ${currentLang === 'ru' ? 'background: var(--primary-color);' : ''}">
             ${currentLang === 'ru' ? '<span style="color: white; font-size: 12px; font-weight: 700;">✓</span>' : ''}
           </div>
@@ -1800,11 +1813,11 @@ function showLanguagePage() {
       <div style="display: flex; gap: 16px;">
         <button onclick="applyLanguageChanges()"
                 style="flex: 1; padding: 16px; background: var(--primary-color); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
-          Apply Changes
+          ${t('language.applyChanges')}
         </button>
         <button onclick="cancelLanguageChanges()"
                 style="flex: 1; padding: 16px; background: transparent; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; color: rgba(255, 255, 255, 0.8); font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
-          Cancel
+          ${t('common.cancel')}
         </button>
       </div>
     </div>
@@ -1829,41 +1842,40 @@ function showEditProfilePage() {
   content.innerHTML = `
     <div style="padding: 40px; max-width: 1000px; width: 100%; margin: 0 auto;">
       <div style="margin-bottom: 40px;">
-        <h2 style="color: white; font-size: 28px; font-weight: 700; margin-bottom: 10px;">Edit Profile</h2>
-        <p style="color: rgba(255,255,255,0.7); font-size: 16px;">Update your personal information</p>
+        <h2 style="color: white; font-size: 28px; font-weight: 700; margin-bottom: 10px;">${t('profile.editProfile')}</h2>
+        <p style="color: rgba(255,255,255,0.7); font-size: 16px;">${t('profile.updateInfo')}</p>
       </div>
 
       <form onsubmit="saveProfileChanges(event)" style="display: flex; flex-direction: column; gap: 24px;">
         <div>
-          <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">First Name</label>
+          <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">${t('profile.firstName')}</label>
           <input type="text" id="firstName" value="${userData.firstName || ''}"
                  style="width: 100%; padding: 16px; background: rgba(58, 56, 56, 0.8); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 16px; transition: all 0.3s ease;"
-                 placeholder="Enter your first name" required>
+                 placeholder="${t('profile.enterFirstName')}" required>
         </div>
 
         <div>
-          <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">Last Name</label>
+          <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">${t('profile.lastName')}</label>
           <input type="text" id="lastName" value="${userData.lastName || ''}"
                  style="width: 100%; padding: 16px; background: rgba(58, 56, 56, 0.8); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 16px; transition: all 0.3s ease;"
-                 placeholder="Enter your last name" required>
+                 placeholder="${t('profile.enterLastName')}" required>
         </div>
 
-
         <div>
-          <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">Phone</label>
+          <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">${t('profile.phone')}</label>
           <input type="tel" id="phone" value="${userData.phone || ''}"
                  style="width: 100%; padding: 16px; background: rgba(58, 56, 56, 0.8); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 16px; transition: all 0.3s ease;"
-                 placeholder="Enter your phone number">
+                 placeholder="${t('profile.enterPhone')}">
         </div>
 
         <div style="display: flex; gap: 16px; margin-top: 20px;">
           <button type="submit"
                   style="flex: 1; padding: 16px; background: var(--primary-color); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
-            Save Changes
+            ${t('profile.saveChanges')}
           </button>
           <button type="button" onclick="cancelProfileChanges()"
                   style="flex: 1; padding: 16px; background: transparent; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; color: rgba(255, 255, 255, 0.8); font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
-            Cancel
+            ${t('common.cancel')}
           </button>
         </div>
       </form>
@@ -1923,8 +1935,11 @@ window.selectLanguage = function(lang) {
 
 window.applyLanguageChanges = function() {
   if (selectedLanguage) {
+    // Set the language first
+    setLanguage(selectedLanguage);
     localStorage.setItem('language', selectedLanguage);
-    showToast('Language updated successfully!');
+
+    showToast(t('language.updated'));
 
     // Reload page with new language
     setTimeout(() => {
@@ -1947,7 +1962,7 @@ window.saveProfileChanges = function(event) {
   const phone = document.getElementById('phone').value.trim();
 
   if (!firstName || !lastName) {
-    showToast('Please fill in all required fields');
+    showToast(t('common.fillRequiredFields'));
     return;
   }
 
@@ -1973,7 +1988,7 @@ window.saveProfileChanges = function(event) {
   // Save to sessionStorage
   sessionStorage.setItem('landingUser', JSON.stringify(updatedUser));
 
-  showToast('Profile updated successfully!');
+  showToast(t('profile.updated'));
 
   // Go back to dashboard
   setTimeout(() => {

@@ -89,12 +89,60 @@ const translations = {
     
     // Language Page
     'language.title': 'Language',
+    'language.settings': 'Language Settings',
     'language.choosePreferred': 'Choose your preferred language',
     'language.english': 'English',
     'language.uzbek': 'Uzbek',
     'language.russian': 'Russian',
     'language.applyChanges': 'Apply changes',
+    'language.updated': 'Language updated successfully!',
     'language.back': 'Back',
+
+    // Student Dashboard
+    'dashboard.welcomeBack': 'Welcome back, {name}!',
+    'dashboard.continueJourney': 'Continue your learning journey',
+    'dashboard.activeCourses': 'Active Courses',
+    'dashboard.totalPoints': 'Total Points',
+    'dashboard.certificates': 'Certificates',
+    'dashboard.myCourses': 'My Courses',
+    'dashboard.allCourses': 'All Courses',
+    'dashboard.loadingCourses': 'Loading courses...',
+    'dashboard.noEnrolledCourses': 'No enrolled courses yet',
+    'dashboard.browseAllCourses': 'Browse all courses to get started',
+    'dashboard.noCoursesAvailable': 'No courses available',
+    'dashboard.progress': 'Progress',
+    'dashboard.free': 'Free',
+    'dashboard.sum': 'UZS',
+    'dashboard.selfPaced': 'Self-paced',
+    'dashboard.allLevels': 'All levels',
+    'dashboard.students': 'students',
+    'dashboard.continueLearning': 'Continue Learning',
+    'dashboard.startLearning': 'Start Learning',
+    'dashboard.loggingOut': 'Logging out...',
+    'dashboard.logout': 'Logout',
+
+    // Sidebar - Student
+    'sidebar.home': 'Home',
+    'sidebar.account': 'Account',
+    'sidebar.editProfile': 'Edit Profile',
+    'sidebar.support': 'Support',
+
+    // Profile
+    'profile.editProfile': 'Edit Profile',
+    'profile.updateInfo': 'Update your profile information',
+    'profile.firstName': 'First Name',
+    'profile.lastName': 'Last Name',
+    'profile.phone': 'Phone Number',
+    'profile.enterFirstName': 'Enter your first name',
+    'profile.enterLastName': 'Enter your last name',
+    'profile.enterPhone': 'Enter your phone number',
+    'profile.saveChanges': 'Save Changes',
+    'profile.updated': 'Profile updated successfully!',
+
+    // Common
+    'common.cancel': 'Cancel',
+    'common.comingSoon': 'Coming soon!',
+    'common.fillRequiredFields': 'Please fill in all required fields',
     
     // Page Titles
     'pages.messages': 'Messages',
@@ -542,12 +590,60 @@ const translations = {
     
     // Language Page
     'language.title': 'Til',
+    'language.settings': 'Til sozlamalari',
     'language.choosePreferred': 'O\'zingizga qulay tilni tanlang',
     'language.english': 'Ingliz tili',
     'language.uzbek': 'O\'zbek tili',
     'language.russian': 'Rus tili',
     'language.applyChanges': 'O\'zgarishlarni saqlash',
+    'language.updated': 'Til muvaffaqiyatli yangilandi!',
     'language.back': 'Orqaga',
+
+    // Student Dashboard
+    'dashboard.welcomeBack': 'Xush kelibsiz, {name}!',
+    'dashboard.continueJourney': 'O\'rganishni davom ettiring',
+    'dashboard.activeCourses': 'Faol kurslar',
+    'dashboard.totalPoints': 'Jami balllar',
+    'dashboard.certificates': 'Sertifikatlar',
+    'dashboard.myCourses': 'Mening kurslarim',
+    'dashboard.allCourses': 'Barcha kurslar',
+    'dashboard.loadingCourses': 'Kurslar yuklanmoqda...',
+    'dashboard.noEnrolledCourses': 'Hali ro\'yxatdan o\'tmagan kurslar yo\'q',
+    'dashboard.browseAllCourses': 'Boshlash uchun barcha kurslarni ko\'ring',
+    'dashboard.noCoursesAvailable': 'Mavjud kurslar yo\'q',
+    'dashboard.progress': 'Jarayon',
+    'dashboard.free': 'Bepul',
+    'dashboard.sum': 'UZS',
+    'dashboard.selfPaced': 'O\'z sur\'atingizda',
+    'dashboard.allLevels': 'Barcha darajalar',
+    'dashboard.students': 'o\'quvchi',
+    'dashboard.continueLearning': 'O\'rganishni davom ettirish',
+    'dashboard.startLearning': 'O\'rganishni boshlash',
+    'dashboard.loggingOut': 'Chiqilmoqda...',
+    'dashboard.logout': 'Chiqish',
+
+    // Sidebar - Student
+    'sidebar.home': 'Bosh sahifa',
+    'sidebar.account': 'Hisob',
+    'sidebar.editProfile': 'Profilni tahrirlash',
+    'sidebar.support': 'Yordam',
+
+    // Profile
+    'profile.editProfile': 'Profilni tahrirlash',
+    'profile.updateInfo': 'Profil ma\'lumotlarini yangilang',
+    'profile.firstName': 'Ism',
+    'profile.lastName': 'Familiya',
+    'profile.phone': 'Telefon raqami',
+    'profile.enterFirstName': 'Ismingizni kiriting',
+    'profile.enterLastName': 'Familyangizni kiriting',
+    'profile.enterPhone': 'Telefon raqamingizni kiriting',
+    'profile.saveChanges': 'O\'zgarishlarni saqlash',
+    'profile.updated': 'Profil muvaffaqiyatli yangilandi!',
+
+    // Common
+    'common.cancel': 'Bekor qilish',
+    'common.comingSoon': 'Tez orada!',
+    'common.fillRequiredFields': 'Iltimos, barcha majburiy maydonlarni to\'ldiring',
     
     // Page Titles
     'pages.messages': 'Xabarlar',
@@ -995,12 +1091,60 @@ const translations = {
     
     // Language Page
     'language.title': 'Язык',
+    'language.settings': 'Настройки языка',
     'language.choosePreferred': 'Выберите предпочитаемый язык',
     'language.english': 'Английский',
     'language.uzbek': 'Узбекский',
     'language.russian': 'Русский',
     'language.applyChanges': 'Применить изменения',
+    'language.updated': 'Язык успешно обновлен!',
     'language.back': 'Назад',
+
+    // Student Dashboard
+    'dashboard.welcomeBack': 'Добро пожаловать, {name}!',
+    'dashboard.continueJourney': 'Продолжите свое обучение',
+    'dashboard.activeCourses': 'Активные курсы',
+    'dashboard.totalPoints': 'Всего баллов',
+    'dashboard.certificates': 'Сертификаты',
+    'dashboard.myCourses': 'Мои курсы',
+    'dashboard.allCourses': 'Все курсы',
+    'dashboard.loadingCourses': 'Загрузка курсов...',
+    'dashboard.noEnrolledCourses': 'Пока нет записанных курсов',
+    'dashboard.browseAllCourses': 'Просмотрите все курсы для начала',
+    'dashboard.noCoursesAvailable': 'Нет доступных курсов',
+    'dashboard.progress': 'Прогресс',
+    'dashboard.free': 'Бесплатно',
+    'dashboard.sum': 'UZS',
+    'dashboard.selfPaced': 'В своем темпе',
+    'dashboard.allLevels': 'Все уровни',
+    'dashboard.students': 'студентов',
+    'dashboard.continueLearning': 'Продолжить обучение',
+    'dashboard.startLearning': 'Начать обучение',
+    'dashboard.loggingOut': 'Выход...',
+    'dashboard.logout': 'Выйти',
+
+    // Sidebar - Student
+    'sidebar.home': 'Главная',
+    'sidebar.account': 'Аккаунт',
+    'sidebar.editProfile': 'Редактировать профиль',
+    'sidebar.support': 'Поддержка',
+
+    // Profile
+    'profile.editProfile': 'Редактировать профиль',
+    'profile.updateInfo': 'Обновите информацию профиля',
+    'profile.firstName': 'Имя',
+    'profile.lastName': 'Фамилия',
+    'profile.phone': 'Номер телефона',
+    'profile.enterFirstName': 'Введите ваше имя',
+    'profile.enterLastName': 'Введите вашу фамилию',
+    'profile.enterPhone': 'Введите номер телефона',
+    'profile.saveChanges': 'Сохранить изменения',
+    'profile.updated': 'Профиль успешно обновлен!',
+
+    // Common
+    'common.cancel': 'Отмена',
+    'common.comingSoon': 'Скоро!',
+    'common.fillRequiredFields': 'Пожалуйста, заполните все обязательные поля',
     
     // Page Titles
     'pages.messages': 'Сообщения',
@@ -1348,9 +1492,19 @@ export function setLanguage(lang) {
 }
 
 // Get translation
-export function t(key) {
+export function t(key, params = {}) {
   const lang = getCurrentLanguage();
-  return translations[lang]?.[key] || translations['en']?.[key] || key;
+  let translation = translations[lang]?.[key] || translations['en']?.[key] || key;
+
+  // Replace template variables like {name} with actual values
+  if (params && typeof translation === 'string') {
+    Object.keys(params).forEach(param => {
+      const placeholder = `{${param}}`;
+      translation = translation.replace(new RegExp(placeholder, 'g'), params[param]);
+    });
+  }
+
+  return translation;
 }
 
 // Initialize language system
