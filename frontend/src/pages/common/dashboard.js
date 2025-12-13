@@ -7391,33 +7391,38 @@ function getSubAdminHTML() {
           border-color: rgba(239, 68, 68, 0.4);
           transform: scale(1.1);
         }
+        /* Modal Styles - Enhanced with Sidebar Hidden and Primary Color */
         .add-admin-modal {
           position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          background: rgba(0, 0, 0, 0.8);
-          backdrop-filter: blur(4px);
+          background: rgba(0, 0, 0, 0.85);
+          backdrop-filter: blur(8px);
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 99999;
+          z-index: 100001;
           animation: fadeIn 0.3s ease;
         }
         .add-admin-modal.hidden {
           display: none;
         }
+        .sidebar-hidden {
+          display: none !important;
+        }
         .modal-content {
-          background: rgba(35, 35, 35, 0.95);
-          border: 1px solid rgba(126, 162, 212, 0.3);
+          background: rgba(35, 35, 35, 0.98);
+          border: 2px solid var(--primary-color);
           border-radius: 16px;
           padding: 32px;
-          max-width: 500px;
+          max-width: 480px;
           width: 90%;
-          animation: slideUp 0.3s ease;
+          animation: slideUp 0.4s ease;
           position: relative;
-          z-index: 100000;
+          z-index: 100002;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--primary-color);
         }
         @keyframes slideUp {
           from { transform: translateY(30px); opacity: 0; }
@@ -7443,8 +7448,9 @@ function getSubAdminHTML() {
           transition: all 0.3s ease;
         }
         .close-modal-btn:hover {
-          color: #ffffff;
-          transform: rotate(90deg);
+          color: var(--primary-color);
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 4px;
         }
         .form-group {
           margin-bottom: 20px;
@@ -7454,12 +7460,13 @@ function getSubAdminHTML() {
           font-size: 13px;
           margin-bottom: 8px;
           display: block;
+          font-weight: 500;
         }
         .form-input-admin {
           width: 100%;
           padding: 12px 16px;
           background: rgba(58, 56, 56, 0.5);
-          border: 1px solid rgba(126, 162, 212, 0.2);
+          border: 2px solid var(--primary-color, rgba(126, 162, 212, 0.3));
           border-radius: 8px;
           color: #ffffff;
           font-size: 14px;
@@ -7467,8 +7474,50 @@ function getSubAdminHTML() {
         }
         .form-input-admin:focus {
           outline: none;
-          border-color: rgba(126, 162, 212, 0.5);
+          border-color: var(--primary-color);
           background: rgba(58, 56, 56, 0.7);
+          box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+        }
+        .phone-input-container {
+          display: flex;
+          border: 2px solid var(--primary-color, rgba(126, 162, 212, 0.3));
+          border-radius: 8px;
+          background: rgba(58, 56, 56, 0.5);
+          transition: all 0.3s ease;
+        }
+        .phone-input-container:focus-within {
+          border-color: var(--primary-color);
+          background: rgba(58, 56, 56, 0.7);
+          box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
+        }
+        .phone-prefix {
+          padding: 12px 16px;
+          background: rgba(58, 56, 56, 0.6);
+          color: #ffffff;
+          font-weight: 500;
+          border-radius: 6px 0 0 6px;
+          font-size: 14px;
+          white-space: nowrap;
+          border-right: 1px solid var(--primary-color, rgba(126, 162, 212, 0.3));
+        }
+        .phone-number-input {
+          flex: 1;
+          padding: 12px 16px;
+          background: transparent;
+          border: none;
+          color: #ffffff;
+          font-size: 14px;
+        }
+        .phone-number-input:focus {
+          outline: none;
+        }
+        .phone-number-input::placeholder {
+          color: rgba(156, 163, 175, 0.7);
+        }
+        .password-requirements {
+          font-size: 12px;
+          color: rgba(156, 163, 175, 0.8);
+          margin-top: 4px;
         }
         .modal-actions {
           display: flex;
@@ -7477,23 +7526,24 @@ function getSubAdminHTML() {
           margin-top: 24px;
         }
         .btn-cancel {
-          padding: 10px 20px;
+          padding: 12px 24px;
           background: transparent;
-          border: 1px solid rgba(126, 162, 212, 0.3);
+          border: 2px solid var(--primary-color, rgba(126, 162, 212, 0.5));
           border-radius: 8px;
-          color: rgba(126, 162, 212, 1);
+          color: var(--primary-color, rgba(126, 162, 212, 1));
           font-size: 14px;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.3s ease;
         }
         .btn-cancel:hover {
+          border-color: var(--primary-color);
           background: rgba(126, 162, 212, 0.1);
         }
         .btn-submit {
-          padding: 10px 20px;
-          background: rgba(126, 162, 212, 0.3);
-          border: 1px solid rgba(126, 162, 212, 0.5);
+          padding: 12px 24px;
+          background: var(--primary-color, rgba(126, 162, 212, 1));
+          border: 2px solid var(--primary-color, rgba(126, 162, 212, 1));
           border-radius: 8px;
           color: #ffffff;
           font-size: 14px;
@@ -7501,9 +7551,15 @@ function getSubAdminHTML() {
           cursor: pointer;
           transition: all 0.3s ease;
         }
-        .btn-submit:hover {
-          background: rgba(126, 162, 212, 0.4);
-          transform: translateY(-2px);
+        .btn-submit:hover:not(:disabled) {
+          background: var(--primary-color-hover, rgba(106, 142, 192, 1));
+          border-color: var(--primary-color-hover, rgba(106, 142, 192, 1));
+          transform: translateY(-1px);
+        }
+        .btn-submit:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
         }
         @keyframes slideIn {
           from {
@@ -7583,28 +7639,44 @@ ${t('subAdmin.addSubadmin')}
             <h3 class="modal-title">${t('subAdmin.addNew')}</h3>
             <button class="close-modal-btn" onclick="closeAddAdminModal()">×</button>
           </div>
-          
+
           <form onsubmit="submitNewAdmin(event)">
             <div class="form-group">
               <label class="form-label">${t('subAdmin.fullName')}</label>
-              <input type="text" class="form-input-admin" id="adminName" placeholder="${t('subAdmin.fullName')}" required>
+              <input type="text" class="form-input-admin" id="adminName"
+                     placeholder="${t('subAdmin.fullName')}"
+                     autocomplete="off" required>
             </div>
-            
-            <div class="form-group">
-              <label class="form-label">${t('subAdmin.email')}</label>
-              <input type="email" class="form-input-admin" id="adminEmail" placeholder="admin@darslinker.com" required>
-            </div>
-            
+
             <div class="form-group">
               <label class="form-label">${t('subAdmin.phone')}</label>
-              <input type="tel" class="form-input-admin" id="adminPhone" placeholder="+998901234567" required>
+              <div class="phone-input-container">
+                <div class="phone-prefix">+998</div>
+                <input type="tel" class="phone-number-input" id="adminPhone"
+                       placeholder="90 123 45 67"
+                       maxlength="12"
+                       autocomplete="off"
+                       oninput="formatPhoneNumber(this)" required>
+              </div>
             </div>
-            
+
             <div class="form-group">
               <label class="form-label">${t('subAdmin.password')}</label>
-              <input type="password" class="form-input-admin" id="adminPassword" placeholder="Minimum 6 characters" required minlength="6">
+              <input type="password" class="form-input-admin" id="adminPassword"
+                     placeholder="Minimum 6 characters"
+                     autocomplete="new-password"
+                     required minlength="6">
+              <div class="password-requirements">At least 6 characters</div>
             </div>
-            
+
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input type="password" class="form-input-admin" id="adminPasswordConfirm"
+                     placeholder="Confirm your password"
+                     autocomplete="new-password"
+                     required minlength="6">
+            </div>
+
             <div class="modal-actions">
               <button type="button" class="btn-cancel" onclick="closeAddAdminModal()">${t('subAdmin.cancel')}</button>
               <button type="submit" class="btn-submit" id="submitBtn">${t('subAdmin.addAdmin')}</button>
@@ -7619,22 +7691,38 @@ ${t('subAdmin.addSubadmin')}
 // Open add admin modal
 window.openAddAdminModal = function() {
   const modal = document.getElementById('addAdminModal');
+  const sidebar = document.querySelector('.figma-sidebar');
+
   if (modal) {
     modal.classList.remove('hidden');
+    // Hide sidebar when modal is open
+    if (sidebar) {
+      sidebar.classList.add('sidebar-hidden');
+    }
   }
 };
 
 // Close add admin modal
 window.closeAddAdminModal = function() {
   const modal = document.getElementById('addAdminModal');
+  const sidebar = document.querySelector('.figma-sidebar');
+
   if (modal) {
     modal.classList.add('hidden');
+
+    // Show sidebar when modal is closed
+    if (sidebar) {
+      sidebar.classList.remove('sidebar-hidden');
+    }
+
     // Reset form
     document.getElementById('adminName').value = '';
-    document.getElementById('adminEmail').value = '';
-    document.getElementById('adminPhone').value = '';
+    const phoneInput = document.getElementById('adminPhone');
+    if (phoneInput) phoneInput.value = '';
     document.getElementById('adminPassword').value = '';
-    
+    const confirmPasswordInput = document.getElementById('adminPasswordConfirm');
+    if (confirmPasswordInput) confirmPasswordInput.value = '';
+
     // Reset submit button
     const submitBtn = document.getElementById('submitBtn');
     submitBtn.disabled = false;
@@ -7645,34 +7733,46 @@ window.closeAddAdminModal = function() {
 // Submit new admin
 window.submitNewAdmin = async function(event) {
   event.preventDefault();
-  
+
   const submitBtn = document.getElementById('submitBtn');
   const originalText = submitBtn.textContent;
-  
+
   try {
     // Show loading state
     submitBtn.disabled = true;
     submitBtn.textContent = 'Adding...';
-    
+
     const fullName = document.getElementById('adminName').value.trim();
-    const email = document.getElementById('adminEmail').value.trim();
     const phone = document.getElementById('adminPhone').value.trim();
     const password = document.getElementById('adminPassword').value;
-    
+    const confirmPassword = document.getElementById('adminPasswordConfirm').value;
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      throw new Error('Passwords do not match');
+    }
+
+    // Validate phone format (must be 9 digits)
+    if (!/^[0-9]{9}$/.test(phone.replace(/\s/g, ''))) {
+      throw new Error('Phone number must be exactly 9 digits');
+    }
+
+    // Format phone with +998 prefix
+    const formattedPhone = '+998' + phone.replace(/\s/g, '');
+
     // Get current user data
     const userData = JSON.parse(localStorage.getItem('currentUser'));
     if (!userData || !userData._id) {
       throw new Error('User data not found');
     }
-    
+
     // Create sub-admin
     const response = await apiService.createSubAdmin(userData._id, {
       fullName,
-      email,
-      phone,
+      phone: formattedPhone,
       password
     });
-    
+
     if (response.success) {
       showSuccessToast('Sub-admin added successfully');
       closeAddAdminModal();
@@ -7701,6 +7801,36 @@ window.submitNewAdmin = async function(event) {
     submitBtn.disabled = false;
     submitBtn.textContent = originalText;
   }
+};
+
+// Format phone number input
+window.formatPhoneNumber = function(input) {
+  // Remove all non-digit characters
+  let value = input.value.replace(/\D/g, '');
+
+  // Limit to exactly 9 digits
+  if (value.length > 9) {
+    value = value.substring(0, 9);
+  }
+
+  // Format as XX XXX XX XX (total 11 chars with spaces)
+  let formatted = '';
+  if (value.length > 0) {
+    if (value.length <= 2) {
+      formatted = value;
+    } else if (value.length <= 5) {
+      formatted = value.substring(0, 2) + ' ' + value.substring(2);
+    } else if (value.length <= 7) {
+      formatted = value.substring(0, 2) + ' ' + value.substring(2, 5) + ' ' + value.substring(5);
+    } else if (value.length <= 9) {
+      formatted = value.substring(0, 2) + ' ' + value.substring(2, 5) + ' ' + value.substring(5, 7) + ' ' + value.substring(7);
+    }
+  }
+
+  // Debug: log to console
+  console.log('Original:', input.value, 'Digits only:', value, 'Length:', value.length, 'Formatted:', formatted);
+
+  input.value = formatted;
 };
 
 // Delete sub admin
