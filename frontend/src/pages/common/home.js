@@ -473,7 +473,7 @@ export function initHomePage() {
             </div>
 
             <div class="mobile-theme-toggle" id="mobileThemeToggle">
-              <span class="mobile-theme-text" data-home-i18n="darkMode">Dark Mode</span>
+              <span class="mobile-theme-text" data-home-i18n="lightMode">Light Mode</span>
               <div class="mobile-toggle-switch">
                 <div class="mobile-toggle-slider"></div>
               </div>
@@ -512,13 +512,13 @@ export function initHomePage() {
           <div class="theme-toggle" id="themeToggle">
             <div class="toggle-container">
               <!-- Sun Icon -->
-              <svg class="theme-icon sun-icon active" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="theme-icon sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
                 <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
 
               <!-- Moon Icon -->
-              <svg class="theme-icon moon-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <svg class="theme-icon moon-icon active" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </div>
@@ -1434,6 +1434,275 @@ function initHomePageEffects() {
         visibility: visible !important;
         transform: translateY(0) !important;
       }
+
+      /* Light Theme Styles */
+      .light-theme {
+        --bg-primary: #ffffff;
+        --bg-secondary: #f8f9fa;
+        --text-primary: #212529;
+        --text-secondary: #6c757d;
+      }
+
+      .light-theme body {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 50%, #e9ecef 100%) !important;
+        color: #212529 !important;
+      }
+
+      /* Force all white text to black in light mode */
+      .light-theme * {
+        color: #212529 !important;
+      }
+
+      /* Exceptions for elements that should keep their colors */
+      .light-theme .login-btn,
+      .light-theme .mobile-login-btn,
+      .light-theme .btn-primary,
+      .light-theme .advice-submit {
+        color: #ffffff !important;
+      }
+
+      .light-theme .header {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(25px) !important;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05) !important;
+      }
+
+      .light-theme .nav-item {
+        color: #212529 !important;
+      }
+
+      .light-theme .nav-item:hover,
+      .light-theme .nav-item.active {
+        color: #7EA2D4 !important;
+      }
+
+      .light-theme .login-btn {
+        background: #7EA2D4 !important;
+        color: #ffffff !important;
+      }
+
+      .light-theme .mobile-login-btn {
+        background: #7EA2D4 !important;
+        color: #ffffff !important;
+      }
+
+      .light-theme .hero {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+      }
+
+      .light-theme .hero-title {
+        color: #212529 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+      }
+
+      .light-theme .hero-feature-card {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        color: #212529 !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      .light-theme .hero-feature-card h3,
+      .light-theme .hero-feature-card p {
+        color: #212529 !important;
+      }
+
+      .light-theme .platform-feature-card {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        color: #212529 !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      .light-theme .platform-feature-card h4 {
+        color: #212529 !important;
+      }
+
+      .light-theme .pricing-card {
+        background: rgba(255, 255, 255, 0.98) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        color: #212529 !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1) !important;
+      }
+
+      .light-theme .pricing-card h3,
+      .light-theme .pricing-card span,
+      .light-theme .pricing-card .feature-item span {
+        color: #212529 !important;
+      }
+
+      .light-theme .article-card {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        color: #212529 !important;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
+      }
+
+      .light-theme .article-card h3,
+      .light-theme .article-card p {
+        color: #212529 !important;
+      }
+
+      .light-theme .advice-section {
+        background: transparent !important;
+      }
+
+      .light-theme .advice-card {
+        background: rgba(255, 255, 255, 0.98) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        color: #212529 !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12) !important;
+      }
+
+      .light-theme .advice-title {
+        color: #212529 !important;
+      }
+
+      .light-theme .form-input {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid rgba(0, 0, 0, 0.15) !important;
+        color: #212529 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05) !important;
+      }
+
+      .light-theme .form-input:focus {
+        border-color: #7EA2D4 !important;
+        box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1) !important;
+      }
+
+      .light-theme .form-input::placeholder {
+        color: #6c757d !important;
+        opacity: 1 !important;
+      }
+
+      .light-theme .btn-primary {
+        background: linear-gradient(135deg, #7EA2D4, #6B91C7) !important;
+        color: #ffffff !important;
+        border: none !important;
+      }
+
+      .light-theme .advice-submit {
+        background: linear-gradient(135deg, #7EA2D4, #6B91C7) !important;
+        color: #ffffff !important;
+      }
+
+      .light-theme .footer {
+        background: rgba(248, 249, 250, 0.95) !important;
+        color: #212529 !important;
+        border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
+      }
+
+      .light-theme .footer-nav-item,
+      .light-theme .footer-contact span,
+      .light-theme .footer-bottom p {
+        color: #212529 !important;
+      }
+
+      .light-theme .section-title {
+        color: #212529 !important;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+      }
+
+      .light-theme .lang-selected {
+        background: rgba(255, 255, 255, 0.9) !important;
+        border: 1px solid rgba(0, 0, 0, 0.2) !important;
+        color: #212529 !important;
+      }
+
+      .light-theme .lang-selected span {
+        color: #212529 !important;
+      }
+
+      .light-theme .lang-options {
+        background: rgba(255, 255, 255, 0.95) !important;
+        border: 1px solid rgba(0, 0, 0, 0.2) !important;
+      }
+
+      .light-theme .lang-option {
+        color: #212529 !important;
+      }
+
+      .light-theme .lang-option span {
+        color: #212529 !important;
+      }
+
+      .light-theme .lang-option:hover {
+        background: rgba(126, 162, 212, 0.1) !important;
+        color: #212529 !important;
+      }
+
+      .light-theme .lang-option:hover span {
+        color: #212529 !important;
+      }
+
+      /* Logo special styling for light mode - need custom logo for this */
+      .light-theme .logo,
+      .light-theme .footer-logo-img {
+        /* We'll need a custom logo with "Dars" black and "linker" #7EA2D4 */
+        /* For now, using filter to make it darker */
+        filter: brightness(0.3) contrast(1.5) !important;
+      }
+
+      /* Stats badge and other elements */
+      .light-theme .stats-badge {
+        background: rgba(255, 255, 255, 0.9) !important;
+        color: #212529 !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+      }
+
+      .light-theme .stats-number,
+      .light-theme .stats-text {
+        color: #212529 !important;
+      }
+
+      .light-theme .btn-outline {
+        background: rgba(255, 255, 255, 0.9) !important;
+        color: #7EA2D4 !important;
+        border: 2px solid #7EA2D4 !important;
+      }
+
+      .light-theme .btn-outline:hover {
+        background: #7EA2D4 !important;
+        color: #ffffff !important;
+      }
+
+      .light-theme .video-btn {
+        background: rgba(255, 255, 255, 0.9) !important;
+        color: #7EA2D4 !important;
+        border: 1px solid #7EA2D4 !important;
+      }
+
+      .light-theme .btn-login-main {
+        background: rgba(255, 255, 255, 0.95) !important;
+        color: #7EA2D4 !important;
+        border: 2px solid #7EA2D4 !important;
+      }
+
+      .light-theme .btn-login-main:hover {
+        background: #7EA2D4 !important;
+        color: #ffffff !important;
+      }
+
+      /* Social media icons with circle border */
+      .light-theme .social-link {
+        border: 2px solid #dee2e6 !important;
+        border-radius: 50% !important;
+        width: 45px !important;
+        height: 45px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        color: #6c757d !important;
+        transition: all 0.3s ease !important;
+      }
+
+      .light-theme .social-link:hover {
+        border-color: #7EA2D4 !important;
+        color: #7EA2D4 !important;
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(126, 162, 212, 0.2) !important;
+      }
     `;
     document.head.appendChild(style);
   }
@@ -1683,6 +1952,26 @@ function initHeaderScrollEffects() {
   });
 }
 
+// Apply theme changes to the page
+function applyTheme(isDark) {
+  const body = document.body;
+  const html = document.documentElement;
+  
+  if (isDark) {
+    // Dark mode styles
+    body.classList.remove('light-theme');
+    body.classList.add('dark-theme');
+    html.classList.remove('light-theme');
+    html.classList.add('dark-theme');
+  } else {
+    // Light mode styles
+    body.classList.remove('dark-theme');
+    body.classList.add('light-theme');
+    html.classList.remove('dark-theme');
+    html.classList.add('light-theme');
+  }
+}
+
 // Initialize theme toggle functionality
 function initThemeToggle() {
   const themeToggle = document.getElementById('themeToggle');
@@ -1691,15 +1980,21 @@ function initThemeToggle() {
 
   if (!themeToggle || !sunIcon || !moonIcon) return;
 
-  // Check for saved theme preference or default to light mode
-  const savedTheme = localStorage.getItem('theme') || 'light';
+  // Check for saved theme preference or default to dark mode
+  const savedTheme = localStorage.getItem('theme') || 'dark';
   let isDark = savedTheme === 'dark';
 
-  // Set initial state
+  // Set initial state - dark mode is default
   if (isDark) {
     sunIcon.classList.remove('active');
     moonIcon.classList.add('active');
+  } else {
+    moonIcon.classList.remove('active');
+    sunIcon.classList.add('active');
   }
+  
+  // Apply initial theme
+  applyTheme(isDark);
 
   themeToggle.addEventListener('click', function() {
     // Toggle theme
@@ -1724,11 +2019,10 @@ function initThemeToggle() {
       nextIcon.classList.remove('switching');
     }, 400);
 
-    // Console log for future implementation
+    // Apply actual theme changes
+    applyTheme(isDark);
+    
     console.log(`Theme switched to: ${isDark ? 'dark' : 'light'} mode`);
-
-    // Here you can add actual theme switching logic later
-    // For now, just visual toggle
   });
 
   // Add hover sound effect (optional)
@@ -2781,15 +3075,21 @@ function initMobileThemeToggle() {
     return;
   }
 
-  // Check for saved theme preference
-  const savedTheme = localStorage.getItem('theme') || 'light';
+  // Check for saved theme preference - default to dark mode
+  const savedTheme = localStorage.getItem('theme') || 'dark';
   let isDark = savedTheme === 'dark';
 
-  // Set initial state
+  // Set initial state - dark mode is default
   if (isDark) {
     mobileToggleSlider.classList.add('active');
     mobileThemeText.textContent = 'Light Mode';
+  } else {
+    mobileToggleSlider.classList.remove('active');
+    mobileThemeText.textContent = 'Dark Mode';
   }
+  
+  // Apply initial theme
+  applyTheme(isDark);
 
   mobileThemeToggle.addEventListener('click', function() {
     // Toggle theme
@@ -2824,6 +3124,9 @@ function initMobileThemeToggle() {
       }
     }
 
+    // Apply actual theme changes
+    applyTheme(isDark);
+    
     console.log(`Mobile theme switched to: ${isDark ? 'dark' : 'light'} mode`);
   });
 }
