@@ -1151,6 +1151,9 @@ function showToast(message) {
 
 // Handle logout
 function handleLogout() {
+  // Get teacher ID before clearing session
+  const teacherId = sessionStorage.getItem('currentTeacherId');
+  
   // Clear session storage
   sessionStorage.removeItem('landingUser');
   sessionStorage.removeItem('currentTeacherId');
@@ -1158,9 +1161,13 @@ function handleLogout() {
   // Show toast
   showToast(t('dashboard.loggingOut'));
   
-  // Redirect to login page after short delay
+  // Redirect to teacher landing page after short delay
   setTimeout(() => {
-    window.location.href = '/';
+    if (teacherId) {
+      window.location.href = `/teacher/${teacherId}`;
+    } else {
+      window.location.href = '/';
+    }
   }, 1000);
 }
 
