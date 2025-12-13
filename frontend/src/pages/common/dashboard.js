@@ -6158,6 +6158,11 @@ async function generateLandingPageHTML(teacher) {
             \`;
             document.body.appendChild(modal);
             
+            // Apply translations to modal content
+            setTimeout(() => {
+                window.selectLanguage({ stopPropagation: () => {} }, currentLang);
+            }, 50);
+            
             // Only numbers for reset code
             const codeInput = document.getElementById('resetCode');
             codeInput.addEventListener('input', (e) => {
@@ -6491,6 +6496,11 @@ async function generateLandingPageHTML(teacher) {
                     e.target.value = e.target.value.replace(/\\D/g, '');
                 });
                 codeInput.focus();
+                
+                // Apply translations
+                setTimeout(() => {
+                    window.selectLanguage({ stopPropagation: () => {} }, currentLang);
+                }, 50);
             }
         }
         
