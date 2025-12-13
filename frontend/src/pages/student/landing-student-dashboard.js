@@ -1098,7 +1098,7 @@ function attachEventListeners() {
   const meetingBtn = document.querySelector('.landing-meeting-btn');
   if (meetingBtn) {
     meetingBtn.addEventListener('click', () => {
-      showToast(t('common.comingSoon'));
+      showWarningToast(t('common.comingSoon'));
     });
   }
 
@@ -1134,28 +1134,7 @@ function attachEventListeners() {
   });
 }
 
-// Show toast notification
-function showToast(message) {
-  // Remove existing toast if any
-  const existingToast = document.querySelector('.landing-toast');
-  if (existingToast) {
-    existingToast.remove();
-  }
-
-  // Create new toast
-  const toast = document.createElement('div');
-  toast.className = 'landing-toast';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  // Remove after 3 seconds
-  setTimeout(() => {
-    toast.style.animation = 'slideOutBottomRight 0.3s ease';
-    setTimeout(() => {
-      toast.remove();
-    }, 300);
-  }, 3000);
-}
+// Toast functions are imported from utils/toast.js
 
 // Handle logout
 function handleLogout() {
@@ -1167,7 +1146,7 @@ function handleLogout() {
   sessionStorage.removeItem('currentTeacherId');
   
   // Show toast
-  showToast(t('dashboard.loggingOut'));
+  showSuccessToast(t('dashboard.loggingOut'));
   
   // Redirect to teacher landing page after short delay
   setTimeout(() => {
@@ -1187,7 +1166,7 @@ function handleNavigation(page) {
     initLandingStudentDashboard();
   } else if (page === 'messages') {
     // Show coming soon for messages
-    showToast(t('common.comingSoon'));
+    showWarningToast(t('common.comingSoon'));
   } else if (page === 'language') {
     // Show language selection page
     showLanguagePage();
@@ -1587,7 +1566,7 @@ window.openCourse = async function(courseId, courseType = 'free') {
   
   if (courseType !== 'free') {
     // For paid courses, show coming soon toast
-    showToast(t('common.comingSoon'));
+    showWarningToast(t('common.comingSoon'));
     return;
   }
 
@@ -2007,7 +1986,7 @@ window.applyLanguageChanges = function() {
     setLanguage(selectedLanguage);
     localStorage.setItem('language', selectedLanguage);
 
-    showToast(t('language.updated'));
+    showSuccessToast(t('language.updated'));
 
     // Reload page with new language
     setTimeout(() => {
@@ -2030,7 +2009,7 @@ window.saveProfileChanges = function(event) {
   const phone = document.getElementById('phone').value.trim();
 
   if (!firstName || !lastName) {
-    showToast(t('common.fillRequiredFields'));
+    showErrorToast(t('common.fillRequiredFields'));
     return;
   }
 
@@ -2056,7 +2035,7 @@ window.saveProfileChanges = function(event) {
   // Save to sessionStorage
   sessionStorage.setItem('landingUser', JSON.stringify(updatedUser));
 
-  showToast(t('profile.updated'));
+  showSuccessToast(t('profile.updated'));
 
   // Go back to dashboard
   setTimeout(() => {
