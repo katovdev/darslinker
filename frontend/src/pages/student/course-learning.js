@@ -1222,7 +1222,7 @@ function attachEventListeners(course, currentLesson = null) {
   const meetingBtn = document.querySelector('.meeting-btn');
   if (meetingBtn) {
     meetingBtn.addEventListener('click', () => {
-      showToast('Coming soon');
+      showToast(t('courseLearning.comingSoon'));
     });
   }
 
@@ -1230,7 +1230,7 @@ function attachEventListeners(course, currentLesson = null) {
   const notificationBtn = document.querySelector('.notification-btn');
   if (notificationBtn) {
     notificationBtn.addEventListener('click', () => {
-      showToast('Coming soon');
+      showToast(t('courseLearning.comingSoon'));
     });
   }
 
@@ -1258,7 +1258,7 @@ function attachEventListeners(course, currentLesson = null) {
   // Mobile sidebar functions for course overview
   window.toggleCourseMobileSidebar = function() {
     // This function is for the course overview page (not the lesson player)
-    showToast('Mobile sidebar for course overview - coming soon!');
+    showToast(t('courseLearning.mobileSidebarComingSoon'));
   };
 
   window.closeCourseMobileSidebar = function() {
@@ -1313,7 +1313,7 @@ function attachEventListeners(course, currentLesson = null) {
   
   // Show locked lesson toast
   window.showLockedLessonToast = function() {
-    showToast('⚠️ Iltimos, darslarni ketma-ketlikda ko\'ring');
+    showToast(t('courseLearning.pleaseWatchInOrder'));
   };
 
   // Open specific lesson - unified loader for ALL lesson types
@@ -1351,7 +1351,7 @@ function attachEventListeners(course, currentLesson = null) {
       // Load unified lesson player (handles ALL lesson types)
       await loadUnifiedLessonPlayer(course, selectedLesson);
     } else {
-      showToast('Lesson not found');
+      showToast(t('courseLearning.lessonNotFound'));
     }
   };
   
@@ -1438,7 +1438,7 @@ function attachEventListeners(course, currentLesson = null) {
     });
     
     if (currentModuleIndex === -1) {
-      showToast('Keyingi dars topilmadi');
+      showToast(t('courseLearning.nextLessonNotFound'));
       return;
     }
     
@@ -1446,7 +1446,7 @@ function attachEventListeners(course, currentLesson = null) {
     const currentModule = course.modules[currentModuleIndex];
     if (currentLessonIndex < currentModule.lessons.length - 1) {
       const nextLesson = currentModule.lessons[currentLessonIndex + 1];
-      showToast('✅ Dars tugatildi!');
+      showToast(t('courseLearning.lessonCompleted'));
       setTimeout(() => {
         window.openLesson(currentModule._id, nextLesson._id);
       }, 500);
@@ -1457,7 +1457,7 @@ function attachEventListeners(course, currentLesson = null) {
     if (currentModuleIndex < course.modules.length - 1) {
       const nextModule = course.modules[currentModuleIndex + 1];
       if (nextModule.lessons && nextModule.lessons.length > 0) {
-        showToast('✅ Modul tugatildi!');
+        showToast(t('courseLearning.moduleCompleted'));
         setTimeout(() => {
           window.openLesson(nextModule._id, nextModule.lessons[0]._id);
         }, 500);
@@ -1466,7 +1466,7 @@ function attachEventListeners(course, currentLesson = null) {
     }
     
     // No more lessons - course completed!
-    showToast('🎉 Kurs muvaffaqiyatli tugatildi!');
+    showToast(t('courseLearning.courseCompleted'));
     setTimeout(() => {
       // Reload course overview to show final progress
       initCourseLearningPage(courseId);
@@ -1508,7 +1508,7 @@ function attachEventListeners(course, currentLesson = null) {
       }
     }
     
-    showToast('🎉 Barcha darslar tugatildi!');
+    showToast(t('courseLearning.allLessonsCompleted'));
   };
   
   // Store current lesson globally for next lesson function
@@ -1522,7 +1522,7 @@ function attachEventListeners(course, currentLesson = null) {
 function handleLogout() {
   sessionStorage.removeItem('landingUser');
   sessionStorage.removeItem('currentTeacherId');
-  showToast('Logging out...');
+  showToast(t('courseLearning.loggingOut'));
   setTimeout(() => {
     window.location.href = '/';
   }, 1000);
@@ -2008,7 +2008,7 @@ async function loadVideoContent(contentArea, lesson) {
         </div>
 
         <button id="nextLessonBtn" onclick="markCompleteAndGoNext('${window.currentCourse?._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-left: 20px;">
-          Keyingi dars →
+          ${t('courseLearning.nextLesson')}
         </button>
       </div>
     </div>
@@ -2180,7 +2180,7 @@ async function loadFileContent(contentArea, lesson) {
       <!-- Next Lesson Button -->
       <div style="margin-top: 32px; display: flex; justify-content: flex-end; padding-top: 24px; border-top: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);">
         <button id="nextLessonBtn" onclick="markCompleteAndGoNext('${window.currentCourse?._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
-          Keyingi dars →
+          ${t('courseLearning.nextLesson')}
         </button>
       </div>
     </div>
@@ -2411,7 +2411,7 @@ window.goToNextLesson = function(courseId, currentLessonId) {
     window.openLesson(nextLesson.moduleId, nextLesson.lesson._id);
   } else {
     // No more lessons - could show completion or return to course overview
-    showToast('Course Complete', 'You have finished all lessons in this course!', 'success');
+    showToast(t('courseLearning.courseComplete'), t('courseLearning.courseCompleteMessage'), 'success');
   }
 };
 
