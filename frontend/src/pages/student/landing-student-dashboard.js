@@ -909,7 +909,8 @@ export function renderLandingStudentDashboard() {
               <span class="landing-nav-arrow" id="account-arrow">▶</span>
             </div>
             <div class="landing-nav-children hidden" id="account-children">
-              <a class="landing-nav-item" data-page="account">Settings</a>
+              <a class="landing-nav-item" data-page="language">Language</a>
+              <a class="landing-nav-item" data-page="edit-profile">Edit Profile</a>
             </div>
           </div>
         </nav>
@@ -1152,13 +1153,19 @@ function handleLogout() {
 
 function handleNavigation(page) {
   console.log('Navigate to:', page);
-  
+
   if (page === 'home') {
     // Reload dashboard home
     initLandingStudentDashboard();
   } else if (page === 'messages') {
     // Show coming soon for messages
     showToast('Coming soon');
+  } else if (page === 'language') {
+    // Show language selection page
+    showLanguagePage();
+  } else if (page === 'edit-profile') {
+    // Show edit profile page
+    showEditProfilePage();
   }
   // Add your navigation logic here
 }
@@ -1610,17 +1617,23 @@ setTimeout(() => {
     item.addEventListener('click', async (e) => {
       e.preventDefault();
       const page = item.dataset.page;
-      
+
       // Remove active class from all items
       document.querySelectorAll('.landing-nav-item').forEach(i => i.classList.remove('active'));
       // Add active to clicked item
       item.classList.add('active');
-      
+
       // Handle navigation
       if (page === 'home') {
         // Reload dashboard home
         const { initLandingStudentDashboard } = await import('./landing-student-dashboard.js');
         initLandingStudentDashboard();
+      } else if (page === 'language') {
+        // Show language selection page
+        showLanguagePage();
+      } else if (page === 'edit-profile') {
+        // Show edit profile page
+        showEditProfilePage();
       } else {
         console.log('Navigate to:', page);
         // Add other page handlers here
@@ -1736,4 +1749,239 @@ window.markAsRead = function(notificationId) {
     }
   })
   .catch(e => {});
+};
+
+// Show language selection page
+function showLanguagePage() {
+  const content = document.querySelector('.landing-dashboard-content');
+
+  // Get current language from localStorage or default to 'en'
+  const currentLang = localStorage.getItem('language') || 'en';
+
+  // Set initial selected language
+  selectedLanguage = currentLang;
+
+  content.innerHTML = `
+    <div style="padding: 40px; max-width: 1000px; width: 100%; margin: 0 auto;">
+      <div style="margin-bottom: 40px;">
+        <h2 style="color: white; font-size: 28px; font-weight: 700; margin-bottom: 10px;">Language Settings</h2>
+        <p style="color: rgba(255,255,255,0.7); font-size: 16px;">Choose your preferred language</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 40px;">
+        <div onclick="selectLanguage('en')"
+             style="display: flex; align-items: center; height: 70px; padding: 20px; background: rgba(58, 56, 56, 0.3); border: 2px solid ${currentLang === 'en' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)'}; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; outline: none; box-shadow: none;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; margin-right: 20px; flex-shrink: 0;">E</div>
+          <span style="font-size: 18px; font-weight: 600; color: white; flex: 1;">English</span>
+          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${currentLang === 'en' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.3)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; ${currentLang === 'en' ? 'background: var(--primary-color);' : ''}">
+            ${currentLang === 'en' ? '<span style="color: white; font-size: 12px; font-weight: 700;">✓</span>' : ''}
+          </div>
+        </div>
+
+        <div onclick="selectLanguage('uz')"
+             style="display: flex; align-items: center; height: 70px; padding: 20px; background: rgba(58, 56, 56, 0.3); border: 2px solid ${currentLang === 'uz' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)'}; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; outline: none; box-shadow: none;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; margin-right: 20px; flex-shrink: 0;">U</div>
+          <span style="font-size: 18px; font-weight: 600; color: white; flex: 1;">O'zbek</span>
+          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${currentLang === 'uz' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.3)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; ${currentLang === 'uz' ? 'background: var(--primary-color);' : ''}">
+            ${currentLang === 'uz' ? '<span style="color: white; font-size: 12px; font-weight: 700;">✓</span>' : ''}
+          </div>
+        </div>
+
+        <div onclick="selectLanguage('ru')"
+             style="display: flex; align-items: center; height: 70px; padding: 20px; background: rgba(58, 56, 56, 0.3); border: 2px solid ${currentLang === 'ru' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.1)'}; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; outline: none; box-shadow: none;">
+          <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary-color); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; color: white; margin-right: 20px; flex-shrink: 0;">R</div>
+          <span style="font-size: 18px; font-weight: 600; color: white; flex: 1;">Русский</span>
+          <div style="width: 20px; height: 20px; border-radius: 50%; border: 2px solid ${currentLang === 'ru' ? 'var(--primary-color)' : 'rgba(255, 255, 255, 0.3)'}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; ${currentLang === 'ru' ? 'background: var(--primary-color);' : ''}">
+            ${currentLang === 'ru' ? '<span style="color: white; font-size: 12px; font-weight: 700;">✓</span>' : ''}
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 16px;">
+        <button onclick="applyLanguageChanges()"
+                style="flex: 1; padding: 16px; background: var(--primary-color); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+          Apply Changes
+        </button>
+        <button onclick="cancelLanguageChanges()"
+                style="flex: 1; padding: 16px; background: transparent; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; color: rgba(255, 255, 255, 0.8); font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+          Cancel
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+// Show edit profile page
+function showEditProfilePage() {
+  const content = document.querySelector('.landing-dashboard-content');
+
+  // Get user data
+  const landingUser = sessionStorage.getItem('landingUser');
+  let userData = {};
+  if (landingUser) {
+    try {
+      userData = JSON.parse(landingUser);
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+  }
+
+  content.innerHTML = `
+    <div style="padding: 40px; max-width: 1000px; width: 100%; margin: 0 auto;">
+      <div style="margin-bottom: 40px;">
+        <h2 style="color: white; font-size: 28px; font-weight: 700; margin-bottom: 10px;">Edit Profile</h2>
+        <p style="color: rgba(255,255,255,0.7); font-size: 16px;">Update your personal information</p>
+      </div>
+
+      <form onsubmit="saveProfileChanges(event)" style="display: flex; flex-direction: column; gap: 24px;">
+        <div>
+          <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">First Name</label>
+          <input type="text" id="firstName" value="${userData.firstName || ''}"
+                 style="width: 100%; padding: 16px; background: rgba(58, 56, 56, 0.8); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 16px; transition: all 0.3s ease;"
+                 placeholder="Enter your first name" required>
+        </div>
+
+        <div>
+          <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">Last Name</label>
+          <input type="text" id="lastName" value="${userData.lastName || ''}"
+                 style="width: 100%; padding: 16px; background: rgba(58, 56, 56, 0.8); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 16px; transition: all 0.3s ease;"
+                 placeholder="Enter your last name" required>
+        </div>
+
+
+        <div>
+          <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">Phone</label>
+          <input type="tel" id="phone" value="${userData.phone || ''}"
+                 style="width: 100%; padding: 16px; background: rgba(58, 56, 56, 0.8); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 16px; transition: all 0.3s ease;"
+                 placeholder="Enter your phone number">
+        </div>
+
+        <div style="display: flex; gap: 16px; margin-top: 20px;">
+          <button type="submit"
+                  style="flex: 1; padding: 16px; background: var(--primary-color); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+            Save Changes
+          </button>
+          <button type="button" onclick="cancelProfileChanges()"
+                  style="flex: 1; padding: 16px; background: transparent; border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; color: rgba(255, 255, 255, 0.8); font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  // Add focus styles
+  const inputs = content.querySelectorAll('input');
+  inputs.forEach(input => {
+    input.addEventListener('focus', function() {
+      this.style.borderColor = 'var(--primary-color)';
+      this.style.background = 'rgba(58, 56, 56, 1)';
+    });
+    input.addEventListener('blur', function() {
+      this.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      this.style.background = 'rgba(58, 56, 56, 0.8)';
+    });
+  });
+}
+
+// Language selection functions
+let selectedLanguage = null;
+
+window.selectLanguage = function(lang) {
+  selectedLanguage = lang;
+  console.log('Selected language:', lang);
+
+  // Update all language options by checking onclick attribute
+  const content = document.querySelector('.landing-dashboard-content');
+  const languageOptions = content.querySelectorAll('div[onclick^="selectLanguage"]');
+
+  languageOptions.forEach(option => {
+    const clickHandler = option.getAttribute('onclick');
+    const isSelected = clickHandler && clickHandler.includes(`'${lang}'`);
+
+    if (isSelected) {
+      // Selected state
+      option.style.border = '2px solid var(--primary-color)';
+      const checkmark = option.querySelector('div:last-child');
+      if (checkmark) {
+        checkmark.style.background = 'var(--primary-color)';
+        checkmark.style.border = '2px solid var(--primary-color)';
+        checkmark.innerHTML = '<span style="color: white; font-size: 12px; font-weight: 700;">✓</span>';
+      }
+    } else {
+      // Unselected state
+      option.style.border = '2px solid rgba(255, 255, 255, 0.1)';
+      const checkmark = option.querySelector('div:last-child');
+      if (checkmark) {
+        checkmark.style.background = 'transparent';
+        checkmark.style.border = '2px solid rgba(255, 255, 255, 0.3)';
+        checkmark.innerHTML = '';
+      }
+    }
+  });
+};
+
+window.applyLanguageChanges = function() {
+  if (selectedLanguage) {
+    localStorage.setItem('language', selectedLanguage);
+    showToast('Language updated successfully!');
+
+    // Reload page with new language
+    setTimeout(() => {
+      initLandingStudentDashboard();
+    }, 1000);
+  }
+};
+
+window.cancelLanguageChanges = function() {
+  // Go back to dashboard
+  initLandingStudentDashboard();
+};
+
+// Profile editing functions
+window.saveProfileChanges = function(event) {
+  event.preventDefault();
+
+  const firstName = document.getElementById('firstName').value.trim();
+  const lastName = document.getElementById('lastName').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+
+  if (!firstName || !lastName) {
+    showToast('Please fill in all required fields');
+    return;
+  }
+
+  // Get current user data
+  const landingUser = sessionStorage.getItem('landingUser');
+  let userData = {};
+  if (landingUser) {
+    try {
+      userData = JSON.parse(landingUser);
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+    }
+  }
+
+  // Update user data
+  const updatedUser = {
+    ...userData,
+    firstName: firstName,
+    lastName: lastName,
+    phone: phone
+  };
+
+  // Save to sessionStorage
+  sessionStorage.setItem('landingUser', JSON.stringify(updatedUser));
+
+  showToast('Profile updated successfully!');
+
+  // Go back to dashboard
+  setTimeout(() => {
+    initLandingStudentDashboard();
+  }, 1000);
+};
+
+window.cancelProfileChanges = function() {
+  // Go back to dashboard
+  initLandingStudentDashboard();
 };
