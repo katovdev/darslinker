@@ -216,6 +216,25 @@ const translations = {
     'quiz.noQuestionsAvailable': 'No questions available',
     'quiz.minutes': 'min',
 
+    // File Player
+    'file.logOut': 'Log out',
+    'file.fileResource': 'File Resource',
+    'file.file': 'File',
+    'file.aboutThisFile': 'About This File',
+    'file.downloadFile': 'Download File',
+    'file.clickToDownload': 'Click to download',
+    'file.fileAvailableForDownload': 'File available for download',
+    'file.downloadFileBtn': 'Download File',
+    'file.pdfFile': 'PDF file',
+    'file.wordDocumentFile': 'Word Document file',
+    'file.imageFile': 'Image file',
+    'file.archiveFile': 'Archive file',
+    'file.defaultFile': 'File file',
+    'file.module': 'Module',
+    'file.lessons': 'lessons',
+    'file.lesson': 'Lesson',
+    'file.noLessons': 'No lessons',
+
     // Time Duration
     'time.hours': 'hours',
     'time.hour': 'hour',
@@ -823,6 +842,25 @@ const translations = {
     'quiz.noQuestionsAvailable': 'Savollar mavjud emas',
     'quiz.minutes': 'daq',
 
+    // File Player
+    'file.logOut': 'Chiqish',
+    'file.fileResource': 'Fayl resursi',
+    'file.file': 'Fayl',
+    'file.aboutThisFile': 'Ushbu fayl haqida',
+    'file.downloadFile': 'Faylni yuklab olish',
+    'file.clickToDownload': 'Yuklab olish uchun bosing',
+    'file.fileAvailableForDownload': 'Fayl yuklab olish uchun mavjud',
+    'file.downloadFileBtn': 'Faylni yuklab olish',
+    'file.pdfFile': 'PDF fayl',
+    'file.wordDocumentFile': 'Word hujjat fayli',
+    'file.imageFile': 'Rasm fayli',
+    'file.archiveFile': 'Arxiv fayli',
+    'file.defaultFile': 'Fayl',
+    'file.module': 'Modul',
+    'file.lessons': 'dars',
+    'file.lesson': 'Dars',
+    'file.noLessons': 'Darslar yo\'q',
+
     // Time Duration
     'time.hours': 'soat',
     'time.hour': 'soat',
@@ -1429,6 +1467,25 @@ const translations = {
     'quiz.timeUp': 'Время вышло! Тест автоматически завершен.',
     'quiz.noQuestionsAvailable': 'Вопросы недоступны',
     'quiz.minutes': 'мин',
+
+    // File Player
+    'file.logOut': 'Выйти',
+    'file.fileResource': 'Файловый ресурс',
+    'file.file': 'Файл',
+    'file.aboutThisFile': 'Об этом файле',
+    'file.downloadFile': 'Скачать файл',
+    'file.clickToDownload': 'Нажмите для скачивания',
+    'file.fileAvailableForDownload': 'Файл доступен для скачивания',
+    'file.downloadFileBtn': 'Скачать файл',
+    'file.pdfFile': 'PDF файл',
+    'file.wordDocumentFile': 'Документ Word',
+    'file.imageFile': 'Файл изображения',
+    'file.archiveFile': 'Архивный файл',
+    'file.defaultFile': 'Файл',
+    'file.module': 'Модуль',
+    'file.lessons': 'уроков',
+    'file.lesson': 'Урок',
+    'file.noLessons': 'Нет уроков',
 
     // Time Duration
     'time.hours': 'часов',

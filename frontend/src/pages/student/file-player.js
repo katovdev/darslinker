@@ -1,5 +1,10 @@
+// Import i18n functions
+import { t, initI18n } from '../../utils/i18n.js';
+
 // File player page
 export async function loadFilePlayer(course, lesson, sidebarHtml) {
+  // Initialize i18n
+  initI18n();
   console.log('📎 Loading file player:', lesson.title);
 
   const appContainer = document.getElementById('app') || document.body;
@@ -413,7 +418,7 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
           </svg>
-          <span class="logout-text">Log out</span>
+          <span class="logout-text">${t('file.logOut')}</span>
         </button>
       </div>
     </header>
@@ -427,14 +432,14 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
       <div class="file-content">
         <div class="file-container">
           <!-- File Header -->
-          <h1 class="file-title">${lesson.title || 'File Resource'}</h1>
+          <h1 class="file-title">${lesson.title || t('file.fileResource')}</h1>
 
           <div class="file-meta">
             <div class="meta-item">
               <svg class="meta-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
               </svg>
-              <span>File</span>
+              <span>${t('file.file')}</span>
             </div>
           </div>
 
@@ -445,7 +450,7 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
               </svg>
-              About This File
+              ${t('file.aboutThisFile')}
             </h2>
             <div class="section-content">
               ${lesson.description}
@@ -460,7 +465,7 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/>
               </svg>
-              Download File
+              ${t('file.downloadFile')}
             </h2>
             <div class="file-download-card" onclick="downloadFile('${lesson.fileUrl}', getFileName('${lesson.fileUrl}', '${lesson.title}'))">
               <div class="file-icon-large" id="fileIconLarge">
@@ -469,15 +474,15 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
                 </svg>
               </div>
               <div class="file-info-large">
-                <div class="file-name-large" id="fileName">${lesson.title || 'Download File'}</div>
-                <div class="file-details" id="fileType">Click to download</div>
-                <div class="file-details" id="fileSize">File available for download</div>
+                <div class="file-name-large" id="fileName">${lesson.title || t('file.downloadFile')}</div>
+                <div class="file-details" id="fileType">${t('file.clickToDownload')}</div>
+                <div class="file-details" id="fileSize">${t('file.fileAvailableForDownload')}</div>
               </div>
               <button class="download-btn" onclick="event.stopPropagation(); downloadFile('${lesson.fileUrl}', getFileName('${lesson.fileUrl}', '${lesson.title}'))">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M3 15v4c0 1.1.9 2 2 2h14a2 2 0 002-2v-4M17 9l-5 5-5-5M12 12.8V2.5"/>
                 </svg>
-                Download File
+                ${t('file.downloadFileBtn')}
               </button>
             </div>
           </div>
@@ -499,7 +504,7 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
         const { icon, type, className } = getFileTypeInfo(fileExtension);
         fileIconLarge.innerHTML = icon;
         fileIconLarge.className = 'file-icon-large ' + className;
-        fileType.textContent = type + ' file';
+        fileType.textContent = getTranslatedFileType(type);
       }
     }
   }, 100);
@@ -558,6 +563,18 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
     }
   }
 
+  // Get translated file type
+  function getTranslatedFileType(type) {
+    const typeMap = {
+      'PDF': t('file.pdfFile'),
+      'Word Document': t('file.wordDocumentFile'),
+      'Image': t('file.imageFile'),
+      'Archive': t('file.archiveFile'),
+      'File': t('file.defaultFile')
+    };
+    return typeMap[type] || t('file.defaultFile');
+  }
+
   // Get file type info (icon, type, className)
   function getFileTypeInfo(extension) {
     const fileTypes = {
@@ -610,8 +627,8 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
         html += `
           <div class="sidebar-module">
             <div class="sidebar-module-header" onclick="togglePlayerModule(${moduleIndex})">
-              <span class="sidebar-module-title">${module.title || `Module ${moduleIndex + 1}`}</span>
-              <span class="sidebar-module-count">${module.lessons?.length || 0} dars</span>
+              <span class="sidebar-module-title">${module.title || `${t('file.module')} ${moduleIndex + 1}`}</span>
+              <span class="sidebar-module-count">${module.lessons?.length || 0} ${t('file.lessons')}</span>
               <span class="sidebar-module-arrow" id="player-arrow-${moduleIndex}">▼</span>
             </div>
             <div class="sidebar-module-lessons" id="player-lessons-${moduleIndex}">
@@ -647,13 +664,13 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
                         }
                       </div>
                       <div class="sidebar-lesson-info">
-                        <div class="sidebar-lesson-title">${lesson.title || `Lesson ${lessonIndex + 1}`}</div>
+                        <div class="sidebar-lesson-title">${lesson.title || `${t('file.lesson')} ${lessonIndex + 1}`}</div>
                         ${lesson.duration ? `<div class="sidebar-lesson-duration">${lesson.duration}</div>` : ''}
                       </div>
                     </div>
                   `;
                   }).join('')
-                : '<div style="padding: 20px; text-align: center; color: #9CA3AF;">No lessons</div>'
+                : `<div style="padding: 20px; text-align: center; color: #9CA3AF;">${t('file.noLessons')}</div>`
               }
             </div>
           </div>
@@ -752,4 +769,15 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
       });
     }
   }, 100);
+
+  // Add language change listener for dynamic retranslation
+  const handleLanguageChange = () => {
+    // Reload the file player with new language
+    loadFilePlayer(course, lesson, sidebarHtml);
+  };
+
+  // Remove existing listener if any
+  window.removeEventListener('languageChanged', handleLanguageChange);
+  // Add new listener
+  window.addEventListener('languageChanged', handleLanguageChange);
 }
