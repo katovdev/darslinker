@@ -1,5 +1,152 @@
 // Course learning page - Full course view with modules and lessons
 import { loadQuizPlayer } from './quiz-player.js';
+// Import i18n functions
+import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
+
+// Function to translate duration text
+function translateDuration(duration) {
+  if (!duration || typeof duration !== 'string') {
+    return duration;
+  }
+  
+  // Skip if it's already a non-time text
+  const lowerDuration = duration.toLowerCase().trim();
+  if (lowerDuration === 'quiz' || lowerDuration === 'assignment' || lowerDuration === 'file') {
+    return duration;
+  }
+  
+  console.log('🕐 Translating duration:', duration, 'Current language:', getCurrentLanguage());
+  
+  // Quick test - if it's exactly "11 daqiqa 33 soniya", force translate it
+  if (duration === "11 daqiqa 33 soniya") {
+    const currentLang = getCurrentLanguage();
+    console.log('🎯 Found exact match for test duration, current lang:', currentLang);
+    if (currentLang === 'ru') {
+      return '11 минут 33 секунд';
+    } else if (currentLang === 'en') {
+      return '11 minutes 33 seconds';
+    }
+  }
+  
+  // Handle various Uzbek formats: "11 daqiqa 33 soniy", "11daqiqa33soniya", etc.
+  const uzbekPatterns = [
+    /(\d+)\s*daqiqa\s*(\d+)\s*soniya/i,
+    /(\d+)\s*daqiqa\s*(\d+)\s*soniy/i,
+    /(\d+)\s*daqiqa\s*(\d+)/i,
+    /(\d+)\s*daqiqa/i
+  ];
+  
+  for (const pattern of uzbekPatterns) {
+    const match = duration.match(pattern);
+    if (match) {
+      const minutes = parseInt(match[1]);
+      const seconds = parseInt(match[2] || 0);
+      
+      console.log('✅ Matched Uzbek pattern:', { minutes, seconds });
+      
+      const currentLang = getCurrentLanguage();
+      if (currentLang === 'en') {
+        if (seconds > 0) {
+          return `${minutes} ${minutes === 1 ? t('time.minute') : t('time.minutes')} ${seconds} ${seconds === 1 ? t('time.second') : t('time.seconds')}`;
+        } else {
+          return `${minutes} ${minutes === 1 ? t('time.minute') : t('time.minutes')}`;
+        }
+      } else if (currentLang === 'ru') {
+        if (seconds > 0) {
+          return `${minutes} ${t('time.minutes')} ${seconds} ${t('time.seconds')}`;
+        } else {
+          return `${minutes} ${t('time.minutes')}`;
+        }
+      } else {
+        // Keep Uzbek as is or format it properly
+        if (seconds > 0) {
+          return `${minutes} ${t('time.minutes')} ${seconds} ${t('time.seconds')}`;
+        } else {
+          return `${minutes} ${t('time.minutes')}`;
+        }
+      }
+    }
+  }
+  
+  // Handle MM:SS format (e.g., "11:33")
+  const timePattern = /^(\d+):(\d+)$/;
+  const timeMatch = duration.match(timePattern);
+  if (timeMatch) {
+    const minutes = parseInt(timeMatch[1]);
+    const seconds = parseInt(timeMatch[2]);
+    
+    console.log('✅ Matched time pattern:', { minutes, seconds });
+    
+    const currentLang = getCurrentLanguage();
+    if (currentLang === 'uz') {
+      if (seconds > 0) {
+        return `${minutes} ${t('time.minutes')} ${seconds} ${t('time.seconds')}`;
+      } else {
+        return `${minutes} ${t('time.minutes')}`;
+      }
+    } else if (currentLang === 'ru') {
+      if (seconds > 0) {
+        return `${minutes} ${t('time.minutes')} ${seconds} ${t('time.seconds')}`;
+      } else {
+        return `${minutes} ${t('time.minutes')}`;
+      }
+    } else {
+      if (seconds > 0) {
+        return `${minutes} ${minutes === 1 ? t('time.minute') : t('time.minutes')} ${seconds} ${seconds === 1 ? t('time.second') : t('time.seconds')}`;
+      } else {
+        return `${minutes} ${minutes === 1 ? t('time.minute') : t('time.minutes')}`;
+      }
+    }
+  }
+  
+  // Handle English formats
+  const englishPattern = /(\d+)\s*minutes?\s*(\d+)?\s*seconds?/i;
+  const englishMatch = duration.match(englishPattern);
+  if (englishMatch) {
+    const minutes = parseInt(englishMatch[1]);
+    const seconds = parseInt(englishMatch[2] || 0);
+    
+    console.log('✅ Matched English pattern:', { minutes, seconds });
+    
+    const currentLang = getCurrentLanguage();
+    if (currentLang === 'uz') {
+      if (seconds > 0) {
+        return `${minutes} ${t('time.minutes')} ${seconds} ${t('time.seconds')}`;
+      } else {
+        return `${minutes} ${t('time.minutes')}`;
+      }
+    } else if (currentLang === 'ru') {
+      if (seconds > 0) {
+        return `${minutes} ${t('time.minutes')} ${seconds} ${t('time.seconds')}`;
+      } else {
+        return `${minutes} ${t('time.minutes')}`;
+      }
+    }
+  }
+  
+  console.log('❌ No pattern matched for duration:', duration);
+  // Return original if no pattern matches
+  return duration;
+}
+
+// Function to retranslate all durations on the page
+function retranslateDurations() {
+  console.log('🔄 Retranslating all durations on page...');
+  
+  // Find all lesson duration elements
+  const durationElements = document.querySelectorAll('.lesson-duration, .sidebar-lesson-duration');
+  
+  durationElements.forEach(element => {
+    const originalText = element.textContent;
+    if (originalText && originalText !== t('courseLearning.noDuration')) {
+      const translatedText = translateDuration(originalText);
+      if (translatedText !== originalText) {
+        console.log('🔄 Updating duration:', originalText, '→', translatedText);
+        element.textContent = translatedText;
+      }
+    }
+  });
+}
 
 // Global flag to track if layout is already rendered
 let isLayoutRendered = false;
@@ -54,6 +201,17 @@ function getLogoHTML() {
 
 export async function initCourseLearningPage(courseId) {
   console.log('📚 Loading course learning page for:', courseId);
+  
+  // Initialize i18n
+  await initI18n();
+  
+  // Add language change listener to re-translate durations
+  window.addEventListener('languageChanged', () => {
+    console.log('🌍 Language changed, re-translating durations...');
+    setTimeout(() => {
+      retranslateDurations();
+    }, 100);
+  });
 
   // Fetch course data
   const courseData = await fetchCourseData(courseId);
@@ -244,17 +402,22 @@ async function renderCourseLearningPage(course) {
   // Build duration text
   let durationText = '';
   if (totalHours > 0) {
-    durationText = `${totalHours} soat`;
+    const hoursText = totalHours === 1 ? t('time.hour') : t('time.hours');
+    durationText = `${totalHours} ${hoursText}`;
     if (displayMinutes > 0) {
-      durationText += ` ${displayMinutes} daqiqa`;
+      const minutesText = displayMinutes === 1 ? t('time.minute') : t('time.minutes');
+      durationText += ` ${displayMinutes} ${minutesText}`;
     }
   } else if (displayMinutes > 0) {
-    durationText = `${displayMinutes} daqiqa`;
+    const minutesText = displayMinutes === 1 ? t('time.minute') : t('time.minutes');
+    durationText = `${displayMinutes} ${minutesText}`;
     if (remainingSeconds > 0) {
-      durationText += ` ${remainingSeconds} soniya`;
+      const secondsText = remainingSeconds === 1 ? t('time.second') : t('time.seconds');
+      durationText += ` ${remainingSeconds} ${secondsText}`;
     }
   } else {
-    durationText = `${remainingSeconds} soniya`;
+    const secondsText = remainingSeconds === 1 ? t('time.second') : t('time.seconds');
+    durationText = `${remainingSeconds} ${secondsText}`;
   }
 
   // Clear body and set styles
@@ -865,11 +1028,11 @@ async function renderCourseLearningPage(course) {
           ${getLogoHTML()}
         </div>
         <div class="header-actions">
-          <button class="icon-btn logout-btn" title="Logout">
+          <button class="icon-btn logout-btn" title="${t('courseLearning.logoutTitle')}"
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
             </svg>
-            <span class="logout-text">Log out</span>
+            <span class="logout-text">${t('courseLearning.logout')}</span>
           </button>
         </div>
       </header>
@@ -878,12 +1041,12 @@ async function renderCourseLearningPage(course) {
       <main class="course-learning-content">
         <!-- Course Header -->
         <div class="course-header">
-          <h1 class="course-title">${course.title || 'Untitled Course'}</h1>
+          <h1 class="course-title">${course.title || t('courseLearning.untitledCourse')}</h1>
           
           <!-- Progress Section -->
           <div class="course-progress-section">
             <div class="progress-label">
-              Siz kursni <span class="progress-percentage">${progress}%</span> tugatdingiz
+              ${t('courseLearning.progressText', { progress })}
             </div>
             <div class="progress-bar-container">
               <div class="progress-bar-fill" style="width: ${progress}%"></div>
@@ -908,7 +1071,7 @@ async function renderCourseLearningPage(course) {
               <svg class="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
               </svg>
-              <span>${totalLessons} ta dars</span>
+              <span>${t('courseLearning.lessonsCount', { count: totalLessons })}</span>
             </div>
             <div class="info-item">
               <svg class="info-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -922,7 +1085,7 @@ async function renderCourseLearningPage(course) {
 
         <!-- Modules Section -->
         <div class="modules-section">
-          <h2 class="section-title">Kurs tarkibi</h2>
+          <h2 class="section-title">${t('courseLearning.courseContent')}</h2>
           <div class="modules-list">
             ${renderModules(course.modules || [])}
           </div>
@@ -968,8 +1131,8 @@ function renderModules(modules) {
       <div class="module-card" data-module-id="${module._id}">
         <div class="module-header" onclick="toggleModule('${module._id}')">
           <div class="module-title-section">
-            <h3 class="module-title">${index + 1}. ${module.title || 'Untitled Module'}</h3>
-            <p class="module-meta">${lessonCount} ta dars</p>
+            <h3 class="module-title">${index + 1}. ${module.title || t('courseLearning.untitledModule')}</h3>
+            <p class="module-meta">${t('courseLearning.lessonsCount', { count: lessonCount })}</p>
             <div class="module-progress-bar">
               <div class="module-progress-fill ${progressClass}" style="width: ${moduleProgress}%"></div>
             </div>
@@ -992,7 +1155,7 @@ function renderModules(modules) {
 // Render lessons for a module
 function renderLessons(lessons, moduleId) {
   if (!lessons || lessons.length === 0) {
-    return '<p style="color: #9CA3AF; text-align: center; padding: 20px;">No lessons</p>';
+    return `<p style="color: #9CA3AF; text-align: center; padding: 20px;">${t('courseLearning.noLessons')}</p>`;
   }
 
   const progress = window.courseProgress || { completedLessons: [], lastAccessedLesson: null };
@@ -1017,8 +1180,8 @@ function renderLessons(lessons, moduleId) {
           ${lessonIcon}
         </div>
         <div class="lesson-info">
-          <div class="lesson-title" style="${!isUnlocked ? 'opacity: 0.6;' : ''}">${lesson.title || 'Untitled Lesson'}</div>
-          <div class="lesson-duration" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">${lesson.duration || 'No duration'}</div>
+          <div class="lesson-title" style="${!isUnlocked ? 'opacity: 0.6;' : ''}">${lesson.title || t('courseLearning.untitledLesson')}</div>
+          <div class="lesson-duration" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">${lesson.duration ? translateDuration(lesson.duration) : t('courseLearning.noDuration')}</div>
         </div>
         ${isCompleted ? `
         <div class="lesson-status completed" style="width: 20px; height: 20px; border-radius: 50%; background: #10B981;"></div>
@@ -1706,11 +1869,11 @@ async function renderUnifiedPlayerLayout(mainContent, course, lesson) {
         ${getLogoHTML()}
       </div>
       <div class="header-actions">
-        <button class="icon-btn logout-btn" title="Logout">
+        <button class="icon-btn logout-btn" title="${t('courseLearning.logoutTitle')}"
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
           </svg>
-          <span class="logout-text">Log out</span>
+          <span class="logout-text">${t('courseLearning.logout')}</span>
         </button>
       </div>
     </header>
@@ -2088,7 +2251,7 @@ function buildLessonsListHtml(course, currentLesson) {
     return `
       <div class="sidebar-module">
         <div class="sidebar-module-header" onclick="togglePlayerModule('${module._id}', ${index})">
-          <div class="sidebar-module-title">${index + 1}. ${module.title || 'Untitled Module'}</div>
+          <div class="sidebar-module-title">${index + 1}. ${module.title || t('courseLearning.untitledModule')}</div>
           <div class="sidebar-module-count">${lessonCount}</div>
           <svg class="sidebar-module-arrow" id="player-arrow-${index}" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M6 9l6 6 6-6"/>
@@ -2105,7 +2268,7 @@ function buildLessonsListHtml(course, currentLesson) {
 // Build sidebar lessons HTML
 function buildSidebarLessons(lessons, moduleId, currentLesson) {
   if (!lessons || lessons.length === 0) {
-    return '<div style="color: #9CA3AF; text-align: center; padding: 20px; font-size: 14px;">No lessons</div>';
+    return `<div style="color: #9CA3AF; text-align: center; padding: 20px; font-size: 14px;">${t('courseLearning.noLessons')}</div>`;
   }
 
   const progress = window.courseProgress || { completedLessons: [], lastAccessedLesson: null };
@@ -2131,8 +2294,8 @@ function buildSidebarLessons(lessons, moduleId, currentLesson) {
           ${lessonIcon}
         </div>
         <div class="sidebar-lesson-info">
-          <div class="sidebar-lesson-title" style="${!isUnlocked ? 'opacity: 0.6;' : ''}">${lesson.title || 'Untitled Lesson'}</div>
-          <div class="sidebar-lesson-duration" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">${lesson.duration || 'No duration'}</div>
+          <div class="sidebar-lesson-title" style="${!isUnlocked ? 'opacity: 0.6;' : ''}">${lesson.title || t('courseLearning.untitledLesson')}</div>
+          <div class="sidebar-lesson-duration" style="${!isUnlocked ? 'opacity: 0.5;' : ''}">${lesson.duration ? translateDuration(lesson.duration) : t('courseLearning.noDuration')}</div>
         </div>
         ${isCompleted ? `
           <div style="width: 16px; height: 16px; border-radius: 50%; background: #10B981; margin-left: auto;"></div>

@@ -168,6 +168,26 @@ const translations = {
     'courseDetail.noLessonsInModal': 'No lessons',
     'courseDetail.close': 'Close',
 
+    // Course Learning Page
+    'courseLearning.untitledCourse': 'Untitled Course',
+    'courseLearning.progressText': 'You have completed {progress}% of the course',
+    'courseLearning.lessonsCount': '{count} lessons',
+    'courseLearning.courseContent': 'Course Content',
+    'courseLearning.noLessons': 'No lessons',
+    'courseLearning.untitledModule': 'Untitled Module',
+    'courseLearning.untitledLesson': 'Untitled Lesson',
+    'courseLearning.noDuration': 'No duration',
+    'courseLearning.logout': 'Log out',
+    'courseLearning.logoutTitle': 'Logout',
+
+    // Time Duration
+    'time.hours': 'hours',
+    'time.hour': 'hour',
+    'time.minutes': 'minutes',
+    'time.minute': 'minute',
+    'time.seconds': 'seconds',
+    'time.second': 'second',
+
     // Notifications
     'notifications.title': 'Notifications',
     'notifications.loading': 'Loading notifications...',
@@ -719,6 +739,26 @@ const translations = {
     'courseDetail.noLessonsInModal': 'Darslar yo\'q',
     'courseDetail.close': 'Yopish',
 
+    // Course Learning Page
+    'courseLearning.untitledCourse': 'Nomsiz kurs',
+    'courseLearning.progressText': 'Siz kursni {progress}% tugatdingiz',
+    'courseLearning.lessonsCount': '{count} ta dars',
+    'courseLearning.courseContent': 'Kurs tarkibi',
+    'courseLearning.noLessons': 'Darslar yo\'q',
+    'courseLearning.untitledModule': 'Nomsiz modul',
+    'courseLearning.untitledLesson': 'Nomsiz dars',
+    'courseLearning.noDuration': 'Vaqt ko\'rsatilmagan',
+    'courseLearning.logout': 'Chiqish',
+    'courseLearning.logoutTitle': 'Chiqish',
+
+    // Time Duration
+    'time.hours': 'soat',
+    'time.hour': 'soat',
+    'time.minutes': 'daqiqa',
+    'time.minute': 'daqiqa',
+    'time.seconds': 'soniy',
+    'time.second': 'soniy',
+
     // Notifications
     'notifications.title': 'Bildirishnomalar',
     'notifications.loading': 'Bildirishnomalar yuklanmoqda...',
@@ -1269,6 +1309,26 @@ const translations = {
     'courseDetail.lesson': 'Урок',
     'courseDetail.noLessonsInModal': 'Нет уроков',
     'courseDetail.close': 'Закрыть',
+
+    // Course Learning Page
+    'courseLearning.untitledCourse': 'Курс без названия',
+    'courseLearning.progressText': 'Вы завершили {progress}% курса',
+    'courseLearning.lessonsCount': '{count} уроков',
+    'courseLearning.courseContent': 'Содержание курса',
+    'courseLearning.noLessons': 'Нет уроков',
+    'courseLearning.untitledModule': 'Модуль без названия',
+    'courseLearning.untitledLesson': 'Урок без названия',
+    'courseLearning.noDuration': 'Время не указано',
+    'courseLearning.logout': 'Выйти',
+    'courseLearning.logoutTitle': 'Выход',
+
+    // Time Duration
+    'time.hours': 'часов',
+    'time.hour': 'час',
+    'time.minutes': 'минут',
+    'time.minute': 'минута',
+    'time.seconds': 'секунд',
+    'time.second': 'секунда',
 
     // Notifications
     'notifications.title': 'Уведомления',
