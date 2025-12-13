@@ -160,6 +160,7 @@ const translations = {
     // Notification Messages
     'notifications.assignmentGraded': 'Assignment Graded',
     'notifications.assignmentGradedMessage': 'Your assignment has been graded',
+    'notifications.grade': 'Grade',
     'notifications.newAssignment': 'New Assignment',
     'notifications.newAssignmentMessage': 'A new assignment has been posted',
     'notifications.courseUpdate': 'Course Update',
@@ -683,6 +684,19 @@ const translations = {
     'notifications.hourAgo': '{count} soat{plural} oldin',
     'notifications.dayAgo': '{count} kun{plural} oldin',
     
+    // Notification Messages
+    'notifications.assignmentGraded': 'Topshiriq baholandi',
+    'notifications.assignmentGradedMessage': 'Sizning topshiriqingiz baholandi',
+    'notifications.grade': 'Baho',
+    'notifications.newAssignment': 'Yangi topshiriq',
+    'notifications.newAssignmentMessage': 'Yangi topshiriq qo\'shildi',
+    'notifications.courseUpdate': 'Kurs yangilandi',
+    'notifications.courseUpdateMessage': 'Kurs yangilandi',
+    'notifications.newLesson': 'Yangi dars',
+    'notifications.newLessonMessage': 'Yangi dars qo\'shildi',
+    'notifications.certificateEarned': 'Sertifikat olindi',
+    'notifications.certificateEarnedMessage': 'Siz sertifikat oldingiz',
+    
     // Page Titles
     'pages.messages': 'Xabarlar',
     'pages.myCourses': 'Mening kurslarim',
@@ -1196,6 +1210,19 @@ const translations = {
     'notifications.minuteAgo': '{count} минут{plural} назад',
     'notifications.hourAgo': '{count} час{plural} назад',
     'notifications.dayAgo': '{count} д{plural} назад',
+    
+    // Notification Messages
+    'notifications.assignmentGraded': 'Задание оценено',
+    'notifications.assignmentGradedMessage': 'Ваше задание было оценено',
+    'notifications.grade': 'Оценка',
+    'notifications.newAssignment': 'Новое задание',
+    'notifications.newAssignmentMessage': 'Добавлено новое задание',
+    'notifications.courseUpdate': 'Обновление курса',
+    'notifications.courseUpdateMessage': 'Курс был обновлен',
+    'notifications.newLesson': 'Новый урок',
+    'notifications.newLessonMessage': 'Добавлен новый урок',
+    'notifications.certificateEarned': 'Сертификат получен',
+    'notifications.certificateEarnedMessage': 'Вы получили сертификат',
     
     // Page Titles
     'pages.messages': 'Сообщения',

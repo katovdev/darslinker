@@ -1702,6 +1702,38 @@ window.openStudentNotifications = async function() {
             });
           }
           
+          // Translate notification title and message based on type
+          let translatedTitle = n.title;
+          let translatedMessage = n.message;
+          
+          // Map notification types to translation keys
+          if (n.type === 'assignment_graded') {
+            translatedTitle = t('notifications.assignmentGraded');
+            // Extract lesson title and grade from original message if available
+            const lessonMatch = n.message.match(/Your assignment "([^"]+)" has been graded/);
+            const gradeMatch = n.message.match(/Grade: (\d+)%/);
+            const lessonTitle = lessonMatch ? lessonMatch[1] : 'Assignment';
+            const grade = gradeMatch ? gradeMatch[1] : '';
+            
+            if (grade) {
+              translatedMessage = `${t('notifications.assignmentGradedMessage')}: "${lessonTitle}". ${t('notifications.grade')}: ${grade}%`;
+            } else {
+              translatedMessage = `${t('notifications.assignmentGradedMessage')}: "${lessonTitle}"`;
+            }
+          } else if (n.type === 'new_assignment') {
+            translatedTitle = t('notifications.newAssignment');
+            translatedMessage = t('notifications.newAssignmentMessage');
+          } else if (n.type === 'course_update') {
+            translatedTitle = t('notifications.courseUpdate');
+            translatedMessage = t('notifications.courseUpdateMessage');
+          } else if (n.type === 'new_lesson') {
+            translatedTitle = t('notifications.newLesson');
+            translatedMessage = t('notifications.newLessonMessage');
+          } else if (n.type === 'certificate_earned') {
+            translatedTitle = t('notifications.certificateEarned');
+            translatedMessage = t('notifications.certificateEarnedMessage');
+          }
+
           return `
             <div onclick="markAsRead('${n._id}')" 
                  style="background: ${isUnread ? 'rgba(126, 162, 212, 0.1)' : 'rgba(58, 56, 56, 0.3)'}; 
@@ -1715,10 +1747,10 @@ window.openStudentNotifications = async function() {
                  onmouseover="this.style.background='rgba(58, 56, 56, 0.5)'"
                  onmouseout="this.style.background='${isUnread ? 'rgba(126, 162, 212, 0.1)' : 'rgba(58, 56, 56, 0.3)'}'">
               <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-                <div style="font-weight: 600; font-size: 16px; color: #ffffff;">${n.title}</div>
+                <div style="font-weight: 600; font-size: 16px; color: #ffffff;">${translatedTitle}</div>
                 ${isUnread ? '<div style="width: 8px; height: 8px; background: var(--primary-color); border-radius: 50%; margin-top: 4px;"></div>' : ''}
               </div>
-              <div style="font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.5; margin-bottom: 10px;">${n.message}</div>
+              <div style="font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.5; margin-bottom: 10px;">${translatedMessage}</div>
               <div style="font-size: 12px; color: rgba(255,255,255,0.5);">${timeAgo}</div>
             </div>
           `;
