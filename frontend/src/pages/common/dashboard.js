@@ -6416,6 +6416,11 @@ async function generateLandingPageHTML(teacher) {
                     e.target.value = value;
                 });
                 
+                // Apply translations
+                setTimeout(() => {
+                    window.selectLanguage({ stopPropagation: () => {} }, currentLang);
+                }, 50);
+                
             } else if (step === 3) {
                 modalBody.innerHTML = \`
                     <h2 class="modal-title" data-i18n="createPasswordTitle">Parol yarating</h2>
@@ -6455,6 +6460,11 @@ async function generateLandingPageHTML(teacher) {
                     <button class="modal-button" onclick="validateStep3()" data-i18n="sendCodeButton">Kod yuborish</button>
                     <button class="modal-button back-button" onclick="renderStep(2)" data-i18n="backButton">Orqaga</button>
                 \`;
+                
+                // Apply translations
+                setTimeout(() => {
+                    window.selectLanguage({ stopPropagation: () => {} }, currentLang);
+                }, 50);
                 
             } else if (step === 4) {
                 modalBody.innerHTML = \`
