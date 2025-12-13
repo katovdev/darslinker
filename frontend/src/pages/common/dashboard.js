@@ -3801,6 +3801,40 @@ async function generateLandingPageHTML(teacher) {
       viewCourse: "Kursni ko'rish",
       viewCourses: "Kurslarni ko'rish",
       enrollNow: "Hozir yozilish",
+      // Modal translations
+      loginTitle: 'Kirish',
+      loginSubtitle: 'Telefon raqam va parolingizni kiriting',
+      phoneLabel: 'Telefon raqam',
+      passwordLabel: 'Parol',
+      passwordPlaceholder: 'Parolingizni kiriting',
+      loginButton: 'Kirish',
+      forgotPassword: 'Parolni unutdingizmi?',
+      registerTitle: "Ro'yxatdan o'tish",
+      registerSubtitle: 'Ism va familiyangizni kiriting',
+      firstNameLabel: 'Ism',
+      firstNamePlaceholder: 'Ismingiz',
+      lastNameLabel: 'Familiya',
+      lastNamePlaceholder: 'Familiyangiz',
+      phoneTitle: 'Telefon raqamingiz',
+      phoneSubtitle: "O'zbekiston raqamingizni kiriting",
+      phonePlaceholder: '90 123 45 67',
+      createPasswordTitle: 'Parol yarating',
+      createPasswordSubtitle: 'Hisobingiz uchun xavfsiz parol yarating',
+      passwordMinLength: 'Kamida 6 ta belgi',
+      confirmPasswordLabel: 'Parolni tasdiqlang',
+      confirmPasswordPlaceholder: 'Parolni qayta kiriting',
+      sendCodeButton: 'Kod yuborish',
+      verificationTitle: 'Tasdiqlash kodi',
+      verificationSubtitle: 'Telegram botdan kelgan kodni kiriting',
+      verificationLabel: 'Tasdiqlash kodi',
+      verificationPlaceholder: '123456',
+      confirmButton: 'Tasdiqlash',
+      nextButton: 'Keyingisi',
+      backButton: 'Orqaga',
+      resetPasswordTitle: 'Parolni tiklash',
+      resetPasswordSubtitle: 'Telegram botdan kelgan kodni kiriting',
+      newPasswordTitle: 'Yangi parol',
+      newPasswordSubtitle: 'Yangi parolingizni kiriting',
       // Sections
       myCourses: 'Mening kurslarim',
       aboutMe: "O'qituvchi haqida",
@@ -3837,6 +3871,40 @@ async function generateLandingPageHTML(teacher) {
       viewCourse: 'Посмотреть курс',
       viewCourses: 'Посмотреть курсы',
       enrollNow: 'Записаться сейчас',
+      // Modal translations
+      loginTitle: 'Войти',
+      loginSubtitle: 'Введите номер телефона и пароль',
+      phoneLabel: 'Номер телефона',
+      passwordLabel: 'Пароль',
+      passwordPlaceholder: 'Введите пароль',
+      loginButton: 'Войти',
+      forgotPassword: 'Забыли пароль?',
+      registerTitle: 'Регистрация',
+      registerSubtitle: 'Введите имя и фамилию',
+      firstNameLabel: 'Имя',
+      firstNamePlaceholder: 'Ваше имя',
+      lastNameLabel: 'Фамилия',
+      lastNamePlaceholder: 'Ваша фамилия',
+      phoneTitle: 'Ваш номер телефона',
+      phoneSubtitle: 'Введите номер Узбекистана',
+      phonePlaceholder: '90 123 45 67',
+      createPasswordTitle: 'Создать пароль',
+      createPasswordSubtitle: 'Создайте безопасный пароль для аккаунта',
+      passwordMinLength: 'Минимум 6 символов',
+      confirmPasswordLabel: 'Подтвердить пароль',
+      confirmPasswordPlaceholder: 'Повторите пароль',
+      sendCodeButton: 'Отправить код',
+      verificationTitle: 'Код подтверждения',
+      verificationSubtitle: 'Введите код из Telegram бота',
+      verificationLabel: 'Код подтверждения',
+      verificationPlaceholder: '123456',
+      confirmButton: 'Подтвердить',
+      nextButton: 'Далее',
+      backButton: 'Назад',
+      resetPasswordTitle: 'Сброс пароля',
+      resetPasswordSubtitle: 'Введите код из Telegram бота',
+      newPasswordTitle: 'Новый пароль',
+      newPasswordSubtitle: 'Введите новый пароль',
       // Sections
       myCourses: 'Мои курсы',
       aboutMe: 'О преподавателе',
@@ -3873,6 +3941,40 @@ async function generateLandingPageHTML(teacher) {
       viewCourse: 'View Course',
       viewCourses: 'View Courses',
       enrollNow: 'Enroll Now',
+      // Modal translations
+      loginTitle: 'Login',
+      loginSubtitle: 'Enter your phone number and password',
+      phoneLabel: 'Phone Number',
+      passwordLabel: 'Password',
+      passwordPlaceholder: 'Enter your password',
+      loginButton: 'Login',
+      forgotPassword: 'Forgot your password?',
+      registerTitle: 'Register',
+      registerSubtitle: 'Enter your first and last name',
+      firstNameLabel: 'First Name',
+      firstNamePlaceholder: 'Your first name',
+      lastNameLabel: 'Last Name',
+      lastNamePlaceholder: 'Your last name',
+      phoneTitle: 'Your Phone Number',
+      phoneSubtitle: 'Enter your Uzbekistan number',
+      phonePlaceholder: '90 123 45 67',
+      createPasswordTitle: 'Create Password',
+      createPasswordSubtitle: 'Create a secure password for your account',
+      passwordMinLength: 'At least 6 characters',
+      confirmPasswordLabel: 'Confirm Password',
+      confirmPasswordPlaceholder: 'Re-enter password',
+      sendCodeButton: 'Send Code',
+      verificationTitle: 'Verification Code',
+      verificationSubtitle: 'Enter the code from Telegram bot',
+      verificationLabel: 'Verification Code',
+      verificationPlaceholder: '123456',
+      confirmButton: 'Confirm',
+      nextButton: 'Next',
+      backButton: 'Back',
+      resetPasswordTitle: 'Reset Password',
+      resetPasswordSubtitle: 'Enter the code from Telegram bot',
+      newPasswordTitle: 'New Password',
+      newPasswordSubtitle: 'Enter your new password',
       // Sections
       myCourses: 'My Courses',
       aboutMe: 'About Teacher',
@@ -5449,6 +5551,11 @@ async function generateLandingPageHTML(teacher) {
             \`;
             document.body.appendChild(modal);
             renderStep(1);
+            
+            // Apply translations to modal content
+            setTimeout(() => {
+                window.selectLanguage({ stopPropagation: () => {} }, currentLang);
+            }, 50);
         }
 
         function closeRegistrationModal() {
@@ -5469,11 +5576,11 @@ async function generateLandingPageHTML(teacher) {
                     <div class="modal-content" onclick="event.stopPropagation()">
                         <button class="modal-close" onclick="closeLoginModal()">&times;</button>
                         <div id="loginModalBody">
-                            <h2 class="modal-title">Kirish</h2>
-                            <p class="modal-subtitle">Telefon raqam va parolingizni kiriting</p>
+                            <h2 class="modal-title" data-i18n="loginTitle">Kirish</h2>
+                            <p class="modal-subtitle" data-i18n="loginSubtitle">Telefon raqam va parolingizni kiriting</p>
                             
                             <div class="form-group">
-                                <label class="form-label">Telefon raqam</label>
+                                <label class="form-label" data-i18n="phoneLabel">Telefon raqam</label>
                                 <div class="phone-input-wrapper">
                                     <div class="phone-prefix">
                                         <img src="/images/uz-flag.jpg" alt="UZ" class="flag-icon" />
@@ -5485,9 +5592,9 @@ async function generateLandingPageHTML(teacher) {
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Parol</label>
+                                <label class="form-label" data-i18n="passwordLabel">Parol</label>
                                 <div class="password-input-wrapper">
-                                    <input type="password" id="loginPassword" class="form-input password-input-field" placeholder="Parolingizni kiriting" autocomplete="new-password" name="login-password-new" />
+                                    <input type="password" id="loginPassword" class="form-input password-input-field" placeholder="Parolingizni kiriting" data-i18n-placeholder="passwordPlaceholder" autocomplete="new-password" name="login-password-new" />
                                     <button type="button" class="password-toggle-btn" onclick="togglePassword('loginPassword', 'loginPasswordToggle')">
                                         <svg id="loginPasswordToggle" class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
                                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -5498,8 +5605,8 @@ async function generateLandingPageHTML(teacher) {
                                 <div class="error-message" id="loginPasswordError"></div>
                             </div>
                             
-                            <button class="modal-button" onclick="handleLogin()">Kirish</button>
-                            <button class="modal-button back-button" onclick="handleForgotPassword()">Parolni unutdingizmi?</button>
+                            <button class="modal-button" onclick="handleLogin()" data-i18n="loginButton">Kirish</button>
+                            <button class="modal-button back-button" onclick="handleForgotPassword()" data-i18n="forgotPassword">Parolni unutdingizmi?</button>
                         </div>
                     </div>
                 </div>
@@ -5703,6 +5810,11 @@ async function generateLandingPageHTML(teacher) {
             \`;
             document.body.appendChild(modal);
             
+            // Apply translations to modal content
+            setTimeout(() => {
+                window.selectLanguage({ stopPropagation: () => {} }, currentLang);
+            }, 50);
+            
             // Clear autofill values
             setTimeout(() => {
                 const phoneInput = document.getElementById('loginPhone');
@@ -5884,8 +5996,8 @@ async function generateLandingPageHTML(teacher) {
                     <div class="modal-content" onclick="event.stopPropagation()">
                         <button class="modal-close" onclick="closeResetPasswordModal()">&times;</button>
                         <div id="resetPasswordBody">
-                            <h2 class="modal-title">Parolni tiklash</h2>
-                            <p class="modal-subtitle">Telegram botdan kelgan kodni kiriting</p>
+                            <h2 class="modal-title" data-i18n="resetPasswordTitle">Parolni tiklash</h2>
+                            <p class="modal-subtitle" data-i18n="resetPasswordSubtitle">Telegram botdan kelgan kodni kiriting</p>
                             
                             <div class="form-group">
                                 <label class="form-label">Tasdiqlash kodi</label>
@@ -6111,8 +6223,8 @@ async function generateLandingPageHTML(teacher) {
         function showNewPasswordForm(phone, code) {
             const resetPasswordBody = document.getElementById('resetPasswordBody');
             resetPasswordBody.innerHTML = \`
-                <h2 class="modal-title">Yangi parol</h2>
-                <p class="modal-subtitle">Yangi parolingizni kiriting</p>
+                <h2 class="modal-title" data-i18n="newPasswordTitle">Yangi parol</h2>
+                <p class="modal-subtitle" data-i18n="newPasswordSubtitle">Yangi parolingizni kiriting</p>
                 
                 <div class="form-group">
                     <label class="form-label">Yangi parol</label>
@@ -6223,8 +6335,8 @@ async function generateLandingPageHTML(teacher) {
             
             if (step === 1) {
                 modalBody.innerHTML = \`
-                    <h2 class="modal-title">Ro'yxatdan o'tish</h2>
-                    <p class="modal-subtitle">Ism va familiyangizni kiriting</p>
+                    <h2 class="modal-title" data-i18n="registerTitle">Ro'yxatdan o'tish</h2>
+                    <p class="modal-subtitle" data-i18n="registerSubtitle">Ism va familiyangizni kiriting</p>
                     <div class="step-indicator">
                         <div class="step-dot active"></div>
                         <div class="step-dot"></div>
@@ -6232,16 +6344,16 @@ async function generateLandingPageHTML(teacher) {
                         <div class="step-dot"></div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Ism</label>
-                        <input type="text" id="firstName" class="form-input" placeholder="Ismingiz" value="\${registrationData.firstName}" />
+                        <label class="form-label" data-i18n="firstNameLabel">Ism</label>
+                        <input type="text" id="firstName" class="form-input" placeholder="Ismingiz" data-i18n-placeholder="firstNamePlaceholder" value="\${registrationData.firstName}" />
                         <div class="error-message" id="firstNameError"></div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Familiya</label>
-                        <input type="text" id="lastName" class="form-input" placeholder="Familiyangiz" value="\${registrationData.lastName}" />
+                        <label class="form-label" data-i18n="lastNameLabel">Familiya</label>
+                        <input type="text" id="lastName" class="form-input" placeholder="Familiyangiz" data-i18n-placeholder="lastNamePlaceholder" value="\${registrationData.lastName}" />
                         <div class="error-message" id="lastNameError"></div>
                     </div>
-                    <button class="modal-button" onclick="validateStep1()">Keyingisi</button>
+                    <button class="modal-button" onclick="validateStep1()" data-i18n="nextButton">Keyingisi</button>
                 \`;
                 
                 // Add input validation - only letters
@@ -6258,8 +6370,8 @@ async function generateLandingPageHTML(teacher) {
                 
             } else if (step === 2) {
                 modalBody.innerHTML = \`
-                    <h2 class="modal-title">Telefon raqamingiz</h2>
-                    <p class="modal-subtitle">O'zbekiston raqamingizni kiriting</p>
+                    <h2 class="modal-title" data-i18n="phoneTitle">Telefon raqamingiz</h2>
+                    <p class="modal-subtitle" data-i18n="phoneSubtitle">O'zbekiston raqamingizni kiriting</p>
                     <div class="step-indicator">
                         <div class="step-dot active"></div>
                         <div class="step-dot active"></div>
@@ -6267,18 +6379,18 @@ async function generateLandingPageHTML(teacher) {
                         <div class="step-dot"></div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Telefon raqam</label>
+                        <label class="form-label" data-i18n="phoneLabel">Telefon raqam</label>
                         <div class="phone-input-wrapper">
                             <div class="phone-prefix">
                                 <img src="/images/uz-flag.jpg" alt="UZ" class="flag-icon" />
                                 <span>+998</span>
                             </div>
-                            <input type="tel" id="phone" class="form-input phone-input" placeholder="90 123 45 67" value="\${registrationData.phone}" maxlength="12" />
+                            <input type="tel" id="phone" class="form-input phone-input" placeholder="90 123 45 67" data-i18n-placeholder="phonePlaceholder" value="\${registrationData.phone}" maxlength="12" />
                         </div>
                         <div class="error-message" id="phoneError"></div>
                     </div>
-                    <button class="modal-button" onclick="validateStep2()">Keyingisi</button>
-                    <button class="modal-button back-button" onclick="renderStep(1)">Orqaga</button>
+                    <button class="modal-button" onclick="validateStep2()" data-i18n="nextButton">Keyingisi</button>
+                    <button class="modal-button back-button" onclick="renderStep(1)" data-i18n="backButton">Orqaga</button>
                 \`;
                 
                 // Format phone number input
@@ -6301,8 +6413,8 @@ async function generateLandingPageHTML(teacher) {
                 
             } else if (step === 3) {
                 modalBody.innerHTML = \`
-                    <h2 class="modal-title">Parol yarating</h2>
-                    <p class="modal-subtitle">Hisobingiz uchun xavfsiz parol yarating</p>
+                    <h2 class="modal-title" data-i18n="createPasswordTitle">Parol yarating</h2>
+                    <p class="modal-subtitle" data-i18n="createPasswordSubtitle">Hisobingiz uchun xavfsiz parol yarating</p>
                     <div class="step-indicator">
                         <div class="step-dot active"></div>
                         <div class="step-dot active"></div>
@@ -6310,9 +6422,9 @@ async function generateLandingPageHTML(teacher) {
                         <div class="step-dot"></div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Parol</label>
+                        <label class="form-label" data-i18n="passwordLabel">Parol</label>
                         <div class="password-input-wrapper">
-                            <input type="password" id="password" class="form-input password-input-field" placeholder="Kamida 6 ta belgi" value="\${registrationData.password || ''}" />
+                            <input type="password" id="password" class="form-input password-input-field" placeholder="Kamida 6 ta belgi" data-i18n-placeholder="passwordMinLength" value="\${registrationData.password || ''}" />
                             <button type="button" class="password-toggle-btn" onclick="togglePassword('password', 'passwordToggle')">
                                 <svg id="passwordToggle" class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -6323,9 +6435,9 @@ async function generateLandingPageHTML(teacher) {
                         <div class="error-message" id="passwordError"></div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Parolni tasdiqlang</label>
+                        <label class="form-label" data-i18n="confirmPasswordLabel">Parolni tasdiqlang</label>
                         <div class="password-input-wrapper">
-                            <input type="password" id="confirmPassword" class="form-input password-input-field" placeholder="Parolni qayta kiriting" value="\${registrationData.confirmPassword || ''}" />
+                            <input type="password" id="confirmPassword" class="form-input password-input-field" placeholder="Parolni qayta kiriting" data-i18n-placeholder="confirmPasswordPlaceholder" value="\${registrationData.confirmPassword || ''}" />
                             <button type="button" class="password-toggle-btn" onclick="togglePassword('confirmPassword', 'confirmPasswordToggle')">
                                 <svg id="confirmPasswordToggle" class="eye-show" width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="2" fill="none"/>
@@ -6335,14 +6447,14 @@ async function generateLandingPageHTML(teacher) {
                         </div>
                         <div class="error-message" id="confirmPasswordError"></div>
                     </div>
-                    <button class="modal-button" onclick="validateStep3()">Kod yuborish</button>
-                    <button class="modal-button back-button" onclick="renderStep(2)">Orqaga</button>
+                    <button class="modal-button" onclick="validateStep3()" data-i18n="sendCodeButton">Kod yuborish</button>
+                    <button class="modal-button back-button" onclick="renderStep(2)" data-i18n="backButton">Orqaga</button>
                 \`;
                 
             } else if (step === 4) {
                 modalBody.innerHTML = \`
-                    <h2 class="modal-title">Tasdiqlash kodi</h2>
-                    <p class="modal-subtitle">Telegram botdan kelgan kodni kiriting</p>
+                    <h2 class="modal-title" data-i18n="verificationTitle">Tasdiqlash kodi</h2>
+                    <p class="modal-subtitle" data-i18n="verificationSubtitle">Telegram botdan kelgan kodni kiriting</p>
                     <div class="step-indicator">
                         <div class="step-dot active"></div>
                         <div class="step-dot active"></div>
@@ -6350,12 +6462,12 @@ async function generateLandingPageHTML(teacher) {
                         <div class="step-dot active"></div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Tasdiqlash kodi</label>
-                        <input type="text" id="verificationCode" class="form-input" placeholder="123456" maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 8px;" />
+                        <label class="form-label" data-i18n="verificationLabel">Tasdiqlash kodi</label>
+                        <input type="text" id="verificationCode" class="form-input" placeholder="123456" data-i18n-placeholder="verificationPlaceholder" maxlength="6" style="text-align: center; font-size: 24px; letter-spacing: 8px;" />
                         <div class="error-message" id="codeError"></div>
                     </div>
-                    <button class="modal-button" onclick="validateStep4()">Tasdiqlash</button>
-                    <button class="modal-button back-button" onclick="renderStep(3)">Orqaga</button>
+                    <button class="modal-button" onclick="validateStep4()" data-i18n="confirmButton">Tasdiqlash</button>
+                    <button class="modal-button back-button" onclick="renderStep(3)" data-i18n="backButton">Orqaga</button>
                 \`;
                 
                 // Only numbers for verification code
@@ -6948,6 +7060,21 @@ async function generateLandingPageHTML(teacher) {
                     console.log(\`✅ \${key}: "\${oldText}" -> "\${translations[lang][key]}"\`);
                 } else {
                     console.log(\`❌ Missing translation for "\${key}" in "\${lang}"\`);
+                }
+            });
+            
+            // Update placeholders
+            const placeholderElements = document.querySelectorAll('[data-i18n-placeholder]');
+            console.log('📝 Placeholder elements to translate:', placeholderElements.length);
+            
+            placeholderElements.forEach(el => {
+                const key = el.getAttribute('data-i18n-placeholder');
+                const oldPlaceholder = el.placeholder;
+                if (translations[lang] && translations[lang][key]) {
+                    el.placeholder = translations[lang][key];
+                    console.log(\`✅ Placeholder \${key}: "\${oldPlaceholder}" -> "\${translations[lang][key]}"\`);
+                } else {
+                    console.log(\`❌ Missing placeholder translation for "\${key}" in "\${lang}"\`);
                 }
             });
             
