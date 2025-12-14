@@ -604,80 +604,117 @@ const completeCourse = catchAsync(async (req, res) => {
     courseId
   });
 
-  // Find the student or create if not exists
-  let student = await Student.findOne({ userId }).populate('enrolledCourses.course');
+  // Find the student by ID (Student inherits from User via discriminator)
+  let student = await Student.findById(userId);
+  
   if (!student) {
-    logger.info("Student not found, creating new profile for course completion", { userId });
+    logger.info("Student profile not found, checking if user exists", { userId });
     
-    // Get user info to create student profile
+    // Check if user exists and has student role
     const user = await User.findById(userId);
     if (!user) {
       logger.warn("User not found for course completion", { userId });
       throw new ValidationError("User not found");
     }
     
-    // Create student profile
-    student = new Student({
-      userId: userId,
-      firstName: user.firstName || 'Student',
-      lastName: user.lastName || 'User',
-      email: user.email,
-      phone: user.phone,
-      password: user.password || 'temp_password', // Use existing user password or temp
-      enrolledCourses: [courseId],
-      completedCourses: [courseId]
-    });
+    if (user.role !== 'student') {
+      logger.warn("User is not a student", { userId, role: user.role });
+      throw new ValidationError("User is not a student");
+    }
     
-    await student.save();
-    
-    logger.info("Course marked as completed for new student", {
-      userId,
-      courseId,
-      studentId: student._id
-    });
-
-    return res.status(200).json({
-      success: true,
-      message: "Course completed successfully",
-      data: {
-        courseId,
-        completedAt: new Date(),
-        progress: 100
+    // User exists but no student discriminator document
+    // This means the user was created but never had student-specific fields set
+    // We need to convert the user to a student by updating with student fields
+    try {
+      student = await Student.findByIdAndUpdate(
+        userId,
+        {
+          $set: {
+            __t: 'Student', // Set discriminator key
+            completedCourses: [courseId],
+            courseProgress: [{
+              courseId: courseId,
+              completedLessons: [],
+              progressPercentage: 100,
+              startedAt: new Date(),
+              lastAccessedAt: new Date()
+            }]
+          }
+        },
+        {
+          new: true,
+          runValidators: true,
+          select: "-password"
+        }
+      );
+      
+      if (!student) {
+        logger.error("Failed to create student profile", { userId });
+        throw new ValidationError("Failed to create student profile");
       }
-    });
+      
+      logger.info("Student profile created and course completed", {
+        userId,
+        courseId,
+        studentId: student._id
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Course completed successfully",
+        data: {
+          courseId,
+          completedAt: new Date(),
+          progress: 100
+        }
+      });
+      
+    } catch (error) {
+      logger.error("Error creating student profile", { userId, error: error.message });
+      throw new ValidationError("Failed to create student profile: " + error.message);
+    }
   }
 
-  // Check if student is enrolled in the course
-  const enrollment = student.enrolledCourses.find(
-    (enrollment) => enrollment.course._id.toString() === courseId
-  );
-
-  if (!enrollment) {
-    logger.warn("Student not enrolled in course", { userId, courseId });
-    throw new ValidationError("Student is not enrolled in this course");
-  }
-
-  // Check if course is already completed
-  if (enrollment.status === 'completed') {
+  // Student exists, check if course is already completed
+  if (student.completedCourses && student.completedCourses.includes(courseId)) {
     logger.info("Course already completed", { userId, courseId });
     return res.status(200).json({
       success: true,
       message: "Course already completed",
-      data: { courseId, completedAt: enrollment.completedAt }
+      data: { courseId, completedAt: new Date() }
     });
   }
 
-  // Mark course as completed
-  enrollment.status = 'completed';
-  enrollment.completedAt = new Date();
-  enrollment.progress = 100;
+  // Add course to completed courses
+  if (!student.completedCourses) {
+    student.completedCourses = [];
+  }
+  student.completedCourses.push(courseId);
+
+  // Update course progress to 100%
+  let courseProgress = student.courseProgress.find(cp => cp.courseId.toString() === courseId);
+  if (courseProgress) {
+    courseProgress.progressPercentage = 100;
+    courseProgress.lastAccessedAt = new Date();
+  } else {
+    if (!student.courseProgress) {
+      student.courseProgress = [];
+    }
+    student.courseProgress.push({
+      courseId: courseId,
+      completedLessons: [],
+      progressPercentage: 100,
+      startedAt: new Date(),
+      lastAccessedAt: new Date()
+    });
+  }
 
   await student.save();
 
   logger.info("Course marked as completed", {
     userId,
     courseId,
-    completedAt: enrollment.completedAt
+    completedAt: new Date()
   });
 
   res.status(200).json({
@@ -685,7 +722,7 @@ const completeCourse = catchAsync(async (req, res) => {
     message: "Course completed successfully",
     data: {
       courseId,
-      completedAt: enrollment.completedAt,
+      completedAt: new Date(),
       progress: 100
     }
   });

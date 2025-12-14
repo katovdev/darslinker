@@ -167,40 +167,7 @@ export function showCourseCompletionSuccess(course) {
         }
       }
 
-      @keyframes confettiFall {
-        0% {
-          transform: translateY(-100vh) rotate(0deg) scale(1);
-          opacity: 1;
-        }
-        50% {
-          opacity: 1;
-          transform: translateY(50vh) rotate(180deg) scale(1.2);
-        }
-        100% {
-          transform: translateY(100vh) rotate(360deg) scale(0.8);
-          opacity: 0;
-        }
-      }
-
-      @keyframes confettiSway {
-        0%, 100% {
-          transform: translateX(0) rotate(0deg);
-        }
-        25% {
-          transform: translateX(20px) rotate(90deg);
-        }
-        75% {
-          transform: translateX(-20px) rotate(270deg);
-        }
-      }
-
-      .confetti-piece {
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        animation: confettiFall 4s ease-in-out infinite, confettiSway 2s ease-in-out infinite;
-        box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
-      }
+      /* Canvas-based confetti - no CSS animations needed */
 
       @media (max-width: 768px) {
         .success-content {
@@ -227,10 +194,10 @@ export function showCourseCompletionSuccess(course) {
     
     if (teacherId && landingUser) {
       // Redirect to landing student dashboard
-      window.location.href = `/teacher/${teacherId}`;
+      window.location.href = `#/teacher/${teacherId}`;
     } else {
       // Fallback to main student dashboard
-      window.location.href = '/student-dashboard';
+      window.location.href = '#/student-dashboard';
     }
   };
 }
@@ -243,8 +210,6 @@ function getTotalLessons(course) {
 }
 
 function createConfetti() {
-  const colors = ['#7ea2d4', '#ffd700', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#e74c3c', '#9b59b6', '#f39c12'];
-  const shapes = ['circle', 'square', 'triangle'];
   const confettiContainer = document.getElementById('confetti-container');
   
   if (!confettiContainer) {
@@ -252,77 +217,215 @@ function createConfetti() {
     return;
   }
 
-  // Create more confetti pieces for better effect
-  for (let i = 0; i < 100; i++) {
-    setTimeout(() => {
-      const confetti = document.createElement('div');
-      confetti.className = 'confetti-piece';
+  // Create canvas for confetti
+  const canvas = document.createElement('canvas');
+  canvas.id = 'confetti-canvas';
+  canvas.style.position = 'fixed';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = '9999';
+  
+  confettiContainer.appendChild(canvas);
+  
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  
+  const confetti = [];
+  const confettiCount = 120;
+  const colors = [
+    '#7EA2D4', '#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', 
+    '#96CEB4', '#FECA57', '#E74C3C', '#9B59B6', '#F39C12',
+    '#FF9FF3', '#54A0FF', '#5F27CD', '#00D2D3', '#FF9F43',
+    '#10AC84', '#EE5A24', '#0984E3', '#A29BFE', '#FD79A8'
+  ];
+  
+  class Confetto {
+    constructor() {
+      // Start from top of screen with some randomness
+      this.x = Math.random() * canvas.width;
+      this.y = -Math.random() * 100 - 20;
       
-      // Random position
-      confetti.style.left = Math.random() * 100 + '%';
-      confetti.style.top = '-10px';
+      // Size variations for more realistic look
+      this.w = Math.random() * 16 + 8;
+      this.h = Math.random() * 12 + 6;
       
-      // Random color
-      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      // Physics properties
+      this.vx = (Math.random() - 0.5) * 4; // horizontal velocity
+      this.vy = Math.random() * 3 + 2; // vertical velocity
+      this.gravity = 0.15;
+      this.drag = 0.99;
+      this.bounce = 0.7;
       
-      // Random shape
-      const shape = shapes[Math.floor(Math.random() * shapes.length)];
-      if (shape === 'circle') {
-        confetti.style.borderRadius = '50%';
-      } else if (shape === 'triangle') {
-        confetti.style.width = '0';
-        confetti.style.height = '0';
-        confetti.style.backgroundColor = 'transparent';
-        confetti.style.borderLeft = '5px solid transparent';
-        confetti.style.borderRight = '5px solid transparent';
-        confetti.style.borderBottom = `10px solid ${colors[Math.floor(Math.random() * colors.length)]}`;
+      // Rotation properties
+      this.angle = Math.random() * 360;
+      this.angularVelocity = (Math.random() - 0.5) * 15;
+      
+      // Visual properties
+      this.opacity = Math.random() * 0.4 + 0.6;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.shape = Math.random();
+      
+      // Lifecycle
+      this.life = 1.0;
+      this.decay = Math.random() * 0.02 + 0.005;
+    }
+    
+    update() {
+      // Apply physics
+      this.vy += this.gravity;
+      this.vx *= this.drag;
+      this.vy *= this.drag;
+      
+      // Update position
+      this.x += this.vx;
+      this.y += this.vy;
+      
+      // Update rotation
+      this.angle += this.angularVelocity;
+      this.angularVelocity *= 0.99;
+      
+      // Bounce off walls
+      if (this.x <= 0 || this.x >= canvas.width) {
+        this.vx *= -this.bounce;
+        this.x = Math.max(0, Math.min(canvas.width, this.x));
       }
       
-      // Random size
-      const size = Math.random() * 8 + 4; // 4-12px
-      if (shape !== 'triangle') {
-        confetti.style.width = size + 'px';
-        confetti.style.height = size + 'px';
+      // Bounce off ground
+      if (this.y >= canvas.height - this.h) {
+        this.vy *= -this.bounce;
+        this.y = canvas.height - this.h;
+        this.angularVelocity *= 0.8;
       }
       
-      // Random animation
-      confetti.style.animationDelay = Math.random() * 2 + 's';
-      confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+      // Fade out over time
+      this.life -= this.decay;
+      this.opacity = Math.max(0, this.life * 0.8);
       
-      // Random rotation
-      confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+      // Reset if completely faded or off screen
+      if (this.life <= 0 || this.y > canvas.height + 100) {
+        this.reset();
+      }
+    }
+    
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = -Math.random() * 100 - 20;
+      this.vx = (Math.random() - 0.5) * 4;
+      this.vy = Math.random() * 3 + 2;
+      this.life = 1.0;
+      this.opacity = Math.random() * 0.4 + 0.6;
+      this.angle = Math.random() * 360;
+      this.angularVelocity = (Math.random() - 0.5) * 15;
+    }
+    
+    draw() {
+      if (this.opacity <= 0) return;
       
-      confettiContainer.appendChild(confetti);
+      ctx.save();
+      ctx.translate(this.x + this.w/2, this.y + this.h/2);
+      ctx.rotate(this.angle * Math.PI / 180);
+      ctx.globalAlpha = this.opacity;
       
-      // Remove confetti after animation
-      setTimeout(() => {
-        if (confetti.parentNode) {
-          confetti.parentNode.removeChild(confetti);
-        }
-      }, 6000);
-    }, i * 50); // Faster creation
+      // Add glow effect
+      ctx.shadowColor = this.color;
+      ctx.shadowBlur = 15;
+      ctx.fillStyle = this.color;
+      
+      // Draw different shapes
+      if (this.shape < 0.33) {
+        // Rectangle
+        ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
+      } else if (this.shape < 0.66) {
+        // Circle
+        ctx.beginPath();
+        ctx.arc(0, 0, this.w/2, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        // Triangle
+        ctx.beginPath();
+        ctx.moveTo(0, -this.h/2);
+        ctx.lineTo(-this.w/2, this.h/2);
+        ctx.lineTo(this.w/2, this.h/2);
+        ctx.closePath();
+        ctx.fill();
+      }
+      
+      // Add inner highlight for 3D effect
+      ctx.shadowBlur = 0;
+      ctx.globalAlpha = this.opacity * 0.3;
+      ctx.fillStyle = '#ffffff';
+      
+      if (this.shape < 0.33) {
+        ctx.fillRect(-this.w/2, -this.h/2, this.w/3, this.h/3);
+      } else if (this.shape < 0.66) {
+        ctx.beginPath();
+        ctx.arc(-this.w/6, -this.h/6, this.w/6, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(0, -this.h/2);
+        ctx.lineTo(-this.w/6, -this.h/6);
+        ctx.lineTo(this.w/6, -this.h/6);
+        ctx.closePath();
+        ctx.fill();
+      }
+      
+      ctx.restore();
+    }
   }
   
-  // Create second wave of confetti
-  setTimeout(() => {
-    for (let i = 0; i < 50; i++) {
-      setTimeout(() => {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti-piece';
-        confetti.style.left = Math.random() * 100 + '%';
-        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.animationDelay = Math.random() * 1 + 's';
-        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-        confetti.style.borderRadius = '50%';
-        
-        confettiContainer.appendChild(confetti);
-        
-        setTimeout(() => {
-          if (confetti.parentNode) {
-            confetti.parentNode.removeChild(confetti);
-          }
-        }, 4000);
-      }, i * 30);
+  // Initialize confetti with staggered creation for burst effect
+  for (let i = 0; i < confettiCount; i++) {
+    setTimeout(() => {
+      confetti.push(new Confetto());
+    }, i * 50); // Stagger creation over 6 seconds
+  }
+  
+  let animationId;
+  let startTime = Date.now();
+  
+  function animate() {
+    // Clear with slight trail effect for smoother animation
+    ctx.fillStyle = 'rgba(26, 26, 26, 0.1)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Update and draw all confetti
+    confetti.forEach(c => {
+      c.update();
+      c.draw();
+    });
+    
+    // Continue animation for 15 seconds
+    if (Date.now() - startTime < 15000) {
+      animationId = requestAnimationFrame(animate);
+    } else {
+      // Fade out
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (canvas.parentNode) {
+        canvas.parentNode.removeChild(canvas);
+      }
     }
-  }, 1000);
+  }
+  
+  animate();
+  
+  // Handle window resize
+  const handleResize = () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  };
+  
+  window.addEventListener('resize', handleResize);
+  
+  // Cleanup on animation end
+  setTimeout(() => {
+    window.removeEventListener('resize', handleResize);
+    if (canvas.parentNode) {
+      canvas.parentNode.removeChild(canvas);
+    }
+  }, 15000);
 }
