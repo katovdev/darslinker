@@ -73,6 +73,11 @@ const courseSchema = new mongoose.Schema(
         // Quiz data stored inline - support both old and new formats
         questions: [{
           question: String,
+          type: {
+            type: String,
+            enum: ["multiple-choice", "multiple-correct"],
+            default: "multiple-choice"
+          },
           // Old format (optional)
           options: [String],
           correctAnswer: Number,

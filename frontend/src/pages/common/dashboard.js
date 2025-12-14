@@ -14017,11 +14017,15 @@ window.saveLesson = async function(button, type) {
       });
 
       if (questionText.trim() && answers.length > 0) {
+        // Get quiz type from lesson form
+        const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
+        
         const question = {
           question: questionText,
+          type: quizType,
           answers: answers
         };
-        console.log(`🎯 SAVE: Adding question:`, question);
+        console.log(`🎯 SAVE: Adding question with type:`, question);
         questions.push(question);
       }
     });
@@ -14416,9 +14420,16 @@ function createQuizEditForm(lessonData) {
   console.log('🎯 Generated questionsHTML:', questionsHTML);
 
   const escapedTitle = (lessonData.title || '').replace(/"/g, '&quot;');
+  
+  // Determine quiz type from existing questions (check first question's type)
+  let quizType = 'multiple-choice'; // default
+  if (lessonData.questions && lessonData.questions.length > 0 && lessonData.questions[0].type) {
+    quizType = lessonData.questions[0].type;
+  }
+  console.log('🎯 Edit form quiz type determined as:', quizType);
 
   return `
-    <div class="lesson-form lesson-edit-form" data-quiz-type="multiple-choice">
+    <div class="lesson-form lesson-edit-form" data-quiz-type="${quizType}">
       <h5>Edit Quiz: ${escapedTitle}</h5>
       <div class="form-group">
         <label>Quiz Title</label>
@@ -14683,8 +14694,13 @@ window.updateLesson = function(button, type) {
       });
 
       if (questionText.trim() && answers.length > 0) {
+        // Get quiz type from edit form (check for data attribute or default to multiple-choice)
+        const editForm = questionItem.closest('.lesson-edit-form');
+        const quizType = editForm?.getAttribute('data-quiz-type') || 'multiple-choice';
+        
         questions.push({
           question: questionText,
+          type: quizType,
           answers: answers
         });
       }

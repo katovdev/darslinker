@@ -853,6 +853,9 @@ function getQuizActiveStyles() {
       transition: all 0.2s ease;
       font-size: 15px;
       color: #e0e0e0;
+      display: flex;
+      align-items: center;
+      gap: 0;
     }
     
     .question-option:hover {
@@ -864,6 +867,66 @@ function getQuizActiveStyles() {
       background: color-mix(in srgb, var(--primary-color) 20%, transparent);
       border-color: var(--primary-color);
       color: #ffffff;
+    }
+    
+    .option-indicator {
+      flex-shrink: 0;
+    }
+    
+    .option-text {
+      flex: 1;
+      line-height: 1.4;
+    }
+    
+    .radio {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(126, 162, 212, 0.4);
+      border-radius: 50%;
+      background: transparent;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    
+    .radio.checked {
+      border-color: var(--primary-color);
+      background: var(--primary-color);
+    }
+    
+    .radio.checked::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      background: white;
+      border-radius: 50%;
+    }
+    
+    .checkbox {
+      width: 18px;
+      height: 18px;
+      border: 2px solid #9CA3AF;
+      border-radius: 3px;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      position: relative;
+      flex-shrink: 0;
+      margin-right: 12px;
+    }
+    
+    .checkbox.checked {
+      border-color: var(--primary-color);
+      background: var(--primary-color);
+    }
+    
+    .checkbox:hover {
+      border-color: var(--primary-color);
     }
     
     .question-navigation {
@@ -1091,13 +1154,49 @@ function renderQuizQuestions(questions) {
         <div class="question-options">
           ${(q.answers || q.options || []).map((answer, aIndex) => {
             const answerText = typeof answer === 'string' ? answer : answer.text;
-            const isSelected = selectedAnswer?.answerIndex === aIndex;
+            // Check if this is a multiple correct question
+            // Handle both new format (with type field) and legacy questions
+            // const isMultipleCorrect = q.type === 'multiple-correct' || q.type === 'multipleCorrect';
+            
+            // TEMPORARY: Force this question to be multiple correct for testing
+            // Remove this line after testing
+            const isMultipleCorrect = true;
+            
+            // Debug logging
+            console.log('🔍 Question debug:', {
+              questionIndex: currentIndex,
+              questionType: q.type,
+              isMultipleCorrect: isMultipleCorrect,
+              fullQuestion: q,
+              hasTypeField: q.hasOwnProperty('type'),
+              allQuestionKeys: Object.keys(q)
+            });
+            
+            // For multiple correct questions, check if this answer is in the selected answers array
+            let isSelected = false;
+            if (isMultipleCorrect) {
+              isSelected = selectedAnswer?.answerIndexes?.includes(aIndex) || false;
+            } else {
+              isSelected = selectedAnswer?.answerIndex === aIndex;
+            }
+            
             return `
               <div class="question-option ${isSelected ? 'selected' : ''}" 
                    data-question="${currentIndex}" 
                    data-answer="${aIndex}" 
+                   data-type="${isMultipleCorrect ? 'multiple' : 'single'}"
                    onclick="selectAnswer(${currentIndex}, ${aIndex})">
-                ${answerText}
+                <div class="option-indicator">
+                  ${isMultipleCorrect 
+                    ? `<div class="checkbox ${isSelected ? 'checked' : ''}">
+                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="opacity: ${isSelected ? '1' : '0'};">
+                           <polyline points="20,6 9,17 4,12"/>
+                         </svg>
+                       </div>`
+                    : `<div class="radio ${isSelected ? 'checked' : ''}"></div>`
+                  }
+                </div>
+                <div class="option-text">${answerText}</div>
               </div>
             `;
           }).join('')}
@@ -1145,32 +1244,118 @@ window.startQuiz = function() {
 window.selectAnswer = function(questionIndex, answerIndex) {
   const lesson = window.currentLesson;
   const question = lesson.questions[questionIndex];
+  // Check if this is a multiple correct question
+  // const isMultipleCorrect = question.type === 'multiple-correct' || question.type === 'multipleCorrect';
   
-  // Check if answer is correct
-  let isCorrect = false;
-  if (question) {
-    // Check if correctAnswer is index or the answer object has isCorrect property
-    if (typeof question.correctAnswer === 'number') {
-      isCorrect = answerIndex === question.correctAnswer;
-    } else if (question.answers && question.answers[answerIndex]) {
-      const answer = question.answers[answerIndex];
-      isCorrect = answer.isCorrect === true || answer.correct === true;
-    } else if (question.options && question.options[answerIndex]) {
-      const option = question.options[answerIndex];
-      isCorrect = option.isCorrect === true || option.correct === true;
+  // TEMPORARY TEST: Force all questions to be multiple correct for testing
+  const isMultipleCorrect = true;
+  
+  console.log('🎯 SelectAnswer debug:', {
+    questionIndex,
+    answerIndex,
+    questionType: question.type,
+    isMultipleCorrect,
+    question: question,
+    hasTypeProperty: question.hasOwnProperty('type'),
+    typeValue: question.type,
+    typeComparison1: question.type === 'multiple-correct',
+    typeComparison2: question.type === 'multipleCorrect'
+  });
+  
+  if (isMultipleCorrect) {
+    // Handle multiple correct answers
+    let currentAnswers = quizState.answers[questionIndex]?.answerIndexes || [];
+    
+    // Toggle the selected answer
+    if (currentAnswers.includes(answerIndex)) {
+      currentAnswers = currentAnswers.filter(idx => idx !== answerIndex);
+    } else {
+      currentAnswers.push(answerIndex);
+    }
+    
+    // Check if all selected answers are correct
+    let isCorrect = false;
+    if (question && currentAnswers.length > 0) {
+      const correctAnswers = [];
+      if (question.answers) {
+        question.answers.forEach((answer, idx) => {
+          if (answer.isCorrect === true || answer.correct === true) {
+            correctAnswers.push(idx);
+          }
+        });
+      } else if (question.options) {
+        question.options.forEach((option, idx) => {
+          if (option.isCorrect === true || option.correct === true) {
+            correctAnswers.push(idx);
+          }
+        });
+      }
+      
+      // Check if selected answers match correct answers exactly
+      isCorrect = currentAnswers.length === correctAnswers.length && 
+                  currentAnswers.every(idx => correctAnswers.includes(idx));
+    }
+    
+    // Save answer
+    quizState.answers[questionIndex] = {
+      answerIndexes: currentAnswers,
+      isCorrect: isCorrect
+    };
+    
+    // Update UI for multiple selection - only update options for current question
+    const currentQuestionContainer = document.querySelector('.quiz-question');
+    if (currentQuestionContainer) {
+      const options = currentQuestionContainer.querySelectorAll('.question-option');
+      options.forEach((opt, idx) => {
+        const checkbox = opt.querySelector('.checkbox');
+        if (currentAnswers.includes(idx)) {
+          opt.classList.add('selected');
+          if (checkbox) checkbox.classList.add('checked');
+        } else {
+          opt.classList.remove('selected');
+          if (checkbox) checkbox.classList.remove('checked');
+        }
+      });
+    }
+    
+  } else {
+    // Handle single correct answer (original logic)
+    let isCorrect = false;
+    if (question) {
+      // Check if correctAnswer is index or the answer object has isCorrect property
+      if (typeof question.correctAnswer === 'number') {
+        isCorrect = answerIndex === question.correctAnswer;
+      } else if (question.answers && question.answers[answerIndex]) {
+        const answer = question.answers[answerIndex];
+        isCorrect = answer.isCorrect === true || answer.correct === true;
+      } else if (question.options && question.options[answerIndex]) {
+        const option = question.options[answerIndex];
+        isCorrect = option.isCorrect === true || option.correct === true;
+      }
+    }
+    
+    // Save answer
+    quizState.answers[questionIndex] = {
+      answerIndex: answerIndex,
+      isCorrect: isCorrect
+    };
+    
+    // Update UI for single selection - only update options for current question
+    const currentQuestionContainer = document.querySelector('.quiz-question');
+    if (currentQuestionContainer) {
+      const options = currentQuestionContainer.querySelectorAll('.question-option');
+      options.forEach((opt, idx) => {
+        const radio = opt.querySelector('.radio');
+        if (idx === answerIndex) {
+          opt.classList.add('selected');
+          if (radio) radio.classList.add('checked');
+        } else {
+          opt.classList.remove('selected');
+          if (radio) radio.classList.remove('checked');
+        }
+      });
     }
   }
-  
-  // Save answer
-  quizState.answers[questionIndex] = {
-    answerIndex: answerIndex,
-    isCorrect: isCorrect
-  };
-  
-  // Update UI
-  const options = document.querySelectorAll('.question-option');
-  options.forEach(opt => opt.classList.remove('selected'));
-  options[answerIndex].classList.add('selected');
 };
 
 // Next question
@@ -1466,6 +1651,11 @@ export async function renderQuizContent(contentArea, course, lesson) {
   initI18n();
   
   console.log('📝 Rendering quiz content only:', lesson.title);
+  console.log('📝 Lesson questions:', lesson.questions);
+  if (lesson.questions && lesson.questions.length > 0) {
+    console.log('📝 First question type:', lesson.questions[0].type);
+    console.log('📝 First question full object:', lesson.questions[0]);
+  }
 
   // Store global references for quiz functionality
   window.currentCourse = course;
@@ -1841,6 +2031,9 @@ function renderQuizActiveContent(contentArea, lesson, questions) {
         transition: all 0.2s ease;
         font-size: 15px;
         color: #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 0;
       }
 
       .question-option:hover {
@@ -1852,6 +2045,39 @@ function renderQuizActiveContent(contentArea, lesson, questions) {
         background: rgba(126, 162, 212, 0.2);
         border-color: var(--primary-color);
         color: #ffffff;
+      }
+
+      .option-indicator {
+        flex-shrink: 0;
+      }
+
+      .option-text {
+        flex: 1;
+        line-height: 1.4;
+      }
+
+      .checkbox {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #9CA3AF;
+        border-radius: 3px;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        position: relative;
+        flex-shrink: 0;
+        margin-right: 12px;
+      }
+
+      .checkbox.checked {
+        border-color: var(--primary-color);
+        background: var(--primary-color);
+      }
+
+      .checkbox:hover {
+        border-color: var(--primary-color);
       }
 
       .question-navigation {
@@ -2133,32 +2359,110 @@ function attachQuizContentEventListeners() {
   window.selectAnswer = function(questionIndex, answerIndex) {
     const lesson = window.currentLesson;
     const question = lesson.questions[questionIndex];
-
-    // Check if answer is correct
-    let isCorrect = false;
-    if (question) {
-      if (typeof question.correctAnswer === 'number') {
-        isCorrect = answerIndex === question.correctAnswer;
-      } else if (question.answers && question.answers[answerIndex]) {
-        const answer = question.answers[answerIndex];
-        isCorrect = answer.isCorrect === true || answer.correct === true;
-      } else if (question.options && question.options[answerIndex]) {
-        const option = question.options[answerIndex];
-        isCorrect = option.isCorrect === true || option.correct === true;
+    
+    // Check if this is a multiple correct question
+    const isMultipleCorrect = question.type === 'multiple-correct' || question.type === 'multipleCorrect';
+    
+    console.log('🎯 Unified SelectAnswer debug:', {
+      questionIndex,
+      answerIndex,
+      questionType: question.type,
+      isMultipleCorrect,
+      question: question
+    });
+    
+    if (isMultipleCorrect) {
+      // Handle multiple correct answers
+      let currentAnswers = quizState.answers[questionIndex]?.answerIndexes || [];
+      
+      // Toggle the selected answer
+      if (currentAnswers.includes(answerIndex)) {
+        currentAnswers = currentAnswers.filter(idx => idx !== answerIndex);
+      } else {
+        currentAnswers.push(answerIndex);
       }
-    }
+      
+      // Check if all selected answers are correct
+      let isCorrect = false;
+      if (question && currentAnswers.length > 0) {
+        const correctAnswers = [];
+        if (question.answers) {
+          question.answers.forEach((answer, idx) => {
+            if (answer.isCorrect === true || answer.correct === true) {
+              correctAnswers.push(idx);
+            }
+          });
+        } else if (question.options) {
+          question.options.forEach((option, idx) => {
+            if (option.isCorrect === true || option.correct === true) {
+              correctAnswers.push(idx);
+            }
+          });
+        }
+        
+        // Check if selected answers match correct answers exactly
+        isCorrect = currentAnswers.length === correctAnswers.length && 
+                    currentAnswers.every(idx => correctAnswers.includes(idx));
+      }
+      
+      // Save answer
+      quizState.answers[questionIndex] = {
+        answerIndexes: currentAnswers,
+        isCorrect: isCorrect
+      };
+      
+      // Update UI for multiple selection
+      const currentQuestionContainer = document.querySelector('.quiz-question');
+      if (currentQuestionContainer) {
+        const options = currentQuestionContainer.querySelectorAll('.question-option');
+        options.forEach((opt, idx) => {
+          const checkbox = opt.querySelector('.checkbox');
+          if (currentAnswers.includes(idx)) {
+            opt.classList.add('selected');
+            if (checkbox) checkbox.classList.add('checked');
+          } else {
+            opt.classList.remove('selected');
+            if (checkbox) checkbox.classList.remove('checked');
+          }
+        });
+      }
+      
+    } else {
+      // Handle single correct answer (original logic)
+      let isCorrect = false;
+      if (question) {
+        if (typeof question.correctAnswer === 'number') {
+          isCorrect = answerIndex === question.correctAnswer;
+        } else if (question.answers && question.answers[answerIndex]) {
+          const answer = question.answers[answerIndex];
+          isCorrect = answer.isCorrect === true || answer.correct === true;
+        } else if (question.options && question.options[answerIndex]) {
+          const option = question.options[answerIndex];
+          isCorrect = option.isCorrect === true || option.correct === true;
+        }
+      }
 
-    // Save answer
-    quizState.answers[questionIndex] = {
-      answerIndex: answerIndex,
-      isCorrect: isCorrect
-    };
+      // Save answer
+      quizState.answers[questionIndex] = {
+        answerIndex: answerIndex,
+        isCorrect: isCorrect
+      };
 
-    // Update UI
-    const options = document.querySelectorAll('.question-option');
-    options.forEach(opt => opt.classList.remove('selected'));
-    if (options[answerIndex]) {
-      options[answerIndex].classList.add('selected');
+      // Update UI for single selection
+      const currentQuestionContainer = document.querySelector('.quiz-question');
+      if (currentQuestionContainer) {
+        const options = currentQuestionContainer.querySelectorAll('.question-option');
+        options.forEach((opt, idx) => {
+          const radio = opt.querySelector('.radio');
+          if (idx === answerIndex) {
+            opt.classList.add('selected');
+            if (radio) radio.classList.add('checked');
+          } else {
+            opt.classList.remove('selected');
+            if (radio) radio.classList.remove('checked');
+          }
+        });
+      }
     }
   };
 
