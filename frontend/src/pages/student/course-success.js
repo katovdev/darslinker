@@ -192,13 +192,28 @@ export function showCourseCompletionSuccess(course) {
     const teacherId = sessionStorage.getItem('currentTeacherId');
     const landingUser = sessionStorage.getItem('landingUser');
     
-    if (teacherId && landingUser) {
-      // Redirect to landing student dashboard
-      window.location.href = `#/teacher/${teacherId}`;
-    } else {
-      // Fallback to main student dashboard
-      window.location.href = '#/student-dashboard';
-    }
+    console.log('🔄 Redirecting back to dashboard...', { teacherId, landingUser: !!landingUser });
+    
+    // Import router and navigate
+    import('../../utils/router.js').then(({ router }) => {
+      if (teacherId && landingUser) {
+        // Redirect to landing student dashboard
+        console.log('📍 Navigating to teacher landing dashboard:', `/teacher/${teacherId}/student-dashboard`);
+        router.navigate(`/teacher/${teacherId}/student-dashboard`);
+      } else {
+        // Fallback to main student dashboard
+        console.log('📍 Navigating to main student dashboard');
+        router.navigate('/student-dashboard');
+      }
+    }).catch(error => {
+      console.error('Error importing router:', error);
+      // Fallback to window.location
+      if (teacherId && landingUser) {
+        window.location.href = `/teacher/${teacherId}/student-dashboard`;
+      } else {
+        window.location.href = '/student-dashboard';
+      }
+    });
   };
 }
 
@@ -227,6 +242,7 @@ function createConfetti() {
   canvas.style.height = '100%';
   canvas.style.pointerEvents = 'none';
   canvas.style.zIndex = '9999';
+  canvas.style.display = 'block';
   
   confettiContainer.appendChild(canvas);
   
@@ -235,176 +251,67 @@ function createConfetti() {
   canvas.height = window.innerHeight;
   
   const confetti = [];
-  const confettiCount = 120;
-  const colors = [
-    '#7EA2D4', '#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', 
-    '#96CEB4', '#FECA57', '#E74C3C', '#9B59B6', '#F39C12',
-    '#FF9FF3', '#54A0FF', '#5F27CD', '#00D2D3', '#FF9F43',
-    '#10AC84', '#EE5A24', '#0984E3', '#A29BFE', '#FD79A8'
-  ];
+  const confettiCount = 40; // Kamroq miqdor
+  const colors = ['#7EA2D4', '#5A5A5A', '#FFFFFF']; // Sizning ranglaringiz
   
   class Confetto {
     constructor() {
-      // Start from top of screen with some randomness
       this.x = Math.random() * canvas.width;
-      this.y = -Math.random() * 100 - 20;
-      
-      // Size variations for more realistic look
-      this.w = Math.random() * 16 + 8;
-      this.h = Math.random() * 12 + 6;
-      
-      // Physics properties
-      this.vx = (Math.random() - 0.5) * 4; // horizontal velocity
-      this.vy = Math.random() * 3 + 2; // vertical velocity
-      this.gravity = 0.15;
-      this.drag = 0.99;
-      this.bounce = 0.7;
-      
-      // Rotation properties
+      this.y = Math.random() * canvas.height - canvas.height;
+      this.w = Math.random() * 10 + 5;
+      this.h = Math.random() * 6 + 3;
+      this.speed = Math.random() * 3 + 2;
       this.angle = Math.random() * 360;
-      this.angularVelocity = (Math.random() - 0.5) * 15;
-      
-      // Visual properties
-      this.opacity = Math.random() * 0.4 + 0.6;
+      this.rotation = Math.random() * 10 - 5;
+      this.opacity = Math.random() * 0.5 + 0.5;
+      this.swing = Math.random() * 2 - 1;
       this.color = colors[Math.floor(Math.random() * colors.length)];
-      this.shape = Math.random();
-      
-      // Lifecycle
-      this.life = 1.0;
-      this.decay = Math.random() * 0.02 + 0.005;
     }
     
     update() {
-      // Apply physics
-      this.vy += this.gravity;
-      this.vx *= this.drag;
-      this.vy *= this.drag;
+      this.y += this.speed;
+      this.angle += this.rotation;
+      this.x += this.swing;
       
-      // Update position
-      this.x += this.vx;
-      this.y += this.vy;
-      
-      // Update rotation
-      this.angle += this.angularVelocity;
-      this.angularVelocity *= 0.99;
-      
-      // Bounce off walls
-      if (this.x <= 0 || this.x >= canvas.width) {
-        this.vx *= -this.bounce;
-        this.x = Math.max(0, Math.min(canvas.width, this.x));
+      if (this.y > canvas.height) {
+        this.y = -20;
+        this.x = Math.random() * canvas.width;
       }
-      
-      // Bounce off ground
-      if (this.y >= canvas.height - this.h) {
-        this.vy *= -this.bounce;
-        this.y = canvas.height - this.h;
-        this.angularVelocity *= 0.8;
-      }
-      
-      // Fade out over time
-      this.life -= this.decay;
-      this.opacity = Math.max(0, this.life * 0.8);
-      
-      // Reset if completely faded or off screen
-      if (this.life <= 0 || this.y > canvas.height + 100) {
-        this.reset();
-      }
-    }
-    
-    reset() {
-      this.x = Math.random() * canvas.width;
-      this.y = -Math.random() * 100 - 20;
-      this.vx = (Math.random() - 0.5) * 4;
-      this.vy = Math.random() * 3 + 2;
-      this.life = 1.0;
-      this.opacity = Math.random() * 0.4 + 0.6;
-      this.angle = Math.random() * 360;
-      this.angularVelocity = (Math.random() - 0.5) * 15;
     }
     
     draw() {
-      if (this.opacity <= 0) return;
-      
       ctx.save();
-      ctx.translate(this.x + this.w/2, this.y + this.h/2);
+      ctx.translate(this.x, this.y);
       ctx.rotate(this.angle * Math.PI / 180);
       ctx.globalAlpha = this.opacity;
-      
-      // Add glow effect
-      ctx.shadowColor = this.color;
-      ctx.shadowBlur = 15;
       ctx.fillStyle = this.color;
-      
-      // Draw different shapes
-      if (this.shape < 0.33) {
-        // Rectangle
-        ctx.fillRect(-this.w/2, -this.h/2, this.w, this.h);
-      } else if (this.shape < 0.66) {
-        // Circle
-        ctx.beginPath();
-        ctx.arc(0, 0, this.w/2, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        // Triangle
-        ctx.beginPath();
-        ctx.moveTo(0, -this.h/2);
-        ctx.lineTo(-this.w/2, this.h/2);
-        ctx.lineTo(this.w/2, this.h/2);
-        ctx.closePath();
-        ctx.fill();
-      }
-      
-      // Add inner highlight for 3D effect
-      ctx.shadowBlur = 0;
-      ctx.globalAlpha = this.opacity * 0.3;
-      ctx.fillStyle = '#ffffff';
-      
-      if (this.shape < 0.33) {
-        ctx.fillRect(-this.w/2, -this.h/2, this.w/3, this.h/3);
-      } else if (this.shape < 0.66) {
-        ctx.beginPath();
-        ctx.arc(-this.w/6, -this.h/6, this.w/6, 0, Math.PI * 2);
-        ctx.fill();
-      } else {
-        ctx.beginPath();
-        ctx.moveTo(0, -this.h/2);
-        ctx.lineTo(-this.w/6, -this.h/6);
-        ctx.lineTo(this.w/6, -this.h/6);
-        ctx.closePath();
-        ctx.fill();
-      }
-      
+      ctx.fillRect(-this.w / 2, -this.h / 2, this.w, this.h);
       ctx.restore();
     }
   }
   
-  // Initialize confetti with staggered creation for burst effect
+  // Initialize confetti
   for (let i = 0; i < confettiCount; i++) {
-    setTimeout(() => {
-      confetti.push(new Confetto());
-    }, i * 50); // Stagger creation over 6 seconds
+    confetti.push(new Confetto());
   }
   
   let animationId;
   let startTime = Date.now();
   
   function animate() {
-    // Clear with slight trail effect for smoother animation
-    ctx.fillStyle = 'rgba(26, 26, 26, 0.1)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // Update and draw all confetti
     confetti.forEach(c => {
       c.update();
       c.draw();
     });
     
-    // Continue animation for 15 seconds
-    if (Date.now() - startTime < 15000) {
+    // 4 sekund davomida ko'rsatish
+    if (Date.now() - startTime < 4000) {
       animationId = requestAnimationFrame(animate);
     } else {
-      // Fade out
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Animatsiyani to'xtatish va canvasni olib tashlash
+      cancelAnimationFrame(animationId);
       if (canvas.parentNode) {
         canvas.parentNode.removeChild(canvas);
       }
@@ -421,11 +328,11 @@ function createConfetti() {
   
   window.addEventListener('resize', handleResize);
   
-  // Cleanup on animation end
+  // Cleanup after 4 seconds
   setTimeout(() => {
     window.removeEventListener('resize', handleResize);
     if (canvas.parentNode) {
       canvas.parentNode.removeChild(canvas);
     }
-  }, 15000);
+  }, 4000);
 }
