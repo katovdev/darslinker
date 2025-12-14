@@ -16300,7 +16300,7 @@ window.openFinancePage = async function() {
                   <tbody>
                     ${payments.map(payment => `
                       <tr class="payment-row ${payment.status}">
-                        <td class="student-id">${payment.studentId.firstName?.charAt(0) || 'S'}${payment.studentId._id.slice(-4)}</td>
+                        <td class="student-id">ID: ${payment.studentId._id.slice(-5)}</td>
                         <td class="student-name">${payment.studentId.firstName} ${payment.studentId.lastName}</td>
                         <td class="course-name">${payment.courseId.title}</td>
                         <td class="amount">${payment.amount.toLocaleString()} UZS</td>
