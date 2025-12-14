@@ -8871,7 +8871,19 @@ window.applyPrimaryColor = function(color) {
       color: ${color} !important;
     }
     
-    /* My Courses page - course buttons (Edit, Stats) */
+    /* My Courses page - course buttons (Edit, Delete) */
+    .course-actions {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 8px !important;
+    }
+    
+    .course-actions-modern {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+      gap: 12px !important;
+    }
+    
     .course-btn {
       background: rgba(${r}, ${g}, ${b}, 0.2) !important;
       border-color: rgba(${r}, ${g}, ${b}, 0.3) !important;
@@ -20060,7 +20072,6 @@ function updateFilterTabs() {
         </div>
         <div class="course-actions">
           <button class="course-btn" onclick="editCourse(${course.id})" title="Edit course">Edit</button>
-          <button class="course-btn" onclick="viewCourseStats(${course.id})" title="View statistics">Stats</button>
           <button class="course-btn course-btn-delete" onclick="deleteCourse(${course.id})" title="Delete course">Delete</button>
         </div>
       </div>
@@ -20808,7 +20819,6 @@ function renderMyCoursesCards(courses) {
         <!-- Actions -->
         <div class="course-actions-modern">
           <button class="course-btn-modern" onclick="editCourse('${course._id}')">${t('myCourses.edit')}</button>
-          <button class="course-btn-modern" onclick="viewCourseStats('${course._id}')">${t('myCourses.stats')}</button>
           <button class="course-btn-modern course-btn-delete-modern" onclick="deleteCourseConfirm('${course._id}', \`${course.title.replace(/`/g, '')}\`)">${t('myCourses.delete')}</button>
         </div>
       </div>
