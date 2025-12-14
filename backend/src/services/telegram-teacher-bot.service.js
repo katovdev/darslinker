@@ -328,4 +328,77 @@ export async function sendTeacherOtpViaTelegram(phoneNumber, otp) {
   }
 }
 
+/**
+ * Send payment notification to teacher via Telegram
+ * @param {string} teacherId - Teacher's ID
+ * @param {string} studentName - Student's full name
+ * @param {string} courseName - Course name
+ * @param {number} amount - Payment amount
+ * @returns {Promise<boolean>}
+ */
+export async function sendPaymentNotificationToTeacher(teacherId, studentName, courseName, amount) {
+  try {
+    if (!teacherBot) {
+      logger.error('Teacher bot instance not available');
+      return false;
+    }
+
+    // Find teacher by ID
+    const teacher = await User.findById(teacherId);
+    if (!teacher) {
+      logger.warn('Teacher not found for payment notification', { teacherId });
+      return false;
+    }
+
+    // Find chat ID from previous OTP records
+    const previousOtp = await Otp.findOne({
+      identifier: teacher.phone,
+      'meta.botType': 'teacher',
+    }).sort({ createdAt: -1 });
+
+    if (!previousOtp || !previousOtp.meta?.chatId) {
+      logger.warn('No chat ID found for teacher payment notification', { 
+        teacherId, 
+        phone: teacher.phone 
+      });
+      return false;
+    }
+
+    const chatId = previousOtp.meta.chatId;
+
+    // Create payment notification message
+    const message = `💰 Yangi to'lov!
+
+👤 **${studentName}** 
+📚 **${courseName}** kursi uchun to'lov qildi
+
+💵 Miqdor: **${amount.toLocaleString()} UZS**
+
+📱 Dasturda ko'rib chiqing va tasdiqlang.`;
+
+    await teacherBot.sendMessage(chatId, message, {
+      parse_mode: 'Markdown',
+    });
+
+    logger.info('Payment notification sent to teacher via Telegram', {
+      teacherId,
+      chatId,
+      studentName,
+      courseName,
+      amount
+    });
+
+    return true;
+  } catch (error) {
+    logger.error('Error sending payment notification to teacher via Telegram', {
+      teacherId,
+      studentName,
+      courseName,
+      amount,
+      error: error.message,
+    });
+    return false;
+  }
+}
+
 export default teacherBot;

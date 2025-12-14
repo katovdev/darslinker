@@ -6,6 +6,7 @@ import Notification from '../models/notification.model.js';
 import logger from '../../config/logger.js';
 import { catchAsync } from '../middlewares/error.middleware.js';
 import { ValidationError, NotFoundError } from '../utils/error.utils.js';
+import { sendPaymentNotificationToTeacher } from '../services/telegram-teacher-bot.service.js';
 
 /**
  * Submit payment for a course
@@ -92,6 +93,23 @@ const submitPayment = catchAsync(async (req, res) => {
       amount: payment.amount
     }
   });
+
+  // Send Telegram notification to teacher
+  try {
+    await sendPaymentNotificationToTeacher(
+      teacherId,
+      `${student.firstName} ${student.lastName}`,
+      course.title,
+      payment.amount
+    );
+  } catch (error) {
+    logger.error('Failed to send Telegram notification to teacher', {
+      error: error.message,
+      teacherId,
+      paymentId: payment._id
+    });
+    // Don't fail the payment submission if Telegram fails
+  }
 
   logger.info('Payment submitted successfully', {
     paymentId: payment._id,

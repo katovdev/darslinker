@@ -3,7 +3,7 @@ import { apiService } from '../../utils/api.js';
 import { router } from '../../utils/router.js';
 import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
 import { getTheme, saveTheme, initTheme, presetColors } from '../../utils/theme.js';
-import { showSuccessToast, showErrorToast, showInfoToast } from '../../utils/toast.js';
+import { showSuccessToast, showErrorToast, showInfoToast, showToast } from '../../utils/toast.js';
 import { config } from '../../utils/config.js';
 import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
@@ -5554,6 +5554,14 @@ async function generateLandingPageHTML(teacher) {
                 </style>
             \`;
             document.body.appendChild(modal);
+            
+            // Make toast functions available in modal context
+            window.showToast = showToast;
+            window.showSuccessToast = showSuccessToast;
+            window.showErrorToast = showErrorToast;
+            window.showWarningToast = showWarningToast;
+            window.showInfoToast = showInfoToast;
+            
             renderStep(1);
             
             // Apply translations to modal content
@@ -5913,7 +5921,7 @@ async function generateLandingPageHTML(teacher) {
                     
                     sessionStorage.setItem('landingUser', JSON.stringify(userDataToSave));
                     
-                    showToast('success', 'Muvaffaqiyatli kirdingiz!');
+                    showToast('Muvaffaqiyatli kirdingiz!', 'success');
                     closeLoginModal();
                     
                     // Redirect to student dashboard (coming soon page)
@@ -5970,7 +5978,7 @@ async function generateLandingPageHTML(teacher) {
                 
                 if (data.success) {
                     // Always show toast with instructions
-                    showToast('success', 'Telegram botga /login yozing va kontaktingizni yuboring', 8000);
+                    showToast('Telegram botga /login yozing va kontaktingizni yuboring', 'success', 8000);
                     
                     // Show bot info modal
                     const botUsername = 'darslinkerrr_bot';
@@ -6318,7 +6326,7 @@ async function generateLandingPageHTML(teacher) {
                 const data = await response.json();
                 
                 if (data.success) {
-                    showToast('success', 'Parol muvaffaqiyatli o\\'zgartirildi!');
+                    showToast('Parol muvaffaqiyatli o\\'zgartirildi!', 'success');
                     closeResetPasswordModal();
                     
                     // Open login modal after 1 second
@@ -6874,7 +6882,7 @@ async function generateLandingPageHTML(teacher) {
                     
                     sessionStorage.setItem('landingUser', JSON.stringify(userDataToSave));
                     
-                    showToast('success', 'Muvaffaqiyatli ro\\'yxatdan o\\'tdingiz!');
+                    showToast('Muvaffaqiyatli ro\\'yxatdan o\\'tdingiz!', 'success');
                     closeRegistrationModal();
                     
                     // Redirect to student dashboard (coming soon page)
@@ -7065,6 +7073,13 @@ async function generateLandingPageHTML(teacher) {
         window.handleLogin = handleLogin;
         window.handleForgotPassword = handleForgotPassword;
         window.showResetPasswordModal = showResetPasswordModal;
+        
+        // Make toast functions globally available
+        window.showToast = showToast;
+        window.showSuccessToast = showSuccessToast;
+        window.showErrorToast = showErrorToast;
+        window.showWarningToast = showWarningToast;
+        window.showInfoToast = showInfoToast;
         window.closeResetPasswordModal = closeResetPasswordModal;
         window.verifyResetCode = verifyResetCode;
         window.resetPassword = resetPassword;

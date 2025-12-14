@@ -2,6 +2,7 @@ import './style.css';
 import { router } from './utils/router.js';
 import { store } from './utils/store.js';
 import { config } from './utils/config.js';
+import { showToast, showSuccessToast, showErrorToast, showWarningToast, showInfoToast } from './utils/toast.js';
 
 import { initHomePage } from './pages/common/home.js';
 import { initLoginPage } from './pages/auth/login.js';
@@ -24,6 +25,13 @@ class App {
 
   init() {
     console.log(`Initializing ${config.app.name}...`);
+
+    // Make toast functions globally available
+    window.showToast = showToast;
+    window.showSuccessToast = showSuccessToast;
+    window.showErrorToast = showErrorToast;
+    window.showWarningToast = showWarningToast;
+    window.showInfoToast = showInfoToast;
 
     this.setupRoutes();
 
