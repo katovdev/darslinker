@@ -34,6 +34,31 @@ export const createStudentProfileSchema = Joi.object({
  * Validates student-specific profile data
  */
 export const updateStudentProfileSchema = Joi.object({
+  // Base User fields
+  firstName: Joi.string().trim().min(2).max(50).optional().messages({
+    "string.min": "First name must be at least 2 characters long",
+    "string.max": "First name cannot exceed 50 characters",
+  }),
+
+  lastName: Joi.string().trim().min(2).max(50).optional().messages({
+    "string.min": "Last name must be at least 2 characters long",
+    "string.max": "Last name cannot exceed 50 characters",
+  }),
+
+  email: Joi.string().trim().email().optional().messages({
+    "string.email": "Please provide a valid email address",
+  }),
+
+  phone: Joi.string().trim().optional().messages({
+    "string.base": "Phone number must be a string",
+  }),
+
+  password: Joi.string().min(6).max(128).optional().messages({
+    "string.min": "Password must be at least 6 characters long",
+    "string.max": "Password cannot exceed 128 characters",
+  }),
+
+  // Student-specific fields
   bio: Joi.string().trim().min(10).max(500).optional().allow("").messages({
     "string.min": "Bio must be at least 10 characters long",
     "string.max": "Bio cannot exceed 500 characters",

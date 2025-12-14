@@ -1,6 +1,7 @@
 import Teacher from "../models/teacher.model.js";
 import User from "../models/user.model.js";
 import logger from "../../config/logger.js";
+import bcrypt from "bcrypt";
 
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
 import {
@@ -182,8 +183,28 @@ const update = catchAsync(async (req, res) => {
   const existingTeacher = await validateAndFindById(Teacher, id, "Teacher");
   const existingTeacherData = handleValidationResult(existingTeacher);
 
+  // Handle password update separately - update User model directly
+  let passwordUpdated = false;
+  if (updates.password) {
+    const { BCRYPT_SALT_ROUNDS } = await import('../../config/env.js');
+    const saltRounds = parseInt(BCRYPT_SALT_ROUNDS || "10", 10);
+    const hashedPassword = await bcrypt.hash(updates.password, saltRounds);
+    
+    // Update password in User model directly
+    await User.findByIdAndUpdate(id, { password: hashedPassword });
+    passwordUpdated = true;
+    
+    // Remove password from updates to avoid conflicts
+    delete updates.password;
+    
+    logger.info("🔐 Password updated directly in User model for teacher", { 
+      teacherId: id, 
+      saltRounds,
+      hashedPassword: hashedPassword.substring(0, 10) + "..." 
+    });
+  }
+
   const forbiddenFields = [
-    "password",
     "role",
     "status",
     "ratingAverage",
@@ -305,6 +326,12 @@ const update = catchAsync(async (req, res) => {
     });
   }
 
+  logger.info("🔄 About to update teacher with data:", {
+    teacherId: id,
+    updateFields: Object.keys(updates),
+    passwordWasUpdatedSeparately: passwordUpdated
+  });
+
   const updatedTeacher = await Teacher.findByIdAndUpdate(
     id,
     { $set: updates },
@@ -314,6 +341,17 @@ const update = catchAsync(async (req, res) => {
       select: "-password",
     }
   );
+
+  // If password was updated, verify it was saved correctly
+  if (passwordUpdated) {
+    const userWithPassword = await User.findById(id).select('+password');
+    logger.info("🔐 Password update verification", {
+      teacherId: id,
+      passwordHashLength: userWithPassword.password ? userWithPassword.password.length : 0,
+      passwordHashPrefix: userWithPassword.password ? userWithPassword.password.substring(0, 10) : 'none',
+      passwordUpdated: !!userWithPassword.password
+    });
+  }
 
   logger.info("✅ Teacher profile updated successfully", {
     teacherId: id,

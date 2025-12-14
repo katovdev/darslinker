@@ -1951,6 +1951,26 @@ function showEditProfilePage() {
                  placeholder="${t('profile.enterPhone')}">
         </div>
 
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+          <h3 style="color: rgba(255,255,255,0.9); font-size: 18px; font-weight: 600; margin-bottom: 16px;">${t('editProfile.changePassword')}</h3>
+          <p style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 20px;">${t('editProfile.passwordHint')}</p>
+          
+          <div style="display: flex; gap: 16px;">
+            <div style="flex: 1;">
+              <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">${t('editProfile.newPassword')}</label>
+              <input type="password" id="newPassword" autocomplete="new-password"
+                     style="width: 100%; padding: 16px; background: rgba(58, 56, 56, 0.8); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 16px; transition: all 0.3s ease;"
+                     placeholder="${t('editProfile.newPasswordPlaceholder')}">
+            </div>
+            <div style="flex: 1;">
+              <label style="display: block; color: rgba(255,255,255,0.9); font-size: 14px; font-weight: 600; margin-bottom: 8px;">${t('editProfile.confirmPassword')}</label>
+              <input type="password" id="confirmPassword" autocomplete="new-password"
+                     style="width: 100%; padding: 16px; background: rgba(58, 56, 56, 0.8); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; font-size: 16px; transition: all 0.3s ease;"
+                     placeholder="${t('editProfile.confirmPasswordPlaceholder')}">
+            </div>
+          </div>
+        </div>
+
         <div style="display: flex; gap: 16px; margin-top: 20px;">
           <button type="submit"
                   style="flex: 1; padding: 16px; background: var(--primary-color); border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
@@ -2037,16 +2057,30 @@ window.cancelLanguageChanges = function() {
 };
 
 // Profile editing functions
-window.saveProfileChanges = function(event) {
+window.saveProfileChanges = async function(event) {
   event.preventDefault();
 
   const firstName = document.getElementById('firstName').value.trim();
   const lastName = document.getElementById('lastName').value.trim();
   const phone = document.getElementById('phone').value.trim();
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
 
   if (!firstName || !lastName) {
     showErrorToast(t('common.fillRequiredFields'));
     return;
+  }
+
+  // Validate password if provided
+  if (newPassword || confirmPassword) {
+    if (newPassword !== confirmPassword) {
+      showErrorToast(t('editProfile.passwordMismatch'));
+      return;
+    }
+    if (newPassword.length < 6) {
+      showErrorToast(t('editProfile.passwordTooShort'));
+      return;
+    }
   }
 
   // Get current user data
@@ -2060,23 +2094,56 @@ window.saveProfileChanges = function(event) {
     }
   }
 
-  // Update user data
-  const updatedUser = {
-    ...userData,
-    firstName: firstName,
-    lastName: lastName,
-    phone: phone
-  };
+  try {
+    // Prepare update data
+    const updateData = {
+      firstName: firstName,
+      lastName: lastName,
+      phone: phone
+    };
 
-  // Save to sessionStorage
-  sessionStorage.setItem('landingUser', JSON.stringify(updatedUser));
+    // Add password if provided
+    if (newPassword) {
+      updateData.password = newPassword;
+    }
 
-  showSuccessToast(t('profile.updated'));
+    // Update via API
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8001/api'}/students/${userData._id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+      },
+      body: JSON.stringify(updateData)
+    });
 
-  // Go back to dashboard
-  setTimeout(() => {
-    initLandingStudentDashboard();
-  }, 1000);
+    const result = await response.json();
+
+    if (result.success) {
+      // Update user data
+      const updatedUser = {
+        ...userData,
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone
+      };
+
+      // Save to sessionStorage
+      sessionStorage.setItem('landingUser', JSON.stringify(updatedUser));
+
+      showSuccessToast(t('profile.updated'));
+
+      // Go back to dashboard
+      setTimeout(() => {
+        initLandingStudentDashboard();
+      }, 1000);
+    } else {
+      throw new Error(result.message || 'Failed to update profile');
+    }
+  } catch (error) {
+    console.error('Profile update error:', error);
+    showErrorToast(error.message || 'Failed to update profile. Please try again.');
+  }
 };
 
 window.cancelProfileChanges = function() {

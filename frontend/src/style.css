@@ -6602,6 +6602,51 @@ body.light-mode .font-option.disabled {
   border-color: var(--border-color);
 }
 
+/* Password field styling */
+input[type="password"] {
+  font-family: inherit;
+}
+
+input[type="password"]:focus {
+  outline: none;
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(var(--primary-color-rgb), 0.2) !important;
+}
+
+/* Disable autocomplete and autofill for password fields */
+input[type="password"][autocomplete="new-password"] {
+  -webkit-text-security: disc;
+}
+
+input[type="password"]:-webkit-autofill,
+input[type="password"]:-webkit-autofill:hover,
+input[type="password"]:-webkit-autofill:focus,
+input[type="password"]:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px var(--bg-tertiary) inset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Password section styling */
+.password-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+
+.password-section h3 {
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.password-section p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
 body.light-mode .toggle-switch {
   background: var(--bg-tertiary);
 }

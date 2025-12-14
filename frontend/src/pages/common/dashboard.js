@@ -11960,7 +11960,7 @@ function getEditProfileHTML(user) {
 
         <div class="form-field">
           <label class="field-label">${t('editProfile.emailAddress')}</label>
-          <input type="email" class="form-input" name="email" value="${user.email || ''}" required />
+          <input type="email" class="form-input" name="email" value="${user.email || ''}" />
         </div>
 
         <div class="form-field">
@@ -11971,6 +11971,22 @@ function getEditProfileHTML(user) {
         <div class="form-field">
           <label class="field-label">${t('editProfile.telegramUsername')}</label>
           <input type="text" class="form-input" name="telegramUsername" value="${user.telegramUsername || ''}" />
+        </div>
+      </div>
+
+      <!-- Password Change Section -->
+      <div class="profile-section">
+        <h3 class="section-title">${t('editProfile.changePassword')}</h3>
+        <p class="section-subtitle">${t('editProfile.passwordHint')}</p>
+
+        <div class="form-field">
+          <label class="field-label">${t('editProfile.newPassword')}</label>
+          <input type="password" class="form-input" name="newPassword" placeholder="${t('editProfile.newPasswordPlaceholder')}" autocomplete="new-password" />
+        </div>
+
+        <div class="form-field">
+          <label class="field-label">${t('editProfile.confirmPassword')}</label>
+          <input type="password" class="form-input" name="confirmPassword" placeholder="${t('editProfile.confirmPasswordPlaceholder')}" autocomplete="new-password" />
         </div>
       </div>
 
@@ -12709,6 +12725,23 @@ async function handleProfileSave(e) {
       country: formData.get('country'),
       profileImage: formData.get('profileImage') || ''
     };
+
+    // Handle password change
+    const newPassword = formData.get('newPassword');
+    const confirmPassword = formData.get('confirmPassword');
+    
+    if (newPassword || confirmPassword) {
+      if (newPassword !== confirmPassword) {
+        showErrorToast(t('editProfile.passwordMismatch') || 'Passwords do not match');
+        return;
+      }
+      if (newPassword.length < 6) {
+        showErrorToast(t('editProfile.passwordTooShort') || 'Password must be at least 6 characters long');
+        return;
+      }
+      profileData.password = newPassword;
+      console.log('🔐 Password will be updated for user:', user._id);
+    }
 
     console.log('📝 Profile data collected from form:', profileData);
 

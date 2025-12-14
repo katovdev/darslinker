@@ -1,6 +1,7 @@
 import Student from "../models/student.model.js";
 import User from "../models/user.model.js";
 import logger from "../../config/logger.js";
+import bcrypt from "bcrypt";
 
 import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
 import {
@@ -130,8 +131,28 @@ const update = catchAsync(async (req, res) => {
   const existingStudent = await validateAndFindById(Student, id, "Student");
   const existingStudentData = handleValidationResult(existingStudent);
 
+  // Handle password update separately - update User model directly
+  let passwordUpdated = false;
+  if (updates.password) {
+    const { BCRYPT_SALT_ROUNDS } = await import('../../config/env.js');
+    const saltRounds = parseInt(BCRYPT_SALT_ROUNDS || "10", 10);
+    const hashedPassword = await bcrypt.hash(updates.password, saltRounds);
+    
+    // Update password in User model directly
+    await User.findByIdAndUpdate(id, { password: hashedPassword });
+    passwordUpdated = true;
+    
+    // Remove password from updates to avoid conflicts
+    delete updates.password;
+    
+    logger.info("🔐 Password updated directly in User model for student", { 
+      studentId: id, 
+      saltRounds,
+      hashedPassword: hashedPassword.substring(0, 10) + "..." 
+    });
+  }
+
   const forbiddenFields = [
-    "password",
     "role",
     "status",
     "points",
@@ -225,6 +246,17 @@ const update = catchAsync(async (req, res) => {
       select: "-password",
     }
   );
+
+  // If password was updated, verify it was saved correctly
+  if (passwordUpdated) {
+    const userWithPassword = await User.findById(id).select('+password');
+    logger.info("🔐 Password update verification", {
+      studentId: id,
+      passwordHashLength: userWithPassword.password ? userWithPassword.password.length : 0,
+      passwordHashPrefix: userWithPassword.password ? userWithPassword.password.substring(0, 10) : 'none',
+      passwordUpdated: !!userWithPassword.password
+    });
+  }
 
   logger.info("Student profile updated", {
     studentId: id,
