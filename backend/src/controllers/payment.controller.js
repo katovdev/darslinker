@@ -69,16 +69,34 @@ const submitPayment = catchAsync(async (req, res) => {
     }
   }
 
-  // Create new payment
-  const payment = new Payment({
+  // Check if there's a rejected payment to update
+  const rejectedPayment = await Payment.findOne({
     studentId,
     courseId,
-    teacherId,
-    amount: amount || course.price || 0,
-    checkImageUrl
+    status: 'rejected'
   });
 
-  await payment.save();
+  let payment;
+  
+  if (rejectedPayment) {
+    // Update the rejected payment with new data
+    rejectedPayment.status = 'pending';
+    rejectedPayment.amount = amount || course.price || 0;
+    rejectedPayment.checkImageUrl = checkImageUrl;
+    rejectedPayment.rejectionReason = undefined;
+    rejectedPayment.createdAt = new Date();
+    payment = await rejectedPayment.save();
+  } else {
+    // Create new payment
+    payment = new Payment({
+      studentId,
+      courseId,
+      teacherId,
+      amount: amount || course.price || 0,
+      checkImageUrl
+    });
+    await payment.save();
+  }
 
   // Create notification for teacher
   await Notification.create({

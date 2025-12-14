@@ -70,8 +70,8 @@ export async function initCoursePaymentPage(courseId) {
     }
 
     // Render payment page based on status
-    if (paymentStatus) {
-      // Show already submitted status
+    if (paymentStatus && paymentStatus.status !== 'rejected') {
+      // Show already submitted status (pending or approved)
       appElement.innerHTML = `
         <style>
           /* Hide all existing headers */
@@ -198,6 +198,195 @@ export async function initCoursePaymentPage(courseId) {
             <button class="back-btn" onclick="goBackToCourse()">
               ${t('common.back')}
             </button>
+          </div>
+        </div>
+      `;
+    } else if (paymentStatus && paymentStatus.status === 'rejected') {
+      // Show rejected payment status with option to resubmit
+      appElement.innerHTML = `
+        <style>
+          /* Hide all existing headers */
+          .mobile-header,
+          .desktop-header,
+          .figma-header,
+          .landing-header {
+            display: none !important;
+          }
+
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          .payment-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+          }
+
+          .payment-container {
+            background: rgba(42, 42, 42, 0.95);
+            border: 1px solid var(--primary-border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+          }
+
+          .status-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            color: #EF4444;
+          }
+
+          .status-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 16px;
+          }
+
+          .status-message {
+            font-size: 16px;
+            color: #9ca3af;
+            line-height: 1.6;
+            margin-bottom: 24px;
+          }
+
+          .rejection-reason {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 32px;
+          }
+
+          .rejection-reason-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #EF4444;
+            margin-bottom: 8px;
+          }
+
+          .rejection-reason-text {
+            font-size: 14px;
+            color: #FCA5A5;
+            line-height: 1.4;
+          }
+
+          .course-info {
+            background: rgba(42, 42, 42, 0.5);
+            border: 1px solid var(--primary-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+          }
+
+          .course-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+          }
+
+          .course-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+          }
+
+          .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+          }
+
+          .retry-btn {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+
+          .retry-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px var(--primary-shadow);
+          }
+
+          .back-btn {
+            background: transparent;
+            border: 1px solid var(--primary-border);
+            color: #9ca3af;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+
+          .back-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+          }
+
+          @media (max-width: 768px) {
+            .payment-container {
+              padding: 30px 20px;
+              margin: 20px;
+            }
+
+            .status-title {
+              font-size: 24px;
+            }
+
+            .action-buttons {
+              flex-direction: column;
+            }
+          }
+        </style>
+
+        <div class="payment-page">
+          <div class="payment-container">
+            <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+
+            <h1 class="status-title">Payment Rejected</h1>
+            <p class="status-message">Your payment was rejected by the teacher. You can submit a new payment below.</p>
+
+            ${paymentStatus.rejectionReason ? `
+              <div class="rejection-reason">
+                <div class="rejection-reason-title">Rejection Reason:</div>
+                <div class="rejection-reason-text">${paymentStatus.rejectionReason}</div>
+              </div>
+            ` : ''}
+
+            <div class="course-info">
+              <div class="course-name">${course.title}</div>
+              <div class="course-price">${course.price ? `${course.price.toLocaleString()} UZS` : 'Free'}</div>
+            </div>
+
+            <div class="action-buttons">
+              <button class="back-btn" onclick="goBackToCourse()">
+                ${t('common.back')}
+              </button>
+            </div>
           </div>
         </div>
       `;
