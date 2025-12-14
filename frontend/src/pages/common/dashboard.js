@@ -3302,8 +3302,16 @@ async function loadCertificates() {
       console.log('✅ Latest certificates from backend:', latestTeacher.certificates || []);
 
       // Check if user has certificates in their profile
+      const certificatesSection = document.querySelector('.landing-section:has(#certificatesList)') || 
+                                  document.querySelector('#certificatesList').closest('.landing-section');
+      
       if (latestTeacher.certificates && latestTeacher.certificates.length > 0) {
-      certificatesList.innerHTML = latestTeacher.certificates.map((cert, index) => `
+        // Show certificates section
+        if (certificatesSection) {
+          certificatesSection.style.display = 'block';
+        }
+        
+        certificatesList.innerHTML = latestTeacher.certificates.map((cert, index) => `
         <div class="certificate-card" data-certificate-index="${index}">
           <div class="certificate-image" onclick="openCertificateModal('${cert.url}', '${cert.title}')">
             <img src="${cert.url}" alt="${cert.title}" style="width: 100%; height: 100%; object-fit: cover;">
@@ -3347,24 +3355,23 @@ async function loadCertificates() {
         document.body.appendChild(modal);
       }
     } else {
-      // Show empty state when no certificates exist
-      certificatesList.innerHTML = `
-        <div class="empty-state">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="margin-bottom: 16px;">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <polyline points="14,2 14,8 20,8" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <line x1="16" y1="13" x2="8" y2="13" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"/>
-            <line x1="16" y1="17" x2="8" y2="17" stroke="rgba(255,255,255,0.4)" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-          <p style="color: rgba(255,255,255,0.6); margin: 0; text-align: center;">No certificates added yet. Add your first certificate to showcase your expertise.</p>
-        </div>
-      `;
+      // Hide certificates section when no certificates exist
+      if (certificatesSection) {
+        certificatesSection.style.display = 'none';
+      }
       }
     } else {
       console.error('❌ Failed to load teacher data for certificates');
       // Fallback to local data if API fails
       const localCertificates = user.certificates || [];
+      const certificatesSection = document.querySelector('.landing-section:has(#certificatesList)') || 
+                                  document.querySelector('#certificatesList').closest('.landing-section');
+      
       if (localCertificates.length > 0) {
+        // Show certificates section
+        if (certificatesSection) {
+          certificatesSection.style.display = 'block';
+        }
         certificatesList.innerHTML = localCertificates.map((cert, index) => `
           <div class="certificate-card" data-certificate-index="${index}">
             <div class="certificate-image" onclick="openCertificateModal('${cert.url}', '${cert.title}')">
@@ -5258,37 +5265,7 @@ async function generateLandingPageHTML(teacher) {
             </div>
         </div>
     </section>
-    ` : `
-    <!-- Default Certificates Section -->
-    <section class="certificates" id="certificates">
-        <div class="container">
-            <h2>Sertifikatlar & Malaka</h2>
-            <div class="certificates-grid">
-                <div class="certificate-item">
-                    <div class="certificate-icon">🏆</div>
-                    <div class="certificate-info">
-                        <h4>AWS Certified Developer</h4>
-                        <p>Amazon • 2023</p>
-                    </div>
-                </div>
-                <div class="certificate-item">
-                    <div class="certificate-icon">🏆</div>
-                    <div class="certificate-info">
-                        <h4>Google Cloud Professional</h4>
-                        <p>Google • 2022</p>
-                    </div>
-                </div>
-                <div class="certificate-item">
-                    <div class="certificate-icon">🏆</div>
-                    <div class="certificate-info">
-                        <h4>Meta React Developer</h4>
-                        <p>Meta • 2021</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    `}
+    ` : ''}
 
     <!-- Footer -->
     <footer class="footer">
