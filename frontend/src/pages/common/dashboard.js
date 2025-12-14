@@ -8593,7 +8593,7 @@ function getCustomizeUIHTML() {
             </svg>
             ${t('customizeUI.lightMode')}
           </div>
-          <div class="toggle-switch ${theme.mode === 'light' ? 'active' : ''}" id="lightModeToggle" onclick="toggleLightMode()">
+          <div class="toggle-switch disabled" id="lightModeToggle" onclick="showComingSoonToast()">
             <div class="toggle-slider"></div>
           </div>
         </div>
@@ -8605,19 +8605,19 @@ function getCustomizeUIHTML() {
         <p class="section-subtitle">${t('customizeUI.chooseFont')}</p>
         
         <div class="font-options">
-          <div class="font-option ${theme.fontFamily === 'system' ? 'active' : ''}" onclick="selectFont('system')">
+          <div class="font-option disabled" onclick="showComingSoonToast()">
             <div class="font-name" style="font-family: -apple-system, BlinkMacSystemFont, sans-serif;">${t('customizeUI.systemFont')}</div>
             <div class="font-preview">${t('customizeUI.systemFontDesc')}</div>
           </div>
-          <div class="font-option ${theme.fontFamily === 'inter' ? 'active' : ''}" onclick="selectFont('inter')">
+          <div class="font-option disabled" onclick="showComingSoonToast()">
             <div class="font-name" style="font-family: 'Inter', sans-serif;">Inter</div>
             <div class="font-preview">${t('customizeUI.modernClean')}</div>
           </div>
-          <div class="font-option ${theme.fontFamily === 'roboto' ? 'active' : ''}" onclick="selectFont('roboto')">
+          <div class="font-option disabled" onclick="showComingSoonToast()">
             <div class="font-name" style="font-family: 'Roboto', sans-serif;">Roboto</div>
             <div class="font-preview">${t('customizeUI.googleFont')}</div>
           </div>
-          <div class="font-option ${theme.fontFamily === 'poppins' ? 'active' : ''}" onclick="selectFont('poppins')">
+          <div class="font-option disabled" onclick="showComingSoonToast()">
             <div class="font-name" style="font-family: 'Poppins', sans-serif;">Poppins</div>
             <div class="font-preview">${t('customizeUI.geometricFriendly')}</div>
           </div>
@@ -9286,8 +9286,16 @@ window.applyCustomColor = function() {
   closeColorPickerModal();
 };
 
-// Toggle light mode
+// Show coming soon toast
+window.showComingSoonToast = function() {
+  showInfoToast(t('comingSoon.title') + ' This feature will be available in the next update.', 3000);
+};
+
+// Toggle light mode (disabled)
 window.toggleLightMode = function() {
+  showComingSoonToast();
+  return;
+  
   const toggle = document.getElementById('lightModeToggle');
   const isActive = toggle.classList.contains('active');
   

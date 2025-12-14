@@ -6471,6 +6471,12 @@ input:checked + .toggle-slider:before {
   border-color: var(--primary-color);
 }
 
+.font-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 .font-name {
   color: var(--text-primary);
 }
@@ -6586,6 +6592,14 @@ body.light-mode .font-option:hover {
 body.light-mode .font-option.active {
   border-color: var(--primary-color);
   background: var(--primary-light);
+}
+
+body.light-mode .font-option.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
 }
 
 body.light-mode .toggle-switch {
