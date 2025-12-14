@@ -15,7 +15,7 @@ const notificationSchema = new mongoose.Schema(
     type: {
       type: String,
       required: true,
-      enum: ['assignment_graded', 'course_update', 'new_assignment', 'general', 'new_student', 'assignment_submitted']
+      enum: ['assignment_graded', 'course_update', 'new_assignment', 'general', 'new_student', 'assignment_submitted', 'payment_approved', 'payment_submitted']
     },
     title: {
       type: String,
@@ -36,7 +36,9 @@ const notificationSchema = new mongoose.Schema(
       assignmentId: mongoose.Schema.Types.ObjectId,
       courseId: mongoose.Schema.Types.ObjectId,
       lessonId: mongoose.Schema.Types.ObjectId,
-      grade: Number
+      grade: Number,
+      paymentId: mongoose.Schema.Types.ObjectId,
+      amount: Number
     }
   },
   {

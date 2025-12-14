@@ -15,6 +15,7 @@ import telegramRouter from "./telegram.routes.js";
 import streamRouter from "./stream.routes.js";
 import notificationRouter from "./notification.routes.js";
 import subAdminRouter from "./sub-admin.routes.js";
+import paymentRouter from "./payment.routes.js";
 
 const mainRouter = Router();
 
@@ -33,5 +34,6 @@ mainRouter.use("/landing-auth", landingAuthRouter);
 mainRouter.use("/telegram", telegramRouter);
 mainRouter.use("/notifications", notificationRouter);
 mainRouter.use("/sub-admins", subAdminRouter);
+mainRouter.use("/payments", paymentRouter);
 
 export default mainRouter;

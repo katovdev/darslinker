@@ -121,6 +121,22 @@ function hexToRgba(hex, alpha) {
   return `rgba(59, 130, 246, ${alpha})`; // Default blue RGBA
 }
 
+// Apply primary color only
+export function applyPrimaryColor(color) {
+  const root = document.documentElement;
+  root.style.setProperty('--primary-color', color);
+  root.style.setProperty('--primary-color-rgb', hexToRgb(color));
+  root.style.setProperty('--primary-hover', `${color}cc`);
+  root.style.setProperty('--primary-light', hexToRgba(color, 0.2));
+  root.style.setProperty('--primary-light-hover', hexToRgba(color, 0.3));
+  root.style.setProperty('--primary-border', hexToRgba(color, 0.3));
+  root.style.setProperty('--primary-border-hover', hexToRgba(color, 0.5));
+  root.style.setProperty('--primary-shadow', hexToRgba(color, 0.3));
+  
+  // Save to localStorage
+  localStorage.setItem('primaryColor', color);
+}
+
 // Initialize theme system
 export function initTheme() {
   const theme = getTheme();

@@ -15642,8 +15642,8 @@ window.sortCourses = (event) => {
 };
 
 
-// Open Finance Page
-window.openFinancePage = function() {
+// Open Finance Page - Payment Requests
+window.openFinancePage = async function() {
   const contentArea = document.querySelector('.figma-content-area');
   
   if (!contentArea) {
@@ -15654,20 +15654,299 @@ window.openFinancePage = function() {
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
-    pageTitle.textContent = 'Finance';
+    pageTitle.textContent = t('finance.paymentRequests');
   }
   
   // Add finance-page class to content area
   contentArea.className = 'figma-content-area finance-page';
   
-  // Update content area only
+  // Show loading
   contentArea.innerHTML = `
+    <div style="display: flex; align-items: center; justify-content: center; height: 400px; color: var(--primary-color);">
+      <div style="text-align: center;">
+        <div style="font-size: 18px; margin-bottom: 8px;">Loading payment requests...</div>
+        <div style="font-size: 14px; opacity: 0.7;">Please wait...</div>
+      </div>
+    </div>
+  `;
+
+  try {
+    // Get current teacher ID
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const teacherId = currentUser._id;
+
+    if (!teacherId) {
+      throw new Error('Teacher ID not found');
+    }
+
+    // Fetch payment requests
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const token = localStorage.getItem('accessToken');
+    
+    const response = await fetch(`${apiBaseUrl}/payments/teacher/${teacherId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error('Failed to load payment requests');
+    }
+
+    const payments = result.payments || [];
+
+    // Update content area with payment requests table
+    contentArea.innerHTML = `
           <style>
             .figma-content-area.finance-page {
               padding: 24px !important;
               display: flex !important;
               flex-direction: column !important;
               gap: 20px !important;
+            }
+
+            /* Payment Requests Table Styles */
+            .payments-table-container {
+              background: rgba(58, 56, 56, 0.3) !important;
+              border: 1px solid var(--primary-border) !important;
+              border-radius: 12px !important;
+              padding: 24px !important;
+            }
+
+            .payments-header {
+              display: flex !important;
+              justify-content: space-between !important;
+              align-items: center !important;
+              margin-bottom: 24px !important;
+              flex-wrap: wrap !important;
+              gap: 16px !important;
+            }
+
+            .payments-title {
+              color: #ffffff !important;
+              font-size: 24px !important;
+              font-weight: 700 !important;
+              margin: 0 !important;
+            }
+
+            .payments-stats {
+              display: flex !important;
+              gap: 16px !important;
+              font-size: 14px !important;
+            }
+
+            .pending-count {
+              color: #FBB936 !important;
+              font-weight: 600 !important;
+            }
+
+            .approved-count {
+              color: #10B981 !important;
+              font-weight: 600 !important;
+            }
+
+            .no-payments {
+              text-align: center !important;
+              padding: 60px 20px !important;
+              color: rgba(255, 255, 255, 0.6) !important;
+            }
+
+            .no-payments-title {
+              font-size: 20px !important;
+              font-weight: 600 !important;
+              margin-bottom: 8px !important;
+              color: #ffffff !important;
+            }
+
+            .no-payments-text {
+              font-size: 14px !important;
+              opacity: 0.7 !important;
+            }
+
+            .payments-table-wrapper {
+              overflow-x: auto !important;
+            }
+
+            .payments-table {
+              width: 100% !important;
+              border-collapse: collapse !important;
+              min-width: 800px !important;
+            }
+
+            .payments-table th {
+              color: var(--primary-color) !important;
+              font-size: 14px !important;
+              font-weight: 600 !important;
+              text-align: left !important;
+              padding: 16px 12px !important;
+              border-bottom: 2px solid var(--primary-border) !important;
+              background: rgba(126, 162, 212, 0.1) !important;
+            }
+
+            .payments-table td {
+              color: #ffffff !important;
+              font-size: 14px !important;
+              padding: 16px 12px !important;
+              border-bottom: 1px solid rgba(126, 162, 212, 0.1) !important;
+              vertical-align: middle !important;
+            }
+
+            .payment-row:hover {
+              background: rgba(126, 162, 212, 0.05) !important;
+            }
+
+            .student-id {
+              font-family: monospace !important;
+              font-weight: 600 !important;
+              color: var(--primary-color) !important;
+            }
+
+            .student-name {
+              font-weight: 500 !important;
+            }
+
+            .course-name {
+              max-width: 200px !important;
+              overflow: hidden !important;
+              text-overflow: ellipsis !important;
+              white-space: nowrap !important;
+            }
+
+            .amount {
+              font-weight: 600 !important;
+              color: #10B981 !important;
+            }
+
+            .view-receipt-btn {
+              background: rgba(126, 162, 212, 0.2) !important;
+              border: 1px solid var(--primary-border) !important;
+              color: var(--primary-color) !important;
+              padding: 8px 12px !important;
+              border-radius: 6px !important;
+              font-size: 12px !important;
+              cursor: pointer !important;
+              display: flex !important;
+              align-items: center !important;
+              gap: 6px !important;
+              transition: all 0.2s ease !important;
+            }
+
+            .view-receipt-btn:hover {
+              background: rgba(126, 162, 212, 0.3) !important;
+              border-color: var(--primary-color) !important;
+            }
+
+            .status-badge {
+              padding: 6px 12px !important;
+              border-radius: 16px !important;
+              font-size: 12px !important;
+              font-weight: 600 !important;
+              text-transform: uppercase !important;
+              letter-spacing: 0.5px !important;
+            }
+
+            .status-badge.pending {
+              background: rgba(251, 191, 36, 0.2) !important;
+              color: #FBB936 !important;
+              border: 1px solid rgba(251, 191, 36, 0.3) !important;
+            }
+
+            .status-badge.approved {
+              background: rgba(16, 185, 129, 0.2) !important;
+              color: #10B981 !important;
+              border: 1px solid rgba(16, 185, 129, 0.3) !important;
+            }
+
+            .status-badge.rejected {
+              background: rgba(239, 68, 68, 0.2) !important;
+              color: #EF4444 !important;
+              border: 1px solid rgba(239, 68, 68, 0.3) !important;
+            }
+
+            .actions {
+              display: flex !important;
+              gap: 8px !important;
+              flex-wrap: wrap !important;
+            }
+
+            .approve-btn {
+              background: linear-gradient(135deg, #10B981, #059669) !important;
+              border: none !important;
+              color: white !important;
+              padding: 8px 12px !important;
+              border-radius: 6px !important;
+              font-size: 12px !important;
+              font-weight: 600 !important;
+              cursor: pointer !important;
+              display: flex !important;
+              align-items: center !important;
+              gap: 6px !important;
+              transition: all 0.2s ease !important;
+            }
+
+            .approve-btn:hover {
+              transform: translateY(-1px) !important;
+              box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3) !important;
+            }
+
+            .reject-btn {
+              background: linear-gradient(135deg, #EF4444, #DC2626) !important;
+              border: none !important;
+              color: white !important;
+              padding: 8px 12px !important;
+              border-radius: 6px !important;
+              font-size: 12px !important;
+              font-weight: 600 !important;
+              cursor: pointer !important;
+              display: flex !important;
+              align-items: center !important;
+              gap: 6px !important;
+              transition: all 0.2s ease !important;
+            }
+
+            .reject-btn:hover {
+              transform: translateY(-1px) !important;
+              box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3) !important;
+            }
+
+            .action-completed {
+              font-size: 12px !important;
+              color: rgba(255, 255, 255, 0.6) !important;
+              font-style: italic !important;
+            }
+
+            @media (max-width: 768px) {
+              .payments-header {
+                flex-direction: column !important;
+                align-items: flex-start !important;
+              }
+
+              .payments-stats {
+                flex-direction: column !important;
+                gap: 8px !important;
+              }
+
+              .payments-table {
+                min-width: 600px !important;
+              }
+
+              .payments-table th,
+              .payments-table td {
+                padding: 12px 8px !important;
+                font-size: 13px !important;
+              }
+
+              .actions {
+                flex-direction: column !important;
+                gap: 4px !important;
+              }
+
+              .approve-btn,
+              .reject-btn {
+                font-size: 11px !important;
+                padding: 6px 10px !important;
+              }
             }
             .figma-content-area.finance-page .finance-stats-grid {
               display: grid !important;
@@ -15986,137 +16265,187 @@ window.openFinancePage = function() {
               }
             }
           </style>
-          <!-- Finance Stats Cards -->
-          <div class="finance-stats-grid">
-            <div class="finance-card" onclick="showFinanceDetails('revenue')">
-              <div class="finance-card-header">
-                <h3 class="finance-card-title">${t('finance.totalRevenue')}</h3>
+          <!-- Payment Requests Table -->
+          <div class="payments-table-container">
+            <div class="payments-header">
+              <h2 class="payments-title">${t('finance.paymentRequests')}</h2>
+              <div class="payments-stats">
+                <span class="pending-count">${payments.filter(p => p.status === 'pending').length} ${t('finance.pending')}</span>
+                <span class="approved-count">${payments.filter(p => p.status === 'approved').length} ${t('finance.approved')}</span>
               </div>
-              <div class="finance-card-amount">$12,450</div>
-              <div class="finance-card-subtitle">+ $1,200 this month</div>
             </div>
-            <div class="finance-card" onclick="showFinanceDetails('month')">
-              <div class="finance-card-header">
-                <h3 class="finance-card-title">This month</h3>
-              </div>
-              <div class="finance-card-amount">$2,845</div>
-              <div class="finance-card-subtitle">+ $1,200 this month</div>
-            </div>
-            <div class="finance-card" onclick="showFinanceDetails('balance')">
-              <div class="finance-card-header">
-                <h3 class="finance-card-title">${t('finance.availableBalance')}</h3>
-              </div>
-              <div class="finance-card-amount">$1,250</div>
-              <div class="finance-card-subtitle">Ready to withdraw</div>
-            </div>
-            <div class="finance-card" onclick="showFinanceDetails('referral')">
-              <div class="finance-card-header">
-                <h3 class="finance-card-title">Referral Earnings</h3>
-              </div>
-              <div class="finance-card-amount">$485</div>
-              <div class="finance-card-subtitle">From 12 referrals</div>
-            </div>
-          </div>
 
-          <!-- Payment Methods Section -->
-          <div class="finance-section payment-methods-section">
-            <div class="section-header">
-              <h3 class="section-title">Payment methods</h3>
-              <div class="payment-method-options-btn" onclick="togglePaymentMenu(this)">
-                <div class="three-dots">⋯</div>
-                <div class="payment-dropdown-menu">
-                  <div class="dropdown-item edit" onclick="editCard()">Edit</div>
-                  <div class="dropdown-item delete" onclick="deleteCard()">Delete</div>
-                </div>
+            ${payments.length === 0 ? `
+              <div class="no-payments">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity: 0.3; margin-bottom: 16px;">
+                  <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </svg>
+                <div class="no-payments-title">${t('finance.noPayments')}</div>
+                <div class="no-payments-text">Payment requests will appear here when students submit them</div>
               </div>
-            </div>
-            <div class="payment-method-card" onclick="showPaymentDetails()">
-              <div class="payment-card-content">
-                <div class="payment-card-info">
-                  <div class="payment-card-name">UzBank Card</div>
-                  <div class="payment-card-number">**** **** **** 1234</div>
-                </div>
-                <div class="payment-card-badge">Primary</div>
+            ` : `
+              <div class="payments-table-wrapper">
+                <table class="payments-table">
+                  <thead>
+                    <tr>
+                      <th>${t('finance.studentId')}</th>
+                      <th>${t('finance.studentName')}</th>
+                      <th>${t('finance.course')}</th>
+                      <th>${t('finance.amount')}</th>
+                      <th>${t('finance.receipt')}</th>
+                      <th>${t('finance.status')}</th>
+                      <th>${t('finance.actions')}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${payments.map(payment => `
+                      <tr class="payment-row ${payment.status}">
+                        <td class="student-id">${payment.studentId.firstName?.charAt(0) || 'S'}${payment.studentId._id.slice(-4)}</td>
+                        <td class="student-name">${payment.studentId.firstName} ${payment.studentId.lastName}</td>
+                        <td class="course-name">${payment.courseId.title}</td>
+                        <td class="amount">${payment.amount.toLocaleString()} UZS</td>
+                        <td class="receipt">
+                          <button class="view-receipt-btn" onclick="viewReceipt('${payment.checkImageUrl}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                              <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            ${t('finance.viewReceipt')}
+                          </button>
+                        </td>
+                        <td class="status">
+                          <span class="status-badge ${payment.status}">
+                            ${payment.status === 'pending' ? t('finance.pending') : 
+                              payment.status === 'approved' ? t('finance.approved') : 
+                              t('finance.rejected')}
+                          </span>
+                        </td>
+                        <td class="actions">
+                          ${payment.status === 'pending' ? `
+                            <button class="approve-btn" onclick="approvePayment('${payment._id}')">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                <polyline points="22,4 12,14.01 9,11.01"/>
+                              </svg>
+                              ${t('finance.approve')}
+                            </button>
+                            <button class="reject-btn" onclick="rejectPayment('${payment._id}')">
+                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="15" y1="9" x2="9" y2="15"/>
+                                <line x1="9" y1="9" x2="15" y2="15"/>
+                              </svg>
+                              ${t('finance.reject')}
+                            </button>
+                          ` : `
+                            <span class="action-completed">
+                              ${payment.status === 'approved' ? '✓ Approved' : '✗ Rejected'}
+                            </span>
+                          `}
+                        </td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
               </div>
-            </div>
-            <button class="add-payment-btn" onclick="addPaymentMethod()">+ Add a payment method</button>
+            `}
           </div>
+        `;
 
-          <!-- Recent Transactions Section -->
-          <div class="finance-section transactions-section">
-            <div class="section-header">
-              <h3 class="section-title">Recent transactions</h3>
-              <div class="transaction-controls">
-                <input type="text" placeholder="Search transactions..." class="transaction-search" oninput="filterTransactions()">
-                <input type="date" class="transaction-date-filter" onchange="filterTransactions()">
-                <select class="transaction-type-filter" onchange="filterTransactions()">
-                  <option value="">All Types</option>
-                  <option value="Sale">Sales</option>
-                  <option value="Payout">Payouts</option>
-                  <option value="Refund">Refunds</option>
-                </select>
-              </div>
-            </div>
-            <div class="transactions-table-wrapper">
-              <table class="finance-transactions-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Course</th>
-                    <th>Student</th>
-                    <th>Method</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Oct 10, 2025</td>
-                    <td>React Masterclass</td>
-                    <td>John Smith</td>
-                    <td>Uzum</td>
-                    <td>$150</td>
-                    <td><span class="status-completed">Completed</span></td>
-                  </tr>
-                  <tr>
-                    <td>Oct 9, 2025</td>
-                    <td>UI/UX Design</td>
-                    <td>Sarah Connor</td>
-                    <td>Uzum</td>
-                    <td>$200</td>
-                    <td><span class="status-completed">Completed</span></td>
-                  </tr>
-                  <tr>
-                    <td>Oct 8, 2025</td>
-                    <td>JavaScript</td>
-                    <td>Mike Johnson</td>
-                    <td>Uzum</td>
-                    <td>$135</td>
-                    <td><span class="status-completed">Completed</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+        // Add payment functions
+        window.viewReceipt = function(imageUrl) {
+          // Create modal to view receipt
+          const modal = document.createElement('div');
+          modal.className = 'receipt-modal';
+          modal.innerHTML = '<div class="receipt-modal-content">' +
+            '<div class="receipt-modal-header">' +
+              '<h3>Payment Receipt</h3>' +
+              '<button class="close-modal" onclick="this.parentElement.parentElement.parentElement.remove()">×</button>' +
+            '</div>' +
+            '<div class="receipt-image-container">' +
+              '<img src="' + imageUrl + '" alt="Payment Receipt" style="max-width: 100%; max-height: 70vh; object-fit: contain;">' +
+            '</div>' +
+          '</div>';
+          
+          modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;';
+          
+          modal.querySelector('.receipt-modal-content').style.cssText = 'background: #2a2a2a; border-radius: 12px; padding: 20px; max-width: 90vw; max-height: 90vh; overflow: auto;';
+          
+          modal.querySelector('.receipt-modal-header').style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: white;';
+          
+          modal.querySelector('.close-modal').style.cssText = 'background: none; border: none; color: white; font-size: 24px; cursor: pointer;';
+          
+          document.body.appendChild(modal);
+        };
 
-          <!-- Promo Codes Section -->
-          <div class="finance-section promo-section">
-            <div class="section-header">
-              <h3 class="section-title">Promo Codes</h3>
-            </div>
-            <div class="promo-code-card">
-              <div class="promo-code-content">
-                <div class="promo-code-info">
-                  <div class="promo-code-name">NEWSTUDENT30</div>
-                  <div class="promo-code-description">30% discount for new students</div>
-                  <div class="promo-code-usage">Used: 45 times · Expires: Dec 31, 2025</div>
-                </div>
-                <button class="promo-edit-btn">Edit</button>
-              </div>
-            </div>
-            <button class="add-promo-btn">+ Create a new Promo Code</button>
-          </div>
-  `;
+        window.approvePayment = async function(paymentId) {
+          try {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const teacherId = currentUser._id;
+            
+            const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+            const token = localStorage.getItem('accessToken');
+            
+            const response = await fetch(apiBaseUrl + '/payments/' + paymentId + '/approve', {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+              },
+              body: JSON.stringify({ teacherId })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+              showSuccessToast(t('finance.approveSuccess'));
+              // Reload the page
+              openFinancePage();
+            } else {
+              throw new Error(result.message);
+            }
+          } catch (error) {
+            console.error('Error approving payment:', error);
+            showErrorToast(t('finance.approveError'));
+          }
+        };
+
+        window.rejectPayment = async function(paymentId) {
+          const reason = prompt('Rejection reason (optional):') || '';
+          
+          try {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const teacherId = currentUser._id;
+            
+            const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+            const token = localStorage.getItem('accessToken');
+            
+            const response = await fetch(apiBaseUrl + '/payments/' + paymentId + '/reject', {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+              },
+              body: JSON.stringify({ teacherId, reason })
+            });
+
+            const result = await response.json();
+            if (result.success) {
+              showSuccessToast(t('finance.rejectSuccess'));
+              // Reload the page
+              openFinancePage();
+            } else {
+              throw new Error(result.message);
+            }
+          } catch (error) {
+            console.error('Error rejecting payment:', error);
+            showErrorToast(t('finance.rejectError'));
+          }
+        };
+
+  } catch (error) {
+    console.error('Error loading payment requests:', error);
+    contentArea.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 400px; color: #ef4444; text-align: center;"><div><h3>Error Loading Payment Requests</h3><p>Please try again later</p><button onclick="openFinancePage()" style="margin-top: 16px; padding: 8px 16px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">Retry</button></div></div>';
+  }
   
   // Apply saved primary color to Finance page
   const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
@@ -16129,436 +16458,8 @@ function openAIAssistantPage() {
   
   // Show coming soon toast
   showInfoToast(t('comingSoon.aiAssistant'));
-  return;
+}
 
-  try {
-    // Update page title
-    const titleElement = document.querySelector('.figma-title h2');
-    const contentArea = document.querySelector('.figma-content-area');
-
-    if (titleElement) {
-      titleElement.textContent = 'AI Assistant';
-    }
-
-    if (contentArea) {
-      contentArea.className = 'figma-content-area ai-assistant-page';
-      contentArea.innerHTML = `
-        <div class="ai-assistant-container">
-          <style>
-            .figma-content-area.ai-assistant-page {
-              background: #1a1a1a !important;
-              padding: 24px !important;
-              overflow-y: auto !important;
-            }
-            .ai-assistant-container {
-              max-width: 900px !important;
-              margin: 0 auto !important;
-              display: flex !important;
-              flex-direction: column !important;
-              gap: 20px !important;
-            }
-            .ai-status-card {
-              background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid var(--primary-border) !important;
-              border-radius: 12px !important;
-              padding: 24px !important;
-              display: flex !important;
-              align-items: center !important;
-              gap: 16px !important;
-            }
-            .ai-icon {
-              width: 56px !important;
-              height: 56px !important;
-              background: var(--primary-light-hover) !important;
-              border-radius: 12px !important;
-              display: flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-              font-size: 32px !important;
-              flex-shrink: 0 !important;
-            }
-            .ai-status-content h3 {
-              color: #ffffff !important;
-              font-size: 24px !important;
-              font-weight: 600 !important;
-              margin: 0 0 8px 0 !important;
-            }
-            .ai-status-content p {
-              color: rgba(156, 163, 175, 1) !important;
-              margin: 0 !important;
-              font-size: 16px !important;
-            }
-            .ai-metrics {
-              display: grid !important;
-              grid-template-columns: repeat(2, 1fr) !important;
-              gap: 20px !important;
-            }
-            .ai-metric-card {
-              background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid var(--primary-border) !important;
-              border-radius: 12px !important;
-              padding: 24px !important;
-              text-align: center !important;
-              cursor: pointer !important;
-              transition: all 0.3s ease !important;
-            }
-            .ai-metric-card:hover {
-              border-color: var(--primary-border-hover) !important;
-              background: rgba(58, 56, 56, 0.5) !important;
-              transform: translateY(-5px) !important;
-              box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
-            }
-            .ai-metric-card h4 {
-              color: var(--primary-color) !important;
-              font-size: 14px !important;
-              font-weight: 500 !important;
-              margin: 0 0 12px 0 !important;
-              text-transform: uppercase !important;
-              letter-spacing: 0.5px !important;
-            }
-            .ai-metric-value {
-              color: #ffffff !important;
-              font-size: 36px !important;
-              font-weight: 700 !important;
-              margin: 0 0 8px 0 !important;
-            }
-            .ai-metric-change {
-              color: #22c55e !important;
-              font-size: 14px !important;
-              font-weight: 500 !important;
-            }
-            .ai-personality-section,
-            .ai-auto-response-section,
-            .ai-responses-section {
-              background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid var(--primary-border) !important;
-              border-radius: 12px !important;
-              padding: 20px !important;
-            }
-            .section-title {
-              color: #ffffff !important;
-              font-size: 20px !important;
-              font-weight: 600 !important;
-              margin: 0 0 16px 0 !important;
-            }
-            .form-group {
-              margin-bottom: 16px !important;
-            }
-            .form-group:last-child {
-              margin-bottom: 0 !important;
-            }
-            .form-label {
-              color: var(--primary-color) !important;
-              font-size: 14px !important;
-              font-weight: 500 !important;
-              margin-bottom: 8px !important;
-              display: block !important;
-            }
-            .form-input,
-            .form-textarea,
-            select.form-input {
-              width: 100% !important;
-              padding: 12px !important;
-              background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid var(--primary-border) !important;
-              border-radius: 8px !important;
-              color: #ffffff !important;
-              font-size: 14px !important;
-              transition: all 0.3s ease !important;
-              cursor: pointer !important;
-            }
-            select.form-input {
-              appearance: none !important;
-              background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%237EA2D4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
-              background-repeat: no-repeat !important;
-              background-position: right 12px center !important;
-              padding-right: 40px !important;
-            }
-            select.form-input option {
-              background: #2d2d32 !important;
-              color: #ffffff !important;
-              padding: 12px !important;
-            }
-            .form-textarea {
-              resize: vertical !important;
-              min-height: 100px !important;
-            }
-            .form-input:focus,
-            .form-textarea:focus {
-              outline: none !important;
-              border-color: var(--primary-border-hover) !important;
-              background: rgba(58, 56, 56, 0.5) !important;
-            }
-            .settings-item {
-              display: flex !important;
-              align-items: flex-start !important;
-              justify-content: space-between !important;
-              padding: 16px !important;
-              background: rgba(45, 45, 50, 0.3) !important;
-              border: 1px solid rgba(75, 85, 99, 0.2) !important;
-              border-radius: 8px !important;
-              transition: all 0.3s ease !important;
-            }
-            .settings-item:hover {
-              background: rgba(45, 45, 50, 0.5) !important;
-            }
-            .setting-left {
-              flex: 1 !important;
-              margin-right: 16px !important;
-            }
-            .setting-title {
-              color: #ffffff !important;
-              font-size: 16px !important;
-              font-weight: 600 !important;
-              margin-bottom: 4px !important;
-              line-height: 1.2 !important;
-            }
-            .setting-description {
-              color: rgba(156, 163, 175, 1) !important;
-              font-size: 14px !important;
-              line-height: 1.4 !important;
-            }
-            .setting-toggle {
-              display: flex !important;
-              align-items: flex-start !important;
-            }
-            .toggle-switch-new {
-              position: relative !important;
-              display: inline-block !important;
-              width: 44px !important;
-              height: 24px !important;
-              background-color: rgba(75, 85, 99, 0.6) !important;
-              border-radius: 12px !important;
-              cursor: pointer !important;
-              transition: background-color 0.3s ease !important;
-            }
-            .toggle-switch-new input {
-              position: absolute !important;
-              opacity: 0 !important;
-              width: 0 !important;
-              height: 0 !important;
-            }
-            .toggle-switch-new .toggle-thumb {
-              position: absolute !important;
-              top: 2px !important;
-              left: 2px !important;
-              width: 20px !important;
-              height: 20px !important;
-              background-color: white !important;
-              border-radius: 50% !important;
-              transition: transform 0.3s ease !important;
-              box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
-            }
-            .toggle-switch-new input:checked ~ .toggle-thumb {
-              transform: translateX(20px) !important;
-            }
-            .toggle-switch-new input:checked {
-              background-color: #3b82f6 !important;
-            }
-            .toggle-switch-new:has(input:checked) {
-              background-color: #3b82f6 !important;
-            }
-            .response-item {
-              background: rgba(58, 56, 56, 0.3) !important;
-              border: 1px solid var(--primary-border) !important;
-              border-radius: 8px !important;
-              padding: 16px !important;
-              margin-bottom: 12px !important;
-              transition: all 0.3s ease !important;
-            }
-            .response-item:last-child {
-              margin-bottom: 0 !important;
-            }
-            .response-item:hover {
-              border-color: var(--primary-border-hover) !important;
-              background: rgba(58, 56, 56, 0.5) !important;
-            }
-            .response-header {
-              display: flex !important;
-              justify-content: space-between !important;
-              align-items: flex-start !important;
-              margin-bottom: 16px !important;
-            }
-            .response-user {
-              display: flex !important;
-              align-items: center !important;
-              gap: 8px !important;
-            }
-            .user-avatar {
-              width: 32px !important;
-              height: 32px !important;
-              background: var(--border-color) !important;
-              border-radius: 50% !important;
-              display: flex !important;
-              align-items: center !important;
-              justify-content: center !important;
-              font-size: 14px !important;
-              color: var(--primary-color) !important;
-            }
-            .user-info h6 {
-              color: #ffffff !important;
-              font-size: 14px !important;
-              font-weight: 600 !important;
-              margin: 0 !important;
-            }
-            .user-info span {
-              color: rgba(156, 163, 175, 1) !important;
-              font-size: 12px !important;
-            }
-            .edit-btn {
-              background: var(--primary-light) !important;
-              border: 1px solid var(--primary-border-hover) !important;
-              color: var(--primary-color) !important;
-              padding: 6px 12px !important;
-              border-radius: 6px !important;
-              font-size: 12px !important;
-              font-weight: 600 !important;
-              cursor: pointer !important;
-              transition: all 0.3s ease !important;
-            }
-            .edit-btn:hover {
-              background: rgba(126, 162, 212, 0.3) !important;
-            }
-            .question-text,
-            .response-text {
-              color: rgba(156, 163, 175, 1) !important;
-              font-size: 14px !important;
-              margin: 0 0 12px 0 !important;
-            }
-            .ai-response-text {
-              color: #ffffff !important;
-              font-size: 14px !important;
-              line-height: 1.6 !important;
-              margin: 0 !important;
-            }
-            @media (max-width: 768px) {
-              .ai-metrics {
-                grid-template-columns: 1fr !important;
-              }
-              .figma-content-area.ai-assistant-page {
-                padding: 16px !important;
-              }
-            }
-          </style>
-
-          <!-- AI Status Card -->
-          <div class="ai-status-card">
-            <div class="ai-icon">🤖</div>
-            <div class="ai-status-content">
-              <h3>AI Assistant Status</h3>
-              <p>• 156 questions answered today</p>
-            </div>
-          </div>
-
-          <!-- AI Metrics -->
-          <div class="ai-metrics">
-            <div class="ai-metric-card" onclick="showAIMetrics('responses')">
-              <h4>Total AI Responses</h4>
-              <div class="ai-metric-value">2,847</div>
-              <div class="ai-metric-change">↑ 23% this month</div>
-            </div>
-            <div class="ai-metric-card" onclick="showAIMetrics('time')">
-              <h4>Response Time</h4>
-              <div class="ai-metric-value">1.2s</div>
-              <div class="ai-metric-change">Lightning fast</div>
-            </div>
-          </div>
-
-          <!-- Course Selection Section -->
-          <div class="ai-personality-section">
-            <h3 class="section-title">Course Selection</h3>
-            <div class="form-group">
-              <label class="form-label">Select Course for AI Training</label>
-              <select class="form-input" id="aiCourseSelect" onchange="handleCourseSelection(this.value)">
-                <option value="">-- Kursni tanlang --</option>
-                <option value="course1">React.js - Beginner to Advanced</option>
-                <option value="course2">Node.js Backend Development</option>
-                <option value="course3">Python for Data Science</option>
-                <option value="course4">JavaScript Fundamentals</option>
-              </select>
-              <p style="color: rgba(156, 163, 175, 1); margin-top: 8px; font-size: 13px;">AI faqat tanlangan kurs bo'yicha ma'lumotlar bilan javob beradi</p>
-            </div>
-          </div>
-
-          <!-- AI Personality Section -->
-          <div class="ai-personality-section">
-            <h3 class="section-title">AI Personality</h3>
-            <div class="form-group">
-              <label class="form-label">AI Name</label>
-              <input type="text" class="form-input" value="DarsLinker AI Assistant" placeholder="AI yordamchi nomini kiriting">
-            </div>
-            <div class="form-group">
-              <label class="form-label">AI Instructions</label>
-              <textarea class="form-textarea" placeholder="AI qanday javob berishini tavsiflang...">Siz yordam beruvchi o'qituvchi yordamchisisiz. Har doim o'quvchilarni rag'batlantiring va aniq misollar keltiring. Faqat tanlangan kurs mavzulari bo'yicha javob bering.</textarea>
-            </div>
-          </div>
-
-          <!-- Auto-Response Settings -->
-          <div class="ai-auto-response-section">
-            <h3 class="section-title">AI Auto-Response Settings</h3>
-            <p style="color: rgba(156, 163, 175, 1); margin-bottom: 16px; font-size: 14px;">Control where and when AI can automatically respond to students</p>
-
-            <div class="settings-item">
-              <div class="setting-left">
-                <div class="setting-title">Answer Lesson Comments</div>
-                <div class="setting-description">AI will respond to student questions in lesson comment sections</div>
-              </div>
-              <div class="setting-toggle">
-                <label class="toggle-switch-new">
-                  <input type="checkbox" checked onchange="toggleAISetting(this)">
-                  <div class="toggle-thumb"></div>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          <!-- Recent AI Responses -->
-          <div class="ai-responses-section">
-            <h3 class="section-title">Recent AI Responses</h3>
-
-            <div class="response-item">
-              <div class="response-header">
-                <div class="response-user">
-                  <div class="user-avatar">AJ</div>
-                  <div class="user-info">
-                    <h6>Alex Johnson</h6>
-                    <span>React Hooks lesson • 2 min ago</span>
-                  </div>
-                </div>
-                <button class="edit-btn" onclick="editAIResponse(1)">Edit</button>
-              </div>
-              <div class="response-content">
-                <p class="question-text"><strong>Question:</strong><br>"What's the difference between useState and useEffect?"</p>
-                <p class="response-text"><strong>AI Response:</strong><br>useState manages component state, while useEffect handles side effects like API calls. Check Lesson 5 for examples!</p>
-              </div>
-            </div>
-
-            <div class="response-item">
-              <div class="response-header">
-                <div class="response-user">
-                  <div class="user-avatar">AJ</div>
-                  <div class="user-info">
-                    <h6>Alex Johnson</h6>
-                    <span>React Hooks lesson • 2 min ago</span>
-                  </div>
-                </div>
-                <button class="edit-btn" onclick="editAIResponse(2)">Edit</button>
-              </div>
-              <div class="response-content">
-                <p class="question-text"><strong>Question:</strong><br>"What's the difference between useState and useEffect?"</p>
-                <p class="response-text"><strong>AI Response:</strong><br>useState manages component state, while useEffect handles side effects like API calls. Check Lesson 5 for examples!</p>
-              </div>
-            </div>
-          </div>
-        </div>
-  `;
-    } else {
-      console.error('Content area not found');
-    }
-  } catch (error) {
-    console.error('Error opening AI Assistant page:', error);
-  }
-};
 
 // Open Assignments Page
 window.openAssignmentsPage = async function() {
@@ -16579,11 +16480,7 @@ window.openAssignmentsPage = async function() {
   contentArea.className = 'figma-content-area assignments-page';
 
   // Show loading state first
-  contentArea.innerHTML = `
-    <div style="display: flex; justify-content: center; align-items: center; height: 400px; color: var(--primary-color); font-size: 18px;">
-      <div>${t('assignments.loading')}</div>
-    </div>
-  `;
+  contentArea.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 400px; color: var(--primary-color); font-size: 18px;"><div>' + t('assignments.loading') + '</div></div>';
 
   try {
     // Get current teacher data - check multiple storage locations

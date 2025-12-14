@@ -1573,8 +1573,36 @@ window.openCourse = async function(courseId, courseType = 'free') {
   console.log('Opening course:', courseId, 'courseType:', courseType);
   
   if (courseType !== 'free') {
-    // For paid courses, show coming soon toast
-    showWarningToast(t('common.comingSoon'));
+    // For paid courses, check payment status first
+    const landingUser = sessionStorage.getItem('landingUser');
+    if (!landingUser) {
+      showErrorToast('Please login first');
+      return;
+    }
+
+    try {
+      const userData = JSON.parse(landingUser);
+      const studentId = userData._id;
+
+      // Check payment status
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const paymentResponse = await fetch(`${apiBaseUrl}/payments/student/${studentId}/course/${courseId}`);
+      const paymentResult = await paymentResponse.json();
+
+      if (paymentResult.success && paymentResult.isApproved) {
+        // Payment approved, go to course learning
+        console.log('✅ Payment approved, going to course learning');
+        window.location.href = `/course-learning/${courseId}`;
+      } else {
+        // No payment or not approved, go to payment page
+        console.log('💳 Going to payment page');
+        window.location.href = `/course-payment/${courseId}`;
+      }
+    } catch (error) {
+      console.error('Error checking payment status:', error);
+      // On error, go to payment page
+      window.location.href = `/course-payment/${courseId}`;
+    }
     return;
   }
 

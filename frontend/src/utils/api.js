@@ -695,6 +695,44 @@ class ApiService {
       headers: this.getAuthHeaders(),
     });
   }
+
+  // Payment methods
+  async submitPayment(paymentData) {
+    return this.request('/payments/submit', {
+      method: 'POST',
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async getTeacherPayments(teacherId, status = null) {
+    const url = status ? `/payments/teacher/${teacherId}?status=${status}` : `/payments/teacher/${teacherId}`;
+    return this.request(url, {
+      method: 'GET',
+      headers: this.getAuthHeaders(),
+    });
+  }
+
+  async approvePayment(paymentId, teacherId) {
+    return this.request(`/payments/${paymentId}/approve`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({ teacherId }),
+    });
+  }
+
+  async rejectPayment(paymentId, teacherId, reason = '') {
+    return this.request(`/payments/${paymentId}/reject`, {
+      method: 'PATCH',
+      headers: this.getAuthHeaders(),
+      body: JSON.stringify({ teacherId, reason }),
+    });
+  }
+
+  async getStudentPaymentStatus(studentId, courseId) {
+    return this.request(`/payments/student/${studentId}/course/${courseId}`, {
+      method: 'GET',
+    });
+  }
 }
 
 export const apiService = new ApiService();

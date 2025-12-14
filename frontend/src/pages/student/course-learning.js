@@ -251,6 +251,42 @@ export async function initCourseLearningPage(courseId) {
     return;
   }
 
+  // Check if course is paid and payment is required
+  if (courseData.courseType !== 'free' && courseData.price > 0) {
+    const landingUser = sessionStorage.getItem('landingUser');
+    if (landingUser) {
+      try {
+        const userData = JSON.parse(landingUser);
+        const studentId = userData._id;
+
+        // Check payment status
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+        const paymentResponse = await fetch(`${apiBaseUrl}/payments/student/${studentId}/course/${courseId}`);
+        const paymentResult = await paymentResponse.json();
+
+        if (!paymentResult.success || !paymentResult.isApproved) {
+          // Payment not approved, redirect to payment page
+          console.log('💳 Payment required, redirecting to payment page');
+          import('../../utils/router.js').then(({ router }) => {
+            router.navigate(`/course-payment/${courseId}`);
+          }).catch(() => {
+            window.location.href = `/course-payment/${courseId}`;
+          });
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking payment status:', error);
+        // On error, redirect to payment page for paid courses
+        import('../../utils/router.js').then(({ router }) => {
+          router.navigate(`/course-payment/${courseId}`);
+        }).catch(() => {
+          window.location.href = `/course-payment/${courseId}`;
+        });
+        return;
+      }
+    }
+  }
+
   // Store course data globally
   currentCourse = courseData;
 
