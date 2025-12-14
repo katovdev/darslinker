@@ -264,14 +264,26 @@ function createConfetti() {
       this.angle = Math.random() * 360;
       this.rotation = Math.random() * 10 - 5;
       this.opacity = Math.random() * 0.5 + 0.5;
+      this.maxOpacity = this.opacity; // Boshlang'ich opacity ni saqlash
       this.swing = Math.random() * 2 - 1;
       this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.fadeStartTime = null; // Fade boshlanish vaqti
     }
     
-    update() {
+    update(currentTime, fadeStarted) {
       this.y += this.speed;
       this.angle += this.rotation;
       this.x += this.swing;
+      
+      // Agar fade boshlangan bo'lsa, sekin yo'qotish
+      if (fadeStarted) {
+        if (!this.fadeStartTime) {
+          this.fadeStartTime = currentTime;
+        }
+        // 2 sekund davomida sekin yo'qotish
+        const fadeProgress = (currentTime - this.fadeStartTime) / 2000;
+        this.opacity = this.maxOpacity * Math.max(0, 1 - fadeProgress);
+      }
       
       if (this.y > canvas.height) {
         this.y = -20;
@@ -280,6 +292,8 @@ function createConfetti() {
     }
     
     draw() {
+      if (this.opacity <= 0) return; // Agar ko'rinmas bo'lsa, chizmaslik
+      
       ctx.save();
       ctx.translate(this.x, this.y);
       ctx.rotate(this.angle * Math.PI / 180);
@@ -299,15 +313,21 @@ function createConfetti() {
   let startTime = Date.now();
   
   function animate() {
+    const currentTime = Date.now();
+    const elapsed = currentTime - startTime;
+    
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // 2 sekunddan keyin fade boshlanadi, 4 sekundda tugaydi
+    const fadeStarted = elapsed > 2000;
+    
     confetti.forEach(c => {
-      c.update();
+      c.update(currentTime, fadeStarted);
       c.draw();
     });
     
-    // 4 sekund davomida ko'rsatish
-    if (Date.now() - startTime < 4000) {
+    // 6 sekund davomida ko'rsatish (2 sekund normal + 2 sekund fade + 2 sekund buffer)
+    if (elapsed < 6000) {
       animationId = requestAnimationFrame(animate);
     } else {
       // Animatsiyani to'xtatish va canvasni olib tashlash
@@ -328,11 +348,11 @@ function createConfetti() {
   
   window.addEventListener('resize', handleResize);
   
-  // Cleanup after 4 seconds
+  // Cleanup after 6 seconds
   setTimeout(() => {
     window.removeEventListener('resize', handleResize);
     if (canvas.parentNode) {
       canvas.parentNode.removeChild(canvas);
     }
-  }, 4000);
+  }, 6000);
 }

@@ -1525,7 +1525,15 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
         ${hasStarted ? `
         <div class="landing-course-progress-bar">
           <div class="landing-course-progress-label">
-            <span>${progress >= 100 ? '✅ ' + t('dashboard.completed') : t('dashboard.progress')}</span>
+            <span style="display: flex; align-items: center; gap: 6px;">
+              ${progress >= 100 ? `
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #10B981;">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22,4 12,14.01 9,11.01"></polyline>
+                </svg>
+                ${t('dashboard.completed')}
+              ` : t('dashboard.progress')}
+            </span>
             <span>${progress}%</span>
           </div>
           <div class="landing-progress-track">
