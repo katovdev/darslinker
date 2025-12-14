@@ -12,7 +12,7 @@ import {
   JWT_REFRESH_TOKEN_EXPIRES_IN
 } from "../../config/env.js";
 
-import { normalizeEmail, normalizePhone } from "../utils/normalize.utils.js";
+import { normalizePhone } from "../utils/normalize.utils.js";
 import {
   handleValidationResult,
   validateAndFindById,
@@ -33,7 +33,7 @@ import {
  */
 export const createSubAdmin = catchAsync(async (req, res) => {
   const { teacherId } = req.params;
-  const { fullName, email, phone, password, permissions } = req.body;
+  const { fullName, phone, password, permissions } = req.body;
 
   // Validate teacher exists
   const teacher = await validateAndFindById(Teacher, teacherId, "Teacher");
@@ -49,30 +49,20 @@ export const createSubAdmin = catchAsync(async (req, res) => {
   }
 
   // Normalize inputs
-  const normalizedEmail = normalizeEmail(email);
   const normalizedPhone = normalizePhone(phone);
 
-  // Check if email or phone already exists
+  // Check if phone already exists
   const existingSubAdmin = await SubAdmin.findOne({
-    $or: [
-      { email: normalizedEmail },
-      { phone: normalizedPhone }
-    ]
+    phone: normalizedPhone
   });
 
   if (existingSubAdmin) {
-    if (existingSubAdmin.email === normalizedEmail) {
-      throw new ConflictError("A sub-admin with this email already exists");
-    }
-    if (existingSubAdmin.phone === normalizedPhone) {
-      throw new ConflictError("A sub-admin with this phone number already exists");
-    }
+    throw new ConflictError("A sub-admin with this phone number already exists");
   }
 
   // Create new sub-admin
   const newSubAdmin = new SubAdmin({
     fullName: fullName.trim(),
-    email: normalizedEmail,
     phone: normalizedPhone,
     password,
     teacher: teacherId,
@@ -89,7 +79,7 @@ export const createSubAdmin = catchAsync(async (req, res) => {
     subAdminId: newSubAdmin._id,
     teacherId,
     fullName: newSubAdmin.fullName,
-    email: newSubAdmin.email,
+    phone: newSubAdmin.phone,
   });
 
   res.status(201).json({
@@ -129,7 +119,6 @@ export const getTeacherSubAdmins = catchAsync(async (req, res) => {
   if (search) {
     query.$or = [
       { fullName: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } },
       { phone: { $regex: search, $options: 'i' } },
     ];
   }
@@ -204,35 +193,17 @@ export const updateSubAdmin = catchAsync(async (req, res) => {
     throw new NotFoundError("Sub-admin not found");
   }
 
-  // If email or phone is being updated, check for conflicts
-  if (updates.email || updates.phone) {
-    const conflictQuery = { _id: { $ne: id } };
-
-    if (updates.email) {
-      updates.email = normalizeEmail(updates.email);
-      conflictQuery.email = updates.email;
-    }
-
-    if (updates.phone) {
-      updates.phone = normalizePhone(updates.phone);
-      conflictQuery.phone = updates.phone;
-    }
+  // If phone is being updated, check for conflicts
+  if (updates.phone) {
+    updates.phone = normalizePhone(updates.phone);
 
     const existingSubAdmin = await SubAdmin.findOne({
-      $or: [
-        ...(updates.email ? [{ email: updates.email }] : []),
-        ...(updates.phone ? [{ phone: updates.phone }] : [])
-      ],
+      phone: updates.phone,
       _id: { $ne: id }
     });
 
     if (existingSubAdmin) {
-      if (updates.email && existingSubAdmin.email === updates.email) {
-        throw new ConflictError("A sub-admin with this email already exists");
-      }
-      if (updates.phone && existingSubAdmin.phone === updates.phone) {
-        throw new ConflictError("A sub-admin with this phone number already exists");
-      }
+      throw new ConflictError("A sub-admin with this phone number already exists");
     }
   }
 

@@ -1355,10 +1355,7 @@ window.openEditProfile = function() {
                 <input type="email" class="form-input" name="email" value="${user.email || ''}" />
               </div>
 
-              <div class="form-field">
-                <label class="field-label">${t('editProfile.phoneNumber')}</label>
-                <input type="tel" class="form-input" name="phone" value="${user.phone || ''}" />
-              </div>
+
 
               <div class="form-field">
                 <label class="field-label">${t('editProfile.telegramUsername')}</label>
@@ -7678,12 +7675,16 @@ window.submitNewAdmin = async function(event) {
       throw new Error('User data not found');
     }
 
-    // Create sub-admin
-    const response = await apiService.createSubAdmin(userData._id, {
+    const subAdminData = {
       fullName,
       phone: formattedPhone,
       password
-    });
+    };
+
+    console.log('Creating SubAdmin with data:', subAdminData);
+
+    // Create sub-admin
+    const response = await apiService.createSubAdmin(userData._id, subAdminData);
 
     if (response.success) {
       showSuccessToast('Sub-admin added successfully');
@@ -8046,7 +8047,7 @@ function createSubAdminCard(subAdmin) {
       <div class="admin-avatar">${initials}</div>
       <div class="admin-details">
         <h4>${subAdmin.fullName}</h4>
-        <p>${subAdmin.email}</p>
+        <p>${subAdmin.phone}</p>
         <span class="status-badge ${statusClass}" style="
           display: inline-block;
           padding: 2px 8px;
@@ -8070,29 +8071,8 @@ function createSubAdminCard(subAdmin) {
         <span class="meta-label">${t('subAdmin.added')}</span>
         <span class="meta-value">${addedDate}</span>
       </div>
-      <div class="meta-item">
-        <span class="meta-label">Last Login</span>
-        <span class="meta-value">${subAdmin.lastLogin ? new Date(subAdmin.lastLogin).toLocaleDateString() : 'Never'}</span>
-      </div>
     </div>
-    <div class="admin-actions" style="display: flex; gap: 8px; align-items: center;">
-      <button class="edit-admin-btn" onclick="editSubAdmin('${subAdmin._id}')" style="
-        width: 36px;
-        height: 36px;
-        background: rgba(126, 162, 212, 0.1);
-        border: 1px solid rgba(126, 162, 212, 0.2);
-        border-radius: 8px;
-        color: #7ea2d4;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      " onmouseover="this.style.background='rgba(126, 162, 212, 0.2)'; this.style.borderColor='rgba(126, 162, 212, 0.4)'; this.style.transform='scale(1.1)'" onmouseout="this.style.background='rgba(126, 162, 212, 0.1)'; this.style.borderColor='rgba(126, 162, 212, 0.2)'; this.style.transform='scale(1)'">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-        </svg>
-      </button>
+    <div class="admin-actions" style="display: flex; gap: 8px; align-items: center; justify-content: center;">
       <button class="delete-admin-btn" onclick="deleteSubAdmin(this, '${subAdmin._id}', '${subAdmin.fullName}')">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
           <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
@@ -8104,10 +8084,7 @@ function createSubAdminCard(subAdmin) {
   return card;
 }
 
-// Edit sub-admin (placeholder for future implementation)
-window.editSubAdmin = function(subAdminId) {
-  showInfoToast('Edit functionality coming soon');
-};
+
 
 // Open Language Page
 window.openLanguagePage = function() {

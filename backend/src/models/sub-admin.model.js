@@ -12,17 +12,7 @@ const subAdminSchema = new mongoose.Schema(
       maxlength: [100, "Full name cannot exceed 100 characters"],
     },
 
-    email: {
-      type: String,
-      required: [true, "Email is required"],
-      unique: true,
-      trim: true,
-      lowercase: true,
-      match: [
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        "Please provide a valid email address",
-      ],
-    },
+
 
     phone: {
       type: String,
@@ -96,7 +86,6 @@ const subAdminSchema = new mongoose.Schema(
 
 // Indexes for performance
 subAdminSchema.index({ teacher: 1, createdAt: -1 });
-subAdminSchema.index({ email: 1 });
 subAdminSchema.index({ phone: 1 });
 
 // Pre-save middleware to hash password

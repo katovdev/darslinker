@@ -12,12 +12,6 @@ export const createSubAdminSchema = Joi.object({
     "any.required": "Full name is required",
   }),
 
-  email: Joi.string().trim().email().required().messages({
-    "string.empty": "Email is required",
-    "string.email": "Please provide a valid email address",
-    "any.required": "Email is required",
-  }),
-
   phone: Joi.string()
     .trim()
     .pattern(/^[\+]?[1-9][\d]{0,15}$/)
@@ -50,10 +44,6 @@ export const updateSubAdminSchema = Joi.object({
   fullName: Joi.string().trim().min(2).max(100).optional().messages({
     "string.min": "Full name must be at least 2 characters long",
     "string.max": "Full name cannot exceed 100 characters",
-  }),
-
-  email: Joi.string().trim().email().optional().messages({
-    "string.email": "Please provide a valid email address",
   }),
 
   phone: Joi.string()
