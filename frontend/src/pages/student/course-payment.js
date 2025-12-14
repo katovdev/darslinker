@@ -39,6 +39,22 @@ export async function initCoursePaymentPage(courseId) {
 
     const course = result.course;
 
+    // Check if student already submitted payment
+    const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
+    let paymentStatus = null;
+    
+    if (landingUser._id) {
+      try {
+        const statusResponse = await fetch(`${apiBaseUrl}/payments/student/${landingUser._id}/course/${courseId}`);
+        const statusResult = await statusResponse.json();
+        if (statusResult.success && statusResult.payment) {
+          paymentStatus = statusResult.payment;
+        }
+      } catch (error) {
+        console.log('No existing payment found');
+      }
+    }
+
     // Apply teacher's primary color from landing page
     try {
       const teacherId = course.teacher._id || course.teacher;
@@ -53,8 +69,141 @@ export async function initCoursePaymentPage(courseId) {
       console.error('Error loading teacher theme:', error);
     }
 
-    // Render payment page
-    appElement.innerHTML = `
+    // Render payment page based on status
+    if (paymentStatus) {
+      // Show already submitted status
+      appElement.innerHTML = `
+        <style>
+          /* Hide all existing headers */
+          .mobile-header,
+          .desktop-header,
+          .figma-header,
+          .landing-header {
+            display: none !important;
+          }
+
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+
+          .payment-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+          }
+
+          .payment-container {
+            background: rgba(42, 42, 42, 0.95);
+            border: 1px solid var(--primary-border);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+          }
+
+          .status-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+            color: #FBB936;
+          }
+
+          .status-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 16px;
+          }
+
+          .status-message {
+            font-size: 16px;
+            color: #9ca3af;
+            line-height: 1.6;
+            margin-bottom: 32px;
+          }
+
+          .course-info {
+            background: rgba(42, 42, 42, 0.5);
+            border: 1px solid var(--primary-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+          }
+
+          .course-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+          }
+
+          .course-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+          }
+
+          .back-btn {
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+          }
+
+          .back-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px var(--primary-shadow);
+          }
+
+          @media (max-width: 768px) {
+            .payment-container {
+              padding: 30px 20px;
+              margin: 20px;
+            }
+
+            .status-title {
+              font-size: 24px;
+            }
+          }
+        </style>
+
+        <div class="payment-page">
+          <div class="payment-container">
+            <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22,4 12,14.01 9,11.01"></polyline>
+            </svg>
+
+            <h1 class="status-title">${t('payment.alreadySubmitted')}</h1>
+            <p class="status-message">${t('payment.paymentUnderReview')}</p>
+
+            <div class="course-info">
+              <div class="course-name">${course.title}</div>
+              <div class="course-price">${course.price ? `${course.price.toLocaleString()} UZS` : 'Free'}</div>
+            </div>
+
+            <button class="back-btn" onclick="goBackToCourse()">
+              ${t('common.back')}
+            </button>
+          </div>
+        </div>
+      `;
+    } else {
+      // Show normal payment form
+      appElement.innerHTML = `
       <style>
         /* Hide all existing headers */
         .mobile-header,
@@ -350,6 +499,8 @@ export async function initCoursePaymentPage(courseId) {
         </div>
       </div>
     `;
+
+    }
 
     // Store course data globally
     window.currentCourse = course;

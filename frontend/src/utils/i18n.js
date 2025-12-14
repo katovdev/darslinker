@@ -669,6 +669,9 @@ const translations = {
     'payment.fileTooLarge': 'File size must be less than 5MB',
     'payment.approvalNotification': 'Your payment has been approved! You can now start the course.',
     'payment.rejectionNotification': 'Your payment was rejected. Please contact the teacher for more information.',
+    'payment.alreadySubmitted': 'Already Submitted',
+    'payment.waitingApproval': 'Waiting for Approval',
+    'payment.paymentUnderReview': 'Your payment is currently under review by the teacher. You will be notified once it\'s approved.',
     
     // Finance Page
     'finance.paymentRequests': 'Payment Requests',
@@ -1395,6 +1398,9 @@ const translations = {
     'payment.fileTooLarge': 'Fayl hajmi 5MB dan kam bo\'lishi kerak',
     'payment.approvalNotification': 'Sizning to\'lovingiz tasdiqlandi! Endi kursni boshlashingiz mumkin.',
     'payment.rejectionNotification': 'Sizning to\'lovingiz rad etildi. Qo\'shimcha ma\'lumot uchun o\'qituvchi bilan bog\'laning.',
+    'payment.alreadySubmitted': 'Allaqachon yuborilgan',
+    'payment.waitingApproval': 'Tasdiq kutilmoqda',
+    'payment.paymentUnderReview': 'Sizning to\'lovingiz hozirda o\'qituvchi tomonidan ko\'rib chiqilmoqda. Tasdiqlangandan so\'ng sizga xabar beriladi.',
     
     // Finance Page
     'finance.paymentRequests': 'To\'lov so\'rovlari',
@@ -2095,6 +2101,9 @@ const translations = {
     'payment.fileTooLarge': 'Размер файла должен быть менее 5МБ',
     'payment.approvalNotification': 'Ваш платеж одобрен! Теперь вы можете начать курс.',
     'payment.rejectionNotification': 'Ваш платеж отклонен. Обратитесь к преподавателю за дополнительной информацией.',
+    'payment.alreadySubmitted': 'Уже отправлено',
+    'payment.waitingApproval': 'Ожидание одобрения',
+    'payment.paymentUnderReview': 'Ваш платеж в настоящее время рассматривается преподавателем. Вы получите уведомление после одобрения.',
     
     // Finance Page
     'finance.paymentRequests': 'Запросы на оплату',
