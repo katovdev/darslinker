@@ -590,4 +590,105 @@ const getQuizAttempts = catchAsync(async (req, res) => {
   });
 });
 
-export { createStudentProfile, findAll, findOne, update, remove, saveQuizResult, enrollInCourse, checkEnrollment, completeLesson, getCourseProgress, getQuizAttempts };
+/**
+ * Complete a course for a student
+ * @route POST /students/courses/:courseId/complete
+ * @access Private (Authenticated students only)
+ */
+const completeCourse = catchAsync(async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user.userId;
+
+  logger.info("Course completion request", {
+    userId,
+    courseId
+  });
+
+  // Find the student or create if not exists
+  let student = await Student.findOne({ userId }).populate('enrolledCourses.course');
+  if (!student) {
+    logger.info("Student not found, creating new profile for course completion", { userId });
+    
+    // Get user info to create student profile
+    const user = await User.findById(userId);
+    if (!user) {
+      logger.warn("User not found for course completion", { userId });
+      throw new ValidationError("User not found");
+    }
+    
+    // Create student profile
+    student = new Student({
+      userId: userId,
+      firstName: user.firstName || 'Student',
+      lastName: user.lastName || 'User',
+      email: user.email,
+      phone: user.phone,
+      password: user.password || 'temp_password', // Use existing user password or temp
+      enrolledCourses: [courseId],
+      completedCourses: [courseId]
+    });
+    
+    await student.save();
+    
+    logger.info("Course marked as completed for new student", {
+      userId,
+      courseId,
+      studentId: student._id
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Course completed successfully",
+      data: {
+        courseId,
+        completedAt: new Date(),
+        progress: 100
+      }
+    });
+  }
+
+  // Check if student is enrolled in the course
+  const enrollment = student.enrolledCourses.find(
+    (enrollment) => enrollment.course._id.toString() === courseId
+  );
+
+  if (!enrollment) {
+    logger.warn("Student not enrolled in course", { userId, courseId });
+    throw new ValidationError("Student is not enrolled in this course");
+  }
+
+  // Check if course is already completed
+  if (enrollment.status === 'completed') {
+    logger.info("Course already completed", { userId, courseId });
+    return res.status(200).json({
+      success: true,
+      message: "Course already completed",
+      data: { courseId, completedAt: enrollment.completedAt }
+    });
+  }
+
+  // Mark course as completed
+  enrollment.status = 'completed';
+  enrollment.completedAt = new Date();
+  enrollment.progress = 100;
+
+  await student.save();
+
+  logger.info("Course marked as completed", {
+    userId,
+    courseId,
+    completedAt: enrollment.completedAt
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Course completed successfully",
+    data: {
+      courseId,
+      completedAt: enrollment.completedAt,
+      progress: 100
+    }
+  });
+});
+
+export { createStudentProfile, findAll, findOne, update, remove, saveQuizResult, enrollInCourse, checkEnrollment, completeLesson, getCourseProgress, getQuizAttempts, completeCourse };

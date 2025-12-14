@@ -1,9 +1,11 @@
-// Assignment player page - DEPRECATED: Use renderAssignmentContent instead
+// Assignment player page - Use renderAssignmentContent for unified player
 import { t, initI18n } from '../../utils/i18n.js';
 
 export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
   // Initialize i18n
   initI18n();
+  
+  console.log('📝 Assignment player loaded successfully');
   
   console.log('📝 Loading assignment player:', lesson.title);
 
@@ -1658,11 +1660,16 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         `;
 
         if (selectedLesson.type === 'assignment') {
-          const { loadAssignmentPlayer } = await import('./assignment-player.js');
-          await loadAssignmentPlayer(course, selectedLesson, sidebarHtml);
+          // Already in assignment player, just reload current assignment
+          window.location.reload();
         } else if (selectedLesson.type === 'file') {
-          const { loadFilePlayer } = await import('./file-player.js');
-          await loadFilePlayer(course, selectedLesson, sidebarHtml);
+          try {
+            const { loadFilePlayer } = await import('./file-player.js');
+            await loadFilePlayer(course, selectedLesson, sidebarHtml);
+          } catch (error) {
+            console.error('Error loading file player:', error);
+            window.location.reload();
+          }
         }
       }
     }

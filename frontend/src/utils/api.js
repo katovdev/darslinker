@@ -687,6 +687,14 @@ class ApiService {
       headers: this.getAuthHeaders(),
     });
   }
+
+  // Student course completion
+  async completeCourse(courseId) {
+    return this.request(`/students/courses/${courseId}/complete`, {
+      method: 'POST',
+      headers: this.getAuthHeaders(),
+    });
+  }
 }
 
 export const apiService = new ApiService();

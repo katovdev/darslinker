@@ -744,8 +744,18 @@ export async function loadFilePlayer(course, lesson, sidebarHtml) {
         `;
 
         if (selectedLesson.type === 'assignment') {
-          const { loadAssignmentPlayer } = await import('./assignment-player.js');
-          await loadAssignmentPlayer(course, selectedLesson, sidebarHtml);
+          try {
+            const { loadAssignmentPlayer } = await import('./assignment-player.js');
+            await loadAssignmentPlayer(course, selectedLesson, sidebarHtml);
+          } catch (error) {
+            console.error('Error loading assignment player:', error);
+            document.getElementById('app').innerHTML = `
+              <div style="padding: 40px; text-align: center; color: #ef4444;">
+                <h3>Error loading assignment</h3>
+                <p>Please refresh the page and try again.</p>
+              </div>
+            `;
+          }
         } else if (selectedLesson.type === 'file') {
           const { loadFilePlayer } = await import('./file-player.js');
           await loadFilePlayer(course, selectedLesson, sidebarHtml);

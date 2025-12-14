@@ -11,6 +11,7 @@ import {
   completeLesson,
   getCourseProgress,
   getQuizAttempts,
+  completeCourse,
 } from "../controllers/student.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 import { validate } from "../middlewares/validation.middleware.js";
@@ -617,5 +618,25 @@ studentRouter.get("/:id/progress/:courseId", getCourseProgress);
  *         description: Quiz attempts retrieved successfully
  */
 studentRouter.get("/:id/quiz-attempts/:lessonId", getQuizAttempts);
+
+/**
+ * @swagger
+ * /students/courses/{courseId}/complete:
+ *   post:
+ *     summary: Mark course as completed
+ *     description: Mark a course as completed for the authenticated student
+ *     tags: [Students]
+ *     parameters:
+ *       - in: path
+ *         name: courseId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Course ID
+ *     responses:
+ *       200:
+ *         description: Course marked as completed successfully
+ */
+studentRouter.post("/courses/:courseId/complete", authenticate, completeCourse);
 
 export default studentRouter;

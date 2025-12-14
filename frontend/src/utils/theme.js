@@ -35,9 +35,50 @@ export function applyTheme(theme) {
   if (theme.mode === 'light') {
     body.classList.add('light-mode');
     body.classList.remove('dark-mode');
+    
+    // Force update background for immediate effect
+    body.style.background = '#f8f9fa';
+    
+    // Update header backgrounds
+    const headers = document.querySelectorAll('.mobile-header, .desktop-header, .figma-header');
+    headers.forEach(header => {
+      header.style.background = '#ffffff';
+      header.style.borderBottomColor = theme.primaryColor;
+    });
+    
+    // Update all card borders to primary color in light mode
+    const elementsWithBorders = document.querySelectorAll('[style*="border"]');
+    elementsWithBorders.forEach(element => {
+      const style = element.getAttribute('style');
+      if (style && style.includes('rgba(126, 162, 212')) {
+        const newStyle = style.replace(/rgba\(126,\s*162,\s*212,\s*[\d.]+\)/g, theme.primaryColor);
+        element.setAttribute('style', newStyle);
+      }
+    });
   } else {
     body.classList.add('dark-mode');
     body.classList.remove('light-mode');
+    
+    // Force update background for immediate effect
+    body.style.background = '#232323';
+    
+    // Update header backgrounds
+    const headers = document.querySelectorAll('.mobile-header, .desktop-header, .figma-header');
+    headers.forEach(header => {
+      header.style.background = '#1a1a1a';
+      header.style.borderBottomColor = '#333';
+    });
+    
+    // Keep original border colors in dark mode
+    const elementsWithBorders = document.querySelectorAll('[style*="border"]');
+    elementsWithBorders.forEach(element => {
+      const style = element.getAttribute('style');
+      if (style && !style.includes('rgba(126, 162, 212')) {
+        // Restore original border colors if they were changed
+        const newStyle = style.replace(new RegExp(theme.primaryColor, 'g'), 'rgba(126, 162, 212, 0.2)');
+        element.setAttribute('style', newStyle);
+      }
+    });
   }
   
   // Apply primary color

@@ -20,6 +20,10 @@ export async function initDashboard() {
   // Add language change listener to reload dashboard when language changes
   window.removeEventListener('languageChanged', handleLanguageChange);
   window.addEventListener('languageChanged', handleLanguageChange);
+  
+  // Add theme change listener to update colors immediately
+  window.removeEventListener('themeChanged', handleThemeChange);
+  window.addEventListener('themeChanged', handleThemeChange);
 
   // Clean up any existing page-specific styles and reset body styles
   cleanupPageStyles();
@@ -184,7 +188,7 @@ async function renderTeacherDashboard(user) {
   appElement.innerHTML = `
     <div class="figma-dashboard">
       <!-- Mobile Header -->
-      <div class="mobile-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #1a1a1a; border-bottom: 1px solid #333;">
+      <div class="mobile-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: var(--header-bg, var(--bg-primary)); border-bottom: 1px solid var(--border-color);">
         <div style="display: flex; justify-content: space-between; align-items: center; height: 56px; padding: 0 16px; width: 100%;">
           <!-- Left: Burger Menu + Logo -->
           <div style="display: flex; align-items: center; gap: 12px;">
@@ -245,7 +249,7 @@ async function renderTeacherDashboard(user) {
       </div>
 
       <!-- Desktop Header (original layout) -->
-      <div class="figma-header desktop-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: #1a1a1a; border-bottom: 1px solid #333; display: none;">
+      <div class="figma-header desktop-header" style="position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: var(--header-bg, var(--bg-primary)); border-bottom: 1px solid var(--border-color); display: none;">
         <div class="figma-header-left">
           <div class="figma-logo">
             <h1>dars<span>linker</span></h1>
@@ -5922,13 +5926,13 @@ async function generateLandingPageHTML(teacher) {
                         }
                     }, 1500);
                 } else {
-                    showToast('error', data.message || 'Telefon yoki parol noto\\'g\\'ri');
+                    showErrorToast(data.message || 'Telefon yoki parol noto\\'g\\'ri');
                     button.disabled = false;
                     button.textContent = 'Kirish';
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showToast('error', 'Kirishda xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
+                showErrorToast('Kirishda xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
                 button.disabled = false;
                 button.textContent = 'Kirish';
             }
@@ -6322,7 +6326,7 @@ async function generateLandingPageHTML(teacher) {
                         openLoginModal({ preventDefault: () => {} });
                     }, 1000);
                 } else {
-                    showToast('error', data.message || 'Xatolik yuz berdi');
+                    showErrorToast(data.message || 'Xatolik yuz berdi');
                     button.disabled = false;
                     button.textContent = 'Parolni o\\'zgartirish';
                 }
@@ -6759,13 +6763,13 @@ async function generateLandingPageHTML(teacher) {
                     
                     renderStep(4);
                 } else {
-                    showToast('error', data.message || 'Kod yuborishda xatolik');
+                    showErrorToast(data.message || 'Kod yuborishda xatolik');
                     button.disabled = false;
                     button.textContent = 'Kod yuborish';
                 }
             } catch (error) {
                 console.error('Error sending verification code:', error);
-                showToast('error', 'Kod yuborishda xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
+                showErrorToast('Kod yuborishda xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
                 button.disabled = false;
                 button.textContent = 'Kod yuborish';
             }
@@ -6890,97 +6894,13 @@ async function generateLandingPageHTML(teacher) {
                 }
             } catch (error) {
                 console.error('Error verifying code:', error);
-                showToast('error', 'Tasdiqlashda xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
+                showErrorToast('Tasdiqlashda xatolik yuz berdi. Iltimos, qayta urinib ko\\'ring.');
                 button.disabled = false;
                 button.textContent = 'Tasdiqlash';
             }
         }
 
-        // Toast notification function
-        function showToast(type, message, duration = 5000) {
-            const toast = document.createElement('div');
-            toast.className = \`landing-toast landing-toast-\${type}\`;
-            toast.innerHTML = \`
-                <div class="toast-icon">\${type === 'success' ? '✓' : '✕'}</div>
-                <div class="toast-message">\${message}</div>
-            \`;
-            
-            const style = document.createElement('style');
-            style.textContent = \`
-                .landing-toast {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    padding: 16px 20px;
-                    border-radius: 12px;
-                    display: flex;
-                    align-items: center;
-                    gap: 12px;
-                    z-index: 30000;
-                    animation: slideInRight 0.3s ease;
-                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-                    max-width: 400px;
-                }
-                .landing-toast-success {
-                    background: linear-gradient(135deg, #10b981, #059669);
-                    color: white;
-                }
-                .landing-toast-error {
-                    background: linear-gradient(135deg, #ef4444, #dc2626);
-                    color: white;
-                }
-                .toast-icon {
-                    width: 24px;
-                    height: 24px;
-                    background: rgba(255, 255, 255, 0.2);
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-weight: bold;
-                    flex-shrink: 0;
-                }
-                .toast-message {
-                    font-size: 14px;
-                    line-height: 1.5;
-                }
-                @keyframes slideInRight {
-                    from {
-                        transform: translateX(400px);
-                        opacity: 0;
-                    }
-                    to {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                }
-                @keyframes slideOutRight {
-                    from {
-                        transform: translateX(0);
-                        opacity: 1;
-                    }
-                    to {
-                        transform: translateX(400px);
-                        opacity: 0;
-                    }
-                }
-            \`;
-            
-            document.head.appendChild(style);
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.animation = 'slideOutRight 0.3s ease';
-                setTimeout(() => {
-                    if (toast.parentNode) {
-                        toast.parentNode.removeChild(toast);
-                    }
-                    if (style.parentNode) {
-                        style.parentNode.removeChild(style);
-                    }
-                }, 300);
-            }, duration);
-        }
+        // Toast functions are imported from utils/toast.js
 
         // Smooth scroll to section and update active nav link
         window.scrollToSection = function(e, sectionId) {
@@ -7154,7 +7074,7 @@ async function generateLandingPageHTML(teacher) {
         window.validateStep2 = validateStep2;
         window.validateStep3 = validateStep3;
         window.resendCode = resendCode;
-        window.showToast = showToast;
+
         
         // Auto-open modal if redirected from course detail page
         window.addEventListener('load', function() {
@@ -20524,6 +20444,31 @@ function showMessage(message, type = 'info') {
 }
 // Ensure AI Assistant function is globally accessible
 window.openAIAssistantPage = openAIAssistantPage;
+
+// Handle theme change event - update colors immediately
+function handleThemeChange(event) {
+  console.log('Theme changed, updating colors...', event.detail);
+  
+  // Force update header backgrounds
+  const headers = document.querySelectorAll('.mobile-header, .desktop-header, .figma-header');
+  const isLight = event.detail.theme.mode === 'light';
+  
+  headers.forEach(header => {
+    if (isLight) {
+      header.style.background = '#ffffff';
+      header.style.borderBottomColor = 'rgba(0, 0, 0, 0.12)';
+    } else {
+      header.style.background = '#1a1a1a';
+      header.style.borderBottomColor = '#333';
+    }
+  });
+  
+  // Force update dashboard background
+  const dashboard = document.querySelector('.figma-dashboard');
+  if (dashboard) {
+    dashboard.style.background = isLight ? '#f8f9fa' : '#232323';
+  }
+}
 
 // Handle language change event - reload current page with new translations
 function handleLanguageChange() {

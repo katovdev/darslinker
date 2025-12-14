@@ -1525,7 +1525,7 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
         ${hasStarted ? `
         <div class="landing-course-progress-bar">
           <div class="landing-course-progress-label">
-            <span>${t('dashboard.progress')}</span>
+            <span>${progress >= 100 ? '✅ ' + t('dashboard.completed') : t('dashboard.progress')}</span>
             <span>${progress}%</span>
           </div>
           <div class="landing-progress-track">

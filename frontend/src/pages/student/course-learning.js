@@ -1,7 +1,37 @@
 // Course learning page - Full course view with modules and lessons
 import { loadQuizPlayer } from './quiz-player.js';
+import { renderAssignmentContent } from './assignment-player.js';
+import { showCourseCompletionSuccess } from './course-success.js';
 // Import i18n functions
 import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.js';
+import { apiService } from '../../utils/api.js';
+import { showSuccessToast, showErrorToast } from '../../utils/toast.js';
+
+// Function to check if current lesson is the last lesson in the course
+function isLastLesson(lessonId) {
+  const course = window.currentCourse || window.loadedCourse;
+  if (!course || !course.modules) return false;
+  
+  // Find the last lesson in the last module
+  const lastModule = course.modules[course.modules.length - 1];
+  if (!lastModule || !lastModule.lessons || lastModule.lessons.length === 0) return false;
+  
+  const lastLesson = lastModule.lessons[lastModule.lessons.length - 1];
+  return lastLesson._id === lessonId;
+}
+
+// Function to complete course
+async function completeCourse(courseId) {
+  try {
+    const response = await apiService.completeCourse(courseId);
+    console.log('Course completion response:', response);
+    return response;
+  } catch (error) {
+    console.error('Error completing course:', error);
+    // Don't throw error, just log it - we still want to show success
+    return { success: false, error: error.message };
+  }
+}
 
 // Function to translate duration text
 function translateDuration(duration) {
@@ -1222,7 +1252,7 @@ function attachEventListeners(course, currentLesson = null) {
   const meetingBtn = document.querySelector('.meeting-btn');
   if (meetingBtn) {
     meetingBtn.addEventListener('click', () => {
-      showToast(t('courseLearning.comingSoon'));
+      showSuccessToast(t('courseLearning.comingSoon'));
     });
   }
 
@@ -1230,7 +1260,7 @@ function attachEventListeners(course, currentLesson = null) {
   const notificationBtn = document.querySelector('.notification-btn');
   if (notificationBtn) {
     notificationBtn.addEventListener('click', () => {
-      showToast(t('courseLearning.comingSoon'));
+      showSuccessToast(t('courseLearning.comingSoon'));
     });
   }
 
@@ -1258,7 +1288,7 @@ function attachEventListeners(course, currentLesson = null) {
   // Mobile sidebar functions for course overview
   window.toggleCourseMobileSidebar = function() {
     // This function is for the course overview page (not the lesson player)
-    showToast(t('courseLearning.mobileSidebarComingSoon'));
+    showSuccessToast(t('courseLearning.mobileSidebarComingSoon'));
   };
 
   window.closeCourseMobileSidebar = function() {
@@ -1313,7 +1343,7 @@ function attachEventListeners(course, currentLesson = null) {
   
   // Show locked lesson toast
   window.showLockedLessonToast = function() {
-    showToast(t('courseLearning.pleaseWatchInOrder'));
+    showErrorToast(t('courseLearning.pleaseWatchInOrder'));
   };
 
   // Open specific lesson - unified loader for ALL lesson types
@@ -1351,7 +1381,7 @@ function attachEventListeners(course, currentLesson = null) {
       // Load unified lesson player (handles ALL lesson types)
       await loadUnifiedLessonPlayer(course, selectedLesson);
     } else {
-      showToast(t('courseLearning.lessonNotFound'));
+      showErrorToast(t('courseLearning.lessonNotFound'));
     }
   };
   
@@ -1438,7 +1468,7 @@ function attachEventListeners(course, currentLesson = null) {
     });
     
     if (currentModuleIndex === -1) {
-      showToast(t('courseLearning.nextLessonNotFound'));
+      showErrorToast(t('courseLearning.nextLessonNotFound'));
       return;
     }
     
@@ -1446,7 +1476,7 @@ function attachEventListeners(course, currentLesson = null) {
     const currentModule = course.modules[currentModuleIndex];
     if (currentLessonIndex < currentModule.lessons.length - 1) {
       const nextLesson = currentModule.lessons[currentLessonIndex + 1];
-      showToast(t('courseLearning.lessonCompleted'));
+      showSuccessToast(t('courseLearning.lessonCompleted'));
       setTimeout(() => {
         window.openLesson(currentModule._id, nextLesson._id);
       }, 500);
@@ -1457,7 +1487,7 @@ function attachEventListeners(course, currentLesson = null) {
     if (currentModuleIndex < course.modules.length - 1) {
       const nextModule = course.modules[currentModuleIndex + 1];
       if (nextModule.lessons && nextModule.lessons.length > 0) {
-        showToast(t('courseLearning.moduleCompleted'));
+        showSuccessToast(t('courseLearning.moduleCompleted'));
         setTimeout(() => {
           window.openLesson(nextModule._id, nextModule.lessons[0]._id);
         }, 500);
@@ -1466,11 +1496,22 @@ function attachEventListeners(course, currentLesson = null) {
     }
     
     // No more lessons - course completed!
-    showToast(t('courseLearning.courseCompleted'));
-    setTimeout(() => {
-      // Reload course overview to show final progress
-      initCourseLearningPage(courseId);
-    }, 2000);
+    try {
+      await completeCourse(courseId);
+      showSuccessToast(t('courseLearning.courseCompleted'));
+      setTimeout(() => {
+        // Navigate to success page
+        showCourseCompletionSuccess(course);
+      }, 1500);
+    } catch (error) {
+      console.error('Course completion error:', error);
+      // Still show success to user, but log the error
+      showSuccessToast(t('courseLearning.courseCompleted'));
+      setTimeout(() => {
+        // Navigate to success page anyway
+        showCourseCompletionSuccess(course);
+      }, 1500);
+    }
   };
   
   // DEPRECATED: Old function - kept for backward compatibility
@@ -1508,7 +1549,7 @@ function attachEventListeners(course, currentLesson = null) {
       }
     }
     
-    showToast(t('courseLearning.allLessonsCompleted'));
+    showSuccessToast(t('courseLearning.allLessonsCompleted'));
   };
   
   // Store current lesson globally for next lesson function
@@ -1522,7 +1563,7 @@ function attachEventListeners(course, currentLesson = null) {
 function handleLogout() {
   sessionStorage.removeItem('landingUser');
   sessionStorage.removeItem('currentTeacherId');
-  showToast(t('courseLearning.loggingOut'));
+  showSuccessToast(t('courseLearning.loggingOut'));
   setTimeout(() => {
     window.location.href = '/';
   }, 1000);
@@ -2008,7 +2049,7 @@ async function loadVideoContent(contentArea, lesson) {
         </div>
 
         <button id="nextLessonBtn" onclick="markCompleteAndGoNext('${window.currentCourse?._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap; margin-left: 20px;">
-          ${t('courseLearning.nextLesson')}
+          ${isLastLesson(lesson._id) ? t('courseLearning.finishCourse') : t('courseLearning.nextLesson')}
         </button>
       </div>
     </div>
@@ -2180,7 +2221,7 @@ async function loadFileContent(contentArea, lesson) {
       <!-- Next Lesson Button -->
       <div style="margin-top: 32px; display: flex; justify-content: flex-end; padding-top: 24px; border-top: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent);">
         <button id="nextLessonBtn" onclick="markCompleteAndGoNext('${window.currentCourse?._id}', '${lesson._id}')" style="padding: 12px 24px; background: var(--primary-color); color: #ffffff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; white-space: nowrap;">
-          ${t('courseLearning.nextLesson')}
+          ${isLastLesson(lesson._id) ? t('courseLearning.finishCourse') : t('courseLearning.nextLesson')}
         </button>
       </div>
     </div>
@@ -2219,9 +2260,18 @@ async function loadFileContent(contentArea, lesson) {
 }
 
 async function loadAssignmentContent(contentArea, course, lesson) {
-  // Import and use the assignment player content
-  const { renderAssignmentContent } = await import('./assignment-player.js');
-  await renderAssignmentContent(contentArea, course, lesson);
+  try {
+    // Use static import instead of dynamic import
+    await renderAssignmentContent(contentArea, course, lesson);
+  } catch (error) {
+    console.error('Error loading assignment content:', error);
+    contentArea.innerHTML = `
+      <div style="padding: 40px; text-align: center; color: #ef4444;">
+        <h3>Error loading assignment</h3>
+        <p>Please refresh the page and try again.</p>
+      </div>
+    `;
+  }
 }
 
 async function loadQuizContent(contentArea, course, lesson) {
@@ -2411,35 +2461,9 @@ window.goToNextLesson = function(courseId, currentLessonId) {
     window.openLesson(nextLesson.moduleId, nextLesson.lesson._id);
   } else {
     // No more lessons - could show completion or return to course overview
-    showToast(t('courseLearning.courseComplete'), t('courseLearning.courseCompleteMessage'), 'success');
+    showSuccessToast(t('courseLearning.courseCompleted'));
   }
 };
 
 
-// Unified toast notification system
-function showToast(title, message, type = 'info') {
-  const toast = document.createElement('div');
-  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim() || '#7ea2d4';
-  toast.style.cssText = `
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: ${type === 'success' ? '#10B981' : type === 'error' ? '#EF4444' : primaryColor};
-    color: #ffffff;
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-size: 14px;
-    font-weight: 500;
-    z-index: 10000;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  `;
-
-  toast.innerHTML = `<strong>${title}</strong>${message ? `<br><span style="opacity: 0.9;">${message}</span>` : ''}`;
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    if (toast.parentNode) {
-      toast.parentNode.removeChild(toast);
-    }
-  }, 4000);
-}
+// Toast functions are imported from utils/toast.js
