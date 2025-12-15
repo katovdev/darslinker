@@ -89,10 +89,11 @@ export function initBlogDetailPage(blogId) {
       .blog-nav {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 1rem;
       }
 
-      .back-btn {
+      .back-btn, .home-btn {
         display: flex;
         align-items: center;
         gap: 0.5rem;
@@ -106,7 +107,7 @@ export function initBlogDetailPage(blogId) {
         transition: all 0.3s ease;
       }
 
-      .back-btn:hover {
+      .back-btn:hover, .home-btn:hover {
         background: var(--primary-color);
         color: white;
       }
@@ -527,6 +528,13 @@ export function initBlogDetailPage(blogId) {
                 <path d="m19 12H5"/>
               </svg>
               Blog
+            </button>
+            <button class="home-btn" onclick="router.navigate('/'); return false;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9,22 9,12 15,12 15,22"/>
+              </svg>
+              Bosh sahifa
             </button>
           </div>
         </div>

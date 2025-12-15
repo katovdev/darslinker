@@ -13,9 +13,7 @@ export function initBlogListPage() {
   
   let currentPage = 1;
   let currentSearch = '';
-  let currentCategory = '';
   let blogs = [];
-  let categories = [];
   let pagination = {};
   let loading = false;
 
@@ -24,6 +22,7 @@ export function initBlogListPage() {
     <header class="blog-header">
       <div class="container">
         <div class="blog-nav">
+          <h1>Blog</h1>
           <button class="back-btn" onclick="router.navigate('/'); return false;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="m12 19-7-7 7-7"/>
@@ -31,7 +30,6 @@ export function initBlogListPage() {
             </svg>
             Bosh sahifa
           </button>
-          <h1>Blog</h1>
         </div>
       </div>
     </header>
@@ -56,11 +54,7 @@ export function initBlogListPage() {
             </button>
           </div>
           
-          <div class="category-filter">
-            <select id="categorySelect">
-              <option value="">Barcha kategoriyalar</option>
-            </select>
-          </div>
+
         </div>
 
         <!-- Blog Grid -->
@@ -91,6 +85,7 @@ export function initBlogListPage() {
       .blog-nav {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 1rem;
       }
 
@@ -171,20 +166,7 @@ export function initBlogListPage() {
         background: var(--hover-bg);
       }
 
-      .category-filter select {
-        padding: 0.75rem 1rem;
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
-        font-size: 1rem;
-        background: var(--bg-color);
-        color: var(--text-color);
-        min-width: 200px;
-      }
 
-      .category-filter select:focus {
-        outline: none;
-        border-color: var(--primary-color);
-      }
 
       .blog-grid {
         display: grid;
@@ -468,39 +450,11 @@ export function initBlogListPage() {
   initializePage();
 
   async function initializePage() {
-    await loadCategories();
     await loadBlogs();
     setupEventListeners();
   }
 
-  async function loadCategories() {
-    try {
-      const response = await blogAPI.getCategories();
-      if (response.success) {
-        categories = response.data;
-        renderCategoryOptions();
-      }
-    } catch (error) {
-      console.error('Failed to load categories:', error);
-    }
-  }
 
-  function renderCategoryOptions() {
-    const select = document.getElementById('categorySelect');
-    const currentValue = select.value;
-    
-    select.innerHTML = '<option value="">Barcha kategoriyalar</option>';
-    
-    categories.forEach(category => {
-      const option = document.createElement('option');
-      option.value = category.id;
-      option.textContent = category.name;
-      if (category.id === currentValue) {
-        option.selected = true;
-      }
-      select.appendChild(option);
-    });
-  }
 
   async function loadBlogs() {
     if (loading) return;
@@ -524,7 +478,6 @@ export function initBlogListPage() {
       };
 
       if (currentSearch) params.search = currentSearch;
-      if (currentCategory) params.category = currentCategory;
 
       const response = await blogAPI.getAllBlogs(params);
       
@@ -657,13 +610,7 @@ export function initBlogListPage() {
       }
     });
 
-    // Category filter
-    const categorySelect = document.getElementById('categorySelect');
-    categorySelect.addEventListener('change', (e) => {
-      currentCategory = e.target.value;
-      currentPage = 1;
-      loadBlogs();
-    });
+
   }
 
   function performSearch() {
@@ -684,10 +631,8 @@ export function initBlogListPage() {
 
   window.clearFilters = () => {
     currentSearch = '';
-    currentCategory = '';
     currentPage = 1;
     document.getElementById('searchInput').value = '';
-    document.getElementById('categorySelect').value = '';
     loadBlogs();
   };
 
