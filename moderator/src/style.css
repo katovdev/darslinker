@@ -775,7 +775,7 @@ body {
   }
 
   .moderator-title {
-    font-size: 1.2rem;
+    display: none;
   }
 
   .section-header {
@@ -890,7 +890,7 @@ body {
   }
 
   .moderator-title {
-    font-size: 1rem;
+    display: none;
   }
 
   .logo {
