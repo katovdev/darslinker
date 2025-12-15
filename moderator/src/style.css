@@ -71,12 +71,7 @@ body {
   color: var(--primary-color);
 }
 
-.moderator-title {
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--primary-color);
-  text-align: center;
-}
+
 
 .super-admin-btn {
   background: var(--primary-gradient);
