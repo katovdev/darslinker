@@ -42,6 +42,8 @@ body {
   background: var(--bg-primary) !important;
   color: var(--text-primary) !important;
   transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0 !important;
+  padding: 0 !important;
 }
 
 /* Light mode specific overrides for components */
@@ -463,6 +465,7 @@ body {
 /* Hero Section */
 .hero {
   padding: 60px 0;
+  margin-top: 80px;
   position: relative;
   overflow: hidden;
   min-height: 90vh;
@@ -2080,10 +2083,6 @@ body {
 
 /* Responsive Design */
 @media (max-width: 600px) {
-  body {
-    padding-top: 70px;
-  }
-
   .header {
     padding: 15px 0;
   }
@@ -2094,6 +2093,7 @@ body {
 
   .hero {
     padding: 40px 0;
+    margin-top: 70px;
     min-height: 80vh;
   }
 

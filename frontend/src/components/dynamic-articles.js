@@ -173,11 +173,11 @@ class DynamicArticles {
   renderArticleCard(article, index) {
     const cardClass = this.getCardClass(index);
     const isClickable = !article.isFallback;
-    const clickHandler = isClickable ? `onclick="this.handleBlogCardClick('${article.id}', this); return false;"` : '';
+    const clickHandler = isClickable ? `data-blog-id="${article.id}" data-clickable="true"` : '';
     const cursorStyle = isClickable ? 'cursor: pointer;' : '';
 
     return `
-      <div class="article-card ${cardClass}" ${clickHandler} style="${cursorStyle}" data-blog-id="${article.id}">
+      <div class="article-card ${cardClass}" ${clickHandler} style="${cursorStyle}">
         <div class="article-header">
           <h3>${this.escapeHtml(article.title)}</h3>
         </div>
@@ -401,11 +401,11 @@ class DynamicArticles {
    * Setup blog card click handlers with 10-second view tracking
    */
   setupBlogCardHandlers() {
-    const blogCards = this.container.querySelectorAll('.article-card[data-blog-id]');
+    const blogCards = this.container.querySelectorAll('.article-card[data-clickable="true"]');
     
     blogCards.forEach(card => {
       const blogId = card.getAttribute('data-blog-id');
-      if (!blogId || card.dataset.isFallback === 'true') return;
+      if (!blogId) return;
       
       card.addEventListener('click', (e) => {
         e.preventDefault();

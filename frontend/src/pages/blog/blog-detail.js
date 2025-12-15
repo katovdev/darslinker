@@ -32,7 +32,7 @@ export function initBlogDetailPage(blogId) {
     <style>
       .blog-detail-container {
         min-height: 100vh;
-        background: var(--bg-color);
+        background: var(--bg-primary);
       }
 
       .loading-overlay {
@@ -78,7 +78,7 @@ export function initBlogDetailPage(blogId) {
       }
 
       .blog-header {
-        background: var(--bg-color);
+        background: var(--bg-primary);
         border-bottom: 1px solid var(--border-color);
         padding: 1rem 0;
         position: sticky;
@@ -116,6 +116,11 @@ export function initBlogDetailPage(blogId) {
         max-width: 800px;
         margin: 0 auto;
         padding: 2rem;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
       }
 
       .blog-title {
@@ -359,6 +364,19 @@ export function initBlogDetailPage(blogId) {
         color: var(--text-secondary);
       }
 
+      .no-related-blogs {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: var(--text-secondary);
+        font-style: italic;
+      }
+
+      .no-related-blogs p {
+        margin: 0;
+        font-size: 1rem;
+        opacity: 0.8;
+      }
+
       .error-state {
         text-align: center;
         padding: 4rem 2rem;
@@ -446,6 +464,14 @@ export function initBlogDetailPage(blogId) {
   function startViewTracking() {
     console.log('🕐 Starting 10-second view tracking for blog:', blogId);
     
+    // Check if view already tracked in this session
+    const sessionKey = `blog_view_${blogId}`;
+    if (sessionStorage.getItem(sessionKey)) {
+      console.log('✅ View already tracked in this session');
+      viewTracked = true;
+      return;
+    }
+    
     // Clear any existing timer
     if (viewTrackingTimer) {
       clearTimeout(viewTrackingTimer);
@@ -506,6 +532,11 @@ export function initBlogDetailPage(blogId) {
       console.log('📈 Tracking view for blog:', blogId);
       await blogAPI.trackBlogView(blogId);
       viewTracked = true;
+      
+      // Mark as viewed in session storage
+      const sessionKey = `blog_view_${blogId}`;
+      sessionStorage.setItem(sessionKey, 'true');
+      
       console.log('✅ View tracked successfully');
       
       // Update view count in UI if possible
@@ -519,9 +550,15 @@ export function initBlogDetailPage(blogId) {
     // Find and update view count in the current page
     const viewElements = document.querySelectorAll('.blog-meta-item');
     viewElements.forEach(el => {
-      if (el.textContent.includes('ko\'rildi')) {
+      const svgElement = el.querySelector('svg');
+      if (svgElement && el.textContent.match(/^\s*\d+\s*$/)) {
         const currentCount = parseInt(el.textContent.match(/\d+/)?.[0] || '0');
-        el.innerHTML = el.innerHTML.replace(/\d+/, currentCount + 1);
+        el.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+          </svg>
+          ${currentCount + 1}
+        `;
       }
     });
   }
@@ -619,7 +656,7 @@ export function initBlogDetailPage(blogId) {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
               </svg>
-              ${blog.multiViews || 0} ko'rildi
+              ${blog.multiViews || 0}
             </div>
           </div>
           
@@ -641,9 +678,9 @@ export function initBlogDetailPage(blogId) {
           ${renderBlogSections(blog.sections || [])}
         </div>
 
-        ${relatedBlogs.length > 0 ? `
-          <div class="related-blogs">
-            <h3>O'xshash maqolalar</h3>
+        <div class="related-blogs">
+          <h3>O'xshash maqolalar</h3>
+          ${relatedBlogs.length > 0 ? `
             <div class="related-grid">
               ${relatedBlogs.map(relatedBlog => `
                 <div class="related-card" onclick="openBlog('${relatedBlog.id}')">
@@ -661,8 +698,12 @@ export function initBlogDetailPage(blogId) {
                 </div>
               `).join('')}
             </div>
-          </div>
-        ` : ''}
+          ` : `
+            <div class="no-related-blogs">
+              <p>Bu mavzu bo'yicha boshqa maqolalar topilmadi</p>
+            </div>
+          `}
+        </div>
       </article>
     `;
   }

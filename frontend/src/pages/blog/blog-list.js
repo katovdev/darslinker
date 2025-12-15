@@ -74,7 +74,7 @@ export function initBlogListPage() {
 
     <style>
       .blog-header {
-        background: var(--bg-color);
+        background: var(--bg-primary);
         border-bottom: 1px solid var(--border-color);
         padding: 1rem 0;
         position: sticky;
