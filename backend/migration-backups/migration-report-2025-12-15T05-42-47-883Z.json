@@ -1,0 +1,24 @@
+{
+  "startTime": "2025-12-15T05:42:29.477Z",
+  "endTime": "2025-12-15T05:42:47.883Z",
+  "categoriesMigrated": 0,
+  "blogsMigrated": 4,
+  "errors": [],
+  "warnings": [],
+  "success": false,
+  "validation": {
+    "sourceCategories": 0,
+    "targetCategories": 0,
+    "sourceBlogs": 4,
+    "targetBlogs": 4,
+    "categoriesMigrated": 0,
+    "blogsMigrated": 4,
+    "blogsWithInvalidCategories": 4,
+    "isValid": false,
+    "issues": [
+      "4 blogs have invalid category references"
+    ]
+  },
+  "backup": "/Users/zarnigor/Desktop/darslinker/backend/migration-backups/backup-2025-12-15T05-42-29-496Z.json",
+  "duration": 18406
+}

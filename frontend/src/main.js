@@ -17,6 +17,8 @@ import { initCourseLearningPage } from './pages/student/course-learning.js';
 import { initLessonViewPage } from './pages/student/lesson-view.js';
 import { initLessonPlayerPage } from './pages/student/lesson-player.js';
 import { initCoursePaymentPage } from './pages/student/course-payment.js';
+import { initBlogListPage } from './pages/blog/blog-list.js';
+import { initBlogDetailPage } from './pages/blog/blog-detail.js';
 
 class App {
   constructor() {
@@ -56,6 +58,10 @@ class App {
     router.register('/lesson/:courseId/:lessonId', (params) => initLessonViewPage(params.courseId, params.lessonId));
     router.register('/lesson-player/:courseId/:lessonId', (params) => initLessonPlayerPage(params.courseId, params.lessonId));
     router.register('/course-payment/:courseId', (params) => initCoursePaymentPage(params.courseId));
+    
+    // Blog routes
+    router.register('/blog', initBlogListPage);
+    router.register('/blog/:blogId', (params) => initBlogDetailPage(params.blogId));
 
     router.register('/teacher/:teacherId/student-dashboard', (params) => {
       const teacherId = params.teacherId;

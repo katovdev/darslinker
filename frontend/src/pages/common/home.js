@@ -1,6 +1,8 @@
 import { router } from '../../utils/router.js';
 import { store } from '../../utils/store.js';
 import { cleanupPricingStyles } from '../pricing.js';
+import { replaceLandingArticles } from '../../components/dynamic-articles.js';
+import '../../styles/dynamic-articles.css';
 
 // Home page translations - separate from other pages
 const homeTranslations = {
@@ -901,143 +903,12 @@ export function initHomePage() {
       <div class="container">
         <h2 class="section-title" data-home-i18n="articlesTitle">O'qituvchilar uchun ma'qolalar</h2>
 
-        <div class="articles-grid">
-         <div class="samarali-dars-decoration">
-              <img src="/images/0010 1.png" alt="Samarali Dars Decoration" class="samarali-dars-image">
-            </div>
-          <!-- Article Card 1 -->
-          <div class="article-card samarali-dars-card">
-           
-            <div class="article-header">
-              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
-            </div>
-            <div class="article-content">
-              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
-            </div>
-            <div class="article-meta">
-              <div class="article-stats">
-                <span class="views">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                  </svg>
-                  1,245
-                </span>
-                <span class="date">10.01.2024</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Article Card 2 -->
-          <div class="article-card">
-            <div class="article-header">
-              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
-            </div>
-            <div class="article-content">
-              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
-            </div>
-            <div class="article-meta">
-              <div class="article-stats">
-                <span class="views">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                  </svg>
-                  1,245
-                </span>
-                <span class="date">10.01.2024</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Article Card 3 -->
-          <div class="article-card">
-            <div class="article-header">
-              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
-            </div>
-            <div class="article-content">
-              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
-            </div>
-            <div class="article-meta">
-              <div class="article-stats">
-                <span class="views">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                  </svg>
-                  1,245
-                </span>
-                <span class="date">10.01.2024</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Article Card 4 -->
-          <div class="article-card">
-            <div class="article-header">
-              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
-            </div>
-            <div class="article-content">
-              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
-            </div>
-            <div class="article-meta">
-              <div class="article-stats">
-                <span class="views">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                  </svg>
-                  1,245
-                </span>
-                <span class="date">10.01.2024</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Article Card 5 -->
-          <div class="article-card">
-            <div class="article-header">
-              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
-            </div>
-            <div class="article-content">
-              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
-            </div>
-            <div class="article-meta">
-              <div class="article-stats">
-                <span class="views">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                  </svg>
-                  1,245
-                </span>
-                <span class="date">10.01.2024</span>
-              </div>
-            </div>
-          </div>
-            <div class="oxirgi-dars-decoration">
-              <img src="/images/0005 1.png" alt="Oxirgi Dars Decoration" class="oxirgi-dars-image">
-            </div>
-          <!-- Article Card 6 -->
-          <div class="article-card oxirgi-dars-card">
-           
-            <div class="article-header">
-              <h3 data-home-i18n="articleTitle">Samarali Dars</h3>
-            </div>
-            <div class="article-content">
-              <p data-home-i18n="articleDescription">Samarali dars o'tish uchun qaysi usullar haqida batafsil ma'lumot berigan ma'qola</p>
-            </div>
-            <div class="article-meta">
-              <div class="article-stats">
-                <span class="views">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-                  </svg>
-                  1,245
-                </span>
-                <span class="date">10.01.2024</span>
-              </div>
-            </div>
-          </div>
+        <div class="articles-grid" id="dynamic-articles-container">
+          <!-- Dynamic articles will be loaded here -->
         </div>
 
         <div class="articles-action">
-          <button class="btn-blog" data-home-i18n="blogButton">BLOG BO'LIMIGA O'TISH</button>
+          <button class="btn-blog" onclick="router.navigate('/blog'); return false;" data-home-i18n="blogButton">BLOG BO'LIMIGA O'TISH</button>
         </div>
       </div>
     </section>
@@ -1222,6 +1093,9 @@ export function initHomePage() {
 
   // Initialize home page translations
   initHomeTranslations();
+
+  // Initialize dynamic articles
+  initDynamicArticles();
 
   // Update store
   store.setState({ currentPage: 'home' });
@@ -1534,7 +1408,7 @@ function initHomePageEffects() {
 
       .light-theme .article-card {
         background: rgba(255, 255, 255, 0.95) !important;
-        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        border: none !important;
         color: #212529 !important;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
       }
@@ -3129,4 +3003,44 @@ function initMobileThemeToggle() {
     
     console.log(`Mobile theme switched to: ${isDark ? 'dark' : 'light'} mode`);
   });
+
+}
+
+// Initialize dynamic articles for home page
+async function initDynamicArticles() {
+  try {
+    console.log('Initializing dynamic articles...');
+    
+    // Wait a bit for DOM to be fully rendered
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Initialize dynamic articles using the replaceLandingArticles function
+    const dynamicArticles = await replaceLandingArticles({
+      limit: 6,
+      showLoadingState: true,
+      showErrorState: true,
+      fallbackToStatic: true,
+      enableRealTime: true,
+      showUpdateNotifications: true
+    });
+    
+    if (dynamicArticles) {
+      console.log('✅ Dynamic articles initialized successfully');
+    } else {
+      console.warn('⚠️ Dynamic articles initialization returned null - using fallback content');
+    }
+  } catch (error) {
+    console.error('❌ Failed to initialize dynamic articles:', error);
+    
+    // If dynamic loading fails, show a simple message
+    const container = document.getElementById('dynamic-articles-container');
+    if (container) {
+      container.innerHTML = `
+        <div class="articles-loading-error">
+          <p>Maqolalar yuklanmadi. Iltimos, sahifani yangilang.</p>
+          <button onclick="window.location.reload()" class="btn-retry">Qayta urinish</button>
+        </div>
+      `;
+    }
+  }
 }

@@ -1999,10 +1999,10 @@ body {
 .article-header {
   margin-bottom: 15px;
   text-align: center;
-  border: 1px solid  #7EA2D4;
+  border: none;
   border-radius: 8px;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.05);
+  background: transparent;
 }
 
 .article-header h3 {
