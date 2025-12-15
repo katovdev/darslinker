@@ -76,6 +76,9 @@
                 <button class="nav-item active" data-section="blog">
                     Blog
                 </button>
+                <button class="nav-item" data-section="advice">
+                    Maslahat
+                </button>
                 <button class="nav-item" data-section="analytics">
                     Analitika
                 </button>
@@ -101,6 +104,41 @@
                 </div>
             </section>
 
+            <!-- Advice Section -->
+            <section id="advice-section" class="content-section">
+                <div class="section-header">
+                    <h2>Maslahat so'rovlari</h2>
+                </div>
+
+                <div class="advice-filters">
+                    <input type="text" id="advice-search" class="search-input" placeholder="Ism, telefon yoki izoh bo'yicha qidirish...">
+                </div>
+
+                <div class="advice-container">
+                    <div class="advice-table-container">
+                        <table class="advice-table">
+                            <thead>
+                                <tr>
+                                    <th>Ism</th>
+                                    <th>Telefon</th>
+                                    <th>Izoh</th>
+                                    <th>Sana</th>
+                                    <th>Amallar</th>
+                                </tr>
+                            </thead>
+                            <tbody id="advice-table-body">
+                                <tr>
+                                    <td colspan="5" class="loading-row">Ma'lumotlar yuklanmoqda...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="pagination" id="advice-pagination">
+                        <!-- Pagination will be added here -->
+                    </div>
+                </div>
+            </section>
 
             <!-- Analytics Section -->
             <section id="analytics-section" class="content-section">

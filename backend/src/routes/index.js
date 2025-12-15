@@ -18,6 +18,7 @@ import subAdminRouter from "./sub-admin.routes.js";
 import paymentRouter from "./payment.routes.js";
 import blogRouter from "./blog.routes.js";
 import categoryRouter from "./category.routes.js";
+import adviceRouter from "./advice.routes.js";
 
 const mainRouter = Router();
 
@@ -39,5 +40,6 @@ mainRouter.use("/sub-admins", subAdminRouter);
 mainRouter.use("/payments", paymentRouter);
 mainRouter.use("/blogs", blogRouter);
 mainRouter.use("/categories", categoryRouter);
+mainRouter.use("/advices", adviceRouter);
 
 export default mainRouter;

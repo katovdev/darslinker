@@ -361,6 +361,9 @@ class ModeratorApp {
       case 'blog':
         this.loadBlogs();
         break;
+      case 'advice':
+        this.loadAdvices();
+        break;
       case 'analytics':
         this.loadAnalytics();
         break;
@@ -1603,6 +1606,266 @@ class ModeratorApp {
     document.getElementById('total-posts').textContent = '0';
     document.getElementById('total-views').textContent = '0';
     document.getElementById('unique-visitors').textContent = '0';
+  }
+
+  // Advice Management System
+  async loadAdvices() {
+    try {
+      // Load advice list
+      await this.loadAdviceList();
+      
+      // Setup advice filters
+      this.setupAdviceFilters();
+      
+    } catch (error) {
+      console.error('Error loading advices:', error);
+      this.showAdviceError();
+    }
+  }
+
+
+
+  async loadAdviceList(page = 1, status = 'all', search = '') {
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: '10'
+      });
+      
+      if (status !== 'all') {
+        params.append('status', status);
+      }
+      
+      if (search.trim()) {
+        params.append('search', search.trim());
+      }
+      
+      const response = await api.get(`/advices?${params}`);
+      const data = response.data.data;
+      
+      this.renderAdviceTable(data.advices);
+      this.renderAdvicePagination(data.pagination);
+      
+    } catch (error) {
+      console.error('Error loading advice list:', error);
+      this.showAdviceError();
+    }
+  }
+
+  renderAdviceTable(advices) {
+    const tableBody = document.getElementById('advice-table-body');
+    
+    if (!advices || advices.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="5" class="loading-row">Maslahat so\'rovlari topilmadi</td></tr>';
+      return;
+    }
+    
+    tableBody.innerHTML = advices.map(advice => `
+      <tr>
+        <td>${advice.name}</td>
+        <td>${advice.phone}</td>
+        <td>${advice.comment ? (advice.comment.length > 100 ? advice.comment.substring(0, 100) + '...' : advice.comment) : 'Izoh yo\'q'}</td>
+        <td>${new Date(advice.createdAt).toLocaleDateString('uz-UZ')} ${new Date(advice.createdAt).toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' })}</td>
+        <td>
+          <button class="btn-delete-icon" onclick="moderatorApp.showDeleteModal('${advice._id}', '${advice.name}')" title="O'chirish">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  renderAdvicePagination(pagination) {
+    const paginationContainer = document.getElementById('advice-pagination');
+    
+    if (pagination.totalPages <= 1) {
+      paginationContainer.innerHTML = '';
+      return;
+    }
+    
+    let paginationHTML = '';
+    
+    // Previous button
+    if (pagination.page > 1) {
+      paginationHTML += `<button class="pagination-btn" onclick="moderatorApp.loadAdviceList(${pagination.page - 1})">‹ Oldingi</button>`;
+    }
+    
+    // Page numbers
+    for (let i = 1; i <= pagination.totalPages; i++) {
+      if (i === pagination.page) {
+        paginationHTML += `<button class="pagination-btn active">${i}</button>`;
+      } else {
+        paginationHTML += `<button class="pagination-btn" onclick="moderatorApp.loadAdviceList(${i})">${i}</button>`;
+      }
+    }
+    
+    // Next button
+    if (pagination.page < pagination.totalPages) {
+      paginationHTML += `<button class="pagination-btn" onclick="moderatorApp.loadAdviceList(${pagination.page + 1})">Keyingi ›</button>`;
+    }
+    
+    paginationContainer.innerHTML = paginationHTML;
+  }
+
+  setupAdviceFilters() {
+    const searchInput = document.getElementById('advice-search');
+    
+    // Search input with debounce
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        this.loadAdviceList(1, 'all', searchInput.value);
+      }, 500);
+    });
+  }
+
+
+
+  async deleteAdvice(adviceId) {
+    if (!confirm('Haqiqatan ham bu maslahat so\'rovini o\'chirmoqchimisiz?')) {
+      return;
+    }
+    
+    try {
+      await api.delete(`/advices/${adviceId}`);
+      
+      // Reload current page
+      await this.loadAdviceList();
+      
+      this.showSuccessMessage('Maslahat so\'rovi muvaffaqiyatli o\'chirildi!');
+      
+    } catch (error) {
+      console.error('Error deleting advice:', error);
+      this.showErrorMessage('O\'chirishda xatolik yuz berdi!');
+    }
+  }
+
+  showSuccessMessage(message) {
+    // Simple success message - you can enhance this with toast notifications
+    alert(message);
+  }
+
+  showErrorMessage(message) {
+    // Simple error message - you can enhance this with toast notifications
+    alert(message);
+  }
+
+  showAdviceError() {
+    const tableBody = document.getElementById('advice-table-body');
+    tableBody.innerHTML = '<tr><td colspan="5" class="loading-row">Ma\'lumotlarni yuklashda xatolik yuz berdi</td></tr>';
+  }
+
+  // Toast notification for moderator
+  showToast(message, type = 'success') {
+    // Create toast container if it doesn't exist
+    let toastContainer = document.querySelector('.moderator-toast-container');
+    if (!toastContainer) {
+      toastContainer = document.createElement('div');
+      toastContainer.className = 'moderator-toast-container';
+      document.body.appendChild(toastContainer);
+    }
+
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = `moderator-toast ${type}`;
+    
+    const icon = type === 'success' ? 
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>' : 
+      '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="15" y1="9" x2="9" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><line x1="9" y1="9" x2="15" y2="15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    
+    toast.innerHTML = `
+      <div class="moderator-toast-content">
+        <span class="moderator-toast-icon">${icon}</span>
+        <span class="moderator-toast-message">${message}</span>
+      </div>
+    `;
+
+    // Add to container
+    toastContainer.appendChild(toast);
+
+    // Show toast with animation
+    setTimeout(() => {
+      toast.classList.add('show');
+    }, 100);
+
+    // Auto remove after 4 seconds
+    setTimeout(() => {
+      if (toast.parentElement) {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          if (toast.parentElement) {
+            toast.remove();
+          }
+        }, 300);
+      }
+    }, 4000);
+  }
+
+  // Delete Modal Functions
+  showDeleteModal(adviceId, adviceName) {
+    const modalHTML = `
+      <div class="delete-modal-overlay" id="deleteModalOverlay">
+        <div class="delete-modal">
+          <div class="delete-modal-icon">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h3 class="delete-modal-title">Maslahat so'rovini o'chirish</h3>
+          <p class="delete-modal-message">
+            Haqiqatan ham <strong>${adviceName}</strong>ning maslahat so'rovini o'chirmoqchimisiz?
+          </p>
+          <div class="delete-modal-actions">
+            <button class="delete-modal-cancel" onclick="moderatorApp.closeDeleteModal()">
+              Bekor qilish
+            </button>
+            <button class="delete-modal-confirm" onclick="moderatorApp.confirmDelete('${adviceId}')">
+              O'chirish
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Add animation
+    setTimeout(() => {
+      document.getElementById('deleteModalOverlay').classList.add('show');
+    }, 10);
+  }
+
+  closeDeleteModal() {
+    const modal = document.getElementById('deleteModalOverlay');
+    if (modal) {
+      modal.classList.remove('show');
+      setTimeout(() => {
+        modal.remove();
+      }, 300);
+    }
+  }
+
+  async confirmDelete(adviceId) {
+    try {
+      await api.delete(`/advices/${adviceId}`);
+      
+      // Close modal
+      this.closeDeleteModal();
+      
+      // Reload advice list
+      await this.loadAdviceList();
+      
+      // Show success toast
+      this.showToast('Maslahat so\'rovi muvaffaqiyatli o\'chirildi!', 'success');
+      
+    } catch (error) {
+      console.error('Error deleting advice:', error);
+      // Show error toast
+      this.showToast('O\'chirishda xatolik yuz berdi!', 'error');
+    }
   }
 }
 

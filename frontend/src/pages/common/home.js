@@ -2090,38 +2090,67 @@ window.submitAdviceForm = function(event) {
 
   // Validation
   if (!name.trim() || !phone.trim()) {
-    alert('Iltimos, ism va telefon raqamini kiriting!');
+    showToast('Iltimos, ism va telefon raqamini kiriting!', 'error', 4000);
     return;
   }
 
   // Uzbekistan phone validation
   const phoneRegex = /^\+998( [0-9]{2}){1}( [0-9]{3}){1}( [0-9]{2}){2}$/;
   if (!phoneRegex.test(phone) || phone.length < 17) {
-    alert('Iltimos, to\'g\'ri O\'zbekiston telefon raqamini kiriting!\nFormat: +998 XX XXX XX XX');
+    showToast('Iltimos, to\'g\'ri O\'zbekiston telefon raqamini kiriting! Format: +998 XX XXX XX XX', 'error', 5000);
     return;
   }
 
-  // Show success message
-  alert(`Rahmat, ${name}! Sizning so'rovingiz qabul qilindi. Tez orada siz bilan bog'lanamiz.`);
-
-  // Here you would typically send the data to your backend
-  console.log('Advice form submitted:', { name, phone, comment });
-
-  // Reset form
-  event.target.reset();
-
-  // Add success animation to submit button
+  // Show loading state
   const submitBtn = document.querySelector('.advice-submit');
-  if (submitBtn) {
-    const originalText = submitBtn.textContent;
-    submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-    submitBtn.textContent = 'Yuborildi ✓';
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Yuborilmoqda...';
 
-    setTimeout(() => {
-      submitBtn.style.background = '';
-      submitBtn.textContent = originalText;
-    }, 3000);
-  }
+  // Send data to backend
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+  fetch(`${API_URL}/advices`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ name, phone, comment })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Show success toast
+      showToast(`Rahmat, ${name}! Sizning so'rovingiz qabul qilindi. Tez orada siz bilan bog'lanamiz.`, 'success', 6000);
+      
+      // Reset form
+      event.target.reset();
+      
+      // Reset phone input to default value
+      document.getElementById('advicePhone').value = '+998';
+      
+      // Success animation
+      submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+      submitBtn.textContent = 'Yuborildi ✓';
+      
+      setTimeout(() => {
+        submitBtn.style.background = '';
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+      }, 3000);
+      
+    } else {
+      throw new Error(data.message || 'Xatolik yuz berdi');
+    }
+  })
+  .catch(error => {
+    console.error('Advice submission error:', error);
+    showToast('Xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.', 'error', 5000);
+    
+    // Reset button
+    submitBtn.textContent = originalText;
+    submitBtn.disabled = false;
+  });
+
 };
 
 // Initialize SMS Contact functionality
@@ -2173,6 +2202,51 @@ function closeSMSBubble() {
   if (speechBubble) {
     speechBubble.style.display = 'none';
   }
+}
+
+// Toast Notification System
+function showToast(message, type = 'success', duration = 5000) {
+  // Create toast container if it doesn't exist
+  let toastContainer = document.querySelector('.toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.className = 'toast-container';
+    document.body.appendChild(toastContainer);
+  }
+
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  
+  const icon = type === 'success' ? '✅' : '❌';
+  
+  toast.innerHTML = `
+    <div class="toast-content">
+      <span class="toast-icon">${icon}</span>
+      <span class="toast-message">${message}</span>
+      <button class="toast-close" onclick="this.parentElement.parentElement.remove()">&times;</button>
+    </div>
+  `;
+
+  // Add to container
+  toastContainer.appendChild(toast);
+
+  // Show toast with animation
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+
+  // Auto remove after duration
+  setTimeout(() => {
+    if (toast.parentElement) {
+      toast.classList.remove('show');
+      setTimeout(() => {
+        if (toast.parentElement) {
+          toast.remove();
+        }
+      }, 400);
+    }
+  }, duration);
 }
 
 // Phone number formatting for Uzbekistan
