@@ -136,7 +136,7 @@ export function initBlogDetailPage(blogId) {
       .blog-meta {
         display: flex;
         align-items: center;
-        gap: 2rem;
+        justify-content: space-between;
         padding: 1rem 0;
         border-bottom: 1px solid var(--border-color);
         margin-bottom: 2rem;
@@ -144,10 +144,46 @@ export function initBlogDetailPage(blogId) {
         color: var(--text-secondary);
       }
 
+      .blog-meta-left {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .blog-meta-right {
+        display: flex;
+        align-items: center;
+      }
+
       .blog-meta-item {
         display: flex;
         align-items: center;
         gap: 0.5rem;
+      }
+
+      .share-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .share-btn:hover {
+        background: var(--primary-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(126, 162, 212, 0.3);
+      }
+
+      .share-btn:active {
+        transform: translateY(0);
       }
 
       .blog-content {
@@ -313,6 +349,16 @@ export function initBlogDetailPage(blogId) {
         color: var(--text-secondary);
       }
 
+      .related-views {
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .related-date {
+        color: var(--text-secondary);
+      }
+
       .error-state {
         text-align: center;
         padding: 4rem 2rem;
@@ -358,7 +404,18 @@ export function initBlogDetailPage(blogId) {
         .blog-meta {
           flex-direction: column;
           align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .blog-meta-left {
+          flex-direction: column;
+          align-items: flex-start;
           gap: 0.5rem;
+        }
+
+        .share-btn {
+          font-size: 0.8rem;
+          padding: 0.4rem 0.8rem;
         }
 
         .related-grid {
@@ -547,60 +604,59 @@ export function initBlogDetailPage(blogId) {
         ${blog.subtitle ? `<p class="blog-subtitle">${escapeHtml(blog.subtitle)}</p>` : ''}
         
         <div class="blog-meta">
-          <div class="blog-meta-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-              <line x1="16" y1="2" x2="16" y2="6"/>
-              <line x1="8" y1="2" x2="8" y2="6"/>
-              <line x1="3" y1="10" x2="21" y2="10"/>
-            </svg>
-            ${formatDate(blog.createdAt)}
-          </div>
-          
-          <div class="blog-meta-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
-            </svg>
-            ${blog.multiViews || 0} ko'rildi
-          </div>
-          
-          ${blog.categoryId ? `
+          <div class="blog-meta-left">
             <div class="blog-meta-item">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
-                <line x1="7" y1="7" x2="7.01" y2="7"/>
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
               </svg>
-              ${escapeHtml(blog.categoryId.name)}
+              ${formatDate(blog.createdAt)}
             </div>
-          ` : ''}
+            
+            <div class="blog-meta-item">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+              </svg>
+              ${blog.multiViews || 0} ko'rildi
+            </div>
+          </div>
+          
+          <div class="blog-meta-right">
+            <button class="share-btn" onclick="shareBlog('${blog.id}', '${escapeHtml(blog.title)}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="18" cy="5" r="3"/>
+                <circle cx="6" cy="12" r="3"/>
+                <circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              </svg>
+              Ulashish
+            </button>
+          </div>
         </div>
 
         <div class="blog-content">
           ${renderBlogSections(blog.sections || [])}
         </div>
 
-        ${blog.tags && blog.tags.length > 0 ? `
-          <div class="blog-tags">
-            <h4>Teglar:</h4>
-            <div class="tags-list">
-              ${blog.tags.map(tag => `
-                <span class="tag">${escapeHtml(tag.label || tag.value || tag)}</span>
-              `).join('')}
-            </div>
-          </div>
-        ` : ''}
-
         ${relatedBlogs.length > 0 ? `
           <div class="related-blogs">
-            <h3>Shunga o'xshash maqolalar</h3>
+            <h3>O'xshash maqolalar</h3>
             <div class="related-grid">
               ${relatedBlogs.map(relatedBlog => `
                 <div class="related-card" onclick="openBlog('${relatedBlog.id}')">
                   <h4>${escapeHtml(relatedBlog.title)}</h4>
                   <p>${escapeHtml(relatedBlog.subtitle || '')}</p>
                   <div class="related-meta">
-                    <span>${relatedBlog.multiViews || 0} ko'rildi</span>
-                    <span>${formatDate(relatedBlog.createdAt)}</span>
+                    <span class="related-views">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                      </svg>
+                      ${relatedBlog.multiViews || 0}
+                    </span>
+                    <span class="related-date">${formatDate(relatedBlog.createdAt)}</span>
                   </div>
                 </div>
               `).join('')}
@@ -671,6 +727,78 @@ export function initBlogDetailPage(blogId) {
   window.openBlog = (blogId) => {
     router.navigate(`/blog/${blogId}`);
   };
+
+  // Share function using Web Share API
+  window.shareBlog = async (blogId, title) => {
+    const url = window.location.href;
+    const text = `${title} - Darslinker Blog`;
+
+    try {
+      // Check if Web Share API is supported
+      if (navigator.share) {
+        await navigator.share({
+          title: text,
+          text: `${title} maqolasini o'qing`,
+          url: url
+        });
+        console.log('✅ Blog shared successfully');
+      } else {
+        // Fallback: Copy to clipboard
+        await navigator.clipboard.writeText(url);
+        showShareNotification('Havola nusxalandi!');
+        console.log('✅ Blog URL copied to clipboard');
+      }
+    } catch (error) {
+      console.error('❌ Error sharing blog:', error);
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(url);
+        showShareNotification('Havola nusxalandi!');
+      } catch (clipboardError) {
+        console.error('❌ Error copying to clipboard:', clipboardError);
+        showShareNotification('Ulashishda xatolik yuz berdi');
+      }
+    }
+  };
+
+  // Show share notification
+  function showShareNotification(message) {
+    const notification = document.createElement('div');
+    notification.className = 'share-notification';
+    notification.textContent = message;
+    notification.style.cssText = `
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--primary-color);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      z-index: 10000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    `;
+
+    document.body.appendChild(notification);
+
+    // Show notification
+    setTimeout(() => {
+      notification.style.transform = 'translateX(0)';
+    }, 100);
+
+    // Hide notification after 3 seconds
+    setTimeout(() => {
+      notification.style.transform = 'translateX(100%)';
+      setTimeout(() => {
+        if (notification.parentElement) {
+          notification.parentElement.removeChild(notification);
+        }
+      }, 300);
+    }, 3000);
+  }
 
   // Utility functions
   function escapeHtml(text) {

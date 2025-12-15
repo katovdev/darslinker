@@ -165,25 +165,37 @@ const getRelated = catchAsync(async (req, res) => {
     throw new NotFoundError('Blog not found');
   }
 
-  const tagValues = blog.tags.map(tag => tag.value);
+  let relatedBlogs = [];
 
-  if (!tagValues.length) {
-    return res.status(200).json({
-      success: true,
-      message: 'No related blogs found',
-      data: [],
-      count: 0
-    });
+  // First, try to find blogs with same tags
+  const tagValues = blog.tags?.map(tag => tag.value) || [];
+  
+  if (tagValues.length > 0) {
+    relatedBlogs = await Blog.find({
+      _id: { $ne: blog._id },
+      'tags.value': { $in: tagValues },
+      isArchive: false
+    })
+      .populate('categoryId', 'name slug')
+      .limit(parseInt(limit))
+      .sort({ multiViews: -1, createdAt: -1 });
   }
 
-  const relatedBlogs = await Blog.find({
-    _id: { $ne: blog._id },
-    'tags.value': { $in: tagValues },
-    isArchive: false
-  })
-    .populate('categoryId', 'name slug')
-    .limit(parseInt(limit))
-    .sort({ multiViews: -1, createdAt: -1 });
+  // If not enough related blogs found by tags, fill with popular blogs
+  if (relatedBlogs.length < parseInt(limit)) {
+    const remainingLimit = parseInt(limit) - relatedBlogs.length;
+    const excludeIds = [blog._id, ...relatedBlogs.map(b => b._id)];
+    
+    const popularBlogs = await Blog.find({
+      _id: { $nin: excludeIds },
+      isArchive: false
+    })
+      .populate('categoryId', 'name slug')
+      .limit(remainingLimit)
+      .sort({ multiViews: -1, createdAt: -1 });
+    
+    relatedBlogs = [...relatedBlogs, ...popularBlogs];
+  }
 
   res.status(200).json({
     success: true,
