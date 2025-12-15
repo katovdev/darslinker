@@ -12,7 +12,7 @@ export function initBlogListPage() {
   window.router = router;
   
   let currentPage = 1;
-  let currentSearch = '';
+
   let blogs = [];
   let pagination = {};
   let loading = false;
@@ -37,25 +37,7 @@ export function initBlogListPage() {
     <!-- Blog Content -->
     <main class="blog-main">
       <div class="container">
-        <!-- Filters -->
-        <div class="blog-filters">
-          <div class="search-box">
-            <input 
-              type="text" 
-              id="searchInput" 
-              placeholder="Maqolalarni qidirish..." 
-              value="${currentSearch}"
-            />
-            <button id="searchBtn" class="search-btn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.35-4.35"/>
-              </svg>
-            </button>
-          </div>
-          
 
-        </div>
 
         <!-- Blog Grid -->
         <div class="blog-grid" id="blogGrid">
@@ -119,52 +101,7 @@ export function initBlogListPage() {
         min-height: 80vh;
       }
 
-      .blog-filters {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 2rem;
-        flex-wrap: wrap;
-      }
 
-      .search-box {
-        display: flex;
-        flex: 1;
-        min-width: 300px;
-        position: relative;
-      }
-
-      .search-box input {
-        flex: 1;
-        padding: 0.75rem 1rem;
-        border: 2px solid var(--border-color);
-        border-radius: 8px;
-        font-size: 1rem;
-        background: var(--bg-color);
-        color: var(--text-color);
-      }
-
-      .search-box input:focus {
-        outline: none;
-        border-color: var(--primary-color);
-      }
-
-      .search-btn {
-        position: absolute;
-        right: 8px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: var(--text-secondary);
-        cursor: pointer;
-        padding: 0.5rem;
-        border-radius: 4px;
-      }
-
-      .search-btn:hover {
-        color: var(--primary-color);
-        background: var(--hover-bg);
-      }
 
 
 
@@ -387,13 +324,6 @@ export function initBlogListPage() {
       }
 
       @media (max-width: 768px) {
-        .blog-filters {
-          flex-direction: column;
-        }
-
-        .search-box {
-          min-width: auto;
-        }
 
         .blog-grid {
           grid-template-columns: 1fr;
@@ -451,7 +381,6 @@ export function initBlogListPage() {
 
   async function initializePage() {
     await loadBlogs();
-    setupEventListeners();
   }
 
 
@@ -477,7 +406,7 @@ export function initBlogListPage() {
         limit: 12
       };
 
-      if (currentSearch) params.search = currentSearch;
+
 
       const response = await blogAPI.getAllBlogs(params);
       
@@ -510,8 +439,7 @@ export function initBlogListPage() {
       grid.innerHTML = `
         <div class="empty-state">
           <h3>Maqolalar topilmadi</h3>
-          <p>Hozircha bu bo'limda maqolalar mavjud emas yoki qidiruv natijasida hech narsa topilmadi.</p>
-          <button onclick="clearFilters()">Filtrlarni tozalash</button>
+          <p>Hozircha bu bo'limda maqolalar mavjud emas.</p>
         </div>
       `;
       return;
@@ -598,27 +526,7 @@ export function initBlogListPage() {
     paginationEl.innerHTML = paginationHTML;
   }
 
-  function setupEventListeners() {
-    // Search functionality
-    const searchInput = document.getElementById('searchInput');
-    const searchBtn = document.getElementById('searchBtn');
-    
-    searchBtn.addEventListener('click', performSearch);
-    searchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') {
-        performSearch();
-      }
-    });
 
-
-  }
-
-  function performSearch() {
-    const searchInput = document.getElementById('searchInput');
-    currentSearch = searchInput.value.trim();
-    currentPage = 1;
-    loadBlogs();
-  }
 
   // Global functions
   window.goToPage = (page) => {
@@ -629,12 +537,7 @@ export function initBlogListPage() {
     }
   };
 
-  window.clearFilters = () => {
-    currentSearch = '';
-    currentPage = 1;
-    document.getElementById('searchInput').value = '';
-    loadBlogs();
-  };
+
 
   window.openBlog = (blogId) => {
     console.log('🔗 Blog card clicked from blog list:', blogId);
