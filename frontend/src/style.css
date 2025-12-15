@@ -1600,8 +1600,16 @@ body {
 .sms-bubble-header {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 10px 15px 5px 15px;
+  justify-content: space-between;
+  padding: 12px 15px 8px 15px;
+  border-bottom: 1px solid rgba(var(--primary-color-rgb), 0.2);
+}
+
+.sms-bubble-brand {
+  color: var(--primary-color);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
 }
 
 .sms-bubble-close {
@@ -1685,12 +1693,230 @@ body {
 /* Mobile responsive for SMS bubble */
 @media (max-width: 768px) {
   .sms-speech-bubble {
-    width: 280px;
-    right: -10px;
+    width: 400px;
+    right: -40px;
+    bottom: 70px;
+    border-radius: 20px;
+  }
+  
+  .sms-bubble-tail {
+    right: 40px;
+  }
+  
+  .sms-bubble-header {
+    display: none;
+  }
+  
+  .sms-bubble-content {
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .sms-bubble-content p {
+    font-size: 11px;
+    margin: 0;
+    line-height: 1.2;
+    flex: 1;
+  }
+  
+  .sms-telegram-btn {
+    padding: 6px 12px;
+    font-size: 10px;
+    border-radius: 15px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  .sms-telegram-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+}
+
+/* Tablet responsive for SMS bubble */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .sms-speech-bubble {
+    width: 290px;
+    right: -5px;
+    bottom: 75px;
+  }
+  
+  .sms-bubble-tail {
+    right: 30px;
+  }
+}
+
+/* Small mobile screens */
+@media (max-width: 480px) {
+  .sms-speech-bubble {
+    width: 350px;
+    right: -30px;
+    bottom: 60px;
+    border-radius: 18px;
+  }
+  
+  .sms-bubble-tail {
+    right: 40px;
+  }
+  
+  .sms-bubble-header {
+    display: none;
+  }
+  
+  .sms-bubble-content {
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .sms-bubble-content p {
+    font-size: 10px;
+    margin: 0;
+    line-height: 1.1;
+    flex: 1;
+  }
+  
+  .sms-telegram-btn {
+    padding: 5px 10px;
+    font-size: 9px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  .sms-telegram-btn svg {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+/* Large screens - desktop */
+@media (min-width: 1200px) {
+  .sms-speech-bubble {
+    width: 320px;
+    right: 5px;
+    bottom: 85px;
+  }
+  
+  .sms-bubble-tail {
+    right: 20px;
+  }
+  
+  .sms-bubble-content p {
+    font-size: 14px;
+  }
+  
+  .sms-telegram-btn {
+    font-size: 13px;
+  }
+}
+
+/* Extra small screens - very narrow mobile */
+@media (max-width: 360px) {
+  .sms-speech-bubble {
+    width: 320px;
+    right: -35px;
+    bottom: 55px;
+    border-radius: 15px;
+  }
+  
+  .sms-bubble-tail {
+    right: 45px;
+  }
+  
+  .sms-bubble-header {
+    display: none;
+  }
+  
+  .sms-bubble-content {
+    padding: 5px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .sms-bubble-content p {
+    font-size: 9px;
+    margin: 0;
+    line-height: 1.0;
+    flex: 1;
+  }
+  
+  .sms-telegram-btn {
+    font-size: 8px;
+    padding: 4px 8px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  
+  .sms-telegram-btn svg {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Landscape orientation for mobile devices */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sms-contact {
+    bottom: 10px;
+    right: 15px;
+  }
+  
+  .sms-container {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .sms-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .sms-speech-bubble {
+    width: 250px;
+    right: -15px;
+    bottom: 50px;
+    border-radius: 10px;
+  }
+  
+  .sms-bubble-header {
+    padding: 6px 8px 4px 8px;
+  }
+  
+  .sms-bubble-brand {
+    font-size: 11px;
+  }
+  
+  .sms-bubble-close {
+    width: 18px;
+    height: 18px;
+    font-size: 16px;
+  }
+  
+  .sms-bubble-content {
+    padding: 5px 8px 8px 8px;
+  }
+  
+  .sms-bubble-content p {
+    font-size: 10px;
+    margin: 0 0 8px 0;
+  }
+  
+  .sms-telegram-btn {
+    padding: 5px 8px;
+    font-size: 9px;
   }
   
   .sms-bubble-tail {
     right: 35px;
+    border-top-width: 6px;
+    border-left-width: 6px;
+    border-right-width: 6px;
+    bottom: -6px;
   }
 }
 
@@ -3028,6 +3254,11 @@ body {
     width: 22px;
     height: 22px;
   }
+  
+  /* Ensure SMS bubble positioning works with smaller contact button */
+  .sms-speech-bubble {
+    bottom: 70px;
+  }
 
   .pricing-section {
     padding: 40px 0;
@@ -3090,6 +3321,24 @@ body {
     grid-template-columns: 1fr;
     gap: 20px;
   }
+  
+  /* SMS Contact adjustments for very small screens */
+  .sms-contact {
+    bottom: 15px;
+    right: 15px;
+  }
+  
+  .sms-container {
+    width: 45px;
+    height: 45px;
+    border-width: 1.5px;
+  }
+  
+  .sms-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
 }
 
 /* Advice Section Styles */

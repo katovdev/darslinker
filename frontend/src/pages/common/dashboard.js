@@ -1163,7 +1163,8 @@ window.openNewMeeting = function() {
 };
 
 window.openTelegramBot = function() {
-  alert('Telegram Bot integration coming soon...');
+  // Open Telegram bot in new tab
+  window.open('https://t.me/darslinker_bot', '_blank');
 };
 
 window.editProfile = function() {
@@ -5955,7 +5956,7 @@ async function generateLandingPageHTML(teacher) {
                     showToast('Telegram botga /login yozing va kontaktingizni yuboring', 'success', 8000);
                     
                     // Show bot info modal
-                    const botUsername = 'darslinkerrr_bot';
+                    const botUsername = 'darslinker_bot';
                     showBotInfoModal(botUsername, null);
                     
                     // Close login modal and open reset password modal
@@ -6658,7 +6659,7 @@ async function generateLandingPageHTML(teacher) {
             if (modal) {
                 modal.remove();
                 // Redirect to Telegram bot
-                const botUsername = 'darslinkerrr_bot';
+                const botUsername = 'darslinker_bot';
                 window.open(\`https://t.me/\${botUsername}\`, '_blank');
             }
         }
@@ -22622,7 +22623,8 @@ window.startNewMeeting = function() {
 
 // Open Telegram bot function
 window.openTelegramBot = function() {
-  showSuccessToast('Telegram Bot integration coming soon!');
+  // Open Telegram bot in new tab
+  window.open('https://t.me/darslinker_bot', '_blank');
 };
 
 // Open create course function (if not already defined)

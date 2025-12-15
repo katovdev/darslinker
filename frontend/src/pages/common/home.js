@@ -819,6 +819,7 @@ export function initHomePage() {
       <!-- Speech Bubble -->
       <div class="sms-speech-bubble" id="smsSpeechBubble" style="display: none;">
         <div class="sms-bubble-header">
+          <span class="sms-bubble-brand">Darslinker</span>
           <button class="sms-bubble-close" id="smsCloseBtn">&times;</button>
         </div>
         <div class="sms-bubble-content">
