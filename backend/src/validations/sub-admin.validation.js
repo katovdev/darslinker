@@ -87,7 +87,7 @@ export const updateSubAdminPasswordSchema = Joi.object({
 export const subAdminLoginSchema = Joi.object({
   phone: Joi.string()
     .trim()
-    .pattern(/^[\+]?[1-9][\d]{0,15}$/)
+    .pattern(/^[\+]?[0-9\s\-\(\)]{7,20}$/)
     .required()
     .messages({
       "string.empty": "Phone number is required",

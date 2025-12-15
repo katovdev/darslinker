@@ -7,6 +7,13 @@ async function authenticate(req, res, next) {
   try {
     const authHeader = req.headers.authorization;
 
+    console.log("🔐 Authentication attempt:", {
+      url: req.originalUrl,
+      method: req.method,
+      hasAuthHeader: !!authHeader,
+      authHeaderStart: authHeader?.substring(0, 20) + "..."
+    });
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       logger.warn("Authentication failed - No token provided", {
         ip: req.ip,
@@ -38,6 +45,12 @@ async function authenticate(req, res, next) {
 
     const decoded = verifyAccessToken(token);
 
+    console.log("🔓 Token decoded successfully:", {
+      userId: decoded.userId,
+      role: decoded.role,
+      status: decoded.status
+    });
+
     if (decoded.status !== "active") {
       logger.warn("Authentication failed - Account not active", {
         userId: decoded.userId,
@@ -53,6 +66,7 @@ async function authenticate(req, res, next) {
     }
 
     req.user = decoded;
+    console.log("✅ Authentication successful, proceeding to next middleware");
     next();
   } catch (error) {
     if (error.name === "JsonWebTokenError") {

@@ -281,6 +281,76 @@ export const deleteSubAdmin = catchAsync(async (req, res) => {
 });
 
 /**
+ * Admin/Moderator login
+ * @route POST /sub-admins/admin-login
+ * @access Public
+ */
+export const adminLogin = catchAsync(async (req, res) => {
+  const { phone, password } = req.body;
+
+  logger.info("Admin login attempt", { phone, timestamp: new Date().toISOString() });
+
+  // Simple hardcoded admin credentials for moderator
+  const ADMIN_CREDENTIALS = {
+    phone: '+998 99 000 99 00',
+    password: 'moderator_darslinker'
+  };
+
+  // Normalize phone number for comparison (remove spaces and formatting)
+  const normalizedInputPhone = phone.replace(/\s+/g, ' ').trim();
+  const normalizedAdminPhone = ADMIN_CREDENTIALS.phone.replace(/\s+/g, ' ').trim();
+
+  if (normalizedInputPhone !== normalizedAdminPhone || password !== ADMIN_CREDENTIALS.password) {
+    logger.warn("Admin login failed", { phone, reason: "Invalid credentials" });
+    throw new UnauthorizedError("Invalid phone number or password");
+  }
+
+  // Generate tokens for admin
+  const accessToken = jwt.sign(
+    {
+      userId: 'admin',
+      role: "admin",
+      isAdmin: true,
+      status: "active",
+    },
+    JWT_ACCESS_TOKEN_SECRET_KEY,
+    { expiresIn: JWT_ACCESS_TOKEN_EXPIRES_IN }
+  );
+
+  const refreshToken = jwt.sign(
+    {
+      userId: 'admin',
+      role: "admin",
+      isAdmin: true,
+      status: "active",
+    },
+    JWT_REFRESH_TOKEN_SECRET_KEY,
+    { expiresIn: JWT_REFRESH_TOKEN_EXPIRES_IN }
+  );
+
+  logger.info("Admin logged in successfully", {
+    phone: phone,
+    timestamp: new Date().toISOString(),
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Admin login successful",
+    data: {
+      accessToken,
+      refreshToken,
+      user: {
+        id: 'admin',
+        fullName: 'Moderator Admin',
+        phone: phone,
+        role: "admin",
+        isAdmin: true,
+      },
+    },
+  });
+});
+
+/**
  * Sub-admin login
  * @route POST /sub-admins/login
  * @access Public

@@ -12,6 +12,34 @@ const api = axios.create({
   }
 });
 
+// Add request interceptor to include auth token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('moderator_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+    console.log('🔑 Adding token to request:', config.url, 'Token exists:', !!token);
+  } else {
+    console.log('⚠️ No token found for request:', config.url);
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+// Add response interceptor to handle auth errors
+api.interceptors.response.use((response) => {
+  return response;
+}, (error) => {
+  if (error.response?.status === 401) {
+    // Token expired or invalid, logout user
+    localStorage.removeItem('moderator_authenticated');
+    localStorage.removeItem('moderator_token');
+    localStorage.removeItem('moderator_user');
+    window.location.reload();
+  }
+  return Promise.reject(error);
+});
+
 // Global state
 let currentEditingPost = null;
 
@@ -29,6 +57,22 @@ class AuthSystem {
   }
 
   init() {
+    // Force clear old tokens that might not have the status field
+    const token = localStorage.getItem('moderator_token');
+    if (token) {
+      try {
+        // Try to decode the token to check if it has status field
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (!payload.status) {
+          console.log('🔄 Old token detected without status field, clearing...');
+          this.forceLogout();
+        }
+      } catch (e) {
+        console.log('🔄 Invalid token detected, clearing...');
+        this.forceLogout();
+      }
+    }
+
     if (this.isAuthenticated) {
       this.showModeratorInterface();
     } else {
@@ -37,8 +81,31 @@ class AuthSystem {
     this.setupLoginForm();
   }
 
+  forceLogout() {
+    localStorage.removeItem('moderator_authenticated');
+    localStorage.removeItem('moderator_token');
+    localStorage.removeItem('moderator_user');
+    this.isAuthenticated = false;
+  }
+
   checkAuthStatus() {
-    return localStorage.getItem('moderator_authenticated') === 'true';
+    const isAuth = localStorage.getItem('moderator_authenticated') === 'true';
+    const hasToken = !!localStorage.getItem('moderator_token');
+    
+    console.log('🔍 Auth status check:', {
+      isAuthenticated: isAuth,
+      hasToken: hasToken,
+      tokenLength: localStorage.getItem('moderator_token')?.length
+    });
+    
+    // If authenticated but no token, clear auth status
+    if (isAuth && !hasToken) {
+      console.log('⚠️ Authenticated but no token found, clearing auth status');
+      localStorage.removeItem('moderator_authenticated');
+      return false;
+    }
+    
+    return isAuth;
   }
 
   showLoginPage() {
@@ -168,20 +235,41 @@ class AuthSystem {
     return formatted;
   }
 
-  handleLogin(phone, password, errorDiv) {
+  async handleLogin(phone, password, errorDiv) {
     // Hide previous error
     errorDiv.style.display = 'none';
 
-    // Validate credentials
-    if (phone === VALID_CREDENTIALS.phone && password === VALID_CREDENTIALS.password) {
-      // Successful login
-      localStorage.setItem('moderator_authenticated', 'true');
-      this.isAuthenticated = true;
-      this.showModeratorInterface();
-    } else {
-      // Invalid credentials
-      errorDiv.style.display = 'block';
+    try {
+      console.log('🔐 Attempting login with:', { phone, password: '***' });
+      
+      // Make API call to backend for authentication
+      const response = await api.post('/sub-admins/admin-login', {
+        phone: phone,
+        password: password
+      });
 
+      if (response.data.success) {
+        // Store authentication data
+        localStorage.setItem('moderator_authenticated', 'true');
+        localStorage.setItem('moderator_token', response.data.data.accessToken);
+        localStorage.setItem('moderator_user', JSON.stringify(response.data.data.user));
+        
+        console.log('✅ Admin login successful, token stored:', {
+          tokenExists: !!response.data.data.accessToken,
+          tokenLength: response.data.data.accessToken?.length,
+          user: response.data.data.user
+        });
+        
+        this.isAuthenticated = true;
+        this.showModeratorInterface();
+      }
+    } catch (error) {
+      console.error('❌ Login error:', error);
+      console.error('❌ Error response:', error.response?.data);
+      
+      // Show error message
+      errorDiv.style.display = 'block';
+      
       // Clear password field
       document.getElementById('password').value = '';
 
@@ -195,6 +283,8 @@ class AuthSystem {
 
   logout() {
     localStorage.removeItem('moderator_authenticated');
+    localStorage.removeItem('moderator_token');
+    localStorage.removeItem('moderator_user');
     this.isAuthenticated = false;
     this.showLoginPage();
 
@@ -666,9 +756,28 @@ class ModeratorApp {
   }
 
   // Blog Management
+  async testAdminToken() {
+    try {
+      console.log('🧪 Testing admin token...');
+      const response = await api.get('/sub-admins/admin-test');
+      console.log('✅ Token test successful:', response.data);
+      return true;
+    } catch (error) {
+      console.error('❌ Token test failed:', error.response?.data || error.message);
+      return false;
+    }
+  }
+
   async loadBlogs() {
     const postsGrid = document.getElementById('posts-grid');
     postsGrid.innerHTML = '<div class="loading">Postlar yuklanmoqda...</div>';
+
+    // Test token first
+    const tokenValid = await this.testAdminToken();
+    if (!tokenValid) {
+      postsGrid.innerHTML = '<div class="loading">Token yaroqsiz. Iltimos qayta kiring.</div>';
+      return;
+    }
 
     try {
       const response = await api.get('/blogs');

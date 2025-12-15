@@ -61,6 +61,8 @@ app.use((req, res, next) => {
     'http://localhost:5174',
     'http://localhost:5175',
     'http://localhost:3000',
+    'http://localhost:3001', // Moderator port
+    'http://localhost:8001', // Backend port for local development
     'https://bucolic-fairy-0e50d6.netlify.app'
   ];
   

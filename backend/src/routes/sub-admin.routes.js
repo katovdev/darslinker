@@ -7,6 +7,7 @@ import {
   updateSubAdminPassword,
   deleteSubAdmin,
   loginSubAdmin,
+  adminLogin,
   getSubAdminDashboard,
 } from "../controllers/sub-admin.controller.js";
 
@@ -30,6 +31,30 @@ subAdminRouter.post(
   "/login",
   validate(subAdminLoginSchema, "body"),
   loginSubAdmin
+);
+
+subAdminRouter.post(
+  "/admin-login",
+  validate(subAdminLoginSchema, "body"),
+  adminLogin
+);
+
+// Test endpoint to verify admin token
+subAdminRouter.get(
+  "/admin-test",
+  authenticate,
+  (req, res) => {
+    console.log("🧪 Admin test endpoint hit:", {
+      user: req.user,
+      headers: req.headers.authorization?.substring(0, 20) + "..."
+    });
+    
+    res.json({
+      success: true,
+      message: "Admin token is valid",
+      user: req.user
+    });
+  }
 );
 
 // Protected routes (require authentication)

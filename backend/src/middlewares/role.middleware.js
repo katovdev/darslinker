@@ -17,6 +17,12 @@ export function validateAdmin(req, res, next) {
     });
   }
 
+  logger.info("Admin validation check", {
+    userId: req.user.userId,
+    userRole: req.user.role,
+    url: req.originalUrl,
+  });
+
   // Check if user has admin role
   if (req.user.role !== 'admin' && req.user.role !== 'super-admin') {
     logger.warn("Admin validation failed - Insufficient permissions", {
@@ -30,6 +36,11 @@ export function validateAdmin(req, res, next) {
       message: "Access denied. Admin privileges required",
     });
   }
+
+  logger.info("Admin validation successful", {
+    userId: req.user.userId,
+    userRole: req.user.role,
+  });
 
   next();
 }
