@@ -79,6 +79,9 @@
                 <button class="nav-item" data-section="advice">
                     Maslahat
                 </button>
+                <button class="nav-item" data-section="teachers">
+                    O'qituvchilar
+                </button>
                 <button class="nav-item" data-section="analytics">
                     Analitika
                 </button>
@@ -136,6 +139,42 @@
 
                     <div class="pagination" id="advice-pagination">
                         <!-- Pagination will be added here -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Teachers Management Section -->
+            <section id="teachers-section" class="content-section">
+                <div class="section-header">
+                    <h2>O'qituvchilar boshqaruvi</h2>
+                </div>
+
+                <div class="teachers-filters">
+                    <input type="text" id="teachers-search" class="search-input" placeholder="Ism, email yoki telefon bo'yicha qidirish...">
+                    <select id="teachers-sort" class="sort-select">
+                        <option value="newest">Eng yangi</option>
+                        <option value="oldest">Eng eski</option>
+                        <option value="name">Ism bo'yicha</option>
+                        <option value="courses">Kurslar soni</option>
+                    </select>
+                </div>
+
+                <div class="teachers-container">
+                    <div class="teachers-grid" id="teachers-grid">
+                        <div class="loading">O'qituvchilar ma'lumotlari yuklanmoqda...</div>
+                    </div>
+                </div>
+
+                <!-- Teacher Details Modal -->
+                <div id="teacher-details-modal" class="modal" style="display: none;">
+                    <div class="modal-content teacher-modal-content">
+                        <div class="modal-header">
+                            <h3 id="teacher-modal-title">O'qituvchi ma'lumotlari</h3>
+                            <button class="modal-close" onclick="closeTeacherModal()">&times;</button>
+                        </div>
+                        <div class="modal-body" id="teacher-modal-body">
+                            <!-- Teacher details will be loaded here -->
+                        </div>
                     </div>
                 </div>
             </section>

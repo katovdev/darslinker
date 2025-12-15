@@ -1,5 +1,7 @@
 import Teacher from "../models/teacher.model.js";
 import User from "../models/user.model.js";
+import Course from "../models/course.model.js";
+import Student from "../models/student.model.js";
 import logger from "../../config/logger.js";
 import bcrypt from "bcrypt";
 
@@ -982,4 +984,197 @@ const getQuizAnalytics = catchAsync(async (req, res) => {
   });
 });
 
-export { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage, getTeacherStudents, getQuizAnalytics };
+// Export moved to end of file
+
+/**
+ * Get all teachers for moderator panel
+ * @route GET /teachers
+ * @access Private (Admin/Moderator only)
+ */
+const getAllTeachersForModerator = catchAsync(async (req, res) => {
+  logger.info('📚 Fetching all teachers for moderator panel');
+
+  try {
+    // Get all users with teacher role
+    const teachers = await User.find({ role: 'teacher' })
+      .select('firstName lastName email phone createdAt isActive')
+      .sort({ createdAt: -1 });
+
+    // Get additional stats for each teacher
+    const teachersWithStats = await Promise.all(
+      teachers.map(async (teacher) => {
+        try {
+          // Get teacher profile
+          const teacherProfile = await Teacher.findById(teacher._id);
+          
+          // Get courses count
+          const coursesCount = await Course.countDocuments({ teacher: teacher._id });
+          
+          // Get students count - check for students who have enrolled in this teacher's courses
+          const teacherCourses = await Course.find({ teacher: teacher._id }).select('enrolledStudents');
+          
+          // Count unique students across all courses
+          const uniqueStudentIds = new Set();
+          teacherCourses.forEach(course => {
+            if (course.enrolledStudents && course.enrolledStudents.length > 0) {
+              course.enrolledStudents.forEach(studentId => {
+                uniqueStudentIds.add(studentId.toString());
+              });
+            }
+          });
+          
+          const studentsCount = uniqueStudentIds.size;
+          
+          return {
+            _id: teacher._id,
+            firstName: teacher.firstName,
+            lastName: teacher.lastName,
+            email: teacher.email,
+            phone: teacher.phone,
+            createdAt: teacher.createdAt,
+            isActive: teacher.isActive,
+            bio: teacherProfile?.bio || '',
+            specialization: teacherProfile?.specialization || '',
+            coursesCount: coursesCount,
+            studentsCount: studentsCount,
+            totalViews: 0, // You can add this later
+          };
+        } catch (error) {
+          logger.error('Error getting teacher stats:', error);
+          return {
+            _id: teacher._id,
+            firstName: teacher.firstName,
+            lastName: teacher.lastName,
+            email: teacher.email,
+            phone: teacher.phone,
+            createdAt: teacher.createdAt,
+            isActive: teacher.isActive,
+            coursesCount: 0,
+            studentsCount: 0,
+            totalViews: 0,
+          };
+        }
+      })
+    );
+
+    logger.info(`📚 Successfully fetched ${teachersWithStats.length} teachers`);
+
+    res.status(200).json({
+      success: true,
+      message: 'Teachers fetched successfully',
+      data: teachersWithStats,
+      total: teachersWithStats.length
+    });
+
+  } catch (error) {
+    logger.error('❌ Error fetching teachers:', error);
+    throw error;
+  }
+});
+
+/**
+ * Get detailed teacher information for moderator
+ * @route GET /teachers/:id/details
+ * @access Private (Admin/Moderator only)
+ */
+const getTeacherDetailsForModerator = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  
+  logger.info('👤 Fetching teacher details for moderator:', { teacherId: id });
+
+  try {
+    // Get teacher user info
+    const teacher = await User.findById(id).select('firstName lastName email phone createdAt isActive');
+    
+    if (!teacher) {
+      return res.status(404).json({
+        success: false,
+        message: 'Teacher not found'
+      });
+    }
+
+    // Get teacher profile
+    const teacherProfile = await Teacher.findById(id);
+
+    // Get teacher's courses
+    const courses = await Course.find({ teacher: id })
+      .select('title description price createdAt enrolledStudents')
+      .sort({ createdAt: -1 });
+
+    // Get teacher's students - find students enrolled in this teacher's courses
+    const teacherCourses = await Course.find({ teacher: id })
+      .select('_id enrolledStudents')
+      .populate('enrolledStudents', 'firstName lastName email phone createdAt');
+    
+    // Debug log
+    logger.info('🔍 Teacher courses found:', { teacherId: id, coursesCount: teacherCourses.length });
+    
+    // Extract all unique students from all courses
+    const allStudents = [];
+    const studentIds = new Set();
+    
+    teacherCourses.forEach(course => {
+      if (course.enrolledStudents && course.enrolledStudents.length > 0) {
+        course.enrolledStudents.forEach(student => {
+          if (!studentIds.has(student._id.toString())) {
+            studentIds.add(student._id.toString());
+            allStudents.push(student);
+          }
+        });
+      }
+    });
+    
+    const students = allStudents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      
+    logger.info('🔍 Students found:', { studentsCount: students.length, students: students.map(s => ({ name: s.firstName + ' ' + s.lastName, id: s._id })) });
+
+    const teacherDetails = {
+      _id: teacher._id,
+      firstName: teacher.firstName,
+      lastName: teacher.lastName,
+      email: teacher.email,
+      phone: teacher.phone,
+      createdAt: teacher.createdAt,
+      isActive: teacher.isActive,
+      bio: teacherProfile?.bio || '',
+      specialization: teacherProfile?.specialization || '',
+      profileImage: teacherProfile?.profileImage || '',
+      city: teacherProfile?.city || '',
+      country: teacherProfile?.country || '',
+      courses: courses.map(course => ({
+        ...course.toObject(),
+        studentsCount: course.enrolledStudents ? course.enrolledStudents.length : 0
+      })) || [],
+      students: students || [],
+      totalViews: 0,
+      totalRevenue: 0,
+    };
+
+    logger.info('👤 Successfully fetched teacher details');
+
+    res.status(200).json({
+      success: true,
+      message: 'Teacher details fetched successfully',
+      data: teacherDetails
+    });
+
+  } catch (error) {
+    logger.error('❌ Error fetching teacher details:', error);
+    throw error;
+  }
+});
+
+export {
+  createTeacherProfile,
+  findAll,
+  findOne,
+  update,
+  getDashboardStats,
+  getLandingPageData,
+  updateLandingPageSettings,
+  publishLandingPage,
+  getTeacherStudents,
+  getQuizAnalytics,
+  getAllTeachersForModerator,
+  getTeacherDetailsForModerator
+};

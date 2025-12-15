@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage, getTeacherStudents, getQuizAnalytics } from "../controllers/teacher.controller.js";
+import { createTeacherProfile, findAll, findOne, update, getDashboardStats, getLandingPageData, updateLandingPageSettings, publishLandingPage, getTeacherStudents, getQuizAnalytics, getAllTeachersForModerator, getTeacherDetailsForModerator } from "../controllers/teacher.controller.js";
 import {
   authenticate,
   isOwnerOrAdmin,
@@ -1015,5 +1015,70 @@ teacherRouter.get(
   validate(teacherIdParamSchema, "params"),
   getQuizAnalytics
 );
+
+/**
+ * @swagger
+ * /teachers/moderator/all:
+ *   get:
+ *     summary: Get all teachers for moderator panel
+ *     tags: [Teachers]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Teachers fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Teacher'
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Admin/Moderator access required
+ */
+teacherRouter.get("/moderator/all", authenticate, getAllTeachersForModerator);
+
+/**
+ * @swagger
+ * /teachers/moderator/{id}/details:
+ *   get:
+ *     summary: Get detailed teacher information for moderator
+ *     tags: [Teachers]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Teacher ID
+ *     responses:
+ *       200:
+ *         description: Teacher details fetched successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   $ref: '#/components/schemas/Teacher'
+ *       404:
+ *         description: Teacher not found
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden - Admin/Moderator access required
+ */
+teacherRouter.get("/moderator/:id/details", authenticate, getTeacherDetailsForModerator);
 
 export default teacherRouter;

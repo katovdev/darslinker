@@ -2,7 +2,7 @@ import './style.css';
 import axios from 'axios';
 
 // API Configuration
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
 
 // Create axios instance
 const api = axios.create({
@@ -363,6 +363,10 @@ class ModeratorApp {
         break;
       case 'advice':
         this.loadAdvices();
+        break;
+      case 'teachers':
+        loadTeachers();
+        setupTeachersSearch();
         break;
       case 'analytics':
         this.loadAnalytics();
@@ -1879,3 +1883,275 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 export { api };
+
+// Teachers Management Functions
+let teachersData = [];
+let currentTeacherDetails = null;
+
+// Load teachers data
+async function loadTeachers() {
+  try {
+    console.log('📚 Loading teachers data...');
+    
+    // Show loading state
+    const teachersGrid = document.getElementById('teachers-grid');
+    if (teachersGrid) {
+      teachersGrid.innerHTML = '<div class="loading">O\'qituvchilar ma\'lumotlari yuklanmoqda...</div>';
+    }
+
+    // Fetch teachers from API
+    const response = await api.get('/teachers/moderator/all');
+    console.log('📚 Teachers API response:', response.data);
+
+    if (response.data.success) {
+      teachersData = response.data.data || [];
+      displayTeachers(teachersData);
+    } else {
+      throw new Error(response.data.message || 'Failed to load teachers');
+    }
+  } catch (error) {
+    console.error('❌ Error loading teachers:', error);
+    const teachersGrid = document.getElementById('teachers-grid');
+    if (teachersGrid) {
+      teachersGrid.innerHTML = `
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V21C3 22.11 3.89 23 5 23H19C20.11 23 21 22.11 21 21V9M19 21H5V3H13V9H19Z"/>
+          </svg>
+          <p>O'qituvchilar ma'lumotlarini yuklashda xatolik yuz berdi</p>
+          <button onclick="loadTeachers()" class="btn-primary" style="margin-top: 1rem;">Qayta urinish</button>
+        </div>
+      `;
+    }
+  }
+}
+
+// Display teachers in grid
+function displayTeachers(teachers) {
+  const teachersGrid = document.getElementById('teachers-grid');
+  if (!teachersGrid) return;
+
+  if (!teachers || teachers.length === 0) {
+    teachersGrid.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M16 4C18.2 4 20 5.8 20 8S18.2 12 16 12 12 10.2 12 8 13.8 4 16 4M16 14C20.4 14 24 15.8 24 18V20H8V18C8 15.8 11.6 14 16 14M8.5 4C10.7 4 12.5 5.8 12.5 8S10.7 12 8.5 12 4.5 10.2 4.5 8 6.3 4 8.5 4M8.5 14C13 14 16.5 15.8 16.5 18V20H0V18C0 15.8 4 14 8.5 14Z"/>
+        </svg>
+        <p>Hozircha ro'yxatdan o'tgan o'qituvchilar yo'q</p>
+      </div>
+    `;
+    return;
+  }
+
+  const teachersHTML = teachers.map(teacher => {
+    const initials = getInitials(teacher.firstName, teacher.lastName);
+    const joinDate = new Date(teacher.createdAt).toLocaleDateString('en-GB');
+    
+    return `
+      <div class="teacher-card" onclick="openTeacherDetails('${teacher._id}')">
+        <div class="teacher-header">
+          <div class="teacher-avatar">${initials}</div>
+          <div class="teacher-info">
+            <h3>${teacher.firstName} ${teacher.lastName}</h3>
+            <p>${teacher.email || 'Email ko\'rsatilmagan'}</p>
+            <p>${teacher.phone || 'Telefon ko\'rsatilmagan'}</p>
+            <p>Ro'yxatdan o'tgan: ${joinDate}</p>
+          </div>
+        </div>
+        <div class="teacher-actions">
+          <button class="view-details-btn">Batafsil ko'rish</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  teachersGrid.innerHTML = teachersHTML;
+}
+
+// Get initials from name
+function getInitials(firstName, lastName) {
+  const first = firstName ? firstName.charAt(0).toUpperCase() : '';
+  const last = lastName ? lastName.charAt(0).toUpperCase() : '';
+  return first + last || 'O';
+}
+
+// Open teacher details modal
+async function openTeacherDetails(teacherId) {
+  try {
+    console.log('👤 Loading teacher details for ID:', teacherId);
+    
+    // Show modal with loading state
+    const modal = document.getElementById('teacher-details-modal');
+    const modalBody = document.getElementById('teacher-modal-body');
+    const modalTitle = document.getElementById('teacher-modal-title');
+    
+    if (!modal || !modalBody || !modalTitle) return;
+    
+    modalTitle.textContent = 'O\'qituvchi ma\'lumotlari yuklanmoqda...';
+    modalBody.innerHTML = '<div class="loading">Ma\'lumotlar yuklanmoqda...</div>';
+    modal.style.display = 'flex';
+    
+    // Fetch detailed teacher data
+    const response = await api.get(`/teachers/moderator/${teacherId}/details`);
+    console.log('👤 Teacher details response:', response.data);
+    
+    if (response.data.success) {
+      currentTeacherDetails = response.data.data;
+      displayTeacherDetails(currentTeacherDetails);
+    } else {
+      throw new Error(response.data.message || 'Failed to load teacher details');
+    }
+  } catch (error) {
+    console.error('❌ Error loading teacher details:', error);
+    const modalBody = document.getElementById('teacher-modal-body');
+    if (modalBody) {
+      modalBody.innerHTML = `
+        <div class="empty-state">
+          <p>O'qituvchi ma'lumotlarini yuklashda xatolik yuz berdi</p>
+          <button onclick="openTeacherDetails('${teacherId}')" class="btn-primary" style="margin-top: 1rem;">Qayta urinish</button>
+        </div>
+      `;
+    }
+  }
+}
+
+// Display teacher details in modal
+function displayTeacherDetails(teacher) {
+  const modalTitle = document.getElementById('teacher-modal-title');
+  const modalBody = document.getElementById('teacher-modal-body');
+  
+  if (!modalTitle || !modalBody) return;
+  
+  modalTitle.textContent = `${teacher.firstName} ${teacher.lastName}`;
+  
+  const initials = getInitials(teacher.firstName, teacher.lastName);
+  const joinDate = new Date(teacher.createdAt).toLocaleDateString('en-GB');
+  
+  const coursesHTML = teacher.courses && teacher.courses.length > 0 
+    ? teacher.courses.map(course => `
+        <div class="course-item">
+          <h4>${course.title}</h4>
+          <p>Yaratilgan: ${new Date(course.createdAt).toLocaleDateString('en-GB')}</p>
+          <p>O'quvchilar: ${course.studentsCount || 0}</p>
+          <p>Narx: ${course.price ? course.price.toLocaleString() + ' so\'m' : 'Bepul'}</p>
+        </div>
+      `).join('')
+    : '<div class="empty-state"><p>Hozircha kurslar yaratilmagan</p></div>';
+  
+  const studentsHTML = teacher.students && teacher.students.length > 0
+    ? `
+        <table class="students-table">
+          <thead>
+            <tr>
+              <th>Ism</th>
+              <th>Email</th>
+              <th>Telefon</th>
+              <th>Ro'yxatdan o'tgan</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${teacher.students.map(student => `
+              <tr>
+                <td>${student.firstName} ${student.lastName}</td>
+                <td>${student.email || 'Ko\'rsatilmagan'}</td>
+                <td>${student.phone || 'Ko\'rsatilmagan'}</td>
+                <td>${new Date(student.createdAt).toLocaleDateString('en-GB')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `
+    : '<div class="empty-state"><p>Hozircha o\'quvchilar yo\'q</p></div>';
+  
+  modalBody.innerHTML = `
+    <div class="teacher-details">
+      <div class="teacher-profile">
+        <div class="teacher-profile-avatar">${initials}</div>
+        <div class="teacher-profile-info">
+          <h2>${teacher.firstName} ${teacher.lastName}</h2>
+          <p><strong>Email:</strong> ${teacher.email || 'Ko\'rsatilmagan'}</p>
+          <p><strong>Telefon:</strong> ${teacher.phone || 'Ko\'rsatilmagan'}</p>
+          <p><strong>Ro'yxatdan o'tgan:</strong> ${joinDate}</p>
+          <p><strong>Status:</strong> ${teacher.isActive ? 'Faol' : 'Nofaol'}</p>
+          
+
+        </div>
+      </div>
+      
+      <div class="courses-section">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3M19 19H5V5H19V19Z"/>
+          </svg>
+          Yaratgan kurslar (${teacher.courses?.length || 0})
+        </h3>
+        <div class="courses-grid">
+          ${coursesHTML}
+        </div>
+      </div>
+      
+      <div class="students-section">
+        <h3 class="section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M16 4C18.2 4 20 5.8 20 8S18.2 12 16 12 12 10.2 12 8 13.8 4 16 4M16 14C20.4 14 24 15.8 24 18V20H8V18C8 15.8 11.6 14 16 14Z"/>
+          </svg>
+          O'quvchilar (${teacher.students?.length || 0})
+        </h3>
+        ${studentsHTML}
+      </div>
+    </div>
+  `;
+}
+
+// Close teacher details modal
+function closeTeacherModal() {
+  const modal = document.getElementById('teacher-details-modal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+  currentTeacherDetails = null;
+}
+
+// Search and filter teachers
+function setupTeachersSearch() {
+  const searchInput = document.getElementById('teachers-search');
+  const sortSelect = document.getElementById('teachers-sort');
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredTeachers = teachersData.filter(teacher => 
+        teacher.firstName.toLowerCase().includes(searchTerm) ||
+        teacher.lastName.toLowerCase().includes(searchTerm) ||
+        teacher.email.toLowerCase().includes(searchTerm) ||
+        (teacher.phone && teacher.phone.includes(searchTerm))
+      );
+      displayTeachers(filteredTeachers);
+    });
+  }
+  
+  if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+      const sortBy = e.target.value;
+      const sortedTeachers = [...teachersData].sort((a, b) => {
+        switch (sortBy) {
+          case 'newest':
+            return new Date(b.createdAt) - new Date(a.createdAt);
+          case 'oldest':
+            return new Date(a.createdAt) - new Date(b.createdAt);
+          case 'name':
+            return (a.firstName + ' ' + a.lastName).localeCompare(b.firstName + ' ' + b.lastName);
+          case 'courses':
+            return (b.coursesCount || 0) - (a.coursesCount || 0);
+          default:
+            return 0;
+        }
+      });
+      displayTeachers(sortedTeachers);
+    });
+  }
+}
+
+// Make functions globally available
+window.openTeacherDetails = openTeacherDetails;
+window.closeTeacherModal = closeTeacherModal;
