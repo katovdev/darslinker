@@ -692,7 +692,10 @@ export function initHomePage() {
                   type="tel"
                   class="form-input"
                   data-home-i18n="phonePlaceholder"
-                  placeholder="Raqamingiz"
+                  placeholder="+998 XX XXX XX XX"
+                  value="+998"
+                  pattern="\\+998 [0-9]{2} [0-9]{3} [0-9]{2} [0-9]{2}"
+                  maxlength="17"
                   required
                   id="advicePhone"
                 />
@@ -856,6 +859,9 @@ export function initHomePage() {
 
   // Initialize navigation
   initNavigation();
+
+  // Initialize phone formatting
+  initPhoneFormatting();
 
   // Initialize mobile menu
   initMobileMenu();
@@ -2088,10 +2094,10 @@ window.submitAdviceForm = function(event) {
     return;
   }
 
-  // Basic phone validation
-  const phoneRegex = /^[\+]?[0-9\-\(\)\s]+$/;
-  if (!phoneRegex.test(phone)) {
-    alert('Iltimos, to\'g\'ri telefon raqam kiriting!');
+  // Uzbekistan phone validation
+  const phoneRegex = /^\+998( [0-9]{2}){1}( [0-9]{3}){1}( [0-9]{2}){2}$/;
+  if (!phoneRegex.test(phone) || phone.length < 17) {
+    alert('Iltimos, to\'g\'ri O\'zbekiston telefon raqamini kiriting!\nFormat: +998 XX XXX XX XX');
     return;
   }
 
@@ -2167,6 +2173,61 @@ function closeSMSBubble() {
   if (speechBubble) {
     speechBubble.style.display = 'none';
   }
+}
+
+// Phone number formatting for Uzbekistan
+function initPhoneFormatting() {
+  const phoneInput = document.getElementById('advicePhone');
+  if (!phoneInput) return;
+
+  phoneInput.addEventListener('input', function(e) {
+    let value = e.target.value;
+    
+    // Remove all non-digits except the + at the beginning
+    let numbers = value.replace(/[^\d]/g, '');
+    
+    // If user tries to delete 998, restore it
+    if (numbers.length < 3 || !numbers.startsWith('998')) {
+      numbers = '998' + numbers.replace(/^998/, '');
+    }
+    
+    // Limit to 12 digits total (998 + 9 more)
+    if (numbers.length > 12) {
+      numbers = numbers.substring(0, 12);
+    }
+    
+    // Format the number
+    let formatted = '+998';
+    if (numbers.length > 3) {
+      formatted += ' ' + numbers.substring(3, 5);
+    }
+    if (numbers.length > 5) {
+      formatted += ' ' + numbers.substring(5, 8);
+    }
+    if (numbers.length > 8) {
+      formatted += ' ' + numbers.substring(8, 10);
+    }
+    if (numbers.length > 10) {
+      formatted += ' ' + numbers.substring(10, 12);
+    }
+    
+    e.target.value = formatted;
+  });
+
+  // Prevent cursor from going before +998
+  phoneInput.addEventListener('keydown', function(e) {
+    const cursorPosition = e.target.selectionStart;
+    if ((e.key === 'Backspace' || e.key === 'Delete') && cursorPosition <= 4) {
+      e.preventDefault();
+    }
+  });
+
+  // Set cursor after +998 when clicked at the beginning
+  phoneInput.addEventListener('click', function(e) {
+    if (e.target.selectionStart < 4) {
+      e.target.setSelectionRange(4, 4);
+    }
+  });
 }
 
 // Initialize Navigation functionality
