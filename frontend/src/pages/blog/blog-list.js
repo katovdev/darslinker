@@ -692,6 +692,10 @@ export function initBlogListPage() {
   };
 
   window.openBlog = (blogId) => {
+    console.log('🔗 Blog card clicked from blog list:', blogId);
+    
+    // Navigate immediately to blog detail page
+    // The blog detail page will handle the 10-second view tracking
     router.navigate(`/blog/${blogId}`);
   };
 

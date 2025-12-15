@@ -376,8 +376,97 @@ export function initBlogDetailPage(blogId) {
     </style>
   `;
 
+  // View tracking variables
+  let viewTrackingTimer = null;
+  let viewTracked = false;
+  let pageStartTime = Date.now();
+
   // Initialize page
   initializePage();
+
+  // Start view tracking system
+  function startViewTracking() {
+    console.log('🕐 Starting 10-second view tracking for blog:', blogId);
+    
+    // Clear any existing timer
+    if (viewTrackingTimer) {
+      clearTimeout(viewTrackingTimer);
+    }
+    
+    // Set 10-second timer
+    viewTrackingTimer = setTimeout(() => {
+      if (!viewTracked) {
+        trackView();
+      }
+    }, 10000); // 10 seconds
+    
+    // Track when user leaves the page
+    const handlePageLeave = () => {
+      const timeSpent = Date.now() - pageStartTime;
+      console.log('📊 User spent', Math.round(timeSpent / 1000), 'seconds on blog');
+      
+      // If user spent 10+ seconds, track view
+      if (timeSpent >= 10000 && !viewTracked) {
+        trackView();
+      }
+      
+      // Cleanup
+      if (viewTrackingTimer) {
+        clearTimeout(viewTrackingTimer);
+      }
+    };
+    
+    // Listen for page leave events
+    window.addEventListener('beforeunload', handlePageLeave);
+    window.addEventListener('pagehide', handlePageLeave);
+    
+    // Listen for navigation away (SPA routing)
+    const originalPushState = history.pushState;
+    const originalReplaceState = history.replaceState;
+    
+    history.pushState = function(...args) {
+      handlePageLeave();
+      return originalPushState.apply(this, args);
+    };
+    
+    history.replaceState = function(...args) {
+      handlePageLeave();
+      return originalReplaceState.apply(this, args);
+    };
+    
+    // Listen for popstate (back/forward buttons)
+    window.addEventListener('popstate', handlePageLeave);
+  }
+  
+  async function trackView() {
+    if (viewTracked) {
+      console.log('✅ View already tracked for this session');
+      return;
+    }
+    
+    try {
+      console.log('📈 Tracking view for blog:', blogId);
+      await blogAPI.trackBlogView(blogId);
+      viewTracked = true;
+      console.log('✅ View tracked successfully');
+      
+      // Update view count in UI if possible
+      updateViewCountInUI();
+    } catch (error) {
+      console.error('❌ Failed to track view:', error);
+    }
+  }
+  
+  function updateViewCountInUI() {
+    // Find and update view count in the current page
+    const viewElements = document.querySelectorAll('.blog-meta-item');
+    viewElements.forEach(el => {
+      if (el.textContent.includes('ko\'rildi')) {
+        const currentCount = parseInt(el.textContent.match(/\d+/)?.[0] || '0');
+        el.innerHTML = el.innerHTML.replace(/\d+/, currentCount + 1);
+      }
+    });
+  }
 
   async function initializePage() {
     try {
@@ -398,10 +487,8 @@ export function initBlogDetailPage(blogId) {
         blog = response.blog;
         renderBlog();
         
-        // Track view
-        blogAPI.trackBlogView(blogId).catch(err => {
-          console.debug('View tracking failed:', err);
-        });
+        // Start 10-second view tracking
+        startViewTracking();
       } else {
         throw new Error(response.message || 'Blog not found');
       }

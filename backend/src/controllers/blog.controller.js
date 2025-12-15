@@ -324,23 +324,50 @@ const trackView = catchAsync(async (req, res) => {
   const forwardedFor = req.get('X-Forwarded-For');
   const realIp = forwardedFor ? forwardedFor.split(',')[0].trim() : userId;
 
-  // Always increment total views
-  blog.multiViews += 1;
+  console.log('📊 View tracking request:', {
+    blogId: id,
+    blogTitle: blog.title,
+    userIp: realIp,
+    currentViews: blog.multiViews || 0,
+    uniqueViewsCount: blog.uniqueViews?.length || 0
+  });
+
+  // Always increment total views (this represents all page loads after 10 seconds)
+  blog.multiViews = (blog.multiViews || 0) + 1;
 
   // Create unique identifier for this visitor
   const dataToHash = `${realIp}-${userAgent}`;
   const uniqueId = crypto.createHash('md5').update(dataToHash).digest('hex').substring(0, 16);
 
+  // Initialize uniqueViews array if it doesn't exist
+  if (!blog.uniqueViews) {
+    blog.uniqueViews = [];
+  }
+
   // Check if this unique visitor has already viewed this blog
+  let isNewUniqueView = false;
   if (!blog.uniqueViews.includes(uniqueId)) {
     blog.uniqueViews.push(uniqueId);
+    isNewUniqueView = true;
   }
 
   await blog.save();
 
+  console.log('✅ View tracked successfully:', {
+    blogId: id,
+    newTotalViews: blog.multiViews,
+    newUniqueViewsCount: blog.uniqueViews.length,
+    wasNewUniqueView: isNewUniqueView
+  });
+
   res.status(200).json({
     success: true,
-    message: 'View tracked successfully'
+    message: 'View tracked successfully',
+    data: {
+      totalViews: blog.multiViews,
+      uniqueViews: blog.uniqueViews.length,
+      isNewUniqueView: isNewUniqueView
+    }
   });
 });
 

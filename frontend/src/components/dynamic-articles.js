@@ -159,6 +159,9 @@ class DynamicArticles {
 
     // Store reference for reload functionality
     this.container.__dynamicArticles = this;
+    
+    // Setup blog card click handlers
+    this.setupBlogCardHandlers();
   }
 
   /**
@@ -170,11 +173,11 @@ class DynamicArticles {
   renderArticleCard(article, index) {
     const cardClass = this.getCardClass(index);
     const isClickable = !article.isFallback;
-    const clickHandler = isClickable ? `onclick="window.router?.navigate('/blog/${article.id}'); return false;"` : '';
+    const clickHandler = isClickable ? `onclick="this.handleBlogCardClick('${article.id}', this); return false;"` : '';
     const cursorStyle = isClickable ? 'cursor: pointer;' : '';
 
     return `
-      <div class="article-card ${cardClass}" ${clickHandler} style="${cursorStyle}">
+      <div class="article-card ${cardClass}" ${clickHandler} style="${cursorStyle}" data-blog-id="${article.id}">
         <div class="article-header">
           <h3>${this.escapeHtml(article.title)}</h3>
         </div>
@@ -392,6 +395,42 @@ class DynamicArticles {
       subscriptionId: this.realTimeSubscriptionId,
       serviceStatus: realTimeBlogService.getStatus()
     };
+  }
+
+  /**
+   * Setup blog card click handlers with 10-second view tracking
+   */
+  setupBlogCardHandlers() {
+    const blogCards = this.container.querySelectorAll('.article-card[data-blog-id]');
+    
+    blogCards.forEach(card => {
+      const blogId = card.getAttribute('data-blog-id');
+      if (!blogId || card.dataset.isFallback === 'true') return;
+      
+      card.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleBlogCardClick(blogId, card);
+      });
+    });
+  }
+
+  /**
+   * Handle blog card click with immediate navigation
+   * View tracking will happen on the blog detail page after 10 seconds
+   * @param {string} blogId - Blog ID
+   * @param {HTMLElement} cardElement - Card element
+   */
+  handleBlogCardClick(blogId, cardElement) {
+    console.log('🔗 Blog card clicked:', blogId);
+    
+    // Navigate immediately to blog detail page
+    // The blog detail page will handle the 10-second view tracking
+    if (window.router) {
+      window.router.navigate(`/blog/${blogId}`);
+    } else {
+      // Fallback for direct navigation
+      window.location.href = `/blog/${blogId}`;
+    }
   }
 
   /**
