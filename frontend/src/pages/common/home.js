@@ -646,6 +646,7 @@ export function initHomePage() {
     </section>
 
 
+    <!-- FOR PRICING -->
 
 
 
@@ -811,7 +812,27 @@ export function initHomePage() {
         </svg>
         <div class="sms-pulse"></div>
       </div>
+      
+      <!-- Speech Bubble -->
+      <div class="sms-speech-bubble" id="smsSpeechBubble" style="display: none;">
+        <div class="sms-bubble-header">
+          <button class="sms-bubble-close" id="smsCloseBtn">&times;</button>
+        </div>
+        <div class="sms-bubble-content">
+          <p>Savollaringiz bormi? Telegram bot orqali murojaat qiling</p>
+          <button class="sms-telegram-btn" onclick="openTelegramBot()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06-.01.24-.02.38z" fill="white"/>
+            </svg>
+            Telegram Bot
+          </button>
+        </div>
+        <!-- Speech bubble tail -->
+        <div class="sms-bubble-tail"></div>
+      </div>
     </div>
+
+
 
   `;
 
@@ -1331,6 +1352,400 @@ function initHomePageEffects() {
         transform: translateY(-2px) !important;
         box-shadow: 0 4px 12px rgba(126, 162, 212, 0.2) !important;
       }
+
+      /* Floating Chat Widget Styles */
+      .floating-chat-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+      }
+
+      .floating-chat-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #7EA2D4, #6B91C7);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(126, 162, 212, 0.4);
+        transition: all 0.3s ease;
+        animation: pulse 2s infinite;
+      }
+
+      .floating-chat-icon:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 25px rgba(126, 162, 212, 0.6);
+      }
+
+      @keyframes pulse {
+        0% {
+          box-shadow: 0 4px 20px rgba(126, 162, 212, 0.4);
+        }
+        50% {
+          box-shadow: 0 4px 20px rgba(126, 162, 212, 0.6), 0 0 0 10px rgba(126, 162, 212, 0.1);
+        }
+        100% {
+          box-shadow: 0 4px 20px rgba(126, 162, 212, 0.4);
+        }
+      }
+
+      .chat-speech-bubble {
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 320px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        border: 2px solid #e1e8ed;
+        animation: slideInUp 0.3s ease;
+        overflow: hidden;
+      }
+
+      .bubble-header {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e1e8ed;
+      }
+
+      .bubble-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin-right: 12px;
+        background: #7EA2D4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .bubble-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .bubble-info {
+        flex: 1;
+      }
+
+      .bubble-info h4 {
+        margin: 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+
+      .bubble-close {
+        background: none;
+        border: none;
+        font-size: 18px;
+        color: #666;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .bubble-close:hover {
+        background: #f0f0f0;
+        color: #333;
+      }
+
+      .bubble-content {
+        padding: 15px;
+      }
+
+      .bubble-content p {
+        margin: 0 0 15px 0;
+        font-size: 14px;
+        line-height: 1.4;
+        color: #333;
+      }
+
+      .bubble-telegram-btn {
+        background: linear-gradient(135deg, #0088cc, #006699);
+        color: white;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.3s ease;
+        width: 100%;
+        justify-content: center;
+      }
+
+      .bubble-telegram-btn:hover {
+        background: linear-gradient(135deg, #006699, #004d73);
+        transform: translateY(-1px);
+      }
+
+      .bubble-tail {
+        position: absolute;
+        bottom: -8px;
+        right: 25px;
+        width: 16px;
+        height: 16px;
+        background: white;
+        border-right: 2px solid #e1e8ed;
+        border-bottom: 2px solid #e1e8ed;
+        transform: rotate(45deg);
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Light theme adjustments */
+      .light-theme .chat-speech-bubble {
+        background: white;
+        border-color: #dee2e6;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      .light-theme .bubble-header {
+        background: #f8f9fa;
+        border-bottom-color: #dee2e6;
+      }
+
+      .light-theme .bubble-tail {
+        background: white;
+        border-right-color: #dee2e6;
+        border-bottom-color: #dee2e6;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .floating-chat-widget {
+          bottom: 15px;
+          right: 15px;
+        }
+
+        .floating-chat-icon {
+          width: 50px;
+          height: 50px;
+        }
+
+        .chat-speech-bubble {
+          width: 280px;
+          bottom: 70px;
+          right: -10px;
+        }
+
+        .bubble-tail {
+          right: 20px;
+        }
+      }
+
+      /* Telegram Bot Popup Styles */
+      .telegram-popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(5px);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.3s ease;
+      }
+
+      .telegram-popup {
+        background: var(--bg-primary);
+        border: 2px solid var(--primary-color);
+        border-radius: 20px;
+        padding: 0;
+        max-width: 450px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.3s ease;
+        overflow: hidden;
+      }
+
+      .telegram-popup-header {
+        background: linear-gradient(135deg, var(--primary-color), rgba(126, 162, 212, 0.8));
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid rgba(126, 162, 212, 0.3);
+      }
+
+      .telegram-popup-header h3 {
+        margin: 0;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .telegram-popup-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+      }
+
+      .telegram-popup-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(90deg);
+      }
+
+      .telegram-popup-content {
+        padding: 30px;
+        text-align: center;
+      }
+
+      .telegram-popup-icon {
+        margin-bottom: 20px;
+      }
+
+      .telegram-popup-content p {
+        color: var(--text-primary);
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 30px;
+      }
+
+      .telegram-popup-actions {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .telegram-bot-btn {
+        background: linear-gradient(135deg, #0088cc, #006699);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 136, 204, 0.3);
+      }
+
+      .telegram-bot-btn:hover {
+        background: linear-gradient(135deg, #006699, #004d73);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 136, 204, 0.4);
+      }
+
+      .telegram-cancel-btn {
+        background: transparent;
+        color: var(--text-secondary);
+        border: 2px solid var(--border-color);
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .telegram-cancel-btn:hover {
+        background: var(--hover-bg);
+        border-color: var(--primary-color);
+        color: var(--text-primary);
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes slideUp {
+        from { 
+          opacity: 0;
+          transform: translateY(30px) scale(0.9);
+        }
+        to { 
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      /* Light theme popup styles */
+      .light-theme .telegram-popup {
+        background: white;
+        border-color: var(--primary-color);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      }
+
+      .light-theme .telegram-popup-content p {
+        color: #212529;
+      }
+
+      .light-theme .telegram-cancel-btn {
+        color: #6c757d;
+        border-color: #dee2e6;
+      }
+
+      .light-theme .telegram-cancel-btn:hover {
+        background: #f8f9fa;
+        border-color: var(--primary-color);
+        color: #212529;
+      }
+
+      /* Mobile responsive */
+      @media (max-width: 768px) {
+        .telegram-popup {
+          margin: 20px;
+          width: calc(100% - 40px);
+        }
+
+        .telegram-popup-content {
+          padding: 20px;
+        }
+
+        .telegram-popup-actions {
+          flex-direction: column;
+        }
+
+        .telegram-bot-btn,
+        .telegram-cancel-btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
     `;
     document.head.appendChild(style);
   }
@@ -1706,10 +2121,14 @@ window.submitAdviceForm = function(event) {
 // Initialize SMS Contact functionality
 function initSMSContact() {
   const smsContact = document.getElementById('smsContact');
+  const speechBubble = document.getElementById('smsSpeechBubble');
+  const closeBtn = document.getElementById('smsCloseBtn');
 
-  if (!smsContact) return;
+  if (!smsContact || !speechBubble) return;
 
-  smsContact.addEventListener('click', function() {
+  smsContact.addEventListener('click', function(e) {
+    e.stopPropagation();
+    
     // Add click animation
     const container = this.querySelector('.sms-container');
     container.style.transform = 'scale(0.9)';
@@ -1718,25 +2137,36 @@ function initSMSContact() {
       container.style.transform = '';
     }, 150);
 
-    // Open SMS or contact modal
-    const phoneNumber = '+998901234567'; // You can change this number
-    const message = 'Salom! Darslinker haqida ma\'lumot olishni xohlayman.';
-
-    // Try to open SMS app if on mobile, otherwise show contact info
-    if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-      window.location.href = `sms:${phoneNumber}?body=${encodeURIComponent(message)}`;
+    // Toggle speech bubble
+    if (speechBubble.style.display === 'none' || speechBubble.style.display === '') {
+      speechBubble.style.display = 'block';
     } else {
-      // For desktop, show a nice alert with contact info
-      alert(`Biz bilan bog'lanish:\n\nTelefon: ${phoneNumber}\nYoki Telegram: @darslinker\n\nXabar: ${message}`);
+      speechBubble.style.display = 'none';
     }
 
-    console.log('SMS contact clicked');
+    console.log('SMS contact clicked - speech bubble toggled');
   });
+
+  // Close button event listener
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeSMSBubble();
+    });
+  }
 
   // Add hover sound effect (optional)
   smsContact.addEventListener('mouseenter', function() {
     // You can add sound effects here later
   });
+}
+
+// Close SMS Speech Bubble
+function closeSMSBubble() {
+  const speechBubble = document.getElementById('smsSpeechBubble');
+  if (speechBubble) {
+    speechBubble.style.display = 'none';
+  }
 }
 
 // Initialize Navigation functionality
@@ -2798,3 +3228,73 @@ async function initDynamicArticles() {
     }
   }
 }
+
+// Floating Chat Widget Functions
+function toggleChatBubble() {
+  const bubble = document.getElementById('chatSpeechBubble');
+  if (bubble) {
+    if (bubble.style.display === 'none' || bubble.style.display === '') {
+      bubble.style.display = 'block';
+    } else {
+      bubble.style.display = 'none';
+    }
+  }
+}
+
+function closeChatBubble() {
+  const bubble = document.getElementById('chatSpeechBubble');
+  if (bubble) {
+    bubble.style.display = 'none';
+  }
+}
+
+function openTelegramBot() {
+  // Open Telegram bot in new tab
+  window.open('https://t.me/darslinker_bot', '_blank');
+  // Close popup after opening bot
+  closeTelegramBotMessage();
+}
+
+// ESC key to close chat bubble and SMS bubble
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    const chatBubble = document.getElementById('chatSpeechBubble');
+    const smsBubble = document.getElementById('smsSpeechBubble');
+    
+    if (chatBubble && chatBubble.style.display === 'block') {
+      closeChatBubble();
+    }
+    
+    if (smsBubble && smsBubble.style.display === 'block') {
+      closeSMSBubble();
+    }
+  }
+});
+
+// Click outside bubbles to close
+document.addEventListener('click', function(e) {
+  const chatBubble = document.getElementById('chatSpeechBubble');
+  const chatIcon = document.getElementById('floatingChatIcon');
+  const smsBubble = document.getElementById('smsSpeechBubble');
+  const smsContact = document.getElementById('smsContact');
+  
+  // Close chat bubble if clicked outside
+  if (chatBubble && chatBubble.style.display === 'block') {
+    if (!chatBubble.contains(e.target) && !chatIcon.contains(e.target)) {
+      closeChatBubble();
+    }
+  }
+  
+  // Close SMS bubble if clicked outside
+  if (smsBubble && smsBubble.style.display === 'block') {
+    if (!smsBubble.contains(e.target) && !smsContact.contains(e.target)) {
+      closeSMSBubble();
+    }
+  }
+});
+
+// Make functions globally available
+window.toggleChatBubble = toggleChatBubble;
+window.closeChatBubble = closeChatBubble;
+window.openTelegramBot = openTelegramBot;
+window.closeSMSBubble = closeSMSBubble;

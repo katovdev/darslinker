@@ -1581,6 +1581,119 @@ body {
   }
 }
 
+/* SMS Speech Bubble Styles */
+.sms-speech-bubble {
+  position: absolute;
+  bottom: 80px;
+  right: 0;
+  width: 300px;
+  background: rgba(45, 45, 45, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(var(--primary-color-rgb), 0.4);
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  animation: bubbleSlideIn 0.3s ease-out;
+}
+
+.sms-bubble-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 15px 5px 15px;
+}
+
+.sms-bubble-close {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.sms-bubble-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.sms-bubble-content {
+  padding: 10px 15px 15px 15px;
+}
+
+.sms-bubble-content p {
+  color: #ccc;
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0 0 15px 0;
+}
+
+.sms-telegram-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #0088cc, #0066aa);
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  justify-content: center;
+}
+
+.sms-telegram-btn:hover {
+  background: linear-gradient(135deg, #0099dd, #0077bb);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 136, 204, 0.3);
+}
+
+.sms-bubble-tail {
+  position: absolute;
+  bottom: -8px;
+  right: 25px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid rgba(45, 45, 45, 0.95);
+}
+
+@keyframes bubbleSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Mobile responsive for SMS bubble */
+@media (max-width: 768px) {
+  .sms-speech-bubble {
+    width: 280px;
+    right: -10px;
+  }
+  
+  .sms-bubble-tail {
+    right: 35px;
+  }
+}
+
 /* Theme toggle animation */
 @keyframes iconRotate {
   0% {
