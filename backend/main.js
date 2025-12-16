@@ -63,7 +63,11 @@ app.use((req, res, next) => {
     'http://localhost:3000',
     'http://localhost:3001', // Moderator port
     'http://localhost:8001', // Backend port for local development
-    'https://bucolic-fairy-0e50d6.netlify.app'
+    'https://darslinker-azio.vercel.app', // Frontend
+    'https://darslinker-4n3z.vercel.app', // Moderator
+    'https://darslinker.uz', // Main domain
+    'https://moderator.darslinker.uz', // Moderator subdomain
+    'https://bucolic-fairy-0e50d6.netlify.app' // Old frontend (backup)
   ];
   
   const origin = req.headers.origin;

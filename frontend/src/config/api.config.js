@@ -16,8 +16,8 @@ const getApiConfig = () => {
       retryDelay: 1000
     },
     production: {
-      baseURL: import.meta.env.VITE_API_URL || 'https://api.darslinker.uz',
-      apiPrefix: '/api',
+      baseURL: import.meta.env.VITE_API_URL || 'https://darslinker-backend.onrender.com/api',
+      apiPrefix: '',
       timeout: 15000,
       retryAttempts: 2,
       retryDelay: 2000
