@@ -519,10 +519,7 @@ export function initHomePage() {
                 <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
 
-              <!-- Moon Icon -->
-              <svg class="theme-icon moon-icon active" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+
             </div>
           </div>
 
@@ -2026,9 +2023,8 @@ function applyTheme(isDark) {
 function initThemeToggle() {
   const themeToggle = document.getElementById('themeToggle');
   const sunIcon = themeToggle?.querySelector('.sun-icon');
-  const moonIcon = themeToggle?.querySelector('.moon-icon');
 
-  if (!themeToggle || !sunIcon || !moonIcon) return;
+  if (!themeToggle || !sunIcon) return;
 
   // Check for saved theme preference or default to dark mode
   const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -2037,9 +2033,7 @@ function initThemeToggle() {
   // Set initial state - dark mode is default
   if (isDark) {
     sunIcon.classList.remove('active');
-    moonIcon.classList.add('active');
   } else {
-    moonIcon.classList.remove('active');
     sunIcon.classList.add('active');
   }
   
@@ -2053,21 +2047,12 @@ function initThemeToggle() {
     // Save preference
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
 
-    // Switch icons with animation
-    const currentIcon = isDark ? sunIcon : moonIcon;
-    const nextIcon = isDark ? moonIcon : sunIcon;
-
-    // Fade out current icon
-    currentIcon.classList.remove('active');
-
-    // Add switching animation to next icon
-    nextIcon.classList.add('switching');
-    nextIcon.classList.add('active');
-
-    // Remove switching class after animation
-    setTimeout(() => {
-      nextIcon.classList.remove('switching');
-    }, 400);
+    // Switch icon state
+    if (isDark) {
+      sunIcon.classList.remove('active');
+    } else {
+      sunIcon.classList.add('active');
+    }
 
     // Apply actual theme changes
     applyTheme(isDark);
@@ -3118,7 +3103,6 @@ function addMobileMenuStyles() {
       .korporativ-glass-decoration,
       .samarali-dars-decoration,
       .oxirgi-dars-decoration,
-      .theme-toggle .moon-icon,
       .theme-toggle .sun-icon {
         display: none !important;
       }
@@ -3305,14 +3289,11 @@ function initMobileThemeToggle() {
     const desktopThemeToggle = document.getElementById('themeToggle');
     if (desktopThemeToggle) {
       const sunIcon = desktopThemeToggle.querySelector('.sun-icon');
-      const moonIcon = desktopThemeToggle.querySelector('.moon-icon');
 
-      if (sunIcon && moonIcon) {
+      if (sunIcon) {
         if (isDark) {
           sunIcon.classList.remove('active');
-          moonIcon.classList.add('active');
         } else {
-          moonIcon.classList.remove('active');
           sunIcon.classList.add('active');
         }
       }

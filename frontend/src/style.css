@@ -13868,3 +13868,61 @@ OBILE HEADER PERFECT LAYOUT ===== */
     transform: translateY(0);
   }
 }
+
+/* Modal Centering Fix - Ensures all modals stay perfectly centered */
+.login-modal,
+.register-modal,
+.password-modal,
+.otp-modal-overlay {
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  z-index: 9999 !important;
+}
+
+/* Prevent modal jumping/movement */
+.login-modal,
+.register-modal {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+/* Ensure modal content doesn't cause jumping */
+.login-card,
+.register-card,
+.password-card {
+  position: relative !important;
+  transform: none !important;
+  margin: 0 !important;
+}
+
+/* Theme toggle without moon icon */
+.theme-toggle {
+  position: relative;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.theme-icon {
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.theme-icon.active {
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+.theme-icon:not(.active) {
+  opacity: 0.4;
+}

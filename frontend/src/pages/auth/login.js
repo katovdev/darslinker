@@ -20,14 +20,7 @@ export function initLoginPage() {
       <!-- Neon Dots -->
       <div class="neon-dots-container" id="neonDotsContainer"></div>
 
-      <!-- Animated Moon Decorations -->
-      <div class="moon-decoration moon-top-right">
-        <img src="/images/0016 1.png" alt="Moon" class="moon-image" />
-      </div>
 
-      <div class="moon-decoration moon-bottom-left">
-        <img src="/images/0016 1.png" alt="Moon" class="moon-image" />
-      </div>
 
       <!-- Logo -->
       <div class="login-logo">
@@ -217,54 +210,7 @@ function addLoginPageStyles() {
       animation-delay: -4s;
     }
 
-    .moon-decoration {
-      position: fixed;
-      z-index: 1;
-      pointer-events: none;
-    }
 
-    .moon-top-right {
-      top: 150px;
-      right: 350px;
-      animation: moonFloat 6s ease-in-out infinite;
-    }
-
-    .moon-bottom-left {
-      bottom: 100px;
-      left: 330px;
-      animation: moonFloat 8s ease-in-out infinite reverse;
-    }
-
-    .moon-image {
-      width: 200px;
-      height: 200px;
-      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
-      animation: moonRotate 20s linear infinite;
-    }
-
-    @keyframes moonFloat {
-      0%, 100% {
-        transform: translateY(0px) translateX(0px);
-      }
-      25% {
-        transform: translateY(-15px) translateX(5px);
-      }
-      50% {
-        transform: translateY(0px) translateX(10px);
-      }
-      75% {
-        transform: translateY(15px) translateX(5px);
-      }
-    }
-
-    @keyframes moonRotate {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
 
     .login-logo {
       margin-bottom: 30px;
@@ -286,9 +232,14 @@ function addLoginPageStyles() {
     }
 
     .login-modal {
-      position: relative;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       z-index: 10;
-      transform: translateY(-100px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .login-card {
@@ -498,12 +449,6 @@ function addLoginPageStyles() {
         display: none !important;
       }
 
-      .moon-decoration,
-      .moon-top-right,
-      .moon-bottom-left {
-        display: none !important;
-      }
-
       .login-card {
         width: 90vw;
         max-width: 450px;
@@ -515,6 +460,10 @@ function addLoginPageStyles() {
       }
 
       .login-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
 
       .login-logo h1 {
@@ -532,6 +481,10 @@ function addLoginPageStyles() {
       }
 
       .login-modal {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
 
       .country-selector {

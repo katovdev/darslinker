@@ -21,14 +21,7 @@ export function initPasswordPage() {
       <!-- Background -->
       <div class="password-background"></div>
 
-      <!-- Animated Moon Decorations -->
-      <div class="moon-decoration moon-top-right">
-        <img src="/images/0016 1.png" alt="Moon" class="moon-image" />
-      </div>
 
-      <div class="moon-decoration moon-bottom-left">
-        <img src="/images/0016 1.png" alt="Moon" class="moon-image" />
-      </div>
 
       <!-- Logo -->
       <div class="password-logo">
@@ -122,54 +115,7 @@ function addPasswordPageStyles() {
       z-index: -1;
     }
 
-    .moon-decoration {
-      position: fixed;
-      z-index: 1;
-      pointer-events: none;
-    }
 
-    .moon-top-right {
-      top: 140px;
-      right: 360px;
-      animation: moonFloat 6s ease-in-out infinite;
-    }
-
-    .moon-bottom-left {
-      bottom: 120px;
-      left: 340px;
-      animation: moonFloat 8s ease-in-out infinite reverse;
-    }
-
-    .moon-image {
-      width: 200px;
-      height: 200px;
-      filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
-      animation: moonRotate 20s linear infinite;
-    }
-
-    @keyframes moonFloat {
-      0%, 100% {
-        transform: translateY(0px) translateX(0px);
-      }
-      25% {
-        transform: translateY(-15px) translateX(5px);
-      }
-      50% {
-        transform: translateY(0px) translateX(10px);
-      }
-      75% {
-        transform: translateY(15px) translateX(5px);
-      }
-    }
-
-    @keyframes moonRotate {
-      from {
-        transform: rotate(0deg);
-      }
-      to {
-        transform: rotate(360deg);
-      }
-    }
 
     .password-logo {
       margin-bottom: 30px;
@@ -391,11 +337,6 @@ function addPasswordPageStyles() {
     /* Responsive Design */
     @media (max-width: 768px) {
       /* Hide all 3D elements */
-      .moon-decoration,
-      .moon-top-right,
-      .moon-bottom-left {
-        display: none !important;
-      }
 
       .password-card {
         width: 90vw;
