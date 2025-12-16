@@ -529,11 +529,7 @@ body {
   overflow: visible;
 }
 
-.hero-feature-card:hover {
-  background: rgba(58, 56, 56, 0.3);
-  border-color: var(--primary-color);
-  transform: translateY(-5px);
-}
+/* Hero feature card hover effect removed */
 
 .hero-feature-card h3 {
   font-size: 20px;
@@ -626,52 +622,15 @@ body {
   bottom: 170px;
   right: 10px;
   opacity: 0.7;
-  pointer-events: auto;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  pointer-events: none;
 }
-
-.analytics-3d-icon:hover {
-  transform: scale(1.1) rotate(5deg);
-  opacity: 1;
-}
-
-/* Behind card - blurred */
-/* .analytics-behind {
-  z-index: -1;
-  clip-path: polygon(0 0, 100% 0, 100% 60%, 0 60%);
-}
-
-.analytics-behind .analytics-icon-image {
-  width: 300px;
-  height: 300px;
-  object-fit: contain;
-  filter: blur(3px) brightness(0.6) saturate(100%);
-  transition: all 0.3s ease;
-  animation: analyticsFloat3D 5s ease-in-out infinite;
-  opacity: 0.8;
-} */
-
-
 
 .analytics-icon-image-clear {
   width: 300px;
   height: 300px;
   object-fit: contain;
   filter: brightness(0.9) saturate(120%);
-  transition: all 0.3s ease;
   animation: analyticsFloat3D 5s ease-in-out infinite;
-}
-
-.analytics-3d-icon:hover .analytics-icon-image-clear {
-  filter: brightness(1.2) saturate(150%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
-}
-
-.analytics-card:hover .analytics-icon-image,
-.analytics-card:hover .analytics-icon-image-clear {
-  filter: brightness(1.1) saturate(150%);
-  opacity: 0.9;
-  transform: scale(1.02);
 }
 
 /* Analytics Icon 3D Floating Animation */
@@ -829,10 +788,7 @@ body {
   transition: all 0.3s ease;
 }
 
-.platform-feature-card:hover {
-  background: rgba(58, 56, 56, 0.3);
-  transform: translateY(-5px);
-}
+/* Platform feature card hover effect removed */
 
 .platform-feature-card h4 {
   font-size: 14px;
@@ -854,14 +810,7 @@ body {
   top: 950px;
   z-index: 10;
   opacity: 0.6;
-  pointer-events: auto;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.course-3d-icon:hover {
-  transform: scale(1.1) rotate(5deg);
-  opacity: 1;
+  pointer-events: none;
 }
 
 .course-icon-image {
@@ -869,18 +818,7 @@ body {
   height: 250px;
   object-fit: contain;
   filter: brightness(0.8) saturate(150%);
-  transition: all 0.3s ease;
   animation: courseFloat 5s ease-in-out infinite;
-}
-
-.course-3d-icon:hover .course-icon-image {
-  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
-}
-
-.course-card:hover .course-icon-image {
-  filter: brightness(1.1) saturate(180%);
-  opacity: 0.8;
-  transform: scale(1.05);
 }
 
 /* Brending Card Special Styling */
@@ -896,28 +834,15 @@ body {
   top: 1100px;
   z-index: 10;
   opacity: 0.6;
-  pointer-events: auto;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  pointer-events: none;
 }
-
-/* Glass decoration hover effect removed */
 
 .glass-deco-image {
   width: 300px;
   height: 300px;
   object-fit: contain;
   filter: brightness(0.8) saturate(150%);
-  transition: all 0.3s ease;
   animation: glassFloat 4s ease-in-out infinite;
-}
-
-/* Glass decoration image hover effect removed */
-
-.brending-card:hover .glass-deco-image {
-  filter: brightness(1.1) saturate(180%);
-  opacity: 0.8;
-  transform: scale(1.05);
 }
 
 /* Minimal Card Glass Decoration */
@@ -938,34 +863,15 @@ body {
   top: 550px;
   z-index: 10;
   opacity: 0.6;
-  pointer-events: auto;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  pointer-events: none;
 }
-
-/* Minimal glass decoration hover effect removed */
 
 .minimal-glass-image {
   width: 250px;
   height: 250px;
   object-fit: contain;
   filter: brightness(0.8) saturate(150%);
-  transition: all 0.3s ease;
   animation: minimalGlassFloat 4s ease-in-out infinite;
-}
-
-/* Minimal glass decoration image hover effect removed */
-
-
-.minimal-glass-decoration .minimal-glass-image {
-  position: relative;
-  z-index: 2;
-}
-
-.minimal-card:hover .minimal-glass-image {
-  filter: brightness(1.1) saturate(180%);
-  opacity: 0.8;
-  transform: scale(1.05);
 }
 
 .korporativ-glass-decoration {
@@ -974,28 +880,15 @@ body {
   top: 100px;
   z-index: 10;
   opacity: 0.6;
-  pointer-events: auto;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  pointer-events: none;
 }
-
-/* Korporativ glass decoration hover effect removed */
 
 .korporativ-glass-image {
   width: 330px;
   height: 330px;
   object-fit: contain;
   filter: brightness(0.8) saturate(150%);
-  transition: all 0.3s ease;
   animation: korporativGlassFloat 4s ease-in-out infinite;
-}
-
-/* Korporativ glass decoration image hover effect removed */
-
-.korporativ-card:hover .korporativ-glass-image {
-  filter: brightness(1.1) saturate(180%);
-  opacity: 0.8;
-  transform: scale(1.05);
 }
 
 /* Course Floating Animation */
@@ -1387,15 +1280,8 @@ body {
   top: -50px;
   left: -40px;
   z-index: 100;
-  cursor: pointer;
-  transition: all 0.3s ease;
   opacity: 0.8;
-  pointer-events: auto;
-}
-
-.play-button-3d:hover {
-  transform: scale(1.1) rotate(5deg);
-  opacity: 1;
+  pointer-events: none;
 }
 
 .play-btn-image {
@@ -1403,12 +1289,7 @@ body {
   height: 250px;
   object-fit: contain;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
-  transition: all 0.3s ease;
   animation: playButtonFloat 4s ease-in-out infinite;
-}
-
-.play-button-3d:hover .play-btn-image {
-  filter: drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
 }
 
 .play-button-3d:active {
@@ -2517,16 +2398,7 @@ body {
     right: -10px;
   }
 
-  .analytics-3d-icon{
-   transform: scale(1.1) rotate(5deg);
-  opacity: 1;}
-
-.analytics-3d-icon:hover .analytics-icon-image {
-    filter: drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
-  }
-
-
-  .analytics-icon-image {
+  .analytics-icon-image-clear {
     width: 80px;
     height: 80px;
   }
@@ -2544,12 +2416,6 @@ body {
   .glass-decoration {
     right: -40px;
     top: -20px;
-  }
-
-  .glass-decoration{
-    transform: scale(1.1) rotate(5deg);
-    opacity: 1;
-
   }
 
   .glass-deco-image {
