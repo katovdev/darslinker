@@ -70,14 +70,20 @@ app.use((req, res, next) => {
     'https://darslinker.uz', // Main domain (HTTPS)
     'http://www.darslinker.uz', // WWW version (HTTP)
     'https://www.darslinker.uz', // WWW version (HTTPS)
-    'https://moderator.darslinker.uz', // Moderator subdomain
+    
+    // Moderator subdomains
+    'http://moderator.darslinker.uz', // Moderator subdomain (HTTP)
+    'https://moderator.darslinker.uz', // Moderator subdomain (HTTPS)
+    'http://admin.darslinker.uz', // Admin subdomain (HTTP)
+    'https://admin.darslinker.uz', // Admin subdomain (HTTPS)
     
     // Vercel deployments
     'https://darslinker-azio.vercel.app', // Frontend
-    'https://darslinker-4n3z.vercel.app', // Moderator
+    'https://darslinker-4n3z.vercel.app', // Moderator (old)
     
-    // Netlify (backup)
-    'https://bucolic-fairy-0e50d6.netlify.app'
+    // Netlify deployments
+    'https://bucolic-fairy-0e50d6.netlify.app', // Old frontend
+    'https://heartfelt-centaur-5fc321.netlify.app' // Moderator (new)
   ];
   
   const origin = req.headers.origin;
