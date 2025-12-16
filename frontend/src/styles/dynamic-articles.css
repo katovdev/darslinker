@@ -452,7 +452,7 @@
   animation: slideInRight 0.3s ease-out;
 }
 
-.notification-content {
+.articles-update-notification .notification-content {
   background: linear-gradient(135deg, #7EA2D4 0%, #5A8BC4 100%);
   color: white;
   padding: 1rem 1.5rem;
@@ -520,7 +520,7 @@
     left: 10px;
   }
   
-  .notification-content {
+  .articles-update-notification .notification-content {
     min-width: auto;
     padding: 0.75rem 1rem;
   }
@@ -531,7 +531,7 @@
 }
 
 /* Dark mode notification */
-[data-theme="dark"] .notification-content {
+[data-theme="dark"] .articles-update-notification .notification-content {
   background: linear-gradient(135deg, #4A6B8A 0%, #3A5B7A 100%);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 }
@@ -737,7 +737,7 @@
   }
 }
 
-.notification-content {
+.articles-update-notification .notification-content {
   display: flex;
   align-items: center;
   gap: 0.5rem;

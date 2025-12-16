@@ -22109,7 +22109,9 @@ window.openNotifications = async function() {
           height: 20px;
         }
         .notification-content {
-          flex: 1;
+          flex: 1 !important;
+          background: red !important;
+          background-color: red !important;
         }
         .notification-title {
           font-weight: 600;
