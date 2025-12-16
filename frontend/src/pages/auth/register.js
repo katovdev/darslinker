@@ -1240,21 +1240,84 @@ function initRegisterPageFunctionality() {
           sessionStorage.removeItem('registerIdentifier');
           sessionStorage.removeItem('registerMode');
 
-          // Close modal and reset form
-          document.body.removeChild(otpModal);
-          document.head.removeChild(otpStyles);
+          // Create full-screen loading overlay that completely replaces everything
+          const fullScreenLoading = document.createElement('div');
+          fullScreenLoading.id = 'fullscreen-loading';
+          fullScreenLoading.innerHTML = `
+            <div class="fullscreen-loading-content">
+              <div class="loading-spinner-large"></div>
+              <h2>Muvaffaqiyatli!</h2>
+              <p>Dashboardga o'tilmoqda...</p>
+            </div>
+          `;
 
-          // Reset form inputs
-          firstNameInput.value = '';
-          lastNameInput.value = '';
-          phoneInput.value = '';
-          passwordInput.value = '';
-          confirmPasswordInput.value = '';
+          // Add full screen loading styles
+          const fullScreenStyles = document.createElement('style');
+          fullScreenStyles.id = 'fullscreen-loading-styles';
+          fullScreenStyles.textContent = `
+            #fullscreen-loading {
+              position: fixed !important;
+              top: 0 !important;
+              left: 0 !important;
+              width: 100vw !important;
+              height: 100vh !important;
+              background: #232323 !important;
+              display: flex !important;
+              justify-content: center !important;
+              align-items: center !important;
+              z-index: 99999 !important;
+              font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif !important;
+            }
 
-          // Navigate to dashboard after successful registration
+            .fullscreen-loading-content {
+              text-align: center !important;
+              color: #ffffff !important;
+            }
+
+            .fullscreen-loading-content h2 {
+              font-size: 2rem !important;
+              margin: 20px 0 10px 0 !important;
+              color: #7EA2D4 !important;
+              font-weight: 600 !important;
+            }
+
+            .fullscreen-loading-content p {
+              font-size: 1.2rem !important;
+              color: rgba(255, 255, 255, 0.8) !important;
+              margin: 0 !important;
+            }
+
+            .loading-spinner-large {
+              width: 80px !important;
+              height: 80px !important;
+              border: 6px solid rgba(126, 162, 212, 0.3) !important;
+              border-top: 6px solid #7EA2D4 !important;
+              border-radius: 50% !important;
+              animation: spin 1s linear infinite !important;
+              margin: 0 auto 30px auto !important;
+            }
+
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `;
+
+          // Clear only the body content, keep head scripts
+          document.body.innerHTML = '';
+
+          // Add loading styles and content
+          document.head.appendChild(fullScreenStyles);
+          document.body.appendChild(fullScreenLoading);
+
+          // Reset body styles completely
+          document.body.style.cssText = 'margin: 0 !important; padding: 0 !important; overflow: hidden !important; height: 100vh !important; background: #232323 !important;';
+
+          // Navigate to dashboard after 500ms
           setTimeout(() => {
-            router.navigate('/dashboard');
-          }, 2000);
+            // Use window.location for reliable navigation
+            window.location.href = '/dashboard';
+          }, 500);
         }
       } catch (error) {
         console.error('OTP verification error:', error);
