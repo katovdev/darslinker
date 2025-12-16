@@ -36,15 +36,7 @@ export function initRegisterPage() {
         <div class="register-card">
           <h2 class="register-title">Ro'yxatdan o'tish</h2>
 
-          <!-- Toggle Buttons -->
-          <div class="register-toggle">
-            <button class="toggle-btn ${registerMode === 'phone' ? 'active' : ''}" id="phoneToggle" data-type="phone">
-              Telefon raqam
-            </button>
-            <button class="toggle-btn ${registerMode === 'email' ? 'active' : ''}" id="emailToggle" data-type="email">
-              Email
-            </button>
-          </div>
+
 
           <!-- Form Fields -->
           <div class="register-form">
@@ -75,7 +67,7 @@ export function initRegisterPage() {
             </div>
 
             <!-- Phone Number -->
-            <div class="form-group ${registerMode !== 'phone' ? 'hidden' : ''}" id="phoneGroup">
+            <div class="form-group" id="phoneGroup">
               <label class="form-label">Telefon raqam</label>
               <div class="phone-input">
                 <div class="country-selector">
@@ -93,18 +85,7 @@ export function initRegisterPage() {
               <div class="input-error" id="phoneError"></div>
             </div>
 
-            <!-- Email -->
-            <div class="form-group ${registerMode !== 'email' ? 'hidden' : ''}" id="emailGroup">
-              <label class="form-label">Email</label>
-              <input
-                type="email"
-                class="form-input"
-                placeholder="example@email.com"
-                id="emailInput"
-                value="${registerMode === 'email' ? registerIdentifier : ''}"
-              />
-              <div class="input-error" id="emailError"></div>
-            </div>
+
 
             <!-- Password -->
             <div class="form-group">
@@ -299,9 +280,13 @@ function addRegisterPageStyles() {
 
 
     .register-logo {
-      margin-bottom: 1px;
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
       text-align: center;
-      transform: translateY(-100px);
+      width: 100%;
     }
 
     .register-logo h1 {
@@ -351,37 +336,7 @@ function addRegisterPageStyles() {
       margin: 10px 0 15px 0;
     }
 
-    .register-toggle {
-      display: flex;
-      background: rgba(60, 60, 80, 0.5);
-      border-radius: 25px;
-      padding: 4px;
-      margin-bottom: 6px;
-    }
 
-    .toggle-btn {
-      flex: 1;
-      padding: 10px 16px;
-      border: none;
-      background: transparent;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.9rem;
-      font-weight: 500;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .toggle-btn.active {
-      background: rgba(126, 162, 212, 1);
-      color: #ffffff;
-      box-shadow: 0 2px 8px rgba(126, 162, 212, 0.3);
-    }
-
-    .toggle-btn:hover:not(.active) {
-      background: rgba(60, 60, 80, 0.7);
-      color: rgba(255, 255, 255, 0.9);
-    }
 
     .register-form {
       margin-bottom: 8px;
@@ -680,17 +635,13 @@ function addRegisterPageStyles() {
 }
 
 function initRegisterPageFunctionality() {
-  const phoneToggle = document.getElementById('phoneToggle');
-  const emailToggle = document.getElementById('emailToggle');
   const phoneGroup = document.getElementById('phoneGroup');
-  const emailGroup = document.getElementById('emailGroup');
   const registerSubmit = document.getElementById('registerSubmit');
 
   // Form inputs
   const firstNameInput = document.getElementById('firstNameInput');
   const lastNameInput = document.getElementById('lastNameInput');
   const phoneInput = document.getElementById('phoneInput');
-  const emailInput = document.getElementById('emailInput');
   const passwordInput = document.getElementById('passwordInput');
   const confirmPasswordInput = document.getElementById('confirmPasswordInput');
 
@@ -702,7 +653,6 @@ function initRegisterPageFunctionality() {
   const firstNameError = document.getElementById('firstNameError');
   const lastNameError = document.getElementById('lastNameError');
   const phoneError = document.getElementById('phoneError');
-  const emailError = document.getElementById('emailError');
   const passwordError = document.getElementById('passwordError');
   const confirmPasswordError = document.getElementById('confirmPasswordError');
 
@@ -715,20 +665,7 @@ function initRegisterPageFunctionality() {
     togglePasswordVisibility(confirmPasswordInput, confirmPasswordToggle);
   });
 
-  // Toggle between phone and email registration
-  phoneToggle.addEventListener('click', () => {
-    phoneToggle.classList.add('active');
-    emailToggle.classList.remove('active');
-    phoneGroup.classList.remove('hidden');
-    emailGroup.classList.add('hidden');
-  });
 
-  emailToggle.addEventListener('click', () => {
-    emailToggle.classList.add('active');
-    phoneToggle.classList.remove('active');
-    emailGroup.classList.remove('hidden');
-    phoneGroup.classList.add('hidden');
-  });
 
   // Real-time validation with letter-only filtering
   firstNameInput.addEventListener('input', (e) => {
@@ -751,8 +688,7 @@ function initRegisterPageFunctionality() {
   });
   phoneInput.addEventListener('blur', validatePhone);
 
-  emailInput.addEventListener('input', validateEmail);
-  emailInput.addEventListener('blur', validateEmail);
+
 
   passwordInput.addEventListener('input', validatePassword);
   passwordInput.addEventListener('blur', validatePassword);
@@ -809,9 +745,6 @@ function initRegisterPageFunctionality() {
   }
 
   function validatePhone() {
-    const isPhoneMode = phoneToggle.classList.contains('active');
-    if (!isPhoneMode) return true;
-
     const value = phoneInput.value.trim().replace(/\s/g, '');
 
     if (!value) {
@@ -826,23 +759,7 @@ function initRegisterPageFunctionality() {
     }
   }
 
-  function validateEmail() {
-    const isEmailMode = emailToggle.classList.contains('active');
-    if (!isEmailMode) return true;
 
-    const value = emailInput.value.trim();
-
-    if (!value) {
-      showError(emailError, 'Email kiritilishi shart');
-      return false;
-    } else if (!isValidEmail(value)) {
-      showError(emailError, 'To\'g\'ri email kiriting');
-      return false;
-    } else {
-      hideError(emailError);
-      return true;
-    }
-  }
 
   function validatePassword() {
     const value = passwordInput.value.trim();
@@ -902,20 +819,15 @@ function initRegisterPageFunctionality() {
   });
 
   async function handleRegistration() {
-    const isPhoneMode = phoneToggle.classList.contains('active');
-
-    // Run all validations
+    // Run all validations (phone only now)
     const isFirstNameValid = validateFirstName();
     const isLastNameValid = validateLastName();
     const isPhoneValid = validatePhone();
-    const isEmailValid = validateEmail();
     const isPasswordValid = validatePassword();
     const isConfirmPasswordValid = validateConfirmPassword();
 
     // Check if all validations pass
-    const allValid = isFirstNameValid && isLastNameValid &&
-                    (isPhoneMode ? isPhoneValid : isEmailValid) &&
-                    isPasswordValid && isConfirmPasswordValid;
+    const allValid = isFirstNameValid && isLastNameValid && isPhoneValid && isPasswordValid && isConfirmPasswordValid;
 
     if (!allValid) {
       showErrorToast('Iltimos, barcha xatolarni tuzating!');
@@ -926,10 +838,9 @@ function initRegisterPageFunctionality() {
     const firstName = firstNameInput.value.trim();
     const lastName = lastNameInput.value.trim();
     const phone = phoneInput.value.trim().replace(/\s/g, '');
-    const email = emailInput.value.trim();
     const password = passwordInput.value.trim();
 
-    const userIdentifier = isPhoneMode ? `+998${phone}` : email;
+    const userIdentifier = `+998${phone}`;
 
     // Add loading state
     registerSubmit.textContent = 'Ro\'yxatdan o\'tilmoqda...';
@@ -940,7 +851,7 @@ function initRegisterPageFunctionality() {
       const checkResult = await apiService.checkUser(userIdentifier);
 
       if (checkResult.exists && checkResult.next === 'login') {
-        showErrorToast('Bu telefon raqam yoki email allaqachon ro\'yxatdan o\'tgan va tasdiqlangan!');
+        showErrorToast('Bu telefon raqam allaqachon ro\'yxatdan o\'tgan va tasdiqlangan!');
         registerSubmit.textContent = 'Ro\'yxatdan o\'tish';
         registerSubmit.disabled = false;
         return;
@@ -959,15 +870,9 @@ function initRegisterPageFunctionality() {
         firstName,
         lastName,
         password,
+        phone: `+998${phone}`,
         role: 'teacher' // Default role - all users are teachers
       };
-
-      // Add phone or email based on mode
-      if (isPhoneMode) {
-        userData.phone = `+998${phone}`;
-      } else {
-        userData.email = email;
-      }
 
       // Register the user
       const registerResult = await apiService.register(userData);
@@ -994,10 +899,7 @@ function initRegisterPageFunctionality() {
     }
   }
 
-  function isValidEmail(email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  }
+
 
   function showOtpVerificationModal(identifier) {
     // Create OTP verification modal
@@ -1346,7 +1248,6 @@ function initRegisterPageFunctionality() {
           firstNameInput.value = '';
           lastNameInput.value = '';
           phoneInput.value = '';
-          emailInput.value = '';
           passwordInput.value = '';
           confirmPasswordInput.value = '';
 

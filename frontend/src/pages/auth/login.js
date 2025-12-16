@@ -32,15 +32,7 @@ export function initLoginPage() {
         <div class="login-card">
           <h2 class="login-title">Kirish</h2>
 
-          <!-- Toggle Buttons -->
-          <div class="login-toggle">
-            <button class="toggle-btn active" id="phoneToggle" data-type="phone">
-              Telefon raqam
-            </button>
-            <button class="toggle-btn" id="emailToggle" data-type="email">
-              Email
-            </button>
-          </div>
+
 
           <!-- Input Section -->
           <div class="input-section">
@@ -63,16 +55,7 @@ export function initLoginPage() {
               <div class="input-error" id="phoneError"></div>
             </div>
 
-            <!-- Email Input (hidden by default) -->
-            <div class="email-input-container hidden" id="emailContainer">
-              <input
-                type="email"
-                class="email-input"
-                placeholder="example@email.com"
-                id="emailInput"
-              />
-              <div class="input-error" id="emailError"></div>
-            </div>
+
           </div>
 
           <!-- Login Button -->
@@ -213,9 +196,13 @@ function addLoginPageStyles() {
 
 
     .login-logo {
-      margin-bottom: 30px;
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
       text-align: center;
-      transform: translateY(-120px)
+      width: 100%;
     }
 
     .login-logo h1 {
@@ -263,37 +250,7 @@ function addLoginPageStyles() {
       margin: 1px 0 20px 0;
     }
 
-    .login-toggle {
-      display: flex;
-      background: rgba(60, 60, 80, 0.5);
-      border-radius: 25px;
-      padding: 4px;
-      margin-bottom: 20px;
-    }
 
-    .toggle-btn {
-      flex: 1;
-      padding: 12px 16px;
-      border: none;
-      background: transparent;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 0.95rem;
-      font-weight: 500;
-      border-radius: 25px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .toggle-btn.active {
-      background: rgba(126, 162, 212, 1);
-      color: #ffffff;
-      box-shadow: 0 2px 8px rgba(126, 162, 212, 0.3);
-    }
-
-    .toggle-btn:hover:not(.active) {
-      background: rgba(60, 60, 80, 0.7);
-      color: rgba(255, 255, 255, 0.9);
-    }
 
     .input-section {
       margin-bottom: 32px;
@@ -367,36 +324,13 @@ function addLoginPageStyles() {
       color: rgba(255, 255, 255, 0.5);
     }
 
-    .email-input {
-      width: 100%;
-      padding: 16px 20px;
-      background: rgba(60, 60, 80, 0.5);
-      border: 1px solid #7EA2D4;
-      border-radius: 25px;
-      color: #ffffff;
-      font-size: 0.95rem;
-      outline: none;
-      transition: all 0.3s ease;
-    }
 
-    .email-input:focus {
-      border-color: #7EA2D4;
-      box-shadow: 0 0 0 3px rgba(126, 162, 212, 0.1);
-    }
-
-    .email-input::placeholder {
-      color: rgba(255, 255, 255, 0.5);
-    }
 
     /* Override browser autocomplete styles */
     .phone-number-input:-webkit-autofill,
     .phone-number-input:-webkit-autofill:hover,
     .phone-number-input:-webkit-autofill:focus,
-    .phone-number-input:-webkit-autofill:active,
-    .email-input:-webkit-autofill,
-    .email-input:-webkit-autofill:hover,
-    .email-input:-webkit-autofill:focus,
-    .email-input:-webkit-autofill:active {
+    .phone-number-input:-webkit-autofill:active {
       -webkit-box-shadow: 0 0 0 1000px rgba(60, 60, 80, 0.5) inset !important;
       -webkit-text-fill-color: #ffffff !important;
       caret-color: #ffffff !important;
@@ -506,16 +440,12 @@ function addLoginPageStyles() {
 }
 
 function initLoginPageFunctionality() {
-  const phoneToggle = document.getElementById('phoneToggle');
-  const emailToggle = document.getElementById('emailToggle');
   const phoneContainer = document.getElementById('phoneContainer');
-  const emailContainer = document.getElementById('emailContainer');
   const inputLabel = document.getElementById('inputLabel');
   const loginSubmit = document.getElementById('loginSubmit');
 
   // Error elements
   const phoneError = document.getElementById('phoneError');
-  const emailError = document.getElementById('emailError');
 
   // Validation functions
   function showError(errorElement, message) {
@@ -543,71 +473,23 @@ function initLoginPageFunctionality() {
     }
   }
 
-  function validateEmail() {
-    const emailInput = document.getElementById('emailInput');
-    const emailValue = emailInput.value.trim();
 
-    if (!emailValue) {
-      showError(emailError, 'Email kiritilishi shart');
-      return false;
-    } else if (!isValidEmail(emailValue)) {
-      showError(emailError, 'To\'g\'ri email kiriting');
-      return false;
-    } else {
-      hideError(emailError);
-      return true;
-    }
-  }
 
-  // Toggle between phone and email input
-  phoneToggle.addEventListener('click', () => {
-    phoneToggle.classList.add('active');
-    emailToggle.classList.remove('active');
-    phoneContainer.classList.remove('hidden');
-    emailContainer.classList.add('hidden');
-    inputLabel.textContent = 'Telefon raqam';
-    // Clear errors when switching
-    hideError(phoneError);
-    hideError(emailError);
-  });
 
-  emailToggle.addEventListener('click', () => {
-    emailToggle.classList.add('active');
-    phoneToggle.classList.remove('active');
-    emailContainer.classList.remove('hidden');
-    phoneContainer.classList.add('hidden');
-    inputLabel.textContent = 'Email';
-    // Clear errors when switching
-    hideError(phoneError);
-    hideError(emailError);
-  });
 
   // Handle form submission
   loginSubmit.addEventListener('click', (e) => {
     e.preventDefault();
 
-    const isPhoneMode = phoneToggle.classList.contains('active');
-    let userIdentifier = '';
-    let isValid = false;
-
-    if (isPhoneMode) {
-      isValid = validatePhone();
-      if (isValid) {
-        const phoneInput = document.getElementById('phoneInput');
-        const phoneValue = phoneInput.value.trim().replace(/\s/g, '');
-        userIdentifier = '+998' + phoneValue;
-      }
-    } else {
-      isValid = validateEmail();
-      if (isValid) {
-        const emailInput = document.getElementById('emailInput');
-        userIdentifier = emailInput.value.trim();
-      }
-    }
-
+    // Only phone mode now
+    const isValid = validatePhone();
     if (!isValid) {
       return; // Don't proceed if validation fails
     }
+
+    const phoneInput = document.getElementById('phoneInput');
+    const phoneValue = phoneInput.value.trim().replace(/\s/g, '');
+    const userIdentifier = '+998' + phoneValue;
 
     // Add loading state
     loginSubmit.textContent = 'Tekshirilmoqda...';
@@ -632,7 +514,7 @@ function initLoginPageFunctionality() {
         } else {
           // User doesn't exist, go to register page
           sessionStorage.setItem('registerIdentifier', userIdentifier);
-          sessionStorage.setItem('registerMode', isPhoneMode ? 'phone' : 'email');
+          sessionStorage.setItem('registerMode', 'phone');
 
           // Restore body scroll before navigation
           document.body.style.overflow = '';
@@ -649,8 +531,7 @@ function initLoginPageFunctionality() {
         console.error('Error checking user:', error);
 
         // Show error message
-        const errorElement = isPhoneMode ? phoneError : emailError;
-        showError(errorElement, 'Xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
+        showError(phoneError, 'Xatolik yuz berdi. Iltimos, qayta urinib ko\'ring.');
 
         // Reset button state
         loginSubmit.textContent = 'Kirish';
@@ -688,20 +569,10 @@ function initLoginPageFunctionality() {
 
   phoneInput.addEventListener('blur', validatePhone);
 
-  emailInput.addEventListener('input', () => {
-    // Clear error when user starts typing
-    if (emailError.classList.contains('show')) {
-      hideError(emailError);
-    }
-  });
 
-  emailInput.addEventListener('blur', validateEmail);
 }
 
-function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}
+
 
 function showOtpVerificationModal(identifier, user) {
   // Create OTP verification modal
