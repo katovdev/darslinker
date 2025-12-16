@@ -7,12 +7,17 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
-    assetsDir: 'assets'
+    sourcemap: false,
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
   },
   publicDir: 'public',
+  base: './',
   define: {
-    // Make sure environment variables are available
-    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL)
+    'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL || 'https://darslinker-backend.onrender.com/api')
   }
 });
