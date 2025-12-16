@@ -197,7 +197,7 @@ function addLoginPageStyles() {
 
     .login-logo {
       position: fixed;
-      top: 80px;
+      top: 160px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
@@ -390,7 +390,11 @@ function addLoginPageStyles() {
       }
 
       .login-logo {
-        margin-bottom: 25px;
+        position: fixed;
+        top: 90px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
       }
 
       .login-modal {
@@ -411,7 +415,11 @@ function addLoginPageStyles() {
       }
 
       .login-logo {
-        margin-bottom: 20px;
+        position: fixed;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 20;
       }
 
       .login-modal {
