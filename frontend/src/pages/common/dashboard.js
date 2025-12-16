@@ -1507,7 +1507,7 @@ window.openLandingSettings = async function() {
 // Helper function to get landing settings HTML
 function getLandingSettingsHTML(user, landingData = null) {
   const theme = getTheme();
-  const productionURL = 'https://bucolic-fairy-0e50d6.netlify.app';
+  const productionURL = 'https://darslinker.uz';
   const landingURL = `${productionURL}/teacher/${user._id}`;
 
   // Default values or from landingData
@@ -21778,7 +21778,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // New Landing Settings HTML
 function getNewLandingSettingsHTML(user, landingData = null) {
-  const productionURL = 'https://bucolic-fairy-0e50d6.netlify.app';
+  const productionURL = 'https://darslinker.uz';
   const landingURL = `${productionURL}/teacher/${user._id}`;
   
   // Default values or from landingData

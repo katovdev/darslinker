@@ -67,7 +67,7 @@ app.use((req, res, next) => {
     'https://darslinker-4n3z.vercel.app', // Moderator
     'https://darslinker.uz', // Main domain
     'https://moderator.darslinker.uz', // Moderator subdomain
-    'https://bucolic-fairy-0e50d6.netlify.app' // Old frontend (backup)
+    'https://darslinker-azio.vercel.app' // Frontend (Vercel)
   ];
   
   const origin = req.headers.origin;
@@ -76,21 +76,33 @@ app.use((req, res, next) => {
     method: req.method,
     path: req.path,
     origin: origin,
-    allowed: allowedOrigins.includes(origin)
+    allowed: allowedOrigins.includes(origin),
+    userAgent: req.headers['user-agent']?.substring(0, 50)
   });
   
+  // Always set CORS headers for allowed origins
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    // For development, allow any localhost origin
+    if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      res.header('Access-Control-Allow-Origin', origin);
+      console.log('🔧 Allowing localhost origin:', origin);
+    } else if (origin && origin.includes('vercel.app')) {
+      // Allow any vercel.app domain for moderator
+      res.header('Access-Control-Allow-Origin', origin);
+      console.log('🔧 Allowing vercel.app origin:', origin);
+    }
   }
   
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Max-Age', '86400'); // 24 hours
 
   // Handle preflight requests
   if (req.method === 'OPTIONS') {
-    console.log('✅ Handling OPTIONS preflight request');
+    console.log('✅ Handling OPTIONS preflight request for:', req.path);
     return res.status(200).end();
   }
   

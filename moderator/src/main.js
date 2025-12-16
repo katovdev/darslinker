@@ -1,8 +1,28 @@
 import './style.css';
 import axios from 'axios';
 
-// API Configuration
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+// API Configuration - Auto-detect environment
+const isProduction = import.meta.env.PROD;
+const isDevelopment = import.meta.env.DEV;
+const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+// Force production API URL for deployed moderator
+let API_URL;
+if (isLocalhost) {
+  API_URL = 'http://localhost:8001/api';  // Development
+} else {
+  API_URL = 'https://darslinker-backend.onrender.com/api';  // Production - hardcoded
+}
+
+console.log('🔧 Moderator API Configuration:', {
+  hostname: window.location.hostname,
+  isProduction,
+  isDevelopment,
+  isLocalhost,
+  envApiUrl: import.meta.env.VITE_API_URL,
+  finalApiUrl: API_URL,
+  allEnvVars: import.meta.env
+});
 
 // Create axios instance
 const api = axios.create({
@@ -28,8 +48,22 @@ api.interceptors.request.use((config) => {
 
 // Add response interceptor to handle auth errors
 api.interceptors.response.use((response) => {
+  console.log('✅ API Response:', {
+    status: response.status,
+    url: response.config.url,
+    method: response.config.method
+  });
   return response;
 }, (error) => {
+  console.error('❌ API Error:', {
+    status: error.response?.status,
+    statusText: error.response?.statusText,
+    url: error.config?.url,
+    method: error.config?.method,
+    message: error.message,
+    code: error.code
+  });
+  
   if (error.response?.status === 401) {
     // Token expired or invalid, logout user
     localStorage.removeItem('moderator_authenticated');
@@ -240,7 +274,12 @@ class AuthSystem {
     errorDiv.style.display = 'none';
 
     try {
-      console.log('🔐 Attempting login with:', { phone, password: '***' });
+      console.log('🔐 Attempting login with:', { 
+        phone, 
+        password: '***',
+        apiUrl: API_URL,
+        fullUrl: `${API_URL}/sub-admins/admin-login`
+      });
       
       // Make API call to backend for authentication
       const response = await api.post('/sub-admins/admin-login', {
@@ -266,9 +305,27 @@ class AuthSystem {
     } catch (error) {
       console.error('❌ Login error:', error);
       console.error('❌ Error response:', error.response?.data);
+      console.error('❌ Error details:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url,
+        method: error.config?.method
+      });
       
       // Show error message
       errorDiv.style.display = 'block';
+      
+      // Update error message based on error type
+      if (error.message.includes('Network Error') || error.code === 'ERR_NETWORK') {
+        errorDiv.textContent = 'Tarmoq xatosi. Backend serveriga ulanib bo\'lmadi.';
+      } else if (error.response?.status === 401) {
+        errorDiv.textContent = 'Telefon raqam yoki parol noto\'g\'ri.';
+      } else if (error.response?.status === 404) {
+        errorDiv.textContent = 'API endpoint topilmadi.';
+      } else {
+        errorDiv.textContent = error.response?.data?.message || 'Login jarayonida xatolik yuz berdi.';
+      }
       
       // Clear password field
       document.getElementById('password').value = '';

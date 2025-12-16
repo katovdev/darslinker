@@ -288,6 +288,14 @@ export const deleteSubAdmin = catchAsync(async (req, res) => {
 export const adminLogin = catchAsync(async (req, res) => {
   const { phone, password } = req.body;
 
+  console.log("🔐 Admin login attempt received:", { 
+    phone, 
+    hasPassword: !!password,
+    origin: req.headers.origin,
+    userAgent: req.headers['user-agent']?.substring(0, 50),
+    timestamp: new Date().toISOString() 
+  });
+
   logger.info("Admin login attempt", { phone, timestamp: new Date().toISOString() });
 
   // Simple hardcoded admin credentials for moderator
