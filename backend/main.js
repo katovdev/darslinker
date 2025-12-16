@@ -57,17 +57,27 @@ const app = express();
 // CORS middleware - must be before other middleware
 app.use((req, res, next) => {
   const allowedOrigins = [
+    // Local development
     'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:5175',
     'http://localhost:3000',
     'http://localhost:3001', // Moderator port
     'http://localhost:8001', // Backend port for local development
+    
+    // Production domains
+    'http://darslinker.uz', // Main domain (HTTP)
+    'https://darslinker.uz', // Main domain (HTTPS)
+    'http://www.darslinker.uz', // WWW version (HTTP)
+    'https://www.darslinker.uz', // WWW version (HTTPS)
+    'https://moderator.darslinker.uz', // Moderator subdomain
+    
+    // Vercel deployments
     'https://darslinker-azio.vercel.app', // Frontend
     'https://darslinker-4n3z.vercel.app', // Moderator
-    'https://darslinker.uz', // Main domain
-    'https://moderator.darslinker.uz', // Moderator subdomain
-    'https://darslinker-azio.vercel.app' // Frontend (Vercel)
+    
+    // Netlify (backup)
+    'https://bucolic-fairy-0e50d6.netlify.app'
   ];
   
   const origin = req.headers.origin;
@@ -83,15 +93,32 @@ app.use((req, res, next) => {
   // Always set CORS headers for allowed origins
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
+    console.log('✅ Allowed origin:', origin);
   } else {
     // For development, allow any localhost origin
     if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
       res.header('Access-Control-Allow-Origin', origin);
       console.log('🔧 Allowing localhost origin:', origin);
-    } else if (origin && origin.includes('vercel.app')) {
-      // Allow any vercel.app domain for moderator
+    } 
+    // Allow any vercel.app domain
+    else if (origin && origin.includes('vercel.app')) {
       res.header('Access-Control-Allow-Origin', origin);
       console.log('🔧 Allowing vercel.app origin:', origin);
+    } 
+    // Allow any darslinker.uz subdomain
+    else if (origin && (origin.includes('darslinker.uz') || origin.endsWith('.darslinker.uz'))) {
+      res.header('Access-Control-Allow-Origin', origin);
+      console.log('🔧 Allowing darslinker.uz origin:', origin);
+    } 
+    // Allow netlify domains
+    else if (origin && origin.includes('netlify.app')) {
+      res.header('Access-Control-Allow-Origin', origin);
+      console.log('🔧 Allowing netlify.app origin:', origin);
+    } 
+    // Fallback: allow the request anyway but log it
+    else {
+      res.header('Access-Control-Allow-Origin', origin || '*');
+      console.log('⚠️ Allowing unknown origin:', origin);
     }
   }
   
