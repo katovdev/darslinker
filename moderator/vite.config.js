@@ -7,8 +7,10 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
+    assetsDir: 'assets'
   },
+  publicDir: 'public',
   define: {
     // Make sure environment variables are available
     'import.meta.env.VITE_API_URL': JSON.stringify(process.env.VITE_API_URL)
