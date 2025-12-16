@@ -1,0 +1,250 @@
+  <!--platform features dan keyin qo'yilishi kerak. -->
+
+
+        <div class="minimal-glass-decoration">
+              <img src="/images/gradient glass (4) 1.png" alt="Glass Decoration" class="minimal-glass-image">
+            </div>
+          <!-- Minimal Plan -->
+          <div class="pricing-card minimal-card">
+
+            <div class="pricing-header minimal">
+              <h3 data-home-i18n="minimal">Minimal</h3>
+            </div>
+            <div class="pricing-features">
+              <div class="feature-item">
+                <span data-home-i18n="courseLimit">Kurs joylash soni</span>
+                <span class="feature-value">2</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="adminAdd">Admin qo'shish</span>
+                <span class="feature-value">3</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="studentBase">O'quvchilar bazasi</span>
+                <span class="feature-value">∞</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="support">Qo'llab-quvvatlash</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="analytics">O'quvchilar analitikasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item disabled">
+                <span data-home-i18n="onlineMeeting">Onlayn uchrashuv</span>
+                <span class="feature-check">✗</span>
+              </div>
+              <div class="feature-item disabled">
+                <span data-home-i18n="certificate">Sertifikat generatsiyasi</span>
+                <span class="feature-check">✗</span>
+              </div>
+              <div class="feature-item disabled">
+                <span data-home-i18n="chat">O'quvchilar bilan chat</span>
+                <span class="feature-check">✗</span>
+              </div>
+              <div class="feature-item disabled">
+                <span data-home-i18n="paymentIntegration">To'lov tizimi integratsyasi</span>
+                <span class="feature-check">✗</span>
+              </div>
+              <div class="feature-item disabled">
+                <span data-home-i18n="ai">Sun'iy intellekt</span>
+                <span class="feature-check">✗</span>
+              </div>
+              <div class="feature-item disabled">
+                <span data-home-i18n="contentSecurity">Kontent xavfsizligi</span>
+                <span class="feature-check">✗</span>
+              </div>
+              <div class="feature-item disabled">
+                <span data-home-i18n="brandDesign">Brendga mos dizayn</span>
+                <span class="feature-check">✗</span>
+              </div>
+            </div>
+            <div class="pricing-price minimal">470 000 so'm</div>
+          </div>
+
+          <!-- Standard Plan -->
+          <div class="pricing-card">
+            <span class="tavsiya-badge" data-home-i18n="recommended">Tavsiya</span>
+            <div class="pricing-header standard">
+              <h3 data-home-i18n="standard">Standard</h3>
+            </div>
+            <div class="pricing-features">
+              <div class="feature-item">
+                <span data-home-i18n="courseLimit">Kurs joylash soni</span>
+                <span class="feature-value">4</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="adminAdd">Admin qo'shish</span>
+                <span class="feature-value">6</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="studentBase">O'quvchilar bazasi</span>
+                <span class="feature-value">∞</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="support">Qo'llab-quvvatlash</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="analytics">O'quvchilar analitikasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="onlineMeeting">Onlayn uchrashuv</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="certificate">Sertifikat generatsiyasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="chat">O'quvchilar bilan chat</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="paymentIntegration">To'lov tizimi integratsyasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="ai">Sun'iy intellekt</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item disabled">
+                <span data-home-i18n="contentSecurity">Kontent xavfsizligi</span>
+                <span class="feature-check">✗</span>
+              </div>
+              <div class="feature-item disabled">
+                <span data-home-i18n="brandDesign">Brendga mos dizayn</span>
+                <span class="feature-check">✗</span>
+              </div>
+            </div>
+            <div class="pricing-price standard">870 000 so'm</div>
+          </div>
+
+          <!-- Pro Plan -->
+          <div class="pricing-card">
+            <div class="pricing-header pro">
+              <h3 data-home-i18n="pro">Pro</h3>
+            </div>
+            <div class="pricing-features">
+              <div class="feature-item">
+                <span data-home-i18n="courseLimit">Kurs joylash soni</span>
+                <span class="feature-value">8</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="adminAdd">Admin qo'shish</span>
+                <span class="feature-value">12</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="studentBase">O'quvchilar bazasi</span>
+                <span class="feature-value">∞</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="support">Qo'llab-quvvatlash</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="analytics">O'quvchilar analitikasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="onlineMeeting">Onlayn uchrashuv</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="certificate">Sertifikat generatsiyasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="chat">O'quvchilar bilan chat</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="paymentIntegration">To'lov tizimi integratsyasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="ai">Sun'iy intellekt</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="contentSecurity">Kontent xavfsizligi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="brandDesign">Brendga mos dizayn</span>
+                <span class="feature-check">✓</span>
+              </div>
+            </div>
+            <div class="pricing-price pro">1 270 000 so'm</div>
+          </div>
+
+               <div class="korporativ-glass-decoration">
+              <img src="/images/gradient glass (5) 1.png" alt="Glass Decoration" class="korporativ-glass-image">
+            </div>
+          <!-- Korporativ Plan -->
+          <div class="pricing-card korporativ-card">
+       
+            <div class="pricing-header korporativ">
+              <h3 data-home-i18n="corporate">Korporativ</h3>
+            </div>
+            <div class="pricing-features">
+              <div class="feature-item">
+                <span data-home-i18n="courseLimit">Kurs joylash soni</span>
+                <span class="feature-value">∞</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="adminAdd">Admin qo'shish</span>
+                <span class="feature-value">∞</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="studentBase">O'quvchilar bazasi</span>
+                <span class="feature-value">∞</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="support">Qo'llab-quvvatlash</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="personalDomain">Shaxsiy Domein</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="onlineMeeting">Onlayn uchrashuv</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="proFeatures">Pro tarif imkoniyatlari</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="seo">SEO - Google'da qidiruv</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="chat">O'quvchilar bilan chat</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="paymentIntegration">To'lov tizimi integratsyasi</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="ai">Sun'iy intellekt</span>
+                <span class="feature-check">✓</span>
+              </div>
+              <div class="feature-item">
+                <span data-home-i18n="contentSecurity">Kontent xavfsizligi</span>
+                <span class="feature-check">✓</span>
+              </div>
+            </div>
+            <div class="pricing-price korporativ" data-home-i18n="specialPrice">Maxsus narx</div>
+          </div>
+        </div>
+
+        <div class="pricing-action">
+          <button class="btn-pricing" onclick="router.navigate('/pricing'); return false;" data-home-i18n="pricingInfo">Ta'riflar bo'yicha to'liq ma'lumot</button>
+        </div>
+      </div>
+    </section> -->
