@@ -901,10 +901,7 @@ body {
   transition: all 0.3s ease;
 }
 
-.glass-decoration:hover {
-  transform: scale(1.1) rotate(5deg);
-  opacity: 1;
-}
+/* Glass decoration hover effect removed */
 
 .glass-deco-image {
   width: 300px;
@@ -915,9 +912,7 @@ body {
   animation: glassFloat 4s ease-in-out infinite;
 }
 
-.glass-decoration:hover .glass-deco-image {
-  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
-}
+/* Glass decoration image hover effect removed */
 
 .brending-card:hover .glass-deco-image {
   filter: brightness(1.1) saturate(180%);
@@ -948,10 +943,7 @@ body {
   transition: all 0.3s ease;
 }
 
-.minimal-glass-decoration:hover {
-  transform: scale(1.1) rotate(5deg);
-  opacity: 1;
-}
+/* Minimal glass decoration hover effect removed */
 
 .minimal-glass-image {
   width: 250px;
@@ -962,9 +954,7 @@ body {
   animation: minimalGlassFloat 4s ease-in-out infinite;
 }
 
-.minimal-glass-decoration:hover .minimal-glass-image {
-  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
-}
+/* Minimal glass decoration image hover effect removed */
 
 
 .minimal-glass-decoration .minimal-glass-image {
@@ -989,10 +979,7 @@ body {
   transition: all 0.3s ease;
 }
 
-.korporativ-glass-decoration:hover {
-  transform: scale(1.1) rotate(5deg);
-  opacity: 1;
-}
+/* Korporativ glass decoration hover effect removed */
 
 .korporativ-glass-image {
   width: 330px;
@@ -1003,9 +990,7 @@ body {
   animation: korporativGlassFloat 4s ease-in-out infinite;
 }
 
-.korporativ-glass-decoration:hover .korporativ-glass-image {
-  filter: brightness(1.2) saturate(180%) drop-shadow(0 6px 12px rgba(107, 123, 255, 0.3));
-}
+/* Korporativ glass decoration image hover effect removed */
 
 .korporativ-card:hover .korporativ-glass-image {
   filter: brightness(1.1) saturate(180%);
@@ -1458,8 +1443,8 @@ body {
 
 .toggle-container {
   position: relative;
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   background: rgba(90, 90, 90, 0.2);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -1482,17 +1467,15 @@ body {
 .theme-icon {
   position: absolute;
   color: #ffffff;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  opacity: 0;
-  transform: scale(0.5) rotate(180deg);
-  width: 20px;
-  height: 20px;
+  transition: all 0.3s ease;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.theme-icon.active {
-  opacity: 1;
-  transform: scale(1) rotate(0deg);
-}
+/* Theme icon active state handled by JavaScript */
 
 .theme-toggle:active .toggle-container {
   transform: scale(0.95);

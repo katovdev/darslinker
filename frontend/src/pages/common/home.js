@@ -514,9 +514,14 @@ export function initHomePage() {
           <div class="theme-toggle" id="themeToggle">
             <div class="toggle-container">
               <!-- Sun Icon -->
-              <svg class="theme-icon sun-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Sun Icon (for dark mode - to switch to light) -->
+              <svg class="theme-icon sun-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: flex; align-items: center; justify-content: center;">
                 <circle cx="12" cy="12" r="5" stroke="currentColor" stroke-width="2"/>
                 <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+              <!-- Moon Icon (for light mode - to switch to dark) -->
+              <svg class="theme-icon moon-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: flex; align-items: center; justify-content: center;">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
 
 
@@ -2023,18 +2028,23 @@ function applyTheme(isDark) {
 function initThemeToggle() {
   const themeToggle = document.getElementById('themeToggle');
   const sunIcon = themeToggle?.querySelector('.sun-icon');
+  const moonIcon = themeToggle?.querySelector('.moon-icon');
 
-  if (!themeToggle || !sunIcon) return;
+  if (!themeToggle || !sunIcon || !moonIcon) return;
 
   // Check for saved theme preference or default to dark mode
   const savedTheme = localStorage.getItem('theme') || 'dark';
   let isDark = savedTheme === 'dark';
 
-  // Set initial state - dark mode is default
+  // Set initial state - show appropriate icon
   if (isDark) {
-    sunIcon.classList.remove('active');
+    // Dark mode: show sun icon (to switch to light)
+    sunIcon.style.display = 'block';
+    moonIcon.style.display = 'none';
   } else {
-    sunIcon.classList.add('active');
+    // Light mode: show moon icon (to switch to dark)
+    sunIcon.style.display = 'none';
+    moonIcon.style.display = 'block';
   }
   
   // Apply initial theme
@@ -2049,9 +2059,13 @@ function initThemeToggle() {
 
     // Switch icon state
     if (isDark) {
-      sunIcon.classList.remove('active');
+      // Dark mode: show sun icon (to switch to light)
+      sunIcon.style.display = 'block';
+      moonIcon.style.display = 'none';
     } else {
-      sunIcon.classList.add('active');
+      // Light mode: show moon icon (to switch to dark)
+      sunIcon.style.display = 'none';
+      moonIcon.style.display = 'block';
     }
 
     // Apply actual theme changes
@@ -3103,7 +3117,8 @@ function addMobileMenuStyles() {
       .korporativ-glass-decoration,
       .samarali-dars-decoration,
       .oxirgi-dars-decoration,
-      .theme-toggle .sun-icon {
+      .theme-toggle .sun-icon,
+      .theme-toggle .moon-icon {
         display: none !important;
       }
 
@@ -3289,12 +3304,17 @@ function initMobileThemeToggle() {
     const desktopThemeToggle = document.getElementById('themeToggle');
     if (desktopThemeToggle) {
       const sunIcon = desktopThemeToggle.querySelector('.sun-icon');
+      const moonIcon = desktopThemeToggle.querySelector('.moon-icon');
 
-      if (sunIcon) {
+      if (sunIcon && moonIcon) {
         if (isDark) {
-          sunIcon.classList.remove('active');
+          // Dark mode: show sun icon (to switch to light)
+          sunIcon.style.display = 'block';
+          moonIcon.style.display = 'none';
         } else {
-          sunIcon.classList.add('active');
+          // Light mode: show moon icon (to switch to dark)
+          sunIcon.style.display = 'none';
+          moonIcon.style.display = 'block';
         }
       }
     }
