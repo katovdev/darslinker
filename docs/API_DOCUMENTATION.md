@@ -1,21 +1,3 @@
-# API Hujjatlari - Dars Linker Platformasi
-
-## Asosiy URL
-
-**Ishlab chiqarish**: `https://darslinker-backend.onrender.com/api`
-**Rivojlantirish**: `http://localhost:8001/api`
-
-## Autentifikatsiya
-
-API JWT (JSON Web Token) asosidagi autentifikatsiyadan foydalanadi. Tokenni Authorization headeriga qo'shing:
-
-```http
-Authorization: Bearer <sizning_jwt_tokeningiz>
-```
-
-## Javob Formati
-
-Barcha API javoblari izchil formatga amal qiladi:
 
 ### Muvaffaqiyatli Javob
 ```json
@@ -725,19 +707,3 @@ Create a sub-admin for a teacher.
 | File Upload | 10 requests/minute |
 | General API | 100 requests/minute |
 | Blog Endpoints | 50 requests/minute |
-
-## Webhook Events
-
-### Telegram Bot Webhooks
-**POST** `/telegram/webhook`
-
-Receives updates from Telegram bots.
-
-### Payment Webhooks
-**POST** `/payments/webhook`
-
-Receives payment status updates from payment providers.
-
----
-
-For interactive API testing, visit: `https://darslinker-backend.onrender.com/api-docs`

@@ -1,8 +1,3 @@
-# Tizim Arxitekturasi - Dars Linker Platformasi
-
-## Umumiy Ma'lumot
-
-Dars Linker - zamonaviy, kengaytirilishi mumkin bo'lgan arxitektura bilan qurilgan keng qamrovli onlayn ta'lim platformasidir. Tizim ko'plab foydalanuvchi turlarini, kontent boshqaruvini, to'lov jarayonlarini va real-vaqt aloqasini yuqori ishlash va xavfsizlik standartlarini saqlab qolgan holda boshqarish uchun mo'ljallangan.
 
 ## High-Level Architecture
 
