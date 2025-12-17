@@ -655,6 +655,7 @@ function renderLessonViewPage(courseData, currentLesson) {
                    <video 
                      id="lesson-video-player"
                      controls 
+                     controlsList="nodownload nopictureinpicture"
                      autoplay 
                      preload="metadata"
                      class="lesson-view-video-player"

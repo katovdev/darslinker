@@ -14215,7 +14215,7 @@ window.viewVideo = function(button, event) {
         </button>
       </div>
       <div class="video-container" style="padding: 24px; background: var(--bg-primary);">
-        <video controls autoplay style="width: 100%; height: auto; border-radius: 8px; max-width: 800px; min-width: 400px;">
+        <video controls controlsList="nodownload nopictureinpicture" autoplay style="width: 100%; height: auto; border-radius: 8px; max-width: 800px; min-width: 400px;">
           <source src="${videoUrl}" type="video/mp4">
           Your browser does not support the video tag.
         </video>

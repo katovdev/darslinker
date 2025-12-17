@@ -1504,7 +1504,7 @@ function openVideoModal(lesson) {
         </div>
         <div class="video-player-container" id="video-player-container">
           ${videoUrl 
-            ? `<video controls autoplay class="video-player" id="main-video-player">
+            ? `<video controls controlsList="nodownload nopictureinpicture" autoplay class="video-player" id="main-video-player">
                  <source src="${videoUrl}" type="video/mp4">
                  Your browser does not support the video tag.
                </video>`
@@ -1586,7 +1586,7 @@ window.playVideoInModal = function(lessonId, lessonType) {
   
   if (videoContainer && videoUrl) {
     videoContainer.innerHTML = `
-      <video controls autoplay class="video-player" id="main-video-player">
+      <video controls controlsList="nodownload nopictureinpicture" autoplay class="video-player" id="main-video-player">
         <source src="${videoUrl}" type="video/mp4">
         Your browser does not support the video tag.
       </video>
