@@ -70,6 +70,8 @@ app.use((req, res, next) => {
     'https://darslinker.uz', // Main domain (HTTPS)
     'http://www.darslinker.uz', // WWW version (HTTP)
     'https://www.darslinker.uz', // WWW version (HTTPS)
+    'https://api.darslinker.uz', // Backend API behind Nginx/HTTPS
+    'https://frontend-seven-lime-32.vercel.app', // Current frontend deployment
     
     // Moderator subdomains
     'http://moderator.darslinker.uz', // Moderator subdomain (HTTP)

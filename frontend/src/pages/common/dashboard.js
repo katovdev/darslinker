@@ -13,14 +13,14 @@ export async function initDashboard() {
   // Initialize i18n and theme
   initI18n();
   initTheme();
-  
+
   // Load and apply saved primary color
   loadSavedPrimaryColor();
-  
+
   // Add language change listener to reload dashboard when language changes
   window.removeEventListener('languageChanged', handleLanguageChange);
   window.addEventListener('languageChanged', handleLanguageChange);
-  
+
   // Add theme change listener to update colors immediately
   window.removeEventListener('themeChanged', handleThemeChange);
   window.addEventListener('themeChanged', handleThemeChange);
@@ -46,12 +46,12 @@ export async function initDashboard() {
   // Get user data - try localStorage first (most recent), then sessionStorage
   let currentUserData = localStorage.getItem('currentUser');
   let source = 'localStorage';
-  
+
   if (!currentUserData || currentUserData === 'undefined' || currentUserData === 'null') {
     currentUserData = sessionStorage.getItem('currentUser');
     source = 'sessionStorage';
   }
-  
+
   console.log(`Raw currentUser from ${source}:`, currentUserData);
 
   let userData = null;
@@ -59,7 +59,7 @@ export async function initDashboard() {
     try {
       userData = JSON.parse(currentUserData);
       console.log('✅ Parsed user data:', userData);
-      
+
       // Sync to both storages
       sessionStorage.setItem('currentUser', JSON.stringify(userData));
       localStorage.setItem('currentUser', JSON.stringify(userData));
@@ -128,7 +128,7 @@ async function renderTeacherDashboard(user) {
   console.log('city:', user.city);
   console.log('country:', user.country);
   console.log('ratingAverage:', user.ratingAverage);
-  
+
   // Fetch dashboard data first to get real stats
   let dashboardStats = {
     activeCourses: 0,
@@ -136,7 +136,7 @@ async function renderTeacherDashboard(user) {
     totalRevenue: 0,
     avgRating: 0
   };
-  
+
   try {
     console.log('🔄 Attempting to fetch teacher dashboard data...');
     console.log('🆔 Teacher ID:', user._id);
@@ -178,13 +178,13 @@ async function renderTeacherDashboard(user) {
       console.error('🔐 Authentication error - token might be invalid or expired');
     }
   }
-  
+
   const appElement = document.querySelector('#app');
   if (!appElement) {
     console.error('❌ App element not found - cannot render dashboard');
     return;
   }
-  
+
   appElement.innerHTML = `
     <div class="figma-dashboard">
       <!-- Mobile Header -->
@@ -395,11 +395,11 @@ async function renderTeacherDashboard(user) {
             <div class="figma-profile-avatar">
               <div class="figma-avatar-circle">
                 ${user.profileImage
-                  ? `<img src="${user.profileImage}" alt="Profile">`
-                  : `<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+      ? `<img src="${user.profileImage}" alt="Profile">`
+      : `<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
                       <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                     </svg>`
-                }
+    }
               </div>
             </div>
             <div class="figma-profile-info">
@@ -409,7 +409,7 @@ async function renderTeacherDashboard(user) {
               <div class="figma-profile-rating">
                 ${user.ratingAverage > 0 ? `
                   <div class="figma-stars">
-                    ${[1,2,3,4,5].map(star => `
+                    ${[1, 2, 3, 4, 5].map(star => `
                       <svg class="star-icon" width="14" height="14" viewBox="0 0 24 24" fill="${star <= user.ratingAverage ? '#ffd700' : 'rgba(255,255,255,0.3)'}">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                       </svg>
@@ -620,7 +620,7 @@ async function renderTeacherDashboard(user) {
   `;
 
   // Define mobile menu functions globally
-  window.toggleMobileMenu = function() {
+  window.toggleMobileMenu = function () {
     console.log('🔥 Toggle clicked');
     const dropdown = document.getElementById('mobileHeaderDropdown');
     const button = document.getElementById('mobileHeaderMenu');
@@ -702,7 +702,7 @@ async function renderTeacherDashboard(user) {
     }
   };
 
-  window.closeMobileMenu = function() {
+  window.closeMobileMenu = function () {
     const dropdown = document.getElementById('mobileHeaderDropdown');
     if (dropdown) {
       dropdown.style.display = 'none';
@@ -712,7 +712,7 @@ async function renderTeacherDashboard(user) {
 
   // Close menu when clicking outside
   setTimeout(() => {
-    document.addEventListener('click', function(event) {
+    document.addEventListener('click', function (event) {
       const dropdown = document.getElementById('mobileHeaderDropdown');
       const menuBtn = document.getElementById('mobileHeaderMenu');
       if (dropdown && menuBtn && dropdown.style.display === 'block' && !dropdown.contains(event.target) && !menuBtn.contains(event.target)) {
@@ -947,10 +947,10 @@ async function handleCreateCourse(e) {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       },
     });
-    
+
     const result = await response.json();
     const currentCourses = result.courses || [];
-    
+
     if (currentCourses.length >= 2) {
       showErrorToast('You have already created 2 courses. Upgrade your plan to create more courses.');
       return;
@@ -964,7 +964,7 @@ async function handleCreateCourse(e) {
   const clickedButton = e.submitter;
   const action = clickedButton?.value || 'publish'; // Default to publish
   const status = action === 'draft' ? 'draft' : 'active';
-  
+
   console.log('📝 Form submitted with action:', action, 'status:', status);
 
   // Show loading state
@@ -974,7 +974,7 @@ async function handleCreateCourse(e) {
 
   try {
     const formData = new FormData(e.target);
-    
+
     // Get basic course info
     const title = formData.get('title');
     const description = formData.get('description');
@@ -982,52 +982,52 @@ async function handleCreateCourse(e) {
     const courseType = formData.get('courseType') || 'free';
     const price = courseType === 'paid' ? parseInt(formData.get('price')) || 0 : 0;
     const discountPrice = courseType === 'paid' ? parseInt(formData.get('discountPrice')) || 0 : 0;
-    
+
     // Get thumbnail URL (should be uploaded already)
     const thumbnail = window.uploadedThumbnailUrl || '';
-    
+
     console.log('🖼️ Thumbnail check:', {
       uploadedThumbnailUrl: window.uploadedThumbnailUrl,
       thumbnail: thumbnail,
       hasThumbnail: !!thumbnail
     });
-    
+
     // Validate required fields
     if (!title || !description || !category) {
       throw new Error('Please fill in all required fields');
     }
-    
+
     if (!thumbnail) {
       console.error('❌ No thumbnail found! window.uploadedThumbnailUrl:', window.uploadedThumbnailUrl);
       throw new Error('Please upload a course thumbnail');
     }
-    
+
     // Collect modules data
     const modules = [];
     const moduleItems = document.querySelectorAll('.module-item');
-    
+
     moduleItems.forEach((moduleItem, moduleIndex) => {
       const moduleTitle = moduleItem.querySelector('.module-info h4')?.textContent || `Module ${moduleIndex + 1}`;
       const lessons = [];
-      
+
       const lessonItems = moduleItem.querySelectorAll('.lesson-item');
       lessonItems.forEach((lessonItem, lessonIndex) => {
         const lessonTitleElement = lessonItem.querySelector('.lesson-title-with-icon span:last-child');
         const lessonTitle = lessonTitleElement?.textContent || `Lesson ${lessonIndex + 1}`;
         const duration = lessonItem.querySelector('span:last-child')?.textContent || '';
-        
+
         // Determine lesson type from duration text
         let type = 'video';
         if (duration.includes('Quiz')) type = 'quiz';
         else if (duration.includes('Assignment')) type = 'assignment';
         else if (duration.includes('File')) type = 'file';
-        
+
         // Get full lesson data from stored data
         const lessonData = lessonItem.lessonData || {};
-        
+
         console.log('📚 lessonItem.lessonData:', lessonData);
         console.log('📚 lessonData.questions:', lessonData.questions);
-        
+
         const lesson = {
           type,
           title: lessonTitle,
@@ -1035,12 +1035,12 @@ async function handleCreateCourse(e) {
           duration,
           ...lessonData // Include all lesson data (fileName, fileUrl, instructions, etc.)
         };
-        
+
         console.log('📚 Final lesson object being saved:', lesson);
         console.log('📚 lesson.questions:', lesson.questions);
         lessons.push(lesson);
       });
-      
+
       if (lessons.length > 0) {
         modules.push({
           title: moduleTitle,
@@ -1049,10 +1049,10 @@ async function handleCreateCourse(e) {
         });
       }
     });
-    
+
     console.log('👤 Current user:', user);
     console.log('👤 User ID:', user._id);
-    
+
     const courseData = {
       title,
       description,
@@ -1068,16 +1068,16 @@ async function handleCreateCourse(e) {
       modules,
       teacher: user._id,
     };
-    
+
     console.log('📦 Sending course data:', courseData);
     console.log('📦 Teacher field:', courseData.teacher);
 
     // Call API to create course
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const createCourseUrl = `${apiBaseUrl}/courses`;
-    
+
     console.log('📤 Creating course at:', createCourseUrl);
-    
+
     const response = await fetch(createCourseUrl, {
       method: 'POST',
       headers: {
@@ -1086,7 +1086,7 @@ async function handleCreateCourse(e) {
       },
       body: JSON.stringify(courseData),
     });
-    
+
     const result = await response.json();
     console.log('📥 API Response:', result);
 
@@ -1096,8 +1096,8 @@ async function handleCreateCourse(e) {
     }
 
     if (result.success) {
-      const message = status === 'draft' 
-        ? 'Course saved as draft!' 
+      const message = status === 'draft'
+        ? 'Course saved as draft!'
         : 'Course published successfully!';
       showSuccessToast(message);
       setTimeout(() => {
@@ -1120,7 +1120,7 @@ async function handleCreateCourse(e) {
 }
 
 // Global functions for onclick handlers
-window.handleLogout = async function() {
+window.handleLogout = async function () {
   try {
     await apiService.logout();
     localStorage.removeItem('accessToken');
@@ -1137,41 +1137,41 @@ window.handleLogout = async function() {
 
 // openCreateCourse is defined later in the file (line ~9692)
 
-window.closeModal = function(modalId) {
+window.closeModal = function (modalId) {
   document.getElementById(modalId).classList.add('hidden');
 };
 
-window.openCreateLesson = function() {
+window.openCreateLesson = function () {
   alert('Dars yaratish oynasi ishlab chiqilmoqda...');
 };
 
-window.openCreateAssignment = function() {
+window.openCreateAssignment = function () {
   alert('Vazifa yaratish oynasi ishlab chiqilmoqda...');
 };
 
-window.viewStudents = function() {
+window.viewStudents = function () {
   alert('O\'quvchilar ro\'yxati oynasi ishlab chiqilmoqda...');
 };
 
-window.viewAllCourses = function() {
+window.viewAllCourses = function () {
   alert('Barcha kurslar sahifasi ishlab chiqilmoqda...');
 };
 
 // New functions for the Figma design
-window.openNewMeeting = function() {
+window.openNewMeeting = function () {
   alert('New meeting functionality coming soon...');
 };
 
-window.openTelegramBot = function() {
+window.openTelegramBot = function () {
   // Open Telegram bot in new tab
   window.open('https://t.me/darslinker_bot', '_blank');
 };
 
-window.editProfile = function() {
+window.editProfile = function () {
   openEditProfile();
 };
 
-window.openEditProfile = function() {
+window.openEditProfile = function () {
   // Get fresh user data from state
   const user = store.getState().user;
 
@@ -1196,22 +1196,22 @@ window.openEditProfile = function() {
     updatePageTitle(t('editProfile.title'));
     contentArea.innerHTML = getEditProfileHTML(user);
     updateActiveMenuItem('Profile');
-    
+
     // Add form handler
     const form = document.getElementById('editProfileForm');
     if (form) {
       form.addEventListener('submit', handleProfileSave);
     }
-    
+
     // Add image upload handler
     const imageInput = document.getElementById('profileImageInput');
     if (imageInput) {
       imageInput.addEventListener('change', handleImageUpload);
     }
-    
+
     return;
   }
-  
+
   // If no dashboard structure, render full page
   document.querySelector('#app').innerHTML = `
     <div class="figma-dashboard">
@@ -1401,7 +1401,7 @@ window.openEditProfile = function() {
 };
 
 // Open Landing Page Settings
-window.openLandingSettings = async function() {
+window.openLandingSettings = async function () {
   // Get fresh user data from state
   const user = store.getState().user;
 
@@ -1421,7 +1421,7 @@ window.openLandingSettings = async function() {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       },
     });
-    
+
     const result = await response.json();
     if (result.success) {
       landingData = result.landing;
@@ -1507,8 +1507,8 @@ window.openLandingSettings = async function() {
 // Helper function to get landing settings HTML
 function getLandingSettingsHTML(user, landingData = null) {
   const theme = getTheme();
-  const productionURL = 'https://darslinker.uz';
-  const landingURL = `${productionURL}/teacher/${user._id}`;
+  const landingBase = (import.meta.env.VITE_LANDING_BASE_URL || window.location.origin || '').replace(/\/+$/, '');
+  const landingURL = `${landingBase}/teacher/${user._id}`;
 
   // Default values or from landingData
   const settings = {
@@ -2078,12 +2078,12 @@ function getLandingSettingsHTML(user, landingData = null) {
               <label class="field-label">Profile Photo (Avatar)</label>
               <div class="profile-upload-section" style="cursor: not-allowed; opacity: 0.6; pointer-events: none;">
                 <div class="profile-avatar-placeholder" id="landingProfileAvatar">
-                  ${user.profileImage 
-                    ? `<img src="${user.profileImage}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`
-                    : `<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                  ${user.profileImage
+      ? `<img src="${user.profileImage}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`
+      : `<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                       </svg>`
-                  }
+    }
                 </div>
                 <div>
                   <div class="upload-text">Profile Photo</div>
@@ -2264,7 +2264,7 @@ function initializeLandingSettings() {
   // loadFeaturedCourses(); // Removed - all courses will be shown automatically
   // loadFeaturedTestimonials(); // Disabled - feature coming soon
   loadCertificates();
-  
+
   // Setup hero image upload
   const heroImageInput = document.getElementById('heroImageInput');
   if (heroImageInput) {
@@ -2279,7 +2279,7 @@ function initializeLandingSettings() {
 
   // Add color selection handlers
   document.querySelectorAll('.color-option').forEach(option => {
-    option.addEventListener('click', function() {
+    option.addEventListener('click', function () {
       document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
       this.classList.add('active');
     });
@@ -2335,7 +2335,7 @@ async function handleHeroImageUpload(e) {
       // Update Landing API with hero image
       const user = store.getState().user;
       const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-      
+
       const landingResponse = await fetch(`${apiBaseUrl}/landing/${user._id}`, {
         method: 'PUT',
         headers: {
@@ -2353,7 +2353,7 @@ async function handleHeroImageUpload(e) {
         // Update store
         store.setState({ user: { ...user, heroImage: data.url } });
         showSuccessToast('Hero image updated successfully');
-        
+
         // Reload landing settings to show new image
         openLandingSettings();
       } else {
@@ -2422,7 +2422,7 @@ async function handleLandingProfilePhotoUpload(e) {
     if (data.success) {
       // Update avatar preview
       avatar.innerHTML = `<img src="${data.url}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-      
+
       // Update user profile via API
       const user = store.getState().user;
       console.log('👤 Updating teacher profile with image URL:', data.url);
@@ -2445,11 +2445,11 @@ async function handleLandingProfilePhotoUpload(e) {
   } catch (error) {
     console.error('Photo upload error:', error);
     showErrorToast('Failed to upload photo');
-    
+
     // Restore previous image
     const user = store.getState().user;
     const avatar = document.getElementById('landingProfileAvatar');
-    avatar.innerHTML = user.profileImage 
+    avatar.innerHTML = user.profileImage
       ? `<img src="${user.profileImage}" alt="Profile" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`
       : `<svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -2462,7 +2462,7 @@ function getVideoDuration(file) {
   return new Promise((resolve) => {
     const video = document.createElement('video');
     video.preload = 'metadata';
-    video.onloadedmetadata = function() {
+    video.onloadedmetadata = function () {
       URL.revokeObjectURL(video.src);
       const duration = video.duration;
       const hours = Math.floor(duration / 3600);
@@ -2475,7 +2475,7 @@ function getVideoDuration(file) {
 
       resolve(formattedDuration);
     };
-    video.onerror = function() {
+    video.onerror = function () {
       resolve('00:00'); // fallback
     };
     video.src = URL.createObjectURL(file);
@@ -2495,7 +2495,7 @@ function createHiddenInput(form, className) {
 window.activeVideoUploads = window.activeVideoUploads || {};
 
 // Handle video upload for lesson creation
-window.handleVideoUpload = async function(input) {
+window.handleVideoUpload = async function (input) {
   const file = input.files[0];
   if (!file) return;
 
@@ -2540,16 +2540,16 @@ window.handleVideoUpload = async function(input) {
     const token = localStorage.getItem('accessToken');
 
     const xhr = new XMLHttpRequest();
-    
+
     // Store XHR for cancellation
     const uploadId = Date.now();
     window.activeVideoUploads[uploadId] = xhr;
     uploadSection.dataset.uploadId = uploadId;
 
-    xhr.onload = function() {
+    xhr.onload = function () {
       // Remove from active uploads
       delete window.activeVideoUploads[uploadId];
-      
+
       if (xhr.status === 200) {
         try {
           const response = JSON.parse(xhr.responseText);
@@ -2585,24 +2585,24 @@ window.handleVideoUpload = async function(input) {
       }
     };
 
-    xhr.onerror = function() {
+    xhr.onerror = function () {
       delete window.activeVideoUploads[uploadId];
       console.error('Network error during upload');
-      
+
       // Reset UI
       uploadContent.style.display = 'block';
       uploadProgress.style.display = 'none';
       uploadSuccess.style.display = 'none';
       input.value = '';
       videoUrlInput.value = '';
-      
+
       showErrorToast('Network error during upload');
     };
 
-    xhr.onabort = function() {
+    xhr.onabort = function () {
       delete window.activeVideoUploads[uploadId];
       console.log('✅ Upload cancelled by user');
-      
+
       // Reset UI
       uploadContent.style.display = 'block';
       uploadProgress.style.display = 'none';
@@ -2630,12 +2630,12 @@ window.handleVideoUpload = async function(input) {
 };
 
 // Cancel video upload
-window.cancelVideoUpload = function(button) {
+window.cancelVideoUpload = function (button) {
   const uploadSection = button.closest('.video-upload-section');
   const uploadId = uploadSection.dataset.uploadId;
-  
+
   console.log('🛑 Cancelling upload...', { uploadId, hasActiveUpload: !!window.activeVideoUploads[uploadId] });
-  
+
   if (uploadId && window.activeVideoUploads[uploadId]) {
     // Abort the XHR request - this will trigger xhr.onabort
     try {
@@ -2646,7 +2646,7 @@ window.cancelVideoUpload = function(button) {
     }
     delete window.activeVideoUploads[uploadId];
   }
-  
+
   // Reset UI immediately
   const lessonForm = button.closest('.lesson-form');
   const uploadContent = uploadSection.querySelector('.upload-content');
@@ -2654,18 +2654,18 @@ window.cancelVideoUpload = function(button) {
   const uploadSuccess = uploadSection.querySelector('.upload-success');
   const videoInput = lessonForm.querySelector('input[type="file"]');
   const videoUrlInput = lessonForm.querySelector('.video-url-input');
-  
+
   uploadContent.style.display = 'block';
   uploadProgress.style.display = 'none';
   uploadSuccess.style.display = 'none';
   if (videoInput) videoInput.value = '';
   if (videoUrlInput) videoUrlInput.value = '';
-  
+
   showSuccessToast('Upload cancelled');
 };
 
 // Quiz Type Selection
-window.selectQuizType = function(option, type) {
+window.selectQuizType = function (option, type) {
   const selector = option.closest('.quiz-type-selector');
   const options = selector.querySelectorAll('.quiz-type-option');
 
@@ -2680,7 +2680,7 @@ window.selectQuizType = function(option, type) {
 };
 
 // Add Quiz Question
-window.addQuizQuestion = function(button) {
+window.addQuizQuestion = function (button) {
   const lessonForm = button.closest('.lesson-form');
   const questionsList = lessonForm.querySelector('.questions-list');
   const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
@@ -2723,7 +2723,7 @@ window.addQuizQuestion = function(button) {
 };
 
 // Delete Question
-window.deleteQuestion = function(button) {
+window.deleteQuestion = function (button) {
   const questionItem = button.closest('.question-item');
   const questionsList = questionItem.parentElement;
 
@@ -2738,7 +2738,7 @@ window.deleteQuestion = function(button) {
 };
 
 // Add Option
-window.addAnswer = function(button) {
+window.addAnswer = function (button) {
   const answersSection = button.closest('.answers-section');
   const answersList = answersSection.querySelector('.answers-list');
   const lessonForm = button.closest('.lesson-form');
@@ -2757,7 +2757,7 @@ window.addAnswer = function(button) {
 };
 
 // Toggle Answer (Mark as Correct)
-window.toggleAnswer = function(element) {
+window.toggleAnswer = function (element) {
   const lessonForm = element.closest('.lesson-form');
   const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
 
@@ -2776,7 +2776,7 @@ window.toggleAnswer = function(element) {
     const answersList = element.closest('.answers-list');
     const maxCorrect = parseInt(answersList.getAttribute('data-max-correct')) || 999;
     const currentChecked = answersList.querySelectorAll('.answer-checkbox.checked').length;
-    
+
     if (element.classList.contains('checked')) {
       // Unchecking
       element.classList.remove('checked');
@@ -2821,7 +2821,7 @@ async function handleCertificateFileUpload(e) {
 
     const token = localStorage.getItem('accessToken');
     const endpoint = file.type === 'application/pdf' ? '/upload/document' : '/upload/image';
-    
+
     const response = await fetch(`${config.api.baseUrl}${endpoint}`, {
       method: 'POST',
       headers: {
@@ -2848,7 +2848,7 @@ async function handleCertificateFileUpload(e) {
 }
 
 // Copy landing page URL to clipboard
-window.copyLandingURL = function(url) {
+window.copyLandingURL = function (url) {
   navigator.clipboard.writeText(url).then(() => {
     showSuccessToast('Landing page URL copied to clipboard!');
   }).catch(() => {
@@ -2864,13 +2864,13 @@ window.copyLandingURL = function(url) {
 };
 
 // Landing Color Picker Functions
-window.updateLandingColorPreview = function(color) {
+window.updateLandingColorPreview = function (color) {
   if (/^#[0-9A-F]{6}$/i.test(color)) {
     const preview = document.getElementById('landingColorPreview');
     const picker = document.getElementById('landingColorPicker');
     if (preview) preview.style.backgroundColor = color;
     if (picker) picker.value = color;
-    
+
     // Update active preset
     document.querySelectorAll('.preset-color-landing').forEach(preset => {
       preset.classList.remove('active');
@@ -2878,27 +2878,27 @@ window.updateLandingColorPreview = function(color) {
   }
 };
 
-window.updateLandingColorFromPicker = function(color) {
+window.updateLandingColorFromPicker = function (color) {
   const input = document.getElementById('landingColorInput');
   const preview = document.getElementById('landingColorPreview');
   if (input) input.value = color;
   if (preview) preview.style.backgroundColor = color;
-  
+
   // Update active preset
   document.querySelectorAll('.preset-color-landing').forEach(preset => {
     preset.classList.remove('active');
   });
 };
 
-window.selectLandingPresetColor = function(color) {
+window.selectLandingPresetColor = function (color) {
   const input = document.getElementById('landingColorInput');
   const preview = document.getElementById('landingColorPreview');
   const picker = document.getElementById('landingColorPicker');
-  
+
   if (input) input.value = color;
   if (preview) preview.style.backgroundColor = color;
   if (picker) picker.value = color;
-  
+
   // Update active state
   document.querySelectorAll('.preset-color-landing').forEach(preset => {
     preset.classList.remove('active');
@@ -2920,9 +2920,9 @@ function rgbToHex(rgb) {
 }
 
 // Open color picker modal for landing settings (same as Customize UI)
-window.openLandingColorPickerModal = function() {
+window.openLandingColorPickerModal = function () {
   const currentColor = document.getElementById('landingColorInput')?.value || '#7ea2d4';
-  
+
   // Generate color palette grid
   const generateColorPalette = () => {
     const colors = [];
@@ -2931,22 +2931,22 @@ window.openLandingColorPickerModal = function() {
       const val = Math.round((i / 10) * 255);
       colors.push(`rgb(${val}, ${val}, ${val})`);
     }
-    
+
     // Color rows - Hue variations
     const hues = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330];
     const lightnesses = [50, 60, 70, 80, 90];
-    
+
     hues.forEach(hue => {
       lightnesses.forEach(lightness => {
         colors.push(`hsl(${hue}, 100%, ${lightness}%)`);
       });
     });
-    
+
     return colors;
   };
-  
+
   const colors = generateColorPalette();
-  
+
   const modal = document.createElement('div');
   modal.id = 'landingColorPickerModal';
   modal.innerHTML = `
@@ -3029,17 +3029,17 @@ window.openLandingColorPickerModal = function() {
       }
     </style>
   `;
-  
+
   document.body.appendChild(modal);
   window.selectedLandingCustomColor = currentColor;
 };
 
-window.closeLandingColorPickerModal = function() {
+window.closeLandingColorPickerModal = function () {
   const modal = document.getElementById('landingColorPickerModal');
   if (modal) modal.remove();
 };
 
-window.selectLandingPaletteColor = function(color) {
+window.selectLandingPaletteColor = function (color) {
   // Convert RGB/HSL to HEX
   const rgbToHex = (rgb) => {
     const result = rgb.match(/\d+/g);
@@ -3049,14 +3049,14 @@ window.selectLandingPaletteColor = function(color) {
     const b = parseInt(result[2]);
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   };
-  
+
   const hslToHex = (hsl) => {
     const result = hsl.match(/\d+/g);
     if (!result) return color;
     let h = parseInt(result[0]) / 360;
     let s = parseInt(result[1]) / 100;
     let l = parseInt(result[2]) / 100;
-    
+
     let r, g, b;
     if (s === 0) {
       r = g = b = l;
@@ -3064,39 +3064,39 @@ window.selectLandingPaletteColor = function(color) {
       const hue2rgb = (p, q, t) => {
         if (t < 0) t += 1;
         if (t > 1) t -= 1;
-        if (t < 1/6) return p + (q - p) * 6 * t;
-        if (t < 1/2) return q;
-        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
         return p;
       };
       const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
       const p = 2 * l - q;
-      r = hue2rgb(p, q, h + 1/3);
+      r = hue2rgb(p, q, h + 1 / 3);
       g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1/3);
+      b = hue2rgb(p, q, h - 1 / 3);
     }
-    
+
     const toHex = x => {
       const hex = Math.round(x * 255).toString(16);
       return hex.length === 1 ? '0' + hex : hex;
     };
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   };
-  
+
   let hexColor = color;
   if (color.startsWith('rgb')) {
     hexColor = rgbToHex(color);
   } else if (color.startsWith('hsl')) {
     hexColor = hslToHex(color);
   }
-  
+
   // Update preview
   document.getElementById('selectedLandingColorPreview').style.background = color;
   document.getElementById('selectedLandingColorHex').value = hexColor;
   window.selectedLandingCustomColor = hexColor;
 };
 
-window.applyLandingCustomColor = function() {
+window.applyLandingCustomColor = function () {
   const color = window.selectedLandingCustomColor || '#7ea2d4';
   selectLandingPresetColor(color);
   closeLandingColorPickerModal();
@@ -3114,12 +3114,12 @@ async function loadFeaturedCourses() {
     if (response.success && response.courses && response.courses.length > 0) {
       // Get previously selected courses
       const selectedCourseIds = user.landingPageSettings?.featuredCourses || [];
-      
+
       console.log('🎓 Loading featured courses...');
       console.log('🎓 User landing page settings:', user.landingPageSettings);
       console.log('🎓 Selected course IDs:', selectedCourseIds);
       console.log('🎓 Available courses:', response.courses.map(c => ({ id: c._id, title: c.title })));
-      
+
       coursesList.innerHTML = response.courses.map(course => {
         const isSelected = selectedCourseIds.includes(course._id);
         console.log(`🎓 Course ${course.title}: isSelected = ${isSelected}`);
@@ -3136,7 +3136,7 @@ async function loadFeaturedCourses() {
 
       // Add event listeners for course selection
       coursesList.querySelectorAll('.course-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
           const item = this.closest('.course-item');
           if (this.checked) {
             item.classList.add('selected');
@@ -3194,7 +3194,7 @@ async function loadFeaturedTestimonials() {
 
     // Get teacher profile with reviews from backend
     let testimonials = [];
-    
+
     try {
       const teacherProfile = await apiService.getTeacherProfile(user._id);
       if (teacherProfile.success && teacherProfile.teacher.reviews) {
@@ -3226,7 +3226,7 @@ async function loadFeaturedTestimonials() {
 
       // Add event listeners for testimonial selection
       testimonialsList.querySelectorAll('.testimonial-checkbox').forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
           const item = this.closest('.testimonial-item');
           if (this.checked) {
             item.classList.add('selected');
@@ -3300,15 +3300,15 @@ async function loadCertificates() {
       console.log('✅ Latest certificates from backend:', latestTeacher.certificates || []);
 
       // Check if user has certificates in their profile
-      const certificatesSection = document.querySelector('.landing-section:has(#certificatesList)') || 
-                                  document.querySelector('#certificatesList').closest('.landing-section');
-      
+      const certificatesSection = document.querySelector('.landing-section:has(#certificatesList)') ||
+        document.querySelector('#certificatesList').closest('.landing-section');
+
       if (latestTeacher.certificates && latestTeacher.certificates.length > 0) {
         // Show certificates section
         if (certificatesSection) {
           certificatesSection.style.display = 'block';
         }
-        
+
         certificatesList.innerHTML = latestTeacher.certificates.map((cert, index) => `
         <div class="certificate-card" data-certificate-index="${index}">
           <div class="certificate-image" onclick="openCertificateModal('${cert.url}', '${cert.title}')">
@@ -3335,36 +3335,36 @@ async function loadCertificates() {
           </button>
         </div>
       `).join('');
-      
-      // Add modal to page if not exists
-      if (!document.getElementById('certificateModal')) {
-        const modal = document.createElement('div');
-        modal.id = 'certificateModal';
-        modal.className = 'certificate-modal';
-        modal.innerHTML = `
+
+        // Add modal to page if not exists
+        if (!document.getElementById('certificateModal')) {
+          const modal = document.createElement('div');
+          modal.id = 'certificateModal';
+          modal.className = 'certificate-modal';
+          modal.innerHTML = `
           <div class="certificate-modal-content">
             <button class="certificate-modal-close" onclick="closeCertificateModal()">×</button>
             <img id="certificateModalImage" src="" alt="">
           </div>
         `;
-        modal.onclick = (e) => {
-          if (e.target === modal) closeCertificateModal();
-        };
-        document.body.appendChild(modal);
-      }
-    } else {
-      // Hide certificates section when no certificates exist
-      if (certificatesSection) {
-        certificatesSection.style.display = 'none';
-      }
+          modal.onclick = (e) => {
+            if (e.target === modal) closeCertificateModal();
+          };
+          document.body.appendChild(modal);
+        }
+      } else {
+        // Hide certificates section when no certificates exist
+        if (certificatesSection) {
+          certificatesSection.style.display = 'none';
+        }
       }
     } else {
       console.error('❌ Failed to load teacher data for certificates');
       // Fallback to local data if API fails
       const localCertificates = user.certificates || [];
-      const certificatesSection = document.querySelector('.landing-section:has(#certificatesList)') || 
-                                  document.querySelector('#certificatesList').closest('.landing-section');
-      
+      const certificatesSection = document.querySelector('.landing-section:has(#certificatesList)') ||
+        document.querySelector('#certificatesList').closest('.landing-section');
+
       if (localCertificates.length > 0) {
         // Show certificates section
         if (certificatesSection) {
@@ -3396,7 +3396,7 @@ async function loadCertificates() {
             </button>
           </div>
         `).join('');
-        
+
         // Add modal to page if not exists
         if (!document.getElementById('certificateModal')) {
           const modal = document.createElement('div');
@@ -3433,7 +3433,7 @@ async function loadCertificates() {
 }
 
 // Add new certificate
-window.addNewCertificate = async function() {
+window.addNewCertificate = async function () {
   const modal = document.createElement('div');
   modal.className = 'certificate-modal';
   modal.innerHTML = `
@@ -3510,14 +3510,14 @@ window.addNewCertificate = async function() {
   window.certificateFileToUpload = null;
 
   // Handle form submission
-  document.getElementById('addCertificateForm').addEventListener('submit', async function(e) {
+  document.getElementById('addCertificateForm').addEventListener('submit', async function (e) {
     e.preventDefault();
-    
+
     const formData = new FormData(this);
     const title = formData.get('title');
     const issuer = formData.get('issuer');
     const year = formData.get('year');
-    
+
     if (!window.certificateFileToUpload) {
       showErrorToast('Please upload a certificate file');
       return;
@@ -3595,7 +3595,7 @@ window.addNewCertificate = async function() {
 };
 
 // Handle certificate file selection
-window.handleCertificateFileSelect = function(event) {
+window.handleCertificateFileSelect = function (event) {
   const file = event.target.files[0];
   if (!file) return;
 
@@ -3619,7 +3619,7 @@ window.handleCertificateFileSelect = function(event) {
 };
 
 // Close certificate modal
-window.closeCertificateModal = function() {
+window.closeCertificateModal = function () {
   const modal = document.querySelector('.certificate-modal');
   if (modal) {
     modal.remove();
@@ -3627,12 +3627,12 @@ window.closeCertificateModal = function() {
 };
 
 // Remove certificate with confirmation
-window.removeCertificate = function(index) {
+window.removeCertificate = function (index) {
   const user = store.getState().user;
   const certificate = user.certificates?.[index];
-  
+
   if (!certificate) return;
-  
+
   // Show confirmation modal
   const modal = document.createElement('div');
   modal.innerHTML = `
@@ -3656,7 +3656,7 @@ window.removeCertificate = function(index) {
   document.body.appendChild(modal);
 };
 
-window.confirmRemoveCertificate = async function(index) {
+window.confirmRemoveCertificate = async function (index) {
   try {
     const user = store.getState().user;
     const certificates = [...(user.certificates || [])];
@@ -3710,7 +3710,7 @@ async function handleLandingSettingsSave(event) {
     // Save to Landing API (separate from teacher profile)
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const token = localStorage.getItem('accessToken');
-    
+
     const response = await fetch(`${apiBaseUrl}/landing/${user._id}`, {
       method: 'PUT',
       headers: {
@@ -3757,12 +3757,12 @@ async function handleLandingSettingsSave(event) {
   }
 }
 
-window.customizeUI = function() {
+window.customizeUI = function () {
   openCustomizeUI();
 };
 
 // Open Landing Page Preview
-window.openLandingPreview = async function() {
+window.openLandingPreview = async function () {
   try {
     const user = store.getState().user;
     if (!user) {
@@ -4009,7 +4009,7 @@ async function generateLandingPageHTML(teacher) {
   // Fetch landing data from Landing API
   const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
   let landingData = null;
-  
+
   try {
     const response = await fetch(`${apiBaseUrl}/landing/public/${teacher._id}`);
     const data = await response.json();
@@ -4019,19 +4019,19 @@ async function generateLandingPageHTML(teacher) {
   } catch (error) {
     console.error('Error fetching landing data:', error);
   }
-  
+
   const themeColor = landingData?.primaryColor || '#7EA2D4';
   const logoText = landingData?.logoText || 'DarsLinker';
   const fullName = `${teacher.firstName || ''} ${teacher.lastName || ''}`.trim();
   const heroText = landingData?.heroText || 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING';
   const heroImage = landingData?.heroImage || '';
-  
+
   // Merge teacher data with landing data
   const teacherWithLanding = {
     ...teacher,
     socialLinks: landingData?.socialLinks || teacher.socialLinks || {}
   };
-  
+
   console.log('🎓 Landing data:', landingData);
   console.log('🎓 Hero text:', heroText);
   console.log('🎓 Hero image:', heroImage);
@@ -5114,9 +5114,9 @@ async function generateLandingPageHTML(teacher) {
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
-                    <h1>${heroText.split('\n').map((line, i) => 
-                      i === 1 ? `<span class="highlight">${line}</span>` : line
-                    ).join('<br>')}</h1>
+                    <h1>${heroText.split('\n').map((line, i) =>
+    i === 1 ? `<span class="highlight">${line}</span>` : line
+  ).join('<br>')}</h1>
 
                     <a href="#courses" class="cta-button" data-i18n="viewCourses">Kurslarni ko'rish</a>
                 </div>
@@ -5186,9 +5186,9 @@ async function generateLandingPageHTML(teacher) {
                 <!-- Profile Image - Right Side -->
                 <div class="profile-image-container">
                     ${teacher.profileImage
-                        ? `<img src="${teacher.profileImage}" alt="${fullName}" class="profile-image">`
-                        : `<div class="profile-placeholder">${fullName.charAt(0) || 'T'}</div>`
-                    }
+      ? `<img src="${teacher.profileImage}" alt="${fullName}" class="profile-image">`
+      : `<div class="profile-placeholder">${fullName.charAt(0) || 'T'}</div>`
+    }
                 </div>
             </div>
         </div>
@@ -5203,9 +5203,9 @@ async function generateLandingPageHTML(teacher) {
                 ${teacher.courses.map(course => `
                     <div class="course-card" onclick="window.location.href='/course/${course._id}'" style="cursor: pointer;">
                         ${course.thumbnail
-                            ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-image">`
-                            : `<div style="height: 250px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>`
-                        }
+        ? `<img src="${course.thumbnail}" alt="${course.title}" class="course-image">`
+        : `<div style="height: 250px; background: linear-gradient(135deg, ${themeColor}, #4a90e2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem;">📚</div>`
+      }
                         <div class="course-content">
                             <h3 class="course-title">${course.title}</h3>
                             <p style="color: rgba(255, 255, 255, 0.7); font-size: 14px; margin: 10px 0; line-height: 1.5;">${course.description ? (course.description.length > 100 ? course.description.substring(0, 100) + '...' : course.description) : ''}</p>
@@ -7109,7 +7109,7 @@ function reloadDashboard() {
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     console.log('💾 User data saved before reload:', currentUser);
   }
-  
+
   // Reload dashboard to show updated data
   location.reload();
 }
@@ -7133,18 +7133,18 @@ function updateActiveMenuItem(itemName) {
 }
 
 // Open Sub Admin Page
-window.openSubAdmin = function() {
+window.openSubAdmin = function () {
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (contentArea) {
     updatePageTitle(t('subAdmin.title'));
     contentArea.innerHTML = getSubAdminHTML();
     updateActiveMenuItem(t('subAdmin.title'));
-    
+
     // Apply saved primary color to Sub Admin page
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
     applyPrimaryColor(savedColor);
-    
+
     // Load real sub-admin data
     loadSubAdmins();
     return;
@@ -7599,7 +7599,7 @@ ${t('subAdmin.addSubadmin')}
 }
 
 // Open add admin modal
-window.openAddAdminModal = function() {
+window.openAddAdminModal = function () {
   const modal = document.getElementById('addAdminModal');
   const sidebar = document.querySelector('.figma-sidebar');
 
@@ -7613,7 +7613,7 @@ window.openAddAdminModal = function() {
 };
 
 // Close add admin modal
-window.closeAddAdminModal = function() {
+window.closeAddAdminModal = function () {
   const modal = document.getElementById('addAdminModal');
   const sidebar = document.querySelector('.figma-sidebar');
 
@@ -7641,7 +7641,7 @@ window.closeAddAdminModal = function() {
 };
 
 // Submit new admin
-window.submitNewAdmin = async function(event) {
+window.submitNewAdmin = async function (event) {
   event.preventDefault();
 
   const submitBtn = document.getElementById('submitBtn');
@@ -7694,11 +7694,11 @@ window.submitNewAdmin = async function(event) {
     } else {
       throw new Error(response.message || 'Failed to add sub-admin');
     }
-    
+
   } catch (error) {
     console.error('Error adding sub-admin:', error);
     let errorMessage = 'Failed to add sub-admin';
-    
+
     if (error.message.includes('limit')) {
       errorMessage = 'Maximum sub-admin limit reached (3 sub-admins allowed)';
     } else if (error.message.includes('email')) {
@@ -7708,7 +7708,7 @@ window.submitNewAdmin = async function(event) {
     } else if (error.message) {
       errorMessage = error.message;
     }
-    
+
     showErrorToast(errorMessage);
   } finally {
     // Reset button state
@@ -7718,7 +7718,7 @@ window.submitNewAdmin = async function(event) {
 };
 
 // Format phone number input
-window.formatPhoneNumber = function(input) {
+window.formatPhoneNumber = function (input) {
   // Remove all non-digit characters
   let value = input.value.replace(/\D/g, '');
 
@@ -7748,7 +7748,7 @@ window.formatPhoneNumber = function(input) {
 };
 
 // Delete sub admin
-window.deleteSubAdmin = function(button, subAdminId, name) {
+window.deleteSubAdmin = function (button, subAdminId, name) {
   // Create custom confirmation modal
   const modal = document.createElement('div');
   modal.className = 'delete-confirm-modal';
@@ -7887,16 +7887,16 @@ window.deleteSubAdmin = function(button, subAdminId, name) {
       }
     </style>
   `;
-  
+
   document.body.appendChild(modal);
-  
+
   // Store button reference for later use
   modal.dataset.buttonRef = button.closest('.admin-card').outerHTML;
   modal.dataset.cardElement = Array.from(document.querySelectorAll('.admin-card')).indexOf(button.closest('.admin-card'));
 };
 
 // Close delete confirmation modal
-window.closeDeleteConfirm = function() {
+window.closeDeleteConfirm = function () {
   const modal = document.querySelector('.delete-confirm-modal');
   if (modal) {
     modal.style.animation = 'fadeOut 0.2s ease';
@@ -7905,16 +7905,16 @@ window.closeDeleteConfirm = function() {
 };
 
 // Confirm delete sub admin
-window.confirmDeleteSubAdmin = async function(subAdminId, confirmButton) {
+window.confirmDeleteSubAdmin = async function (subAdminId, confirmButton) {
   const originalText = confirmButton.textContent;
-  
+
   try {
     // Show loading state
     confirmButton.disabled = true;
     confirmButton.textContent = 'Removing...';
-    
+
     const response = await apiService.deleteSubAdmin(subAdminId);
-    
+
     if (response.success) {
       showSuccessToast('Sub-admin removed successfully');
       closeDeleteConfirm();
@@ -7922,11 +7922,11 @@ window.confirmDeleteSubAdmin = async function(subAdminId, confirmButton) {
     } else {
       throw new Error(response.message || 'Failed to remove sub-admin');
     }
-    
+
   } catch (error) {
     console.error('Error removing sub-admin:', error);
     showErrorToast(error.message || 'Failed to remove sub-admin');
-    
+
     // Reset button state
     confirmButton.disabled = false;
     confirmButton.textContent = originalText;
@@ -7934,14 +7934,14 @@ window.confirmDeleteSubAdmin = async function(subAdminId, confirmButton) {
 };
 
 // Search sub admins
-window.searchSubAdmins = function(query) {
+window.searchSubAdmins = function (query) {
   const cards = document.querySelectorAll('.admin-card');
   const searchLower = query.toLowerCase();
-  
+
   cards.forEach(card => {
     const name = card.querySelector('.admin-details h4').textContent.toLowerCase();
     const email = card.querySelector('.admin-details p').textContent.toLowerCase();
-    
+
     if (name.includes(searchLower) || email.includes(searchLower)) {
       card.style.display = 'flex';
     } else {
@@ -7955,31 +7955,31 @@ window.loadSubAdmins = async function loadSubAdmins() {
   const loadingState = document.getElementById('loadingState');
   const emptyState = document.getElementById('emptyState');
   const adminCardsList = document.getElementById('adminCardsList');
-  
+
   try {
     // Show loading state
     loadingState.style.display = 'block';
     emptyState.style.display = 'none';
-    
+
     // Remove existing admin cards
     const existingCards = adminCardsList.querySelectorAll('.admin-card');
     existingCards.forEach(card => card.remove());
-    
+
     // Get current user data
     const userData = JSON.parse(localStorage.getItem('currentUser'));
     if (!userData || !userData._id) {
       throw new Error('User data not found');
     }
-    
+
     // Fetch sub-admins
     const response = await apiService.getTeacherSubAdmins(userData._id);
-    
+
     if (response.success) {
       const subAdmins = response.data.subAdmins;
-      
+
       // Hide loading state
       loadingState.style.display = 'none';
-      
+
       if (subAdmins.length === 0) {
         // Show empty state
         emptyState.style.display = 'block';
@@ -7993,12 +7993,12 @@ window.loadSubAdmins = async function loadSubAdmins() {
     } else {
       throw new Error(response.message || 'Failed to load sub-admins');
     }
-    
+
   } catch (error) {
     console.error('Error loading sub-admins:', error);
     loadingState.style.display = 'none';
     emptyState.style.display = 'block';
-    
+
     // Update empty state to show error
     const emptyStateDiv = document.getElementById('emptyState');
     emptyStateDiv.innerHTML = `
@@ -8012,7 +8012,7 @@ window.loadSubAdmins = async function loadSubAdmins() {
         <button onclick="loadSubAdmins()" style="background: var(--primary-color); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer;">Try Again</button>
       </div>
     `;
-    
+
     updatePageTitle(t('subAdmin.title'));
   }
 }
@@ -8020,7 +8020,7 @@ window.loadSubAdmins = async function loadSubAdmins() {
 // Render sub-admins list
 function renderSubAdmins(subAdmins) {
   const adminCardsList = document.getElementById('adminCardsList');
-  
+
   subAdmins.forEach(subAdmin => {
     const adminCard = createSubAdminCard(subAdmin);
     adminCardsList.appendChild(adminCard);
@@ -8032,17 +8032,17 @@ function createSubAdminCard(subAdmin) {
   const card = document.createElement('div');
   card.className = 'admin-card';
   card.style.animation = 'slideIn 0.5s ease';
-  
+
   // Get initials
   const initials = subAdmin.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
-  
+
   // Format date
   const addedDate = new Date(subAdmin.createdAt).toLocaleDateString();
-  
+
   // Status indicator
   const statusClass = subAdmin.isActive ? 'active' : 'inactive';
   const statusText = subAdmin.isActive ? 'Active' : 'Inactive';
-  
+
   card.innerHTML = `
     <div class="admin-info">
       <div class="admin-avatar">${initials}</div>
@@ -8056,10 +8056,10 @@ function createSubAdminCard(subAdmin) {
           font-size: 11px;
           font-weight: 600;
           margin-top: 4px;
-          ${subAdmin.isActive 
-            ? 'background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3);'
-            : 'background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);'
-          }
+          ${subAdmin.isActive
+      ? 'background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.3);'
+      : 'background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);'
+    }
         ">${statusText}</span>
       </div>
     </div>
@@ -8081,21 +8081,21 @@ function createSubAdminCard(subAdmin) {
       </button>
     </div>
   `;
-  
+
   return card;
 }
 
 
 
 // Open Language Page
-window.openLanguagePage = function() {
+window.openLanguagePage = function () {
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (contentArea) {
     updatePageTitle(t('language.title'));
     contentArea.innerHTML = getLanguagePageHTML();
     updateActiveMenuItem('Language');
-    
+
     // Set current language as selected
     const currentLang = getCurrentLanguage();
     document.querySelectorAll('.language-option').forEach(option => {
@@ -8103,7 +8103,7 @@ window.openLanguagePage = function() {
         option.classList.add('selected');
       }
     });
-    
+
     // Apply saved primary color to Language page
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
     applyPrimaryColor(savedColor);
@@ -8114,7 +8114,7 @@ window.openLanguagePage = function() {
 // Helper function to get language page HTML
 function getLanguagePageHTML() {
   const currentLang = getCurrentLanguage();
-  
+
   return `
     <div class="language-page">
       <style>
@@ -8269,34 +8269,34 @@ function getLanguagePageHTML() {
 }
 
 // Select language
-window.selectLanguage = function(lang) {
+window.selectLanguage = function (lang) {
   document.querySelectorAll('.language-option').forEach(option => {
     option.classList.remove('selected');
   });
   document.querySelector(`[data-lang="${lang}"]`).classList.add('selected');
-  
+
   // Store selected language temporarily
   window.selectedLanguage = lang;
 };
 
 // Apply language changes
-window.applyLanguageChanges = function() {
+window.applyLanguageChanges = function () {
   const selectedLang = window.selectedLanguage || getCurrentLanguage();
   setLanguage(selectedLang);
-  
+
   // Reload dashboard with new language
   initDashboard();
 };
 
 // Open Customize UI Page
-window.openCustomizeUI = function() {
+window.openCustomizeUI = function () {
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (contentArea) {
     updatePageTitle(t('pages.customizeUI'));
     contentArea.innerHTML = getCustomizeUIHTML();
     updateActiveMenuItem('Customize UI');
-    
+
     // Initialize color picker and theme settings
     initializeCustomizeUI();
     return;
@@ -8306,7 +8306,7 @@ window.openCustomizeUI = function() {
 // Helper function to get Customize UI HTML
 function getCustomizeUIHTML() {
   const theme = getTheme();
-  
+
   return `
     <div class="customize-ui-page">
       <style>
@@ -8592,15 +8592,15 @@ function initializeCustomizeUI() {
 }
 
 // Update color preview
-window.updateColorPreview = function(color) {
+window.updateColorPreview = function (color) {
   if (/^#[0-9A-F]{6}$/i.test(color)) {
     document.getElementById('colorPreview').style.backgroundColor = color;
     document.getElementById('colorPicker').value = color;
     window.currentTheme.primaryColor = color;
-    
+
     // Apply color to entire app
     applyPrimaryColor(color);
-    
+
     // Update active preset
     document.querySelectorAll('.preset-color').forEach(preset => {
       preset.classList.remove('active');
@@ -8609,12 +8609,12 @@ window.updateColorPreview = function(color) {
 };
 
 // Apply primary color to entire app
-window.applyPrimaryColor = function(color) {
+window.applyPrimaryColor = function (color) {
   // Convert hex to RGB
   const r = parseInt(color.slice(1, 3), 16);
   const g = parseInt(color.slice(3, 5), 16);
   const b = parseInt(color.slice(5, 7), 16);
-  
+
   // Update CSS variables
   document.documentElement.style.setProperty('--primary-color', color);
   document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
@@ -8622,14 +8622,14 @@ window.applyPrimaryColor = function(color) {
   document.documentElement.style.setProperty('--primary-light', `rgba(${r}, ${g}, ${b}, 0.1)`);
   document.documentElement.style.setProperty('--primary-light-hover', `rgba(${r}, ${g}, ${b}, 0.15)`);
   document.documentElement.style.setProperty('--primary-color-light', `rgba(${r}, ${g}, ${b}, 0.7)`);
-  
+
   // Update border-color variables (used in many places)
   document.documentElement.style.setProperty('--border-color', `rgba(${r}, ${g}, ${b}, 0.3)`);
   document.documentElement.style.setProperty('--primary-border', `rgba(${r}, ${g}, ${b}, 0.2)`);
   document.documentElement.style.setProperty('--primary-border-light', `rgba(${r}, ${g}, ${b}, 0.1)`);
   document.documentElement.style.setProperty('--primary-border-hover', `rgba(${r}, ${g}, ${b}, 0.4)`);
   document.documentElement.style.setProperty('--primary-border-strong', `rgba(${r}, ${g}, ${b}, 0.5)`);
-  
+
   // Create dynamic style tag to override hardcoded colors
   let styleTag = document.getElementById('dynamic-primary-color');
   if (!styleTag) {
@@ -8637,7 +8637,7 @@ window.applyPrimaryColor = function(color) {
     styleTag.id = 'dynamic-primary-color';
     document.head.appendChild(styleTag);
   }
-  
+
   // Override all hardcoded #7ea2d4 and rgba(126, 162, 212, ...) colors
   styleTag.textContent = `
     /* Override hardcoded blue colors with custom primary color */
@@ -9019,7 +9019,7 @@ window.applyPrimaryColor = function(color) {
       background: rgba(${r}, ${g}, ${b}, 0.9) !important;
     }
   `;
-  
+
   // Save to localStorage
   localStorage.setItem('primaryColor', color);
 
@@ -9027,7 +9027,7 @@ window.applyPrimaryColor = function(color) {
 };
 
 // Load saved primary color from localStorage
-window.loadSavedPrimaryColor = function() {
+window.loadSavedPrimaryColor = function () {
   const savedColor = localStorage.getItem('primaryColor');
   if (savedColor && /^#[0-9A-F]{6}$/i.test(savedColor)) {
     applyPrimaryColor(savedColor);
@@ -9038,16 +9038,16 @@ window.loadSavedPrimaryColor = function() {
 };
 
 // Update color from picker
-window.updateColorFromPicker = function(color) {
+window.updateColorFromPicker = function (color) {
   document.getElementById('colorInput').value = color;
   updateColorPreview(color);
 };
 
 // Select preset color
-window.selectPresetColor = function(color) {
+window.selectPresetColor = function (color) {
   document.getElementById('colorInput').value = color;
   updateColorPreview(color);
-  
+
   // Update active state
   document.querySelectorAll('.preset-color').forEach(preset => {
     preset.classList.remove('active');
@@ -9056,7 +9056,7 @@ window.selectPresetColor = function(color) {
 };
 
 // Open color picker modal with full palette
-window.openColorPickerModal = function() {
+window.openColorPickerModal = function () {
   // Generate color palette grid
   const generateColorPalette = () => {
     const colors = [];
@@ -9065,23 +9065,23 @@ window.openColorPickerModal = function() {
       const val = Math.round((i / 10) * 255);
       colors.push(`rgb(${val}, ${val}, ${val})`);
     }
-    
+
     // Color rows - Hue variations
     const hues = [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]; // 12 hues
     const saturations = [100, 80, 60, 40, 20]; // 5 saturation levels
     const lightnesses = [50, 60, 70, 80, 90]; // 5 lightness levels
-    
+
     hues.forEach(hue => {
       lightnesses.forEach(lightness => {
         colors.push(`hsl(${hue}, 100%, ${lightness}%)`);
       });
     });
-    
+
     return colors;
   };
-  
+
   const colors = generateColorPalette();
-  
+
   const modal = document.createElement('div');
   modal.id = 'colorPickerModal';
   modal.innerHTML = `
@@ -9164,15 +9164,15 @@ window.openColorPickerModal = function() {
       }
     </style>
   `;
-  
+
   document.body.appendChild(modal);
-  
+
   // Store selected color
   window.selectedCustomColor = '#7ea2d4';
 };
 
 // Close color picker modal
-window.closeColorPickerModal = function() {
+window.closeColorPickerModal = function () {
   const modal = document.getElementById('colorPickerModal');
   if (modal) {
     modal.remove();
@@ -9180,7 +9180,7 @@ window.closeColorPickerModal = function() {
 };
 
 // Select color from palette
-window.selectPaletteColor = function(color) {
+window.selectPaletteColor = function (color) {
   // Convert RGB/HSL to HEX
   const rgbToHex = (rgb) => {
     const result = rgb.match(/\d+/g);
@@ -9190,14 +9190,14 @@ window.selectPaletteColor = function(color) {
     const b = parseInt(result[2]);
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
   };
-  
+
   const hslToHex = (hsl) => {
     const result = hsl.match(/\d+/g);
     if (!result) return color;
     let h = parseInt(result[0]) / 360;
     let s = parseInt(result[1]) / 100;
     let l = parseInt(result[2]) / 100;
-    
+
     let r, g, b;
     if (s === 0) {
       r = g = b = l;
@@ -9205,32 +9205,32 @@ window.selectPaletteColor = function(color) {
       const hue2rgb = (p, q, t) => {
         if (t < 0) t += 1;
         if (t > 1) t -= 1;
-        if (t < 1/6) return p + (q - p) * 6 * t;
-        if (t < 1/2) return q;
-        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
         return p;
       };
       const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
       const p = 2 * l - q;
-      r = hue2rgb(p, q, h + 1/3);
+      r = hue2rgb(p, q, h + 1 / 3);
       g = hue2rgb(p, q, h);
-      b = hue2rgb(p, q, h - 1/3);
+      b = hue2rgb(p, q, h - 1 / 3);
     }
-    
+
     const toHex = x => {
       const hex = Math.round(x * 255).toString(16);
       return hex.length === 1 ? '0' + hex : hex;
     };
     return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
   };
-  
+
   let hexColor = color;
   if (color.startsWith('rgb')) {
     hexColor = rgbToHex(color);
   } else if (color.startsWith('hsl')) {
     hexColor = hslToHex(color);
   }
-  
+
   // Update preview
   document.getElementById('selectedColorPreview').style.background = color;
   document.getElementById('selectedColorHex').value = hexColor;
@@ -9238,34 +9238,34 @@ window.selectPaletteColor = function(color) {
 };
 
 // Apply custom color
-window.applyCustomColor = function() {
+window.applyCustomColor = function () {
   const color = window.selectedCustomColor || '#7ea2d4';
-  
+
   document.getElementById('colorInput').value = color;
   updateColorPreview(color);
-  
+
   // Update active state
   document.querySelectorAll('.preset-color').forEach(preset => {
     preset.classList.remove('active');
   });
-  
+
   showSuccessToast('Custom color applied!');
   closeColorPickerModal();
 };
 
 // Show coming soon toast
-window.showComingSoonToast = function() {
+window.showComingSoonToast = function () {
   showInfoToast(t('comingSoon.title') + ' This feature will be available in the next update.', 3000);
 };
 
 // Toggle light mode (disabled)
-window.toggleLightMode = function() {
+window.toggleLightMode = function () {
   showComingSoonToast();
   return;
-  
+
   const toggle = document.getElementById('lightModeToggle');
   const isActive = toggle.classList.contains('active');
-  
+
   if (isActive) {
     toggle.classList.remove('active');
     window.currentTheme.mode = 'dark';
@@ -9276,9 +9276,9 @@ window.toggleLightMode = function() {
 };
 
 // Select font
-window.selectFont = function(font) {
+window.selectFont = function (font) {
   window.currentTheme.fontFamily = font;
-  
+
   // Update active state
   document.querySelectorAll('.font-option').forEach(option => {
     option.classList.remove('active');
@@ -9287,12 +9287,12 @@ window.selectFont = function(font) {
 };
 
 // Save customization
-window.saveCustomization = function() {
+window.saveCustomization = function () {
   saveTheme(window.currentTheme);
-  
+
   // Show success toast
   showSuccessToast(t('notifications.customizationSaved'));
-  
+
   // Reload dashboard to apply changes after a short delay
   setTimeout(() => {
     initDashboard();
@@ -9300,9 +9300,9 @@ window.saveCustomization = function() {
 };
 
 // Open My Subscription Page
-window.openMySubscription = function() {
+window.openMySubscription = function () {
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (contentArea) {
     updatePageTitle(t('pages.mySubscription'));
     contentArea.innerHTML = getMySubscriptionHTML();
@@ -9595,30 +9595,30 @@ function getMySubscriptionHTML() {
 }
 
 // Subscription page functions
-window.upgradePlan = function() {
+window.upgradePlan = function () {
   showSuccessToast('Upgrade plan feature coming soon!');
 };
 
-window.changePaymentMethod = function() {
+window.changePaymentMethod = function () {
   showSuccessToast('Change payment method feature coming soon!');
 };
 
-window.payNow = function() {
+window.payNow = function () {
   showSuccessToast('Payment processing feature coming soon!');
 };
 
 // Open Progress Page
-window.openProgress = async function() {
+window.openProgress = async function () {
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (contentArea) {
     updatePageTitle(t('pages.progress'));
     contentArea.innerHTML = `<div style="padding: 40px; text-align: center; color: #9CA3AF;">${t('progress.loading')}</div>`;
     updateActiveMenuItem(t('progress.title'));
-    
+
     // Load real data
     await loadProgressData();
-    
+
     // Apply saved primary color to Progress page
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
     applyPrimaryColor(savedColor);
@@ -9631,31 +9631,31 @@ async function loadProgressData() {
   try {
     // Try multiple sources for teacher ID
     let teacherId = null;
-    
+
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-    
+
     teacherId = user._id || currentUser._id || user.userId || currentUser.userId;
-    
+
     console.log('Teacher ID:', teacherId);
-    
+
     if (!teacherId) {
       console.error('Teacher ID not found');
       const contentArea = document.querySelector('.figma-content-area');
       contentArea.innerHTML = `<div style="padding: 40px; text-align: center; color: #EF4444;">${t('progress.teacherNotFound')}</div>`;
       return;
     }
-    
+
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    
+
     // Fetch all courses and filter by teacher
     const coursesResponse = await fetch(`${apiBaseUrl}/courses`);
     const coursesResult = await coursesResponse.json();
     const allCourses = coursesResult.success ? coursesResult.courses : [];
-    const courses = allCourses.filter(course => 
+    const courses = allCourses.filter(course =>
       course.teacher === teacherId || course.teacher?._id === teacherId
     );
-    
+
     // Fetch all students enrolled in teacher's courses with full info
     const studentsData = [];
     for (const course of courses) {
@@ -9665,11 +9665,11 @@ async function loadProgressData() {
             // Get student info
             const studentInfoResponse = await fetch(`${apiBaseUrl}/students/${studentId}`);
             const studentInfoResult = await studentInfoResponse.json();
-            
+
             // Get student progress
             const studentProgressResponse = await fetch(`${apiBaseUrl}/students/${studentId}/progress/${course._id}`);
             const studentProgressResult = await studentProgressResponse.json();
-            
+
             if (studentInfoResult.success && studentProgressResult.success) {
               studentsData.push({
                 studentId,
@@ -9685,16 +9685,16 @@ async function loadProgressData() {
         }
       }
     }
-    
+
     // Render progress page with real data
     const contentArea = document.querySelector('.figma-content-area');
     contentArea.innerHTML = getProgressHTML(courses, studentsData);
-    
+
     // Attach event listeners to filter buttons and search input
     setTimeout(() => {
       const filterButtons = document.querySelectorAll('.filter-btn');
       filterButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
+        btn.addEventListener('click', function () {
           const courseId = this.getAttribute('data-course-id');
           window.filterProgressCourse(this, courseId);
         });
@@ -9703,12 +9703,12 @@ async function loadProgressData() {
       // Add search functionality
       const searchInput = document.getElementById('studentSearchInput');
       if (searchInput) {
-        searchInput.addEventListener('input', function() {
+        searchInput.addEventListener('input', function () {
           window.searchStudents(this.value);
         });
       }
     }, 100);
-    
+
   } catch (error) {
     console.error('Error loading progress data:', error);
     const contentArea = document.querySelector('.figma-content-area');
@@ -9721,13 +9721,13 @@ function getProgressHTML(courses = [], studentsData = []) {
   // Calculate stats
   const totalCompleted = studentsData.filter(s => s.progress?.progressPercentage === 100).length;
   const currentlyLearning = studentsData.filter(s => s.progress?.progressPercentage > 0 && s.progress?.progressPercentage < 100).length;
-  
+
   // Get all students sorted by progress percentage
   const allStudents = studentsData
     .sort((a, b) => (b.progress?.progressPercentage || 0) - (a.progress?.progressPercentage || 0));
-  
+
   console.log('All students:', allStudents.length);
-  
+
   return `
     <div class="progress-page">
       <style>
@@ -10261,18 +10261,18 @@ function getProgressHTML(courses = [], studentsData = []) {
         <h3 class="section-header">${t('progress.studentsList')}</h3>
         
         ${allStudents.map((student, index) => {
-          const firstName = student.studentInfo?.firstName || 'Student';
-          const lastName = student.studentInfo?.lastName || (index + 1);
-          const email = student.studentInfo?.email || '';
-          const studentId = student.studentInfo?._id || student.studentId || `ID${index + 1}`;
-          const displayId = studentId.length > 10 ? studentId.slice(-5).toUpperCase() : studentId.toUpperCase();
-          const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
-          const progressPercent = student.progress?.progressPercentage || 0;
-          const completedLessons = student.progress?.completedLessons?.length || 0;
+    const firstName = student.studentInfo?.firstName || 'Student';
+    const lastName = student.studentInfo?.lastName || (index + 1);
+    const email = student.studentInfo?.email || '';
+    const studentId = student.studentInfo?._id || student.studentId || `ID${index + 1}`;
+    const displayId = studentId.length > 10 ? studentId.slice(-5).toUpperCase() : studentId.toUpperCase();
+    const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+    const progressPercent = student.progress?.progressPercentage || 0;
+    const completedLessons = student.progress?.completedLessons?.length || 0;
 
-          // No status badges needed
-          
-          return `
+    // No status badges needed
+
+    return `
         <div class="student-progress-card" data-course-id="${student.courseId}" data-student-id="${studentId}" data-student-name="${firstName} ${lastName}" data-progress="${progressPercent}">
           <div class="student-header">
             <div class="student-info-header">
@@ -10301,7 +10301,7 @@ function getProgressHTML(courses = [], studentsData = []) {
           </div>
         </div>
           `;
-        }).join('')}
+  }).join('')}
         
       </div>
     </div>
@@ -10311,17 +10311,17 @@ function getProgressHTML(courses = [], studentsData = []) {
 // DELETED ALL STATIC HTML BELOW - NOW ONLY SHOWS REAL DATA
 
 // Filter progress by course
-window.filterProgressCourse = function(button, courseId) {
+window.filterProgressCourse = function (button, courseId) {
   console.log('Filter clicked:', courseId);
-  
+
   // Remove active class from all buttons
   document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
   button.classList.add('active');
-  
+
   // Filter student cards
   const cards = document.querySelectorAll('.student-progress-card');
   console.log('Found cards:', cards.length);
-  
+
   let visibleCount = 0;
 
   if (courseId === 'active') {
@@ -10355,12 +10355,12 @@ window.filterProgressCourse = function(button, courseId) {
       }
     });
   }
-  
+
   console.log('Visible cards:', visibleCount);
 };
 
 // Search students function
-window.searchStudents = function(searchTerm) {
+window.searchStudents = function (searchTerm) {
   console.log('Searching for:', searchTerm);
 
   const cards = document.querySelectorAll('.student-progress-card');
@@ -10386,7 +10386,7 @@ window.searchStudents = function(searchTerm) {
 };
 
 // Load more progress (keep this function)
-window.loadMoreProgress = function() {
+window.loadMoreProgress = function () {
   return; // Disabled for now
 };
 
@@ -10533,12 +10533,12 @@ function originalCodeResume() {
 
 
 // Load more progress
-window.loadMoreProgress = function() {
+window.loadMoreProgress = function () {
   const btn = document.querySelector('.show-more-progress-btn');
   const section = document.querySelector('.students-progress-section');
-  
+
   if (!btn || !section) return;
-  
+
   if (btn.dataset.loaded === 'true') {
     // Hide extra students
     document.querySelectorAll('.student-progress-card.extra').forEach(card => {
@@ -10549,7 +10549,7 @@ window.loadMoreProgress = function() {
     btn.dataset.loaded = 'false';
     return;
   }
-  
+
   const newStudentsHTML = `
     <div class="student-progress-card extra" style="animation: slideIn 0.5s ease;">
       <div class="student-header">
@@ -10594,21 +10594,21 @@ window.loadMoreProgress = function() {
       </div>
     </div>
   `;
-  
+
   btn.insertAdjacentHTML('beforebegin', newStudentsHTML);
   btn.textContent = 'Show less';
   btn.dataset.loaded = 'true';
 };
 
 // Open Students Analytics Page
-window.openStudentsAnalytics = function() {
+window.openStudentsAnalytics = function () {
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (contentArea) {
     updatePageTitle(t('studentsAnalytics.title'));
     contentArea.innerHTML = getStudentsAnalyticsHTML();
     updateActiveMenuItem(t('studentsAnalytics.title'));
-    
+
     // Apply saved primary color to Students Analytics page
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
     applyPrimaryColor(savedColor);
@@ -10926,7 +10926,7 @@ function getStudentsAnalyticsHTML() {
 }
 
 // Load students analytics data
-window.loadStudentsAnalytics = async function() {
+window.loadStudentsAnalytics = async function () {
   try {
     const user = store.getState().user;
     if (!user || !user._id) {
@@ -11090,7 +11090,7 @@ function showStudentsError(message) {
 }
 
 // Update switch student tab function to work with real data
-window.switchStudentTab = function(button, type) {
+window.switchStudentTab = function (button, type) {
   // Remove active from all tabs
   document.querySelectorAll('.student-tab').forEach(tab => {
     tab.classList.remove('active');
@@ -11116,30 +11116,30 @@ window.switchStudentTab = function(button, type) {
 };
 
 // Switch student tab
-window.switchStudentTab = function(button, type) {
+window.switchStudentTab = function (button, type) {
   // Remove active from all tabs
   document.querySelectorAll('.student-tab').forEach(tab => {
     tab.classList.remove('active');
   });
-  
+
   // Add active to clicked tab
   button.classList.add('active');
-  
+
   const studentsList = document.querySelector('.students-list');
   if (!studentsList) return;
-  
+
   // Remove extra students if any
   document.querySelectorAll('.student-item.extra-student').forEach(s => s.remove());
-  
+
   // Reset show more button
   const btn = document.querySelector('.show-all-students-btn');
   if (btn) {
     btn.textContent = 'Show more';
     btn.dataset.loaded = 'false';
   }
-  
+
   let studentsHTML = '';
-  
+
   if (type === 'all') {
     // All students
     studentsHTML = `
@@ -11299,7 +11299,7 @@ window.switchStudentTab = function(button, type) {
       </div>
     `;
   }
-  
+
   // Find the button and insert students before it
   const showMoreBtn = studentsList.querySelector('.show-all-students-btn');
   if (showMoreBtn) {
@@ -11311,12 +11311,12 @@ window.switchStudentTab = function(button, type) {
 };
 
 // Load more students
-window.loadMoreStudents = function() {
+window.loadMoreStudents = function () {
   const btn = document.querySelector('.show-all-students-btn');
   const studentsList = document.querySelector('.students-list');
-  
+
   if (!btn || !studentsList) return;
-  
+
   // Check if already loaded
   if (btn.dataset.loaded === 'true') {
     // Hide extra students
@@ -11325,13 +11325,13 @@ window.loadMoreStudents = function() {
       student.style.animation = 'slideOut 0.3s ease';
       setTimeout(() => student.remove(), 300);
     });
-    
+
     // Change button back
     btn.textContent = 'Show more';
     btn.dataset.loaded = 'false';
     return;
   }
-  
+
   // New students data
   const newStudents = [
     { name: 'Sarah Johnson', initials: 'SJ', courses: 3, hours: 28, progress: 72 },
@@ -11340,7 +11340,7 @@ window.loadMoreStudents = function() {
     { name: 'David Brown', initials: 'DB', courses: 2, hours: 18, progress: 55 },
     { name: 'Lisa Anderson', initials: 'LA', courses: 5, hours: 42, progress: 78 }
   ];
-  
+
   // Create HTML for new students
   const newStudentsHTML = newStudents.map(student => `
     <div class="student-item extra-student" style="animation: slideIn 0.5s ease;">
@@ -11362,17 +11362,17 @@ window.loadMoreStudents = function() {
       </div>
     </div>
   `).join('');
-  
+
   // Insert new students before the button
   btn.insertAdjacentHTML('beforebegin', newStudentsHTML);
-  
+
   // Change button text
   btn.textContent = 'Show less';
   btn.dataset.loaded = 'true';
 };
 
 // Open Rating & Comments Page
-window.openRatingComments = function() {
+window.openRatingComments = function () {
   // Show coming soon toast
   showInfoToast(t('comingSoon.ratingComments'));
   return;
@@ -11707,12 +11707,12 @@ function getRatingCommentsHTML() {
 }
 
 // Load more reviews function
-window.loadMoreReviews = function() {
+window.loadMoreReviews = function () {
   const reviewsSection = document.querySelector('.reviews-section');
   const showAllBtn = document.querySelector('.show-all-btn');
-  
+
   if (!reviewsSection || !showAllBtn) return;
-  
+
   // Check if already loaded
   if (showAllBtn.dataset.loaded === 'true') {
     // Hide extra reviews
@@ -11721,13 +11721,13 @@ window.loadMoreReviews = function() {
       review.style.animation = 'slideOut 0.3s ease';
       setTimeout(() => review.remove(), 300);
     });
-    
+
     // Change button back
     showAllBtn.textContent = 'Show all';
     showAllBtn.dataset.loaded = 'false';
     return;
   }
-  
+
   // Additional reviews data
   const newReviews = [
     {
@@ -11767,7 +11767,7 @@ window.loadMoreReviews = function() {
       verified: true
     }
   ];
-  
+
   // Create HTML for new reviews
   const newReviewsHTML = newReviews.map(review => `
     <div class="review-card extra-review" style="animation: slideIn 0.5s ease;">
@@ -11787,14 +11787,14 @@ window.loadMoreReviews = function() {
       ${review.verified ? '<div class="review-verified">✓ Verified</div>' : ''}
     </div>
   `).join('');
-  
+
   // Insert new reviews before the button
   showAllBtn.insertAdjacentHTML('beforebegin', newReviewsHTML);
-  
+
   // Change button text
   showAllBtn.textContent = 'Show less';
   showAllBtn.dataset.loaded = 'true';
-  
+
   // Add animations
   if (!document.getElementById('review-animations')) {
     const style = document.createElement('style');
@@ -11872,8 +11872,8 @@ function getEditProfileHTML(user) {
           <div class="profile-picture-upload" onclick="document.getElementById('profileImageInput').click()" style="cursor: pointer;">
             <div class="profile-picture-preview" id="profilePicturePreview">
               ${user.profileImage
-                ? `<img src="${user.profileImage}" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">`
-                : `<svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
+      ? `<img src="${user.profileImage}" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">`
+      : `<svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                    </svg>`}
             </div>
@@ -11967,7 +11967,7 @@ function getEditProfileHTML(user) {
 }
 
 // Menu toggle function (accordion style - close others when opening one)
-window.toggleMenu = function(menuName) {
+window.toggleMenu = function (menuName) {
   const allMenus = ['general', 'content', 'ai', 'analytics', 'rolls', 'settings'];
   const children = document.getElementById(menuName + '-children');
   const arrow = document.getElementById(menuName + '-arrow');
@@ -12004,7 +12004,7 @@ window.toggleMenu = function(menuName) {
 };
 
 // Set active menu child - DON'T reload page, just update active state
-window.setActiveChild = function(element, event) {
+window.setActiveChild = function (element, event) {
   // Prevent default link behavior
   if (event) {
     event.preventDefault();
@@ -12024,9 +12024,9 @@ window.setActiveChild = function(element, event) {
 };
 
 // Back to dashboard function
-window.backToDashboard = function() {
+window.backToDashboard = function () {
   console.log('🔙 Going back to dashboard');
-  
+
   // Make sure user data is in sessionStorage before reload
   const currentUser = store.getState().user;
   if (currentUser) {
@@ -12034,13 +12034,13 @@ window.backToDashboard = function() {
     localStorage.setItem('currentUser', JSON.stringify(currentUser));
     console.log('💾 User data saved before reload:', currentUser);
   }
-  
+
   // Reload dashboard to show updated data
   location.reload();
 };
 
 // Load main dashboard content (without reloading entire page)
-window.loadMainDashboard = async function() {
+window.loadMainDashboard = async function () {
   const contentArea = document.querySelector('.figma-content-area');
   const user = store.getState().user;
 
@@ -12195,7 +12195,7 @@ window.loadMainDashboard = async function() {
           profileImage: teacher.profileImage
         }
       });
-      
+
       // Update stats in the initial render
       const statsLoading = document.getElementById('stats-loading');
       if (statsLoading) {
@@ -12264,11 +12264,11 @@ window.loadMainDashboard = async function() {
           <div class="figma-profile-avatar">
             <div class="figma-avatar-circle">
               ${teacher.profileImage
-                ? `<img src="${teacher.profileImage}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
-                : `<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+          ? `<img src="${teacher.profileImage}" alt="Profile" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`
+          : `<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                    </svg>`
-              }
+        }
             </div>
           </div>
           <div class="figma-profile-info">
@@ -12502,7 +12502,7 @@ window.loadMainDashboard = async function() {
 };
 
 // Bio editing functions
-window.editBio = function() {
+window.editBio = function () {
   const bioText = document.getElementById('bioText');
   const bioEditor = document.getElementById('bioEditor');
   const bioTextarea = document.getElementById('bioTextarea');
@@ -12517,7 +12517,7 @@ window.editBio = function() {
   }
 };
 
-window.saveBio = async function() {
+window.saveBio = async function () {
   console.log('🔧 saveBio function called!'); // Debug log
 
   const bioText = document.getElementById('bioText');
@@ -12589,10 +12589,10 @@ window.saveBio = async function() {
   }
 };
 
-window.cancelBioEdit = function() {
+window.cancelBioEdit = function () {
   const bioText = document.getElementById('bioText');
   const bioEditor = document.getElementById('bioEditor');
-  
+
   if (bioText && bioEditor) {
     bioText.style.display = 'block';
     bioEditor.style.display = 'none';
@@ -12634,15 +12634,23 @@ async function handleImageUpload(e) {
       body: formData
     });
 
-    const data = await response.json();
+    // Be defensive: Render/nginx may return non-JSON on errors (e.g., 405/HTML)
+    const contentType = response.headers.get('content-type') || '';
+    let data;
+    if (contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      throw new Error(`Upload failed (${response.status}): ${text || 'Non-JSON response'}`);
+    }
 
-    if (data.success) {
+    if (response.ok && data.success) {
       // Update preview
       preview.innerHTML = `<img src="${data.url}" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">`;
-      
+
       // Update hidden input
       document.getElementById('profileImageUrl').value = data.url;
-      
+
       showSuccessToast(t('editProfile.imageUploaded') || 'Image uploaded successfully');
     } else {
       throw new Error(data.message);
@@ -12650,11 +12658,11 @@ async function handleImageUpload(e) {
   } catch (error) {
     console.error('Image upload error:', error);
     showErrorToast(t('editProfile.uploadFailed') || 'Image upload failed');
-    
+
     // Restore previous image
     const user = store.getState().user;
     const preview = document.getElementById('profilePicturePreview');
-    preview.innerHTML = user.profileImage 
+    preview.innerHTML = user.profileImage
       ? `<img src="${user.profileImage}" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">`
       : `<svg width="60" height="60" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -12696,7 +12704,7 @@ async function handleProfileSave(e) {
     // Handle password change
     const newPassword = formData.get('newPassword');
     const confirmPassword = formData.get('confirmPassword');
-    
+
     if (newPassword || confirmPassword) {
       if (newPassword !== confirmPassword) {
         showErrorToast(t('editProfile.passwordMismatch') || 'Passwords do not match');
@@ -12730,18 +12738,18 @@ async function handleProfileSave(e) {
 
     if (result.success) {
       const updatedUser = { ...user, ...result.teacher };
-      
+
       console.log('💾 Updating user state:', updatedUser);
-      
+
       // Update user state with new data
       store.setState({
         user: updatedUser
       });
-      
+
       // Update BOTH localStorage and sessionStorage
       localStorage.setItem('currentUser', JSON.stringify(updatedUser));
       sessionStorage.setItem('currentUser', JSON.stringify(updatedUser));
-      
+
       // Also update auth_user if it exists
       if (localStorage.getItem('auth_user')) {
         localStorage.setItem('auth_user', JSON.stringify(updatedUser));
@@ -12764,7 +12772,7 @@ async function handleProfileSave(e) {
 }
 
 // Open Messages Page
-window.openMessagesPage = function() {
+window.openMessagesPage = function () {
   // Show coming soon toast
   showInfoToast(t('comingSoon.messages'));
   return;
@@ -12909,21 +12917,21 @@ window.openMessagesPage = function() {
 };
 
 // Create Group Function
-window.createGroup = function() {
+window.createGroup = function () {
   alert('Group create functionality will be implemented here!');
   // Here you would implement the group creation logic
 };
 
 // Trigger File Upload
-window.triggerFileUpload = function() {
+window.triggerFileUpload = function () {
   document.getElementById('thumbnailInput').click();
 };
 
 // Handle Image Upload
-window.handleImageUpload = async function(event) {
+window.handleImageUpload = async function (event) {
   const file = event.target.files[0];
   if (!file) return;
-  
+
   // Check file size (5MB limit)
   if (file.size > 5 * 1024 * 1024) {
     showErrorToast('File size must be less than 5MB');
@@ -12938,7 +12946,7 @@ window.handleImageUpload = async function(event) {
 
   // Show preview immediately
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const uploadContent = document.getElementById('uploadContent');
     const imagePreview = document.getElementById('imagePreview');
     const previewImg = document.getElementById('previewImg');
@@ -12948,18 +12956,18 @@ window.handleImageUpload = async function(event) {
     imagePreview.classList.remove('hidden');
   };
   reader.readAsDataURL(file);
-  
+
   // Upload to server
   try {
     const formData = new FormData();
-    formData.append('file', file); // Backend expects 'file' not 'image'
-    
-    // Use API base URL from config
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    const uploadUrl = apiBaseUrl.replace('/api', '') + '/api/upload/image';
-    
+    formData.append('file', file);
+
+    // Build absolute URL safely
+    const apiBaseUrl = config?.api?.baseUrl || (import.meta.env.VITE_API_URL || 'http://localhost:8001/api');
+    const uploadUrl = new URL('/api/upload/image', apiBaseUrl).toString();
+
     console.log('📤 Uploading to:', uploadUrl);
-    
+
     const response = await fetch(uploadUrl, {
       method: 'POST',
       headers: {
@@ -12967,11 +12975,11 @@ window.handleImageUpload = async function(event) {
       },
       body: formData,
     });
-    
+
     const result = await response.json();
-    
+
     console.log('📤 Upload response:', result);
-    
+
     // Backend returns url directly, not in data object
     if (result.success && result.url) {
       window.uploadedThumbnailUrl = result.url;
@@ -12988,13 +12996,13 @@ window.handleImageUpload = async function(event) {
 };
 
 // Change Image
-window.changeImage = function(event) {
+window.changeImage = function (event) {
   event.stopPropagation();
   document.getElementById('thumbnailInput').click();
 };
 
 // Delete Image
-window.deleteImage = function(event) {
+window.deleteImage = function (event) {
   event.stopPropagation();
   const uploadContent = document.getElementById('uploadContent');
   const imagePreview = document.getElementById('imagePreview');
@@ -13006,12 +13014,12 @@ window.deleteImage = function(event) {
 };
 
 // Add Lesson Function
-window.addLesson = function(type, dropdownLink, event) {
+window.addLesson = function (type, dropdownLink, event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  
+
   const moduleItem = dropdownLink.closest('.module-item');
   const lessonsList = moduleItem.querySelector('.lessons-list');
   const addDropdown = lessonsList.querySelector('.add-lesson-dropdown');
@@ -13026,7 +13034,7 @@ window.addLesson = function(type, dropdownLink, event) {
 
   let lessonHTML = '';
 
-  switch(type) {
+  switch (type) {
     case 'video':
       lessonHTML = `
         <style>
@@ -13827,7 +13835,7 @@ window.addLesson = function(type, dropdownLink, event) {
 };
 
 // Save Lesson Function
-window.saveLesson = async function(button, type) {
+window.saveLesson = async function (button, type) {
   const lessonForm = button.closest('.lesson-form');
   const inputs = lessonForm.querySelectorAll('input, textarea');
   const moduleItem = lessonForm.closest('.module-item');
@@ -13920,7 +13928,7 @@ window.saveLesson = async function(button, type) {
 
   // Get icon based on type
   let iconSVG = '';
-  switch(type) {
+  switch (type) {
     case 'video':
       iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M23 7l-7 5 7 5V7z"/>
@@ -14009,7 +14017,7 @@ window.saveLesson = async function(button, type) {
       if (questionText.trim() && answers.length > 0) {
         // Get quiz type from lesson form
         const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
-        
+
         const question = {
           question: questionText,
           type: quizType,
@@ -14025,7 +14033,7 @@ window.saveLesson = async function(button, type) {
 
     lessonData.questions = questions;
     lessonData.timeLimit = lessonForm.querySelector('.quiz-time-input')?.value || '';
-    
+
     console.log('🎯 SAVE: Final lessonData for quiz:', JSON.stringify(lessonData, null, 2));
   } else if (type === 'assignment') {
     const instructionsInput = lessonForm.querySelector('.assignment-instructions');
@@ -14044,20 +14052,20 @@ window.saveLesson = async function(button, type) {
       const fileInput = lessonForm.querySelector('.assignment-file');
       console.log('🔍 Assignment file input found:', !!fileInput);
       console.log('🔍 Files selected:', fileInput?.files?.length || 0);
-      
+
       if (fileInput && fileInput.files && fileInput.files[0]) {
         const file = fileInput.files[0];
         lessonData.fileName = file.name;
-        
+
         // Upload file to server
         try {
           const formData = new FormData();
           formData.append('file', file);
-          
-          const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-          const uploadUrl = `${apiBaseUrl}/upload/document`;
+
+          const apiBaseUrl = config?.api?.baseUrl || (import.meta.env.VITE_API_URL || 'http://localhost:8001/api');
+          const uploadUrl = new URL('/api/upload/document', apiBaseUrl).toString();
           console.log('📤 Uploading assignment file to:', uploadUrl);
-          
+
           const response = await fetch(uploadUrl, {
             method: 'POST',
             headers: {
@@ -14065,7 +14073,7 @@ window.saveLesson = async function(button, type) {
             },
             body: formData,
           });
-          
+
           const result = await response.json();
           if (result.success && result.url) {
             lessonData.fileUrl = result.url;
@@ -14085,20 +14093,20 @@ window.saveLesson = async function(button, type) {
     const fileInput = lessonForm.querySelector('input[type="file"]');
 
     lessonData.description = descriptionInput?.value || '';
-    
+
     if (fileInput && fileInput.files && fileInput.files[0]) {
       const file = fileInput.files[0];
       lessonData.fileName = file.name;
-      
+
       // Upload file to server
       try {
         const formData = new FormData();
         formData.append('file', file);
-        
-        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-        const uploadUrl = `${apiBaseUrl}/upload/document`;
+
+        const apiBaseUrl = config?.api?.baseUrl || (import.meta.env.VITE_API_URL || 'http://localhost:8001/api');
+        const uploadUrl = new URL('/api/upload/document', apiBaseUrl).toString();
         console.log('📤 Uploading file lesson to:', uploadUrl);
-        
+
         const response = await fetch(uploadUrl, {
           method: 'POST',
           headers: {
@@ -14106,7 +14114,7 @@ window.saveLesson = async function(button, type) {
           },
           body: formData,
         });
-        
+
         const result = await response.json();
         if (result.success && result.url) {
           lessonData.fileUrl = result.url;
@@ -14118,7 +14126,7 @@ window.saveLesson = async function(button, type) {
         return; // Don't save lesson if file upload fails
       }
     }
-    
+
     console.log('🎯 SAVE File Lesson - Final lessonData:', lessonData);
   }
 
@@ -14157,14 +14165,14 @@ window.saveLesson = async function(button, type) {
 
   // Insert before the lesson form
   lessonForm.insertAdjacentHTML('beforebegin', lessonHTML);
-  
+
   // Get the newly created lesson item and store lesson data
   const newLessonItem = lessonForm.previousElementSibling;
   newLessonItem.lessonData = lessonData;
-  
+
   console.log('🎯 SAVE: Storing lessonData on element:', lessonData);
   console.log('🎯 SAVE: lessonData.questions:', lessonData.questions);
-  
+
   // Also update the data-lesson attribute for edit functionality
   newLessonItem.setAttribute('data-lesson', JSON.stringify(lessonData).replace(/'/g, "&apos;"));
 
@@ -14176,12 +14184,12 @@ window.saveLesson = async function(button, type) {
 };
 
 // View Video Function
-window.viewVideo = function(button, event) {
+window.viewVideo = function (button, event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  
+
   const lessonItem = button.closest('.lesson-item');
   const videoUrl = lessonItem.dataset.videoUrl;
   const lessonTitle = lessonItem.querySelector('.lesson-title-with-icon span:last-child').textContent;
@@ -14202,7 +14210,7 @@ window.viewVideo = function(button, event) {
   modal.className = 'video-modal';
   modal.id = 'videoPreviewModal';
   modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(4px);';
-  
+
   modal.innerHTML = `
     <div class="video-modal-content" style="background: var(--bg-primary); border-radius: 12px; overflow: hidden; max-width: 90vw; max-height: 90vh; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); border: 1px solid var(--border-color);">
       <div class="video-modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 20px 24px; border-bottom: 1px solid var(--border-color); background: var(--bg-secondary);">
@@ -14230,15 +14238,15 @@ window.viewVideo = function(button, event) {
   // Add event listeners
   const closeBtn = modal.querySelector('.close-modal-btn');
   const modalContent = modal.querySelector('.video-modal-content');
-  
+
   if (closeBtn) {
     console.log('✅ Close button found, adding click handler');
-    closeBtn.onclick = function(e) {
+    closeBtn.onclick = function (e) {
       console.log('🔴 X button clicked!');
       console.log('🔴 window.closeVideoModal exists?', typeof window.closeVideoModal);
       e.stopPropagation();
       e.preventDefault();
-      
+
       // Close modal directly here
       const modalToClose = document.getElementById('videoPreviewModal');
       console.log('🔴 Modal to close:', modalToClose);
@@ -14258,14 +14266,14 @@ window.viewVideo = function(button, event) {
   } else {
     console.error('❌ Close button NOT found!');
   }
-  
+
   if (modalContent) {
-    modalContent.onclick = function(e) {
+    modalContent.onclick = function (e) {
       e.stopPropagation();
     };
   }
-  
-  modal.onclick = function(e) {
+
+  modal.onclick = function (e) {
     if (e.target === modal) {
       console.log('🔴 Background clicked!');
       window.closeVideoModal();
@@ -14274,7 +14282,7 @@ window.viewVideo = function(button, event) {
 };
 
 // Close Video Modal Function
-window.closeVideoModal = function() {
+window.closeVideoModal = function () {
   console.log('🟢 closeVideoModal function called');
   const modal = document.getElementById('videoPreviewModal');
   console.log('🟢 Modal element:', modal);
@@ -14296,12 +14304,12 @@ window.closeVideoModal = function() {
 };
 
 // Edit Lesson Function
-window.editLesson = function(button, event) {
+window.editLesson = function (button, event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  
+
   const lessonItem = button.closest('.lesson-item');
   const lessonDataStr = lessonItem.dataset.lesson;
 
@@ -14322,8 +14330,8 @@ window.editLesson = function(button, event) {
       console.log('🎯 Assignment - TextContent:', lessonData.textContent);
       console.log('🎯 Assignment - FileName:', lessonData.fileName);
     }
-  console.log('🎯 Questions data in edit:', lessonData.questions);
-  console.log('🎯 Questions array length:', lessonData.questions ? lessonData.questions.length : 'undefined');
+    console.log('🎯 Questions data in edit:', lessonData.questions);
+    console.log('🎯 Questions array length:', lessonData.questions ? lessonData.questions.length : 'undefined');
   } catch (error) {
     console.error('Error parsing lesson data:', error);
     showErrorToast('Invalid lesson data format');
@@ -14410,7 +14418,7 @@ function createQuizEditForm(lessonData) {
   console.log('🎯 Generated questionsHTML:', questionsHTML);
 
   const escapedTitle = (lessonData.title || '').replace(/"/g, '&quot;');
-  
+
   // Determine quiz type from existing questions (check first question's type)
   let quizType = 'multiple-choice'; // default
   if (lessonData.questions && lessonData.questions.length > 0 && lessonData.questions[0].type) {
@@ -14499,7 +14507,7 @@ function createAssignmentEditForm(lessonData) {
   console.log('🎯 File info - fileUrl:', lessonData.fileUrl);
   console.log('🎯 File info - content:', lessonData.content);
   console.log('🎯 File info - textContent:', lessonData.textContent);
-  
+
   const escapedTitle = (lessonData.title || '').replace(/"/g, '&quot;');
   const escapedInstructions = (lessonData.instructions || '').replace(/"/g, '&quot;');
   const escapedTextContent = (lessonData.textContent || '').replace(/"/g, '&quot;');
@@ -14643,7 +14651,7 @@ function createFileEditForm(lessonData) {
 }
 
 // Update Lesson Function
-window.updateLesson = function(button, type) {
+window.updateLesson = function (button, type) {
   const editForm = button.closest('.lesson-edit-form');
   const moduleItem = editForm.closest('.module-item');
   const hiddenLessonItem = editForm.nextElementSibling;
@@ -14687,7 +14695,7 @@ window.updateLesson = function(button, type) {
         // Get quiz type from edit form (check for data attribute or default to multiple-choice)
         const editForm = questionItem.closest('.lesson-edit-form');
         const quizType = editForm?.getAttribute('data-quiz-type') || 'multiple-choice';
-        
+
         questions.push({
           question: questionText,
           type: quizType,
@@ -14742,11 +14750,11 @@ window.updateLesson = function(button, type) {
       delete updatedData.fileUrl;
     } else if (contentType === 'file') {
       const fileInput = editForm.querySelector('.assignment-file');
-      
+
       // Keep existing file data
       updatedData.fileName = existingData.fileName;
       updatedData.fileUrl = existingData.fileUrl;
-      
+
       // If new file is uploaded, update it
       if (fileInput && fileInput.files && fileInput.files[0]) {
         updatedData.fileName = fileInput.files[0].name;
@@ -14777,7 +14785,7 @@ window.updateLesson = function(button, type) {
 
   // Get icon based on type
   let iconSVG = '';
-  switch(type) {
+  switch (type) {
     case 'video':
       iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M23 7l-7 5 7 5V7z"/>
@@ -14850,7 +14858,7 @@ window.updateLesson = function(button, type) {
 };
 
 // Cancel Edit Function
-window.cancelEdit = function(button) {
+window.cancelEdit = function (button) {
   const editForm = button.closest('.lesson-edit-form');
   const hiddenLessonItem = editForm.nextElementSibling;
 
@@ -14862,7 +14870,7 @@ window.cancelEdit = function(button) {
 };
 
 // Add Question Function
-window.addQuestion = function(button) {
+window.addQuestion = function (button) {
   const questionsContainer = button.closest('.form-group').querySelector('.questions-list');
 
   const questionHTML = `
@@ -14904,7 +14912,7 @@ window.addQuestion = function(button) {
 };
 
 // Remove Question Function
-window.removeQuestion = function(button) {
+window.removeQuestion = function (button) {
   const questionItem = button.closest('.question-item');
   if (questionItem) {
     questionItem.remove();
@@ -14912,7 +14920,7 @@ window.removeQuestion = function(button) {
 };
 
 // Add Answer Function
-window.addAnswer = function(button) {
+window.addAnswer = function (button) {
   const answersSection = button.closest('.answers-section');
   const answerCount = answersSection.querySelectorAll('.answer-option').length + 1;
 
@@ -14929,12 +14937,12 @@ window.addAnswer = function(button) {
 };
 
 // Toggle Answer Selection Function
-window.toggleAnswerSelection = function(checkbox) {
+window.toggleAnswerSelection = function (checkbox) {
   checkbox.classList.toggle('checked');
 };
 
 // Custom Confirm Dialog
-window.showCustomConfirm = function(message, onConfirm) {
+window.showCustomConfirm = function (message, onConfirm) {
   const modalHTML = `
     <div class="delete-confirm-overlay" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); z-index: 10000; align-items: center; justify-content: center;">
       <div class="delete-confirm-modal" style="background: var(--bg-secondary); border-radius: 12px; padding: 24px; max-width: 400px; width: 90%; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);">
@@ -14975,13 +14983,13 @@ window.showCustomConfirm = function(message, onConfirm) {
 
   // Add click handler to confirm button
   const confirmBtn = document.querySelector('.delete-confirm-overlay .confirm-btn');
-  confirmBtn.onclick = function() {
+  confirmBtn.onclick = function () {
     closeCustomConfirm();
     if (onConfirm) onConfirm();
   };
 };
 
-window.closeCustomConfirm = function() {
+window.closeCustomConfirm = function () {
   const modal = document.querySelector('.delete-confirm-overlay');
   if (modal) {
     modal.remove();
@@ -14989,17 +14997,17 @@ window.closeCustomConfirm = function() {
 };
 
 // Delete Lesson Function
-window.deleteLesson = function(button, event) {
+window.deleteLesson = function (button, event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  
+
   const lessonItem = button.closest('.lesson-item');
   const moduleItem = lessonItem.closest('.module-item');
   const lessonTitle = lessonItem.querySelector('.lesson-title-with-icon span:last-child').textContent;
 
-  showCustomConfirm(`Are you sure you want to delete "${lessonTitle}"?`, function() {
+  showCustomConfirm(`Are you sure you want to delete "${lessonTitle}"?`, function () {
     lessonItem.remove();
     updateModuleInfo(moduleItem);
     showSuccessToast('Lesson deleted successfully');
@@ -15007,7 +15015,7 @@ window.deleteLesson = function(button, event) {
 };
 
 // Cancel Lesson Function
-window.cancelLesson = function(button) {
+window.cancelLesson = function (button) {
   const lessonForm = button.closest('.lesson-form');
   lessonForm.remove();
 };
@@ -15047,7 +15055,7 @@ function updateModuleInfo(moduleItem) {
 }
 
 // Add New Module Function
-window.addNewModule = function() {
+window.addNewModule = function () {
   const modulesContainer = document.getElementById('modulesContainer');
   const existingModules = modulesContainer.querySelectorAll('.module-item').length;
   const newModuleNumber = existingModules + 1;
@@ -15114,9 +15122,9 @@ window.addNewModule = function() {
 };
 
 // Toggle Module Expand/Collapse
-window.toggleModule = function(moduleHeader) {
+window.toggleModule = function (moduleHeader) {
   const lessonsList = moduleHeader.nextElementSibling;
-  
+
   // Check if lessons list is currently visible
   // Use getComputedStyle to check actual display value (including CSS)
   const computedStyle = window.getComputedStyle(lessonsList);
@@ -15132,12 +15140,12 @@ window.toggleModule = function(moduleHeader) {
 };
 
 // Edit Module
-window.editModule = function(button, event) {
+window.editModule = function (button, event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  
+
   const moduleHeader = button.closest('.module-header');
   const moduleTitle = moduleHeader.querySelector('h4');
   const currentTitle = moduleTitle.textContent;
@@ -15167,19 +15175,19 @@ window.editModule = function(button, event) {
       </div>
     </div>
   `;
-  
+
   document.body.insertAdjacentHTML('beforeend', modalHTML);
-  
+
   // Store reference to module title element
   window.currentModuleTitle = moduleTitle;
 };
 
-window.closeEditModuleModal = function() {
+window.closeEditModuleModal = function () {
   const modal = document.getElementById('editModuleModal');
   if (modal) modal.remove();
 };
 
-window.saveModuleTitle = function() {
+window.saveModuleTitle = function () {
   const newTitle = document.getElementById('moduleTitle').value.trim();
   if (newTitle && window.currentModuleTitle) {
     window.currentModuleTitle.textContent = newTitle;
@@ -15189,15 +15197,15 @@ window.saveModuleTitle = function() {
 };
 
 // Delete Module
-window.deleteModule = function(button, event) {
+window.deleteModule = function (button, event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  
+
   const moduleItem = button.closest('.module-item');
   const moduleTitle = moduleItem.querySelector('h4').textContent;
-  
+
   const modalHTML = `
     <div class="modal-overlay" id="deleteModuleModal" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 10000; align-items: center; justify-content: center;" onclick="if(event.target === this) closeDeleteModuleModal()">
       <div class="modal-content" style="max-width: 500px; width: 90%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
@@ -15224,19 +15232,19 @@ window.deleteModule = function(button, event) {
       </div>
     </div>
   `;
-  
+
   document.body.insertAdjacentHTML('beforeend', modalHTML);
-  
+
   // Store reference to module item
   window.currentModuleToDelete = moduleItem;
 };
 
-window.closeDeleteModuleModal = function() {
+window.closeDeleteModuleModal = function () {
   const modal = document.getElementById('deleteModuleModal');
   if (modal) modal.remove();
 };
 
-window.confirmDeleteModule = function() {
+window.confirmDeleteModule = function () {
   if (window.currentModuleToDelete) {
     window.currentModuleToDelete.remove();
 
@@ -15252,23 +15260,23 @@ window.confirmDeleteModule = function() {
         title.textContent = newTitle;
       }
     });
-    
+
     showSuccessToast('Module deleted successfully!');
   }
   closeDeleteModuleModal();
 };
 
 // Toggle Lesson Dropdown
-window.toggleLessonDropdown = function(button, event) {
+window.toggleLessonDropdown = function (button, event) {
   console.log('🎯 toggleLessonDropdown called!', button, event);
-  
+
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  
+
   const dropdown = button.nextElementSibling;
-  
+
   if (!dropdown) {
     console.error('❌ Dropdown menu not found!');
     console.error('❌ Button:', button);
@@ -15276,7 +15284,7 @@ window.toggleLessonDropdown = function(button, event) {
     console.error('❌ Button siblings:', button.parentElement.children);
     return;
   }
-  
+
   const isVisible = dropdown.classList.contains('show');
 
   console.log('🎯 Toggle dropdown clicked', { isVisible, dropdown });
@@ -15311,14 +15319,14 @@ window.toggleLessonDropdown = function(button, event) {
 };
 
 // Open My Courses Page
-window.openMyCourses = async function() {
+window.openMyCourses = async function () {
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (!contentArea) {
     console.error('Content area not found');
     return;
   }
-  
+
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
@@ -15588,7 +15596,7 @@ let myCoursesData = [
 function renderCourseCards(courses = mockCourses) {
   const grid = document.getElementById('coursesGrid');
   if (!grid) return;
-  
+
   if (courses.length === 0) {
     grid.innerHTML = '<p class="no-results">No courses found.</p>';
     return;
@@ -15644,15 +15652,15 @@ window.filterCourses = () => {
     const matchesStatus = !statusFilter || course.status === statusFilter;
     return matchesSearch && matchesCategory && matchesStatus;
   });
-  
+
   renderCourseCards(filtered);
 };
 
 window.sortCourses = (event) => {
   const sortBy = event.target.value;
   let sorted = [...mockCourses]; // Use a copy
-  
-  switch(sortBy) {
+
+  switch (sortBy) {
     case 'oldest':
       sorted.sort((a, b) => a.id - b.id);
       break;
@@ -15661,10 +15669,10 @@ window.sortCourses = (event) => {
       break;
     case 'newest':
     default:
-       sorted.sort((a, b) => b.id - a.id);
+      sorted.sort((a, b) => b.id - a.id);
       break;
   }
-  
+
   // Re-apply filters after sorting
   const searchInput = document.querySelector('.search-bar input').value.toLowerCase();
   const categoryFilter = document.querySelectorAll('.filter-select')[0].value;
@@ -15682,23 +15690,23 @@ window.sortCourses = (event) => {
 
 
 // Open Finance Page - Payment Requests
-window.openFinancePage = async function() {
+window.openFinancePage = async function () {
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (!contentArea) {
     console.error('Content area not found');
     return;
   }
-  
+
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
     pageTitle.textContent = t('finance.paymentRequests');
   }
-  
+
   // Add finance-page class to content area
   contentArea.className = 'figma-content-area finance-page';
-  
+
   // Show loading
   contentArea.innerHTML = `
     <div style="display: flex; align-items: center; justify-content: center; height: 400px; color: var(--primary-color);">
@@ -15721,7 +15729,7 @@ window.openFinancePage = async function() {
     // Fetch payment requests
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const token = localStorage.getItem('accessToken');
-    
+
     const response = await fetch(`${apiBaseUrl}/payments/teacher/${teacherId}`, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -16354,9 +16362,9 @@ window.openFinancePage = async function() {
                         </td>
                         <td class="status">
                           <span class="status-badge ${payment.status}">
-                            ${payment.status === 'pending' ? t('finance.pending') : 
-                              payment.status === 'approved' ? t('finance.approved') : 
-                              t('finance.rejected')}
+                            ${payment.status === 'pending' ? t('finance.pending') :
+        payment.status === 'approved' ? t('finance.approved') :
+          t('finance.rejected')}
                           </span>
                         </td>
                         <td class="actions">
@@ -16391,101 +16399,101 @@ window.openFinancePage = async function() {
           </div>
         `;
 
-        // Add payment functions
-        window.viewReceipt = function(imageUrl) {
-          // Create modal to view receipt
-          const modal = document.createElement('div');
-          modal.className = 'receipt-modal';
-          modal.innerHTML = '<div class="receipt-modal-content">' +
-            '<div class="receipt-modal-header">' +
-              '<h3>Payment Receipt</h3>' +
-              '<button class="close-modal" onclick="this.parentElement.parentElement.parentElement.remove()">×</button>' +
-            '</div>' +
-            '<div class="receipt-image-container">' +
-              '<img src="' + imageUrl + '" alt="Payment Receipt" style="max-width: 100%; max-height: 70vh; object-fit: contain;">' +
-            '</div>' +
-          '</div>';
-          
-          modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;';
-          
-          modal.querySelector('.receipt-modal-content').style.cssText = 'background: #2a2a2a; border-radius: 12px; padding: 20px; max-width: 90vw; max-height: 90vh; overflow: auto;';
-          
-          modal.querySelector('.receipt-modal-header').style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: white;';
-          
-          modal.querySelector('.close-modal').style.cssText = 'background: none; border: none; color: white; font-size: 24px; cursor: pointer;';
-          
-          document.body.appendChild(modal);
-        };
+    // Add payment functions
+    window.viewReceipt = function (imageUrl) {
+      // Create modal to view receipt
+      const modal = document.createElement('div');
+      modal.className = 'receipt-modal';
+      modal.innerHTML = '<div class="receipt-modal-content">' +
+        '<div class="receipt-modal-header">' +
+        '<h3>Payment Receipt</h3>' +
+        '<button class="close-modal" onclick="this.parentElement.parentElement.parentElement.remove()">×</button>' +
+        '</div>' +
+        '<div class="receipt-image-container">' +
+        '<img src="' + imageUrl + '" alt="Payment Receipt" style="max-width: 100%; max-height: 70vh; object-fit: contain;">' +
+        '</div>' +
+        '</div>';
 
-        window.approvePayment = async function(paymentId) {
-          try {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            const teacherId = currentUser._id;
-            
-            const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-            const token = localStorage.getItem('accessToken');
-            
-            const response = await fetch(apiBaseUrl + '/payments/' + paymentId + '/approve', {
-              method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-              },
-              body: JSON.stringify({ teacherId })
-            });
+      modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 10000;';
 
-            const result = await response.json();
-            if (result.success) {
-              showSuccessToast(t('finance.approveSuccess'));
-              // Reload the page
-              openFinancePage();
-            } else {
-              throw new Error(result.message);
-            }
-          } catch (error) {
-            console.error('Error approving payment:', error);
-            showErrorToast(t('finance.approveError'));
-          }
-        };
+      modal.querySelector('.receipt-modal-content').style.cssText = 'background: #2a2a2a; border-radius: 12px; padding: 20px; max-width: 90vw; max-height: 90vh; overflow: auto;';
 
-        window.rejectPayment = async function(paymentId) {
-          const reason = prompt('Rejection reason (optional):') || '';
-          
-          try {
-            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-            const teacherId = currentUser._id;
-            
-            const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-            const token = localStorage.getItem('accessToken');
-            
-            const response = await fetch(apiBaseUrl + '/payments/' + paymentId + '/reject', {
-              method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token
-              },
-              body: JSON.stringify({ teacherId, reason })
-            });
+      modal.querySelector('.receipt-modal-header').style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; color: white;';
 
-            const result = await response.json();
-            if (result.success) {
-              showSuccessToast(t('finance.rejectSuccess'));
-              // Reload the page
-              openFinancePage();
-            } else {
-              throw new Error(result.message);
-            }
-          } catch (error) {
-            console.error('Error rejecting payment:', error);
-            showErrorToast(t('finance.rejectError'));
-          }
-        };
+      modal.querySelector('.close-modal').style.cssText = 'background: none; border: none; color: white; font-size: 24px; cursor: pointer;';
+
+      document.body.appendChild(modal);
+    };
+
+    window.approvePayment = async function (paymentId) {
+      try {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const teacherId = currentUser._id;
+
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+        const token = localStorage.getItem('accessToken');
+
+        const response = await fetch(apiBaseUrl + '/payments/' + paymentId + '/approve', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ teacherId })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showSuccessToast(t('finance.approveSuccess'));
+          // Reload the page
+          openFinancePage();
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (error) {
+        console.error('Error approving payment:', error);
+        showErrorToast(t('finance.approveError'));
+      }
+    };
+
+    window.rejectPayment = async function (paymentId) {
+      const reason = prompt('Rejection reason (optional):') || '';
+
+      try {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const teacherId = currentUser._id;
+
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+        const token = localStorage.getItem('accessToken');
+
+        const response = await fetch(apiBaseUrl + '/payments/' + paymentId + '/reject', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ teacherId, reason })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+          showSuccessToast(t('finance.rejectSuccess'));
+          // Reload the page
+          openFinancePage();
+        } else {
+          throw new Error(result.message);
+        }
+      } catch (error) {
+        console.error('Error rejecting payment:', error);
+        showErrorToast(t('finance.rejectError'));
+      }
+    };
 
   } catch (error) {
     console.error('Error loading payment requests:', error);
     contentArea.innerHTML = '<div style="display: flex; align-items: center; justify-content: center; height: 400px; color: #ef4444; text-align: center;"><div><h3>Error Loading Payment Requests</h3><p>Please try again later</p><button onclick="openFinancePage()" style="margin-top: 16px; padding: 8px 16px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer;">Retry</button></div></div>';
   }
-  
+
   // Apply saved primary color to Finance page
   const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
   applyPrimaryColor(savedColor);
@@ -16494,14 +16502,14 @@ window.openFinancePage = async function() {
 // Open AI Assistant Page
 function openAIAssistantPage() {
   console.log('Opening AI Assistant Page');
-  
+
   // Show coming soon toast
   showInfoToast(t('comingSoon.aiAssistant'));
 }
 
 
 // Open Assignments Page
-window.openAssignmentsPage = async function() {
+window.openAssignmentsPage = async function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -17046,17 +17054,17 @@ window.openAssignmentsPage = async function() {
                 <p>${t('assignments.noAssignmentsDesc')}</p>
               </div>
             ` : submissions.map((submission, index) => {
-              const submittedDate = new Date(submission.submittedAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-              });
-              const courseTitle = submission.courseId?.title || t('assignments.unknownCourse');
-              const studentName = submission.studentId?.firstName && submission.studentId?.lastName
-                ? `${submission.studentId.firstName} ${submission.studentId.lastName}`
-                : t('assignments.unknownStudent');
+      const submittedDate = new Date(submission.submittedAt).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+      const courseTitle = submission.courseId?.title || t('assignments.unknownCourse');
+      const studentName = submission.studentId?.firstName && submission.studentId?.lastName
+        ? `${submission.studentId.firstName} ${submission.studentId.lastName}`
+        : t('assignments.unknownStudent');
 
-              return `
+      return `
                 <div class="assignment-item" data-course="${submission.courseId?._id || ''}" data-status="${submission.status}">
                   <div class="assignment-header">
                     <div>
@@ -17074,9 +17082,9 @@ window.openAssignmentsPage = async function() {
                   </div>
                   <div class="assignment-action">
                     ${submission.status === 'graded'
-                      ? `<div class="grade-display">${t('assignments.grade')} ${submission.grade}%</div>`
-                      : `<button class="grade-btn" onclick="gradeAssignment('${submission._id}', '${submission.fileName}', '${submission.fileUrl}')">${t('assignments.gradeNow')}</button>`
-                    }
+          ? `<div class="grade-display">${t('assignments.grade')} ${submission.grade}%</div>`
+          : `<button class="grade-btn" onclick="gradeAssignment('${submission._id}', '${submission.fileName}', '${submission.fileUrl}')">${t('assignments.gradeNow')}</button>`
+        }
                     <a href="${submission.fileUrl}" target="_blank" class="view-file-btn">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -17087,7 +17095,7 @@ window.openAssignmentsPage = async function() {
                   </div>
                 </div>
               `;
-            }).join('')}
+    }).join('')}
           </div>
   `;
 
@@ -17119,7 +17127,7 @@ window.openAssignmentsPage = async function() {
 };
 
 // Assignment Interactive Functions
-window.showAssignmentDetails = function(cardType) {
+window.showAssignmentDetails = function (cardType) {
   const details = {
     total: {
       title: 'Total Assignments Overview',
@@ -17227,7 +17235,7 @@ window.showAssignmentDetails = function(cardType) {
   showModal(details[cardType].title, details[cardType].content);
 };
 
-window.reviewAllAssignments = function() {
+window.reviewAllAssignments = function () {
   showMessage('Starting review session...', 'info');
   closeModal();
   // Switch to all tab by default
@@ -17236,7 +17244,7 @@ window.reviewAllAssignments = function() {
 };
 
 // Enhanced Assignment tab switching function
-window.switchAssignmentTab = function(tabElement, tabType) {
+window.switchAssignmentTab = function (tabElement, tabType) {
   // Remove active class from all tabs
   document.querySelectorAll('.assignment-tab').forEach(tab => {
     tab.classList.remove('active');
@@ -17262,16 +17270,16 @@ window.switchAssignmentTab = function(tabElement, tabType) {
 };
 
 // Update assignments list based on filter
-window.updateAssignmentsList = function(filterType) {
+window.updateAssignmentsList = function (filterType) {
   const assignmentsContainer = document.querySelector('.assignments-section');
-  
+
   // Get all assignment items
   const allItems = assignmentsContainer.querySelectorAll('.assignment-item');
-  
+
   // Filter and show/hide based on status
   allItems.forEach(item => {
     const status = item.getAttribute('data-status');
-    
+
     if (filterType === 'pending') {
       // Show only submitted (pending) assignments
       if (status === 'submitted') {
@@ -17291,15 +17299,15 @@ window.updateAssignmentsList = function(filterType) {
       item.style.display = 'block';
     }
   });
-  
+
   // Check if any items are visible
   const visibleItems = Array.from(allItems).filter(item => item.style.display !== 'none');
-  
+
   if (visibleItems.length === 0) {
     // Show "no assignments" message
     const existingNoMsg = assignmentsContainer.querySelector('.no-assignments-msg');
     if (existingNoMsg) existingNoMsg.remove();
-    
+
     const noAssignmentsMsg = document.createElement('div');
     noAssignmentsMsg.className = 'no-assignments-msg';
     noAssignmentsMsg.style.cssText = 'padding: 40px; text-align: center; color: rgba(255,255,255,0.5);';
@@ -17313,7 +17321,7 @@ window.updateAssignmentsList = function(filterType) {
 };
 
 // Course Filter Function
-window.filterAssignmentsByCourse = function(courseValue) {
+window.filterAssignmentsByCourse = function (courseValue) {
   const assignmentItems = document.querySelectorAll('.assignment-item');
   const counter = document.getElementById('assignment-counter');
   const statsCards = document.querySelectorAll('.assignments-card-amount');
@@ -17382,7 +17390,7 @@ window.filterAssignmentsByCourse = function(courseValue) {
 };
 
 // Enhanced Grade assignment function
-window.gradeAssignment = async function(assignmentId, fileName, fileUrl) {
+window.gradeAssignment = async function (assignmentId, fileName, fileUrl) {
   const gradingModal = `
     <div class="grading-form">
       <div class="grade-input-group">
@@ -17480,7 +17488,7 @@ window.gradeAssignment = async function(assignmentId, fileName, fileUrl) {
   showModal('Grade Assignment', gradingModal);
 };
 
-window.submitGrade = async function(assignmentId) {
+window.submitGrade = async function (assignmentId) {
   const grade = document.getElementById('gradeValue').value;
   const feedback = document.querySelector('.feedback-textarea').value;
 
@@ -17510,7 +17518,7 @@ window.submitGrade = async function(assignmentId) {
 
     showMessage(`Assignment graded successfully! Grade: ${grade}%`, 'success');
     closeModal();
-    
+
     // Refresh assignments page
     openAssignmentsPage();
   } catch (error) {
@@ -17519,7 +17527,7 @@ window.submitGrade = async function(assignmentId) {
   }
 };
 
-window.reviewGrade = function(assignmentId) {
+window.reviewGrade = function (assignmentId) {
   showMessage('Opening grade review interface...', 'info');
 };
 
@@ -17580,7 +17588,7 @@ window.filterTransactions = () => {
 };
 
 // Finance Interactive Functions
-window.showFinanceDetails = function(cardType) {
+window.showFinanceDetails = function (cardType) {
   const details = {
     revenue: {
       title: 'Total Revenue Details',
@@ -17662,13 +17670,13 @@ window.showFinanceDetails = function(cardType) {
   showModal(details[cardType].title, details[cardType].content);
 };
 
-window.requestWithdrawal = function() {
+window.requestWithdrawal = function () {
   showMessage('Withdrawal request submitted! You will receive confirmation via email.', 'success');
   closeModal();
 };
 
 // Payment Method Dropdown Functions
-window.togglePaymentMenu = function(button) {
+window.togglePaymentMenu = function (button) {
   const dropdown = button.querySelector('.payment-dropdown-menu');
   const isOpen = dropdown.classList.contains('show');
 
@@ -17693,7 +17701,7 @@ window.togglePaymentMenu = function(button) {
   }
 };
 
-window.showPaymentDetails = function() {
+window.showPaymentDetails = function () {
   const cardDetails = `
     <div class="modal-content">
       <h3>Payment Method Details</h3>
@@ -17729,7 +17737,7 @@ window.showPaymentDetails = function() {
 };
 
 // Enhanced Finance Interactive Functions
-window.manageCard = function() {
+window.manageCard = function () {
   const cardDetails = `
     <div class="modal-content">
       <h3>Card Details</h3>
@@ -17784,7 +17792,7 @@ window.manageCard = function() {
   showModal('UzBank Card Details', cardDetails);
 };
 
-window.editCard = function() {
+window.editCard = function () {
   const editModal = `
     <div class="modern-modal-overlay" onclick="closeEditModal()">
       <div class="modern-modal-container" onclick="event.stopPropagation()">
@@ -18194,7 +18202,7 @@ window.editCard = function() {
   document.body.insertAdjacentHTML('beforeend', editModal);
 };
 
-window.closeEditModal = function() {
+window.closeEditModal = function () {
   const modal = document.querySelector('.modern-modal-overlay');
   if (modal) {
     modal.style.animation = 'modalFadeOut 0.2s ease';
@@ -18202,7 +18210,7 @@ window.closeEditModal = function() {
   }
 };
 
-window.deleteCard = function() {
+window.deleteCard = function () {
   const deleteModal = `
     <div class="delete-modal-overlay" onclick="closeDeleteModal()">
       <div class="delete-modal-container" onclick="event.stopPropagation()">
@@ -18555,7 +18563,7 @@ window.deleteCard = function() {
   document.body.insertAdjacentHTML('beforeend', deleteModal);
 };
 
-window.closeDeleteModal = function() {
+window.closeDeleteModal = function () {
   const modal = document.querySelector('.delete-modal-overlay');
   if (modal) {
     modal.style.animation = 'deleteFadeOut 0.2s ease';
@@ -18563,7 +18571,7 @@ window.closeDeleteModal = function() {
   }
 };
 
-window.addPaymentMethod = function() {
+window.addPaymentMethod = function () {
   const addForm = `
     <div class="modal-content">
       <h3>Add Payment Method</h3>
@@ -18622,23 +18630,23 @@ window.addPaymentMethod = function() {
   showModal('Add New Payment Method', addForm);
 };
 
-window.saveCardChanges = function() {
+window.saveCardChanges = function () {
   showMessage('Card information updated successfully!', 'success');
   closeModal();
 };
 
-window.confirmDeleteCard = function() {
+window.confirmDeleteCard = function () {
   showMessage('Payment method deleted successfully!', 'success');
   closeModal();
 };
 
-window.saveNewCard = function() {
+window.saveNewCard = function () {
   showMessage('New payment method added successfully!', 'success');
   closeModal();
 };
 
 // Message notification system
-window.showMessage = function(message, type = 'info') {
+window.showMessage = function (message, type = 'info') {
   const messageEl = document.createElement('div');
   messageEl.className = `message-notification ${type}`;
   messageEl.textContent = message;
@@ -18692,7 +18700,7 @@ window.showMessage = function(message, type = 'info') {
 };
 
 // AI Assistant Interactive Functions
-window.showAIMetrics = function(metricType) {
+window.showAIMetrics = function (metricType) {
   const details = {
     responses: {
       title: 'AI Response Analytics',
@@ -18798,7 +18806,7 @@ window.showAIMetrics = function(metricType) {
 };
 
 // Handle Course Selection for AI
-window.handleCourseSelection = function(courseId) {
+window.handleCourseSelection = function (courseId) {
   if (!courseId) {
     showToast('Iltimos, kursni tanlang', 'warning');
     return;
@@ -18806,7 +18814,7 @@ window.handleCourseSelection = function(courseId) {
 
   // Store selected course for AI training
   localStorage.setItem('aiSelectedCourse', courseId);
-  
+
   // Show success message
   const customToast = document.createElement('div');
   customToast.innerHTML = 'Kurs tanlandi! AI endi faqat shu kurs bo\'yicha javob beradi.';
@@ -18841,7 +18849,7 @@ window.handleCourseSelection = function(courseId) {
   console.log('AI Course selected:', courseId);
 };
 
-window.toggleAISetting = function(toggleElement) {
+window.toggleAISetting = function (toggleElement) {
   const isChecked = toggleElement.checked;
 
   if (isChecked) {
@@ -18886,31 +18894,31 @@ window.toggleAISetting = function(toggleElement) {
   }
 };
 
-window.openQuizAnalytics = async function() {
+window.openQuizAnalytics = async function () {
   console.log('openQuizAnalytics function called');
-  
+
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (!contentArea) {
     console.error('Content area not found');
     return;
   }
-  
+
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
     pageTitle.textContent = t('quizAnalytics.title');
   }
-  
+
   // Get teacher ID - try multiple sources
   let teacherId = null;
-  
+
   // Try currentUser from localStorage first (this is the main one)
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   if (currentUser._id) {
     teacherId = currentUser._id;
   }
-  
+
   // Try user from localStorage
   if (!teacherId) {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -18918,12 +18926,12 @@ window.openQuizAnalytics = async function() {
       teacherId = user._id;
     }
   }
-  
+
   // Try window.currentUser if available
   if (!teacherId && window.currentUser && window.currentUser._id) {
     teacherId = window.currentUser._id;
   }
-  
+
   // Try sessionStorage
   if (!teacherId) {
     const sessionUser = sessionStorage.getItem('currentUser');
@@ -18932,9 +18940,9 @@ window.openQuizAnalytics = async function() {
       teacherId = parsedUser._id;
     }
   }
-  
+
   console.log('🔍 Teacher ID for quiz analytics:', teacherId);
-  
+
   if (!teacherId) {
     contentArea.innerHTML = `
       <div style="padding: 40px; text-align: center; color: #EF4444;">
@@ -18944,7 +18952,7 @@ window.openQuizAnalytics = async function() {
     `;
     return;
   }
-  
+
   // Show loading state
   contentArea.innerHTML = `
     <div style="display: flex; justify-content: center; align-items: center; min-height: 400px; color: #9CA3AF;">
@@ -18959,7 +18967,7 @@ window.openQuizAnalytics = async function() {
       }
     </style>
   `;
-  
+
   try {
     // Fetch quiz analytics data
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
@@ -18968,15 +18976,15 @@ window.openQuizAnalytics = async function() {
         'Content-Type': 'application/json'
       }
     });
-    
+
     const result = await response.json();
-    
+
     if (!result.success) {
       throw new Error(result.message || 'Failed to load quiz analytics');
     }
-    
+
     const { analytics, summary, courses } = result.data;
-    
+
     // Update content area with real data
     const quizAnalyticsHTML = `
       <style>
@@ -19214,25 +19222,25 @@ window.openQuizAnalytics = async function() {
               </thead>
               <tbody>
                 ${analytics.map(item => {
-                  const course = courses.find(c => c._id === item.courseId.toString());
-                  const courseName = course ? course.title : t('quizAnalytics.unknownCourse');
-                  const statusClass = item.passed ? 'status-passed' : 'status-failed';
-                  const statusText = item.passed ? t('quizAnalytics.passed') : t('quizAnalytics.failed');
-                  const scoreClass = item.passed ? 'score-pass' : 'score-fail';
-                  
-                  // Format date as DD/MM/YYYY
-                  const dateObj = new Date(item.date);
-                  const day = String(dateObj.getDate()).padStart(2, '0');
-                  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-                  const year = dateObj.getFullYear();
-                  const formattedDate = day + '/' + month + '/' + year;
-                  
-                  const time = window.formatQuizTime(item.timeElapsed);
-                  
-                  // Get last 5 digits of student ID
-                  const studentIdShort = item.studentId.toString().slice(-5);
-                  
-                  return `
+      const course = courses.find(c => c._id === item.courseId.toString());
+      const courseName = course ? course.title : t('quizAnalytics.unknownCourse');
+      const statusClass = item.passed ? 'status-passed' : 'status-failed';
+      const statusText = item.passed ? t('quizAnalytics.passed') : t('quizAnalytics.failed');
+      const scoreClass = item.passed ? 'score-pass' : 'score-fail';
+
+      // Format date as DD/MM/YYYY
+      const dateObj = new Date(item.date);
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const year = dateObj.getFullYear();
+      const formattedDate = day + '/' + month + '/' + year;
+
+      const time = window.formatQuizTime(item.timeElapsed);
+
+      // Get last 5 digits of student ID
+      const studentIdShort = item.studentId.toString().slice(-5);
+
+      return `
                     <tr data-student-id="${studentIdShort}" data-student-name="${item.studentName.toLowerCase()}">
                       <td style="font-family: 'Courier New', monospace; color: var(--primary-color); font-weight: 600;">${studentIdShort}</td>
                       <td class="student-name">${item.studentName}</td>
@@ -19259,7 +19267,7 @@ window.openQuizAnalytics = async function() {
                       <td>${formattedDate}</td>
                     </tr>
                   `;
-                }).join('')}
+    }).join('')}
               </tbody>
             </table>
           `}
@@ -19268,11 +19276,11 @@ window.openQuizAnalytics = async function() {
     `;
 
     contentArea.innerHTML = quizAnalyticsHTML;
-    
+
     // Apply saved primary color
     const savedColor = localStorage.getItem('primaryColor') || '#7ea2d4';
     applyPrimaryColor(savedColor);
-    
+
   } catch (error) {
     console.error('Error loading quiz analytics:', error);
     contentArea.innerHTML = `
@@ -19285,12 +19293,12 @@ window.openQuizAnalytics = async function() {
 };
 
 // Helper function to format time
-window.formatQuizTime = function(seconds) {
+window.formatQuizTime = function (seconds) {
   if (!seconds) return '-';
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
   const secs = seconds % 60;
-  
+
   if (hours > 0) {
     return `${hours} ${t('quizAnalytics.hours')} ${minutes} ${t('quizAnalytics.minutes')}`;
   }
@@ -19301,19 +19309,19 @@ window.formatQuizTime = function(seconds) {
 };
 
 // Filter quiz results by ID or name
-window.filterQuizResults = function() {
+window.filterQuizResults = function () {
   const searchInput = document.getElementById('quizSearchInput');
   const table = document.getElementById('quizResultsTable');
-  
+
   if (!searchInput || !table) return;
-  
+
   const searchTerm = searchInput.value.toLowerCase().trim();
   const rows = table.querySelectorAll('tbody tr');
-  
+
   rows.forEach(row => {
     const studentId = row.getAttribute('data-student-id') || '';
     const studentName = row.getAttribute('data-student-name') || '';
-    
+
     if (studentId.includes(searchTerm) || studentName.includes(searchTerm)) {
       row.style.display = '';
     } else {
@@ -19322,7 +19330,7 @@ window.filterQuizResults = function() {
   });
 };
 
-window.switchQuizTab = function(tabType, tabElement) {
+window.switchQuizTab = function (tabType, tabElement) {
   // Remove active class from all tabs
   document.querySelectorAll('.quiz-tab').forEach(tab => {
     tab.classList.remove('active');
@@ -19405,12 +19413,12 @@ window.switchQuizTab = function(tabType, tabElement) {
   }
 };
 
-window.showQuizAnalytics = function(quizId) {
+window.showQuizAnalytics = function (quizId) {
   // This would show detailed analytics for a specific quiz
   alert('Quiz analytics details for: ' + quizId);
 };
 
-window.editAIResponse = function(responseId) {
+window.editAIResponse = function (responseId) {
   const editForm = `
     <div class="modal-content" style="background: rgba(32, 32, 32, 0.95) !important; border: 1px solid rgba(126, 162, 212, 0.2) !important; border-radius: 12px !important; padding: 0 !important;">
       <div class="response-edit-form">
@@ -19434,12 +19442,12 @@ window.editAIResponse = function(responseId) {
   showModal('Edit AI Response', editForm);
 };
 
-window.saveAIResponse = function(responseId) {
+window.saveAIResponse = function (responseId) {
   showMessage('AI response updated successfully!', 'success');
   closeModal();
 };
 
-window.regenerateAIResponse = function(responseId) {
+window.regenerateAIResponse = function (responseId) {
   showMessage('Regenerating AI response...', 'info');
 
   // Simulate AI regeneration delay
@@ -19449,7 +19457,7 @@ window.regenerateAIResponse = function(responseId) {
   }, 2000);
 };
 
-window.showModal = function(title, content) {
+window.showModal = function (title, content) {
   const modal = `
     <div class="finance-modal" onclick="closeModal()">
       <div class="finance-modal-content" onclick="event.stopPropagation()">
@@ -19550,7 +19558,7 @@ window.showModal = function(title, content) {
   document.body.insertAdjacentHTML('beforeend', modal);
 };
 
-window.closeModal = function() {
+window.closeModal = function () {
   const modal = document.querySelector('.finance-modal');
   if (modal) {
     modal.remove();
@@ -19620,13 +19628,13 @@ window.requestPayout = () => {
   `);
 };
 
-window.submitPayout = function() {
+window.submitPayout = function () {
   showMessage('Payout request submitted successfully! Processing will take 2-3 business days.', 'success');
   closeModal();
 };
 
 // Open Create Course Page
-window.openCreateCourse = async function() {
+window.openCreateCourse = async function () {
   const userData = store.getState().user;
 
   // Show loading toast while checking
@@ -19640,12 +19648,12 @@ window.openCreateCourse = async function() {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       },
     });
-    
+
     const result = await response.json();
     const currentCourses = result.courses || [];
-    
+
     console.log(`📊 Current courses: ${currentCourses.length}/2`);
-    
+
     if (currentCourses.length >= 2) {
       showErrorToast('You have already created 2 courses. Upgrade your plan to create more courses.');
       return;
@@ -19659,18 +19667,18 @@ window.openCreateCourse = async function() {
   // Check current general menu state before navigating
   const generalChildren = document.getElementById('general-children');
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (!contentArea) {
     console.error('Content area not found');
     return;
   }
-  
+
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
     pageTitle.textContent = t('sidebar.createCourse');
   }
-  
+
   // Update content area only
   contentArea.innerHTML = `
           <form class="create-course-form" id="createCourseForm">
@@ -20121,7 +20129,7 @@ function applyCurrentFilters(courses) {
 }
 
 // Filter courses by tab
-window.filterCoursesByTab = function(tabElement, filter) {
+window.filterCoursesByTab = function (tabElement, filter) {
   // Remove active class from all tabs
   document.querySelectorAll('.filter-tab').forEach(tab => {
     tab.classList.remove('active');
@@ -20164,21 +20172,21 @@ window.filterCoursesByTab = function(tabElement, filter) {
 };
 
 // Search courses
-window.searchCourses = function() {
+window.searchCourses = function () {
   const searchInput = document.getElementById('courseSearchInput');
   currentSearch = searchInput ? searchInput.value : '';
   renderMyCoursesCards();
 };
 
 // Sort courses
-window.sortCourses = function() {
+window.sortCourses = function () {
   const sortSelect = document.getElementById('courseSortSelect');
   currentSort = sortSelect ? sortSelect.value : 'newest';
   renderMyCoursesCards();
 };
 
 // Enhanced course action functions
-window.viewCourseStats = function(id) {
+window.viewCourseStats = function (id) {
   const course = myCoursesData.find(c => c.id === id);
   if (!course) return;
 
@@ -20231,12 +20239,12 @@ window.viewCourseStats = function(id) {
   document.body.insertAdjacentHTML('beforeend', statsModal);
 };
 
-window.closeStatsModal = function() {
+window.closeStatsModal = function () {
   const modal = document.querySelector('.course-stats-modal');
   if (modal) modal.remove();
 };
 
-window.editCourse = function(id) {
+window.editCourse = function (id) {
   const course = myCoursesData.find(c => c.id === id);
   if (!course) return;
 
@@ -20252,7 +20260,7 @@ window.editCourse = function(id) {
   }
 };
 
-window.deleteCourse = function(id) {
+window.deleteCourse = function (id) {
   const course = myCoursesData.find(c => c.id === id);
   if (!course) return;
 
@@ -20273,7 +20281,7 @@ window.deleteCourse = function(id) {
 };
 
 // Filter from sidebar menu - works from any page
-window.filterFromSidebar = function(filterType) {
+window.filterFromSidebar = function (filterType) {
   // Always store the filter to apply
   sessionStorage.setItem('pendingFilter', filterType);
 
@@ -20338,7 +20346,7 @@ function applyFilterFromSidebar(filterType) {
   const backButton = document.querySelector('[onclick*="backToDashboard"]');
   if (backButton) {
     const newText = filterType === 'draft' ? '← Back to All Courses' :
-                    filterType === 'archived' ? '← Back to All Courses' : '← Back';
+      filterType === 'archived' ? '← Back to All Courses' : '← Back';
     backButton.textContent = newText;
   }
 }
@@ -20383,11 +20391,11 @@ window.openAIAssistantPage = openAIAssistantPage;
 // Handle theme change event - update colors immediately
 function handleThemeChange(event) {
   console.log('Theme changed, updating colors...', event.detail);
-  
+
   // Force update header backgrounds
   const headers = document.querySelectorAll('.mobile-header, .desktop-header, .figma-header');
   const isLight = event.detail.theme.mode === 'light';
-  
+
   headers.forEach(header => {
     if (isLight) {
       header.style.background = '#ffffff';
@@ -20397,7 +20405,7 @@ function handleThemeChange(event) {
       header.style.borderBottomColor = '#333';
     }
   });
-  
+
   // Force update dashboard background
   const dashboard = document.querySelector('.figma-dashboard');
   if (dashboard) {
@@ -20408,21 +20416,21 @@ function handleThemeChange(event) {
 // Handle language change event - reload current page with new translations
 function handleLanguageChange() {
   console.log('Language changed, reloading dashboard...');
-  
+
   // Get current page from active menu item
   const activeMenuItem = document.querySelector('.figma-menu-child.active');
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (!contentArea) {
     // If no content area, just reload the whole dashboard
     initDashboard();
     return;
   }
-  
+
   // Determine which page is currently active and reload it
   if (activeMenuItem) {
     const menuText = activeMenuItem.textContent.trim();
-    
+
     // Map menu text to page reload functions
     const pageReloadMap = {
       'Dashboard': () => initDashboard(),
@@ -20437,7 +20445,7 @@ function handleLanguageChange() {
       'Students': () => openStudentsAnalytics(),
       'Progress': () => openProgress(),
     };
-    
+
     // Try to find and execute the reload function
     const reloadFn = pageReloadMap[menuText];
     if (reloadFn) {
@@ -20454,11 +20462,11 @@ function handleLanguageChange() {
 
 
 // Toggle Assignment Content Type (Text or File)
-window.toggleAssignmentContentType = function(radio) {
+window.toggleAssignmentContentType = function (radio) {
   const lessonForm = radio.closest('.lesson-form');
   const textContent = lessonForm.querySelector('.assignment-text-content');
   const fileContent = lessonForm.querySelector('.assignment-file-content');
-  
+
   if (radio.value === 'text') {
     textContent.style.display = 'block';
     fileContent.style.display = 'none';
@@ -20469,10 +20477,10 @@ window.toggleAssignmentContentType = function(radio) {
 };
 
 // Handle Assignment File Selection
-window.handleAssignmentFileSelect = function(input) {
+window.handleAssignmentFileSelect = function (input) {
   const file = input.files[0];
   if (!file) return;
-  
+
   // Check file size (50MB max)
   const maxSize = 50 * 1024 * 1024; // 50MB in bytes
   if (file.size > maxSize) {
@@ -20480,7 +20488,7 @@ window.handleAssignmentFileSelect = function(input) {
     input.value = '';
     return;
   }
-  
+
   // Check file type - expanded to support more formats
   const allowedTypes = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.zip', '.rar', '.jpg', '.jpeg', '.png'];
   const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
@@ -20489,40 +20497,40 @@ window.handleAssignmentFileSelect = function(input) {
     input.value = '';
     return;
   }
-  
+
   // Show file preview
   const uploadArea = input.closest('.file-upload-area');
   const placeholder = uploadArea.querySelector('.upload-placeholder');
   const preview = uploadArea.querySelector('.file-preview');
   const fileName = preview.querySelector('.file-name');
   const fileSize = preview.querySelector('.file-size');
-  
+
   placeholder.style.display = 'none';
   preview.style.display = 'flex';
   fileName.textContent = file.name;
   fileSize.textContent = formatFileSize(file.size);
-  
+
   // Store file data for later upload
   uploadArea.dataset.fileName = file.name;
   uploadArea.dataset.fileSize = file.size;
 };
 
 // Remove Assignment File
-window.removeAssignmentFile = function(button, event) {
+window.removeAssignmentFile = function (button, event) {
   event.stopPropagation();
-  
+
   const uploadArea = button.closest('.file-upload-area');
   const placeholder = uploadArea.querySelector('.upload-placeholder');
   const preview = uploadArea.querySelector('.file-preview');
   const fileInput = uploadArea.querySelector('input[type="file"]');
-  
+
   // Reset file input
   fileInput.value = '';
-  
+
   // Hide preview, show placeholder
   preview.style.display = 'none';
   placeholder.style.display = 'block';
-  
+
   // Clear stored data
   delete uploadArea.dataset.fileName;
   delete uploadArea.dataset.fileSize;
@@ -20539,18 +20547,18 @@ function formatFileSize(bytes) {
 
 
 // Open Create Questions Modal
-window.openCreateQuestionsModal = function(button) {
+window.openCreateQuestionsModal = function (button) {
   console.log('openCreateQuestionsModal called');
   const lessonForm = button.closest('.lesson-form');
   const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
   console.log('Quiz type:', quizType);
-  
+
   // Remove existing modal if any
   const existingModal = document.getElementById('createQuestionsModal');
   if (existingModal) {
     existingModal.remove();
   }
-  
+
   const correctAnswersField = quizType === 'multiple-correct' ? `
     <div class="form-group">
       <label>Number of Correct Answers per Question</label>
@@ -20558,7 +20566,7 @@ window.openCreateQuestionsModal = function(button) {
       <small style="color: var(--text-secondary); font-size: 12px; margin-top: 4px; display: block;">This will be applied to all questions</small>
     </div>
   ` : '';
-  
+
   const modalHTML = `
     <div class="modal-overlay" id="createQuestionsModal" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 10000; align-items: center; justify-content: center;" onclick="if(event.target === this) closeCreateQuestionsModal()">
       <div class="modal-content" style="max-width: 500px; width: 90%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
@@ -20589,13 +20597,13 @@ window.openCreateQuestionsModal = function(button) {
       </div>
     </div>
   `;
-  
+
   document.body.insertAdjacentHTML('beforeend', modalHTML);
   console.log('Modal added to DOM');
 };
 
 // Close Create Questions Modal
-window.closeCreateQuestionsModal = function() {
+window.closeCreateQuestionsModal = function () {
   const modal = document.getElementById('createQuestionsModal');
   if (modal) {
     modal.remove();
@@ -20603,53 +20611,53 @@ window.closeCreateQuestionsModal = function() {
 };
 
 // Create Quiz Questions
-window.createQuizQuestions = function() {
+window.createQuizQuestions = function () {
   const questionsCount = parseInt(document.getElementById('questionsCount').value) || 5;
   const answerOptionsCount = parseInt(document.getElementById('answerOptionsCount').value) || 4;
   const correctAnswersCountInput = document.getElementById('correctAnswersCount');
   const correctAnswersCount = correctAnswersCountInput ? parseInt(correctAnswersCountInput.value) || 1 : 1;
-  
+
   // Validate
   if (questionsCount < 1 || questionsCount > 50) {
     showErrorToast('Please enter a valid number of questions (1-50)');
     return;
   }
-  
+
   if (answerOptionsCount < 2 || answerOptionsCount > 10) {
     showErrorToast('Please enter a valid number of answer options (2-10)');
     return;
   }
-  
+
   if (correctAnswersCount > answerOptionsCount) {
     showErrorToast('Number of correct answers cannot exceed number of answer options');
     return;
   }
-  
+
   // Find the lesson form
   const lessonForm = document.querySelector('.lesson-form[data-quiz-type]');
   if (!lessonForm) return;
-  
+
   const questionsList = lessonForm.querySelector('.questions-list');
   const quizType = lessonForm.getAttribute('data-quiz-type') || 'multiple-choice';
-  
+
   // Clear existing questions
   questionsList.innerHTML = '';
-  
+
   // Create questions
   for (let i = 1; i <= questionsCount; i++) {
     addSingleQuizQuestion(questionsList, quizType, i, answerOptionsCount, correctAnswersCount);
   }
-  
+
   closeCreateQuestionsModal();
   showSuccessToast(`${questionsCount} questions created successfully!`);
 };
 
 // Add Single Quiz Question (helper function)
 function addSingleQuizQuestion(questionsList, quizType, questionNumber, answerOptionsCount, correctAnswersCount) {
-  const instructionText = quizType === 'multiple-correct' 
+  const instructionText = quizType === 'multiple-correct'
     ? `Choose ${correctAnswersCount} correct answer${correctAnswersCount > 1 ? 's' : ''}`
     : 'Choose 1 correct answer';
-  
+
   let answersHTML = '';
   for (let i = 0; i < answerOptionsCount; i++) {
     answersHTML += `
@@ -20661,7 +20669,7 @@ function addSingleQuizQuestion(questionsList, quizType, questionNumber, answerOp
       </div>
     `;
   }
-  
+
   const questionHTML = `
     <div class="question-item">
       <div class="question-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -20687,7 +20695,7 @@ function addSingleQuizQuestion(questionsList, quizType, questionNumber, answerOp
       </div>
     </div>
   `;
-  
+
   questionsList.insertAdjacentHTML('beforeend', questionHTML);
 }
 
@@ -20697,19 +20705,19 @@ async function loadMyCoursesFromBackend() {
   try {
     const user = store.getState().user;
     if (!user) return;
-    
+
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const url = `${apiBaseUrl}/courses?teacher=${user._id}`;
     console.log('Fetching from URL:', url);
-    
+
     const response = await fetch(url, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       },
     });
-    
+
     const result = await response.json();
-    
+
     if (result.success && result.courses) {
       window.myCoursesData = result.courses;
       updateCourseStats(result.courses);
@@ -20805,7 +20813,7 @@ function renderMyCoursesCards(courses) {
 }
 
 // Filter Courses
-window.filterCourses = function(filter) {
+window.filterCourses = function (filter) {
   const tabs = document.querySelectorAll('.filter-tab');
   tabs.forEach(tab => {
     if (tab.getAttribute('data-filter') === filter) {
@@ -20814,10 +20822,10 @@ window.filterCourses = function(filter) {
       tab.classList.remove('active');
     }
   });
-  
+
   const courses = window.myCoursesData || [];
   let filtered = courses;
-  
+
   if (filter === 'all') {
     filtered = courses;
   } else if (filter === 'free') {
@@ -20828,33 +20836,33 @@ window.filterCourses = function(filter) {
     // Status filter (active, draft, archived)
     filtered = courses.filter(course => course.status.toLowerCase() === filter);
   }
-  
+
   renderMyCoursesCards(filtered);
 };
 
 // Search Courses
-window.searchCourses = function() {
+window.searchCourses = function () {
   const searchInput = document.getElementById('courseSearchInput');
   const searchTerm = searchInput.value.toLowerCase();
-  
+
   const courses = window.myCoursesData || [];
-  const filtered = courses.filter(course => 
+  const filtered = courses.filter(course =>
     course.title.toLowerCase().includes(searchTerm) ||
     (course.description && course.description.toLowerCase().includes(searchTerm)) ||
     course.category.toLowerCase().includes(searchTerm)
   );
-  
+
   renderMyCoursesCards(filtered);
 };
 
 // Sort Courses
-window.sortCourses = function() {
+window.sortCourses = function () {
   const sortSelect = document.getElementById('courseSortSelect');
   const sortValue = sortSelect.value;
-  
+
   let courses = [...(window.myCoursesData || [])];
-  
-  switch(sortValue) {
+
+  switch (sortValue) {
     case 'newest':
       courses.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       break;
@@ -20868,14 +20876,14 @@ window.sortCourses = function() {
       courses.sort((a, b) => b.title.localeCompare(a.title));
       break;
   }
-  
+
   renderMyCoursesCards(courses);
 };
 
 // Edit Course
-window.editCourse = async function(courseId) {
+window.editCourse = async function (courseId) {
   console.log('Edit course:', courseId);
-  
+
   try {
     // Get course data from backend
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
@@ -20884,10 +20892,10 @@ window.editCourse = async function(courseId) {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       },
     });
-    
+
     const result = await response.json();
     console.log('Course data loaded:', result);
-    
+
     if (result.success && result.course) {
       // Open course edit page with loaded data
       openCourseEditPage(result.course);
@@ -20901,13 +20909,13 @@ window.editCourse = async function(courseId) {
 };
 
 // View Course Stats
-window.viewCourseStats = function(courseId) {
+window.viewCourseStats = function (courseId) {
   console.log('View stats:', courseId);
   showErrorToast('Stats functionality coming soon!');
 };
 
 // Delete Course Confirm
-window.deleteCourseConfirm = function(courseId, courseTitle) {
+window.deleteCourseConfirm = function (courseId, courseTitle) {
   const modalHTML = `
     <div class="modal-overlay" id="deleteCourseModal" style="display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); z-index: 10000; align-items: center; justify-content: center;" onclick="if(event.target === this) closeDeleteCourseModal()">
       <div class="modal-content" style="max-width: 500px; width: 90%; background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px;">
@@ -20934,16 +20942,16 @@ window.deleteCourseConfirm = function(courseId, courseTitle) {
       </div>
     </div>
   `;
-  
+
   document.body.insertAdjacentHTML('beforeend', modalHTML);
 };
 
-window.closeDeleteCourseModal = function() {
+window.closeDeleteCourseModal = function () {
   const modal = document.getElementById('deleteCourseModal');
   if (modal) modal.remove();
 };
 
-window.confirmDeleteCourse = async function(courseId) {
+window.confirmDeleteCourse = async function (courseId) {
   try {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const response = await fetch(`${apiBaseUrl}/courses/${courseId}`, {
@@ -20952,9 +20960,9 @@ window.confirmDeleteCourse = async function(courseId) {
         'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
       },
     });
-    
+
     const result = await response.json();
-    
+
     if (result.success) {
       showSuccessToast('Course deleted successfully!');
       closeDeleteCourseModal();
@@ -20975,13 +20983,13 @@ function updateCourseStats(courses) {
   const totalEnrolled = courses.reduce((sum, course) => sum + (course.totalStudents || 0), 0);
   const totalRevenue = courses.reduce((sum, course) => sum + (course.revenue || 0), 0);
   const liveStudents = Math.floor(totalEnrolled * 0.08); // Estimate 8% online
-  
+
   // Update DOM
   const totalCoursesEl = document.getElementById('totalCoursesCount');
   const totalEnrolledEl = document.getElementById('totalEnrolledCount');
   const totalRevenueEl = document.getElementById('totalRevenueAmount');
   const liveStudentsEl = document.getElementById('liveStudentsCount');
-  
+
   if (totalCoursesEl) totalCoursesEl.textContent = totalCourses;
   if (totalEnrolledEl) totalEnrolledEl.textContent = totalEnrolled.toLocaleString();
   if (totalRevenueEl) totalRevenueEl.textContent = '$' + totalRevenue.toLocaleString();
@@ -20991,21 +20999,21 @@ function updateCourseStats(courses) {
 // Open Course Edit Page
 function openCourseEditPage(courseData) {
   console.log('Opening course edit page with data:', courseData);
-  
+
   const userData = store.getState().user;
   const contentArea = document.querySelector('.figma-content-area');
-  
+
   if (!contentArea) {
     console.error('Content area not found');
     return;
   }
-  
+
   // Update page title
   const pageTitle = document.getElementById('page-title');
   if (pageTitle) {
     pageTitle.textContent = t('createCourse.editCourse');
   }
-  
+
   // Use the same layout as create course page, but with pre-filled data
   contentArea.innerHTML = `
           <form class="create-course-form" id="editCourseForm" onsubmit="handleEditCourse(event, '${courseData._id}')">
@@ -21166,15 +21174,15 @@ function openCourseEditPage(courseData) {
 
           </form>
   `;
-  
+
   // Load existing modules and lessons
   loadCourseModules(courseData);
-  
+
   // Set uploaded thumbnail URL if exists
   if (courseData.thumbnail) {
     window.uploadedThumbnailUrl = courseData.thumbnail;
   }
-  
+
   // Hide upload content if image exists
   if (courseData.thumbnail) {
     const uploadContent = document.getElementById('uploadContent');
@@ -21185,7 +21193,7 @@ function openCourseEditPage(courseData) {
 }
 
 // Add Module function for edit page
-window.addModule = function() {
+window.addModule = function () {
   const modulesContainer = document.getElementById('modulesContainer');
   const existingModules = modulesContainer.querySelectorAll('.module-item').length;
   const newModuleNumber = existingModules + 1;
@@ -21257,32 +21265,32 @@ window.addModule = function() {
 // Load Course Modules and Lessons
 function loadCourseModules(courseData) {
   const modulesContainer = document.getElementById('modulesContainer');
-  
+
   if (courseData.modules && courseData.modules.length > 0) {
     courseData.modules.forEach((module, moduleIndex) => {
       // Add module
       addModule();
-      
+
       const moduleItems = document.querySelectorAll('.module-item');
       const currentModule = moduleItems[moduleItems.length - 1];
-      
+
       // Set module title
       const moduleTitle = currentModule.querySelector('.module-info h4');
       if (moduleTitle) {
         moduleTitle.textContent = module.title || `Module ${moduleIndex + 1}`;
       }
-      
+
       // Add lessons to this module
       if (module.lessons && module.lessons.length > 0) {
         module.lessons.forEach(lesson => {
           // Add lesson based on type
           const lessonContainer = currentModule.querySelector('.lessons-container');
-          
+
           // Create lesson item HTML
           let lessonHTML = '';
           let iconSVG = '';
-          
-          switch(lesson.type) {
+
+          switch (lesson.type) {
             case 'video':
               iconSVG = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M23 7l-7 5 7 5V7z"/>
@@ -21312,29 +21320,29 @@ function loadCourseModules(courseData) {
               </svg>`;
               break;
           }
-          
+
           // Create proper lesson HTML with all buttons
           let actionButtons = `
             <button class="edit-btn" onclick="editLesson(this, event)">Edit</button>
             <button class="delete-btn" onclick="deleteLesson(this, event)">Delete</button>
           `;
-          
+
           // Add view button for video lessons
           if (lesson.type === 'video' && lesson.videoUrl) {
             actionButtons += `<button class="view-btn" onclick="viewVideo(this, event)">Ko'rish</button>`;
           }
-          
+
           // Add view questions button for quiz lessons
           if (lesson.type === 'quiz' && lesson.questions && lesson.questions.length > 0) {
             actionButtons += `<button class="view-btn" onclick="viewQuizQuestions(this, event)">Questions (${lesson.questions.length})</button>`;
           }
-          
+
           // Create lesson duration/info text
           let lessonInfo = lesson.duration || lesson.type;
           if (lesson.type === 'quiz' && lesson.questions && lesson.questions.length > 0) {
             lessonInfo = `Quiz • ${lesson.questions.length} questions`;
           }
-          
+
           lessonHTML = `
             <div class="lesson-item" data-lesson='${JSON.stringify(lesson).replace(/'/g, "&apos;")}' data-video-url="${lesson.videoUrl || ''}">
               <div class="lesson-title-with-icon">
@@ -21347,15 +21355,15 @@ function loadCourseModules(courseData) {
               </div>
             </div>
           `;
-          
+
           lessonContainer.insertAdjacentHTML('beforeend', lessonHTML);
-          
+
           // Store lesson data
           const newLessonItem = lessonContainer.lastElementChild;
           newLessonItem.lessonData = lesson;
         });
       }
-      
+
       // Update module info
       updateModuleInfo(currentModule);
     });
@@ -21363,20 +21371,20 @@ function loadCourseModules(courseData) {
 }
 
 // Handle Edit Course Form Submission
-window.handleEditCourse = async function(e, courseId) {
+window.handleEditCourse = async function (e, courseId) {
   e.preventDefault();
-  
+
   const user = store.getState().user;
   if (!user) {
     showErrorToast('User not found');
     return;
   }
-  
+
   // Determine which button was clicked
   const clickedButton = e.submitter;
   const action = clickedButton?.value || 'publish';
   const status = action === 'draft' ? 'draft' : 'active';
-  
+
   console.log('📝 Updating course with action:', action, 'status:', status);
 
   // Show loading state
@@ -21386,7 +21394,7 @@ window.handleEditCourse = async function(e, courseId) {
 
   try {
     const formData = new FormData(e.target);
-    
+
     // Get basic course info
     const title = formData.get('title');
     const description = formData.get('description');
@@ -21394,38 +21402,38 @@ window.handleEditCourse = async function(e, courseId) {
     const courseType = formData.get('courseType') || 'free';
     const price = courseType === 'paid' ? parseInt(formData.get('price')) || 0 : 0;
     const discountPrice = courseType === 'paid' ? parseInt(formData.get('discountPrice')) || 0 : 0;
-    
+
     // Get thumbnail URL (use existing or newly uploaded)
     const thumbnail = window.uploadedThumbnailUrl || '';
-    
+
     console.log('🖼️ Thumbnail check:', {
       uploadedThumbnailUrl: window.uploadedThumbnailUrl,
       thumbnail: thumbnail,
       hasThumbnail: !!thumbnail
     });
-    
+
     // Validate required fields
     if (!title || !description || !category) {
       throw new Error('Please fill in all required fields');
     }
-    
+
     if (!thumbnail) {
       throw new Error('Please upload a course thumbnail');
     }
-    
+
     // Collect modules data
     const modules = [];
     const moduleItems = document.querySelectorAll('.module-item');
-    
+
     moduleItems.forEach((moduleItem, moduleIndex) => {
       const moduleTitle = moduleItem.querySelector('.module-info h4')?.textContent || `Module ${moduleIndex + 1}`;
       const lessons = [];
-      
+
       const lessonItems = moduleItem.querySelectorAll('.lesson-item');
       lessonItems.forEach((lessonItem, lessonIndex) => {
         // Get full lesson data from stored data
         const lessonData = lessonItem.lessonData || {};
-        
+
         const lesson = {
           type: lessonData.type || 'video',
           title: lessonData.title || `Lesson ${lessonIndex + 1}`,
@@ -21433,11 +21441,11 @@ window.handleEditCourse = async function(e, courseId) {
           duration: lessonData.duration || '',
           ...lessonData // Include all lesson data
         };
-        
+
         console.log('📚 Lesson data being updated:', lesson);
         lessons.push(lesson);
       });
-      
+
       if (lessons.length > 0) {
         modules.push({
           title: moduleTitle,
@@ -21446,7 +21454,7 @@ window.handleEditCourse = async function(e, courseId) {
         });
       }
     });
-    
+
     const courseData = {
       title,
       description,
@@ -21462,15 +21470,15 @@ window.handleEditCourse = async function(e, courseId) {
       modules,
       teacher: user._id,
     };
-    
+
     console.log('📦 Sending updated course data:', courseData);
 
     // Call API to update course
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const updateCourseUrl = `${apiBaseUrl}/courses/${courseId}`;
-    
+
     console.log('📤 Updating course at:', updateCourseUrl);
-    
+
     const response = await fetch(updateCourseUrl, {
       method: 'PATCH',
       headers: {
@@ -21479,7 +21487,7 @@ window.handleEditCourse = async function(e, courseId) {
       },
       body: JSON.stringify(courseData),
     });
-    
+
     const result = await response.json();
     console.log('📥 API Response:', result);
 
@@ -21489,8 +21497,8 @@ window.handleEditCourse = async function(e, courseId) {
     }
 
     if (result.success) {
-      const message = status === 'draft' 
-        ? 'Course updated and saved as draft!' 
+      const message = status === 'draft'
+        ? 'Course updated and saved as draft!'
         : 'Course updated successfully!';
       showSuccessToast(message);
       setTimeout(() => {
@@ -21513,7 +21521,7 @@ window.handleEditCourse = async function(e, courseId) {
 };
 
 // Toggle Pricing Section for Edit Course
-window.togglePricing = function(radio) {
+window.togglePricing = function (radio) {
   const pricingSection = document.querySelector('.pricing-section');
   if (pricingSection) {
     pricingSection.style.display = radio.value === 'paid' ? 'block' : 'none';
@@ -21521,7 +21529,7 @@ window.togglePricing = function(radio) {
 };
 
 // Toggle Pricing Fields for Edit Course
-window.toggleEditPricing = function(radio) {
+window.toggleEditPricing = function (radio) {
   const pricingFields = document.getElementById('pricingFields');
   if (pricingFields) {
     pricingFields.style.display = radio.value === 'paid' ? 'flex' : 'none';
@@ -21529,21 +21537,21 @@ window.toggleEditPricing = function(radio) {
 };
 
 // View Quiz Questions Function
-window.viewQuizQuestions = function(button, event) {
+window.viewQuizQuestions = function (button, event) {
   if (event) {
     event.preventDefault();
     event.stopPropagation();
   }
-  
+
   const lessonItem = button.closest('.lesson-item');
   const lessonData = lessonItem.lessonData || {};
   const questions = lessonData.questions || [];
-  
+
   if (questions.length === 0) {
     showErrorToast('No questions found for this quiz');
     return;
   }
-  
+
   // Create quiz questions modal
   const questionsHTML = questions.map((q, index) => `
     <div class="quiz-question-item" style="margin-bottom: 16px; padding: 16px; background: rgba(255,255,255,0.05); border-radius: 8px;">
@@ -21558,7 +21566,7 @@ window.viewQuizQuestions = function(button, event) {
       </div>
     </div>
   `).join('');
-  
+
   const modalHTML = `
     <div class="quiz-modal" onclick="closeQuizModal()" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 10000; display: flex; align-items: center; justify-content: center;">
       <div class="quiz-modal-content" onclick="event.stopPropagation()" style="max-width: 800px; width: 90%; max-height: 80vh; overflow-y: auto; background: var(--bg-secondary); border-radius: 12px; padding: 24px;">
@@ -21580,12 +21588,12 @@ window.viewQuizQuestions = function(button, event) {
       </div>
     </div>
   `;
-  
+
   document.body.insertAdjacentHTML('beforeend', modalHTML);
 };
 
 // Close Quiz Modal
-window.closeQuizModal = function() {
+window.closeQuizModal = function () {
   const modal = document.querySelector('.quiz-modal');
   if (modal) {
     modal.remove();
@@ -21593,7 +21601,7 @@ window.closeQuizModal = function() {
 };
 
 // Open certificate modal to view full image
-window.openCertificateModal = function(imageUrl, title) {
+window.openCertificateModal = function (imageUrl, title) {
   const modal = document.createElement('div');
   modal.className = 'certificate-modal-overlay';
   modal.innerHTML = `
@@ -21602,28 +21610,28 @@ window.openCertificateModal = function(imageUrl, title) {
       <img src="${imageUrl}" alt="${title}" />
     </div>
   `;
-  
+
   // Close modal when clicking outside the image
-  modal.addEventListener('click', function(e) {
+  modal.addEventListener('click', function (e) {
     if (e.target === modal) {
       modal.remove();
     }
   });
-  
+
   // Close modal with Escape key
-  const handleEscape = function(e) {
+  const handleEscape = function (e) {
     if (e.key === 'Escape') {
       modal.remove();
       document.removeEventListener('keydown', handleEscape);
     }
   };
   document.addEventListener('keydown', handleEscape);
-  
+
   document.body.appendChild(modal);
 };
 
 // Check if current URL is a teacher landing page and serve it
-window.checkAndServeLandingPage = function() {
+window.checkAndServeLandingPage = function () {
   const currentPath = window.location.pathname;
 
   // Check if URL matches student dashboard pattern: /teacher/teacherId/student-dashboard
@@ -21684,8 +21692,8 @@ async function loadTeacherLandingPage(teacherId) {
 
     // Get teacher profile by ID (public endpoint, no token needed)
     console.log('📡 Fetching teacher profile from API...');
-    const apiBaseUrl = window.location.hostname === 'localhost' 
-      ? 'http://localhost:8001/api' 
+    const apiBaseUrl = window.location.hostname === 'localhost'
+      ? 'http://localhost:8001/api'
       : 'https://darslinker-backend.onrender.com/api';
     const response = await fetch(`${apiBaseUrl}/teachers/${teacherId}`);
     const teacherResult = await response.json();
@@ -21693,7 +21701,7 @@ async function loadTeacherLandingPage(teacherId) {
 
     if (teacherResult.success && teacherResult.teacher) {
       const teacher = teacherResult.teacher;
-      
+
       // Debug: Check teacher data and theme color
       console.log('🎨 Teacher data:', teacher);
       console.log('🎨 Teacher courses:', teacher.courses);
@@ -21769,7 +21777,7 @@ function generateErrorHTML() {
 }
 
 // Auto-check for landing page on load
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Only check if we're not already in the dashboard
   if (!document.querySelector('.figma-dashboard')) {
     checkAndServeLandingPage();
@@ -21779,8 +21787,9 @@ document.addEventListener('DOMContentLoaded', function() {
 // New Landing Settings HTML
 function getNewLandingSettingsHTML(user, landingData = null) {
   const productionURL = 'https://darslinker.uz';
-  const landingURL = `${productionURL}/teacher/${user._id}`;
-  
+  const landingBase = (import.meta.env.VITE_LANDING_BASE_URL || window.location.origin || '').replace(/\/+$/, '');
+  const landingURL = `${landingBase}/teacher/${user._id}`;
+
   // Default values or from landingData
   const settings = landingData || {
     title: `${user.firstName} ${user.lastName}'s Courses`,
@@ -21944,19 +21953,19 @@ function getNewLandingSettingsHTML(user, landingData = null) {
 }
 
 // Save Landing Settings
-window.saveLandingSettings = async function(event) {
+window.saveLandingSettings = async function (event) {
   event.preventDefault();
-  
+
   const user = store.getState().user;
   const form = event.target;
   const formData = new FormData(form);
-  
+
   // Show loading
   const submitBtn = form.querySelector('button[type="submit"]');
   const originalText = submitBtn.textContent;
   submitBtn.textContent = 'Saving...';
   submitBtn.disabled = true;
-  
+
   try {
     const landingData = {
       title: formData.get('title'),
@@ -21976,7 +21985,7 @@ window.saveLandingSettings = async function(event) {
         linkedin: formData.get('linkedin')
       }
     };
-    
+
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const response = await fetch(`${apiBaseUrl}/landing/${user._id}`, {
       method: 'PUT',
@@ -21986,15 +21995,15 @@ window.saveLandingSettings = async function(event) {
       },
       body: JSON.stringify(landingData),
     });
-    
+
     const result = await response.json();
-    
+
     if (result.success) {
       showSuccessToast('Landing page settings saved successfully!');
     } else {
       throw new Error(result.message || 'Failed to save settings');
     }
-    
+
   } catch (error) {
     console.error('Error saving landing settings:', error);
     showErrorToast(error.message || 'Failed to save landing page settings');
@@ -22005,7 +22014,7 @@ window.saveLandingSettings = async function(event) {
 };
 
 // Copy Landing URL
-window.copyLandingURL = function(url) {
+window.copyLandingURL = function (url) {
   navigator.clipboard.writeText(url).then(() => {
     showSuccessToast('Landing page URL copied to clipboard!');
   }).catch(() => {
@@ -22016,11 +22025,11 @@ window.copyLandingURL = function(url) {
 // ==================== NOTIFICATION SYSTEM ====================
 
 // Open Notifications Page
-window.openNotifications = async function() {
+window.openNotifications = async function () {
   try {
     const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
     const userId = landingUser._id;
-    
+
     if (!userId) {
       showMessage('Please log in to view notifications', 'error');
       return;
@@ -22052,11 +22061,11 @@ window.openNotifications = async function() {
         hour: '2-digit',
         minute: '2-digit'
       });
-      
-      const icon = notif.type === 'assignment_graded' 
+
+      const icon = notif.type === 'assignment_graded'
         ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>'
         : '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary-color)" stroke-width="2"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
-      
+
       return `
         <div class="notification-item ${notif.read ? 'read' : 'unread'}" onclick="handleNotificationClick('${notif._id}', '${notif.link || ''}')">
           <div class="notification-icon">${icon}</div>
@@ -22142,7 +22151,7 @@ window.openNotifications = async function() {
     `;
 
     showModal(t('header.notifications'), modalContent);
-    
+
     // Update badge count
     updateNotificationBadge(unreadCount);
 
@@ -22153,10 +22162,10 @@ window.openNotifications = async function() {
 };
 
 // Handle notification click
-window.handleNotificationClick = async function(notificationId, link) {
+window.handleNotificationClick = async function (notificationId, link) {
   try {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    
+
     // Mark as read
     await fetch(`${apiBaseUrl}/notifications/${notificationId}/read`, {
       method: 'PATCH'
@@ -22177,16 +22186,16 @@ window.handleNotificationClick = async function(notificationId, link) {
 };
 
 // Mark all notifications as read
-window.markAllNotificationsRead = async function(userId) {
+window.markAllNotificationsRead = async function (userId) {
   try {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    
+
     await fetch(`${apiBaseUrl}/notifications/user/${userId}/read-all`, {
       method: 'PATCH'
     });
 
     showMessage('All notifications marked as read', 'success');
-    
+
     // Reload notifications
     openNotifications();
 
@@ -22197,7 +22206,7 @@ window.markAllNotificationsRead = async function(userId) {
 };
 
 // Update notification badge - single unified function
-window.updateNotificationBadge = function(count) {
+window.updateNotificationBadge = function (count) {
   console.log('🔔 updateNotificationBadge called with count:', count);
   const badge = document.getElementById('notification-badge');
   console.log('🎯 Badge element found:', !!badge);
@@ -22218,7 +22227,7 @@ window.updateNotificationBadge = function(count) {
 };
 
 // Load notification count - unified function for both teachers and students
-window.loadNotificationCount = async function() {
+window.loadNotificationCount = async function () {
   try {
     console.log('🔄 Loading notification count...');
 
@@ -22288,7 +22297,7 @@ window.loadNotificationCount = async function() {
 
 // Override openNotifications to load page instead of modal
 const originalOpenNotifications = window.openNotifications;
-window.openNotifications = async function() {
+window.openNotifications = async function () {
   try {
     const { loadNotificationsPage } = await import('../student/notifications.js');
     loadNotificationsPage();
@@ -22302,7 +22311,7 @@ window.openNotifications = async function() {
 };
 
 // Open notifications page
-window.openNotificationsPage = async function() {
+window.openNotificationsPage = async function () {
   try {
     // Load notifications page
     const { loadNotificationsPage } = await import('../student/notifications.js');
@@ -22315,7 +22324,7 @@ window.openNotificationsPage = async function() {
 };
 
 // Logout function
-window.handleLogout = function() {
+window.handleLogout = function () {
   // Clear all localStorage
   localStorage.clear();
 
@@ -22339,18 +22348,18 @@ setInterval(() => {
 // ===== MOBILE SIDEBAR FUNCTIONALITY =====
 
 // Toggle mobile sidebar
-window.toggleMobileSidebar = function() {
+window.toggleMobileSidebar = function () {
   const sidebar = document.getElementById('dashboardSidebar');
   const overlay = document.getElementById('mobileOverlay');
   const toggleBtn = document.getElementById('mobileMenuToggle');
-  
+
   if (!sidebar || !overlay || !toggleBtn) {
     console.warn('Mobile sidebar elements not found');
     return;
   }
-  
+
   const isOpen = sidebar.classList.contains('mobile-open');
-  
+
   if (isOpen) {
     closeMobileSidebar();
   } else {
@@ -22359,63 +22368,63 @@ window.toggleMobileSidebar = function() {
 };
 
 // Open mobile sidebar
-window.openMobileSidebar = function() {
+window.openMobileSidebar = function () {
   const sidebar = document.getElementById('dashboardSidebar');
   const overlay = document.getElementById('mobileOverlay');
   const toggleBtn = document.getElementById('mobileMenuToggle');
-  
+
   if (!sidebar || !overlay || !toggleBtn) {
     console.warn('Mobile sidebar elements not found');
     return;
   }
-  
+
   // Close mobile header menu if open
   closeMobileHeaderMenu();
-  
+
   sidebar.classList.add('mobile-open');
   overlay.classList.add('active');
   toggleBtn.classList.add('active');
-  
+
   // Prevent body scroll when sidebar is open
   document.body.style.overflow = 'hidden';
   document.documentElement.style.overflow = 'hidden';
-  
+
   // Add accessibility
   sidebar.setAttribute('aria-hidden', 'false');
   toggleBtn.setAttribute('aria-expanded', 'true');
 };
 
 // Close mobile sidebar
-window.closeMobileSidebar = function() {
+window.closeMobileSidebar = function () {
   const sidebar = document.getElementById('dashboardSidebar');
   const overlay = document.getElementById('mobileOverlay');
   const toggleBtn = document.getElementById('mobileMenuToggle');
-  
+
   if (!sidebar || !overlay || !toggleBtn) {
     console.warn('Mobile sidebar elements not found');
     return;
   }
-  
+
   sidebar.classList.remove('mobile-open');
   overlay.classList.remove('active');
   toggleBtn.classList.remove('active');
-  
+
   // Restore body scroll
   document.body.style.overflow = '';
   document.documentElement.style.overflow = '';
-  
+
   // Add accessibility
   sidebar.setAttribute('aria-hidden', 'true');
   toggleBtn.setAttribute('aria-expanded', 'false');
 };
 
 // Close sidebar when clicking on menu items (mobile)
-window.handleMobileMenuClick = function(callback) {
+window.handleMobileMenuClick = function (callback) {
   // Execute the original callback
   if (typeof callback === 'function') {
     callback();
   }
-  
+
   // Close mobile sidebar on mobile devices
   if (window.innerWidth <= 768) {
     closeMobileSidebar();
@@ -22423,7 +22432,7 @@ window.handleMobileMenuClick = function(callback) {
 };
 
 // Handle window resize
-window.addEventListener('resize', function() {
+window.addEventListener('resize', function () {
   if (window.innerWidth > 768) {
     // Close mobile sidebar on desktop
     closeMobileSidebar();
@@ -22434,7 +22443,7 @@ window.addEventListener('resize', function() {
 function initMobileSidebar() {
   // Add click handlers to all menu items to close sidebar on mobile
   const menuItems = document.querySelectorAll('.figma-menu-child, .figma-single-link');
-  
+
   menuItems.forEach(item => {
     const originalOnclick = item.getAttribute('onclick');
     if (originalOnclick) {
@@ -22442,17 +22451,17 @@ function initMobileSidebar() {
       item.setAttribute('onclick', `handleMobileMenuClick(() => { ${originalOnclick} })`);
     }
   });
-  
+
   // Close sidebar when clicking outside on mobile
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     if (window.innerWidth <= 768) {
       const sidebar = document.getElementById('dashboardSidebar');
       const toggleBtn = document.getElementById('mobileMenuToggle');
-      
-      if (sidebar && toggleBtn && 
-          !sidebar.contains(e.target) && 
-          !toggleBtn.contains(e.target) && 
-          sidebar.classList.contains('mobile-open')) {
+
+      if (sidebar && toggleBtn &&
+        !sidebar.contains(e.target) &&
+        !toggleBtn.contains(e.target) &&
+        sidebar.classList.contains('mobile-open')) {
         closeMobileSidebar();
       }
     }
@@ -22463,7 +22472,7 @@ function initMobileSidebar() {
 function initMobileFunctionality() {
   // Initialize mobile sidebar
   initMobileSidebar();
-  
+
   // Add touch event listeners for better mobile experience
   if ('ontouchstart' in window) {
     const sidebar = document.getElementById('dashboardSidebar');
@@ -22471,30 +22480,30 @@ function initMobileFunctionality() {
       let startX = 0;
       let currentX = 0;
       let isDragging = false;
-      
+
       sidebar.addEventListener('touchstart', (e) => {
         startX = e.touches[0].clientX;
         isDragging = true;
       });
-      
+
       sidebar.addEventListener('touchmove', (e) => {
         if (!isDragging) return;
         currentX = e.touches[0].clientX;
         const diffX = startX - currentX;
-        
+
         // If swiping left and distance > 50px, close sidebar
         if (diffX > 50 && sidebar.classList.contains('mobile-open')) {
           closeMobileSidebar();
           isDragging = false;
         }
       });
-      
+
       sidebar.addEventListener('touchend', () => {
         isDragging = false;
       });
     }
   }
-  
+
   // Add keyboard navigation
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
@@ -22510,17 +22519,17 @@ setTimeout(initMobileFunctionality, 500);
 // ===== MOBILE HEADER MENU FUNCTIONALITY =====
 
 // Toggle mobile header menu
-window.toggleMobileHeaderMenu = function() {
+window.toggleMobileHeaderMenu = function () {
   const dropdown = document.getElementById('mobileHeaderDropdown');
   const menuBtn = document.getElementById('mobileHeaderMenu');
-  
+
   if (!dropdown || !menuBtn) {
     console.warn('Mobile header menu elements not found');
     return;
   }
-  
+
   const isOpen = dropdown.classList.contains('active');
-  
+
   if (isOpen) {
     closeMobileHeaderMenu();
   } else {
@@ -22529,54 +22538,54 @@ window.toggleMobileHeaderMenu = function() {
 };
 
 // Open mobile header menu
-window.openMobileHeaderMenu = function() {
+window.openMobileHeaderMenu = function () {
   const dropdown = document.getElementById('mobileHeaderDropdown');
   const menuBtn = document.getElementById('mobileHeaderMenu');
-  
+
   if (!dropdown || !menuBtn) {
     console.warn('Mobile header menu elements not found');
     return;
   }
-  
+
   dropdown.classList.add('active');
   menuBtn.classList.add('active');
-  
+
   // Close sidebar if open
   closeMobileSidebar();
-  
+
   // Add accessibility
   dropdown.setAttribute('aria-hidden', 'false');
   menuBtn.setAttribute('aria-expanded', 'true');
 };
 
 // Close mobile header menu
-window.closeMobileHeaderMenu = function() {
+window.closeMobileHeaderMenu = function () {
   const dropdown = document.getElementById('mobileHeaderDropdown');
   const menuBtn = document.getElementById('mobileHeaderMenu');
-  
+
   if (!dropdown || !menuBtn) {
     console.warn('Mobile header menu elements not found');
     return;
   }
-  
+
   dropdown.classList.remove('active');
   menuBtn.classList.remove('active');
-  
+
   // Add accessibility
   dropdown.setAttribute('aria-hidden', 'true');
   menuBtn.setAttribute('aria-expanded', 'false');
 };
 
 // Close header menu when clicking outside
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
   if (window.innerWidth <= 768) {
     const dropdown = document.getElementById('mobileHeaderDropdown');
     const menuBtn = document.getElementById('mobileHeaderMenu');
-    
-    if (dropdown && menuBtn && 
-        !dropdown.contains(e.target) && 
-        !menuBtn.contains(e.target) && 
-        dropdown.classList.contains('active')) {
+
+    if (dropdown && menuBtn &&
+      !dropdown.contains(e.target) &&
+      !menuBtn.contains(e.target) &&
+      dropdown.classList.contains('active')) {
       closeMobileHeaderMenu();
     }
   }
@@ -22599,11 +22608,11 @@ function updateMobileNotificationBadge(count) {
 function syncNotificationBadges() {
   const desktopBadge = document.getElementById('notification-badge');
   const mobileBadge = document.getElementById('notification-badge-mobile');
-  
+
   if (desktopBadge && mobileBadge) {
     const count = desktopBadge.textContent;
     const isVisible = desktopBadge.style.display !== 'none';
-    
+
     if (isVisible && count) {
       mobileBadge.textContent = count;
       mobileBadge.style.display = 'flex';
@@ -22619,19 +22628,19 @@ setInterval(syncNotificationBadges, 1000);
 // ===== HEADER BUTTON FUNCTIONS =====
 
 // Start new meeting function
-window.startNewMeeting = function() {
+window.startNewMeeting = function () {
   showSuccessToast('New meeting feature coming soon!');
 };
 
 // Open Telegram bot function
-window.openTelegramBot = function() {
+window.openTelegramBot = function () {
   // Open Telegram bot in new tab
   window.open('https://t.me/darslinker_bot', '_blank');
 };
 
 // Open create course function (if not already defined)
 if (typeof window.openCreateCourse === 'undefined') {
-  window.openCreateCourse = function() {
+  window.openCreateCourse = function () {
     showSuccessToast('Create course feature coming soon!');
   };
 }
