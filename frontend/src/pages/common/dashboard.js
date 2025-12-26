@@ -5593,7 +5593,6 @@ async function generateLandingPageHTML(teacher) {
                             </div>
                             
                             <button class="modal-button" onclick="handleLogin()" data-i18n="loginButton">Kirish</button>
-                            <button class="modal-button back-button" onclick="handleForgotPassword()" data-i18n="forgotPassword">Parolni unutdingizmi?</button>
                         </div>
                     </div>
                 </div>

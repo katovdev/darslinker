@@ -533,25 +533,28 @@ function addRegisterPageStyles() {
     /* Toast Notification */
     .toast {
       position: fixed;
-      top: 30px;
-      right: 30px;
+      top: 24px;
+      right: 24px;
       padding: 16px 24px;
       border-radius: 12px;
       color: #ffffff;
       font-weight: 500;
-      z-index: 1000;
+      z-index: 20000;
       transform: translateX(400px);
       transition: transform 0.3s ease;
+      pointer-events: none;
     }
 
     .toast.success {
       background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
       box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      z-index: 21000;
     }
 
     .toast.error {
       background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
       box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+      z-index: 21000;
     }
 
     .toast.show {
@@ -763,12 +766,17 @@ function initRegisterPageFunctionality() {
 
   function validatePassword() {
     const value = passwordInput.value.trim();
+    const hasLetter = /[A-Za-z]/.test(value);
+    const hasNumber = /\d/.test(value);
 
     if (!value) {
       showError(passwordError, 'Parol kiritilishi shart');
       return false;
     } else if (value.length < 6) {
       showError(passwordError, 'Parol kamida 6 ta belgidan iborat bo\'lishi kerak!');
+      return false;
+    } else if (!hasLetter || !hasNumber) {
+      showError(passwordError, 'Parolda kamida bitta harf va bitta raqam bo\'lishi shart');
       return false;
     } else {
       hideError(passwordError);
@@ -830,7 +838,7 @@ function initRegisterPageFunctionality() {
     const allValid = isFirstNameValid && isLastNameValid && isPhoneValid && isPasswordValid && isConfirmPasswordValid;
 
     if (!allValid) {
-      showErrorToast('Iltimos, barcha xatolarni tuzating!');
+      showErrorToast('Iltimos, barcha majburiy ma\'lumotlarni kiriting!');
       return;
     }
 
@@ -942,12 +950,15 @@ function initRegisterPageFunctionality() {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.85);
-        backdrop-filter: blur(8px);
+        background:
+          radial-gradient(circle at 20% 20%, rgba(126, 162, 212, 0.08), transparent 32%),
+          radial-gradient(circle at 80% 80%, rgba(126, 162, 212, 0.06), transparent 30%),
+          rgba(30, 30, 32, 0.68);
+        backdrop-filter: blur(16px) saturate(140%);
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 9999;
+        z-index: 12000;
         animation: fadeIn 0.3s ease;
       }
 
@@ -961,16 +972,18 @@ function initRegisterPageFunctionality() {
       }
 
       .otp-modal {
-        background: rgba(90, 90, 90, 0.15);
-        backdrop-filter: blur(50px);
-        -webkit-backdrop-filter: blur(50px);
+        background: linear-gradient(180deg, rgba(35, 35, 35, 0.85), rgba(28, 28, 28, 0.9));
+        backdrop-filter: blur(32px);
+        -webkit-backdrop-filter: blur(32px);
         border-radius: 24px;
         padding: 40px 48px;
         width: 550px;
         max-width: 90vw;
-        border: 1px solid #7EA2D4;
+        border: 1px solid rgba(126, 162, 212, 0.5);
         position: relative;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        box-shadow:
+          0 25px 70px rgba(0, 0, 0, 0.55),
+          0 0 0 1px rgba(255, 255, 255, 0.05);
         animation: slideUp 0.3s ease;
       }
 

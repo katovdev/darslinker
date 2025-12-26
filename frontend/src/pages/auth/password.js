@@ -304,30 +304,28 @@ function addPasswordPageStyles() {
     /* Toast Notification */
     .toast {
       position: fixed;
-      top: 30px;
-      right: 30px;
+      top: 24px;
+      right: 24px;
       padding: 16px 24px;
       border-radius: 12px;
       color: #ffffff;
       font-weight: 500;
-      z-index: 1000;
+      z-index: 20000;
       transform: translateX(400px);
       transition: transform 0.3s ease;
+      pointer-events: none;
     }
 
     .toast.success {
       background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
       box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      z-index: 21000;
     }
 
     .toast.error {
       background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
       box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-    }
-
-    .toast.info {
-      background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
-      box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+      z-index: 21000;
     }
 
     .toast.show {
@@ -398,7 +396,7 @@ function initPasswordPageFunctionality(userIdentifier) {
   // Handle forgot password click
   forgotPasswordLink.addEventListener('click', (e) => {
     e.preventDefault();
-    showInfoToast('SMS tasdiqlash tez orada qo\'shiladi');
+    showErrorToast('SMS tasdiqlash tez orada qo\'shiladi');
   });
 
   // Handle Enter key press
@@ -427,7 +425,7 @@ function initPasswordPageFunctionality(userIdentifier) {
     passwordSubmit.disabled = true;
 
     // Authenticate using real API
-    apiService.login(userIdentifier, passwordValue)
+    apiService.login(userIdentifier, passwordValue, { skipErrorHandler: true })
       .then(response => {
         console.log('Login response:', response);
 
@@ -522,28 +520,6 @@ function showSuccessToast(message) {
 function showErrorToast(message) {
   const toast = document.createElement('div');
   toast.className = 'toast error';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  // Show toast
-  setTimeout(() => {
-    toast.classList.add('show');
-  }, 100);
-
-  // Hide and remove toast
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.parentNode.removeChild(toast);
-      }
-    }, 300);
-  }, 3000);
-}
-
-function showInfoToast(message) {
-  const toast = document.createElement('div');
-  toast.className = 'toast info';
   toast.textContent = message;
   document.body.appendChild(toast);
 

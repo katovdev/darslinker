@@ -554,7 +554,7 @@ export function initHomePage() {
               </div>
           </div>
 
-          <div class="hero-video-section">
+          <div class="hero-video-section" style="display: none;">
             <button class="video-btn">
               <div class="play-icon-container">
                 <svg class="play-icon-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2311,7 +2311,7 @@ function initNavigation() {
     item.addEventListener('click', function(e) {
       e.preventDefault();
 
-      const text = this.textContent.trim();
+      const targetKey = this.dataset.homeI18n;
 
       // Remove active class from all nav items
       navItems.forEach(navItem => navItem.classList.remove('active'));
@@ -2319,24 +2319,24 @@ function initNavigation() {
       // Add active class to clicked item
       this.classList.add('active');
 
-      switch (text) {
-        case 'Asosiy':
+      switch (targetKey) {
+        case 'home':
           scrollToSection('hero');
           break;
-        case 'Ma\'lumot':
+        case 'about':
           scrollToSection('platform-features');
           break;
-        // case 'Tariflar':
+        // case 'pricing':
         //   scrollToSection('pricing-section');
         //   break;
-        case 'Bloglar':
+        case 'blog':
           scrollToSection('articles-section');
           break;
-        case 'Aloqa':
+        case 'contact':
           scrollToSection('advice-section');
           break;
         default:
-          console.log('Unknown navigation item:', text);
+          console.log('Unknown navigation item key:', targetKey);
       }
     });
   });
@@ -2355,7 +2355,7 @@ function setActiveNavItem(activeText) {
 
   navItems.forEach(item => {
     item.classList.remove('active');
-    if (item.textContent.trim() === activeText) {
+    if (item.dataset.homeI18n === activeText) {
       item.classList.add('active');
     }
   });
@@ -2364,18 +2364,18 @@ function setActiveNavItem(activeText) {
 // Scroll-based active section detection
 function initScrollActiveDetection() {
   const sections = [
-    { element: document.querySelector('.hero'), name: 'Asosiy' },
-    { element: document.querySelector('.platform-features'), name: 'Ma\'lumot' },
-    // { element: document.querySelector('.pricing-section'), name: 'Tariflar' },
-    { element: document.querySelector('.articles-section'), name: 'Bloglar' },
-    { element: document.querySelector('.advice-section'), name: 'Aloqa' }
+    { element: document.querySelector('.hero'), name: 'home' },
+    { element: document.querySelector('.platform-features'), name: 'about' },
+    // { element: document.querySelector('.pricing-section'), name: 'pricing' },
+    { element: document.querySelector('.articles-section'), name: 'blog' },
+    { element: document.querySelector('.advice-section'), name: 'contact' }
   ].filter(section => section.element); // Filter out null elements
 
   let ticking = false;
 
   function updateActiveNav() {
     const scrollPos = window.scrollY + 150; // 150px offset for header
-    let currentSection = 'Asosiy'; // Default to first section
+    let currentSection = 'home'; // Default to first section
 
     // Find which section we're currently in
     for (let i = sections.length - 1; i >= 0; i--) {

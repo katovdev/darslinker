@@ -625,12 +625,15 @@ function showOtpVerificationModal(identifier, user) {
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      backdrop-filter: blur(8px);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(126, 162, 212, 0.08), transparent 32%),
+        radial-gradient(circle at 80% 80%, rgba(126, 162, 212, 0.06), transparent 30%),
+        rgba(30, 30, 32, 0.68);
+      backdrop-filter: blur(16px) saturate(140%);
       display: flex;
       justify-content: center;
       align-items: center;
-      z-index: 9999;
+      z-index: 12000;
       animation: fadeIn 0.3s ease;
     }
 
@@ -644,16 +647,18 @@ function showOtpVerificationModal(identifier, user) {
     }
 
     .otp-modal {
-      background: rgba(90, 90, 90, 0.15);
-      backdrop-filter: blur(50px);
-      -webkit-backdrop-filter: blur(50px);
+      background: linear-gradient(180deg, rgba(35, 35, 35, 0.85), rgba(28, 28, 28, 0.9));
+      backdrop-filter: blur(32px);
+      -webkit-backdrop-filter: blur(32px);
       border-radius: 24px;
       padding: 40px 48px;
       width: 550px;
       max-width: 90vw;
-      border: 1px solid #7EA2D4;
+      border: 1px solid rgba(126, 162, 212, 0.5);
       position: relative;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.05);
       animation: slideUp 0.3s ease;
     }
 
@@ -863,7 +868,7 @@ function showOtpVerificationModal(identifier, user) {
   telegramBtn.addEventListener('click', () => {
     // Open Telegram bot in new tab
     window.open('https://t.me/DarsLinkeer_bot', '_blank');
-    
+
     // Focus on OTP input after opening bot
     setTimeout(() => {
       otpInput.focus();
@@ -915,7 +920,7 @@ function showOtpVerificationModal(identifier, user) {
       }
     } catch (error) {
       console.error('OTP verification error:', error);
-      showToastMessage(error.message || 'OTP tasdiqlashda xatolik yuz berdi', 'error');
+      showToastMessage('Xato OTP kiritdingiz, qayta urinib ko\'ring.', 'error');
     } finally {
       verifyBtn.textContent = 'Tasdiqlash';
       verifyBtn.disabled = false;
@@ -954,42 +959,51 @@ function showToastMessage(message, type = 'success') {
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
   toast.textContent = message;
-  
-  // Add toast styles if not already present
-  if (!document.querySelector('#toast-styles')) {
-    const toastStyles = document.createElement('style');
-    toastStyles.id = 'toast-styles';
-    toastStyles.textContent = `
-      .toast {
-        position: fixed;
-        top: 30px;
-        right: 30px;
-        padding: 16px 24px;
-        border-radius: 12px;
-        color: #ffffff;
-        font-weight: 500;
-        z-index: 1001;
-        transform: translateX(400px);
-        transition: transform 0.3s ease;
-      }
 
-      .toast.success {
-        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-      }
+  // Ensure toast styles always enforce highest z-index (even if previously injected)
+  const toastStyleId = 'otp-toast-styles';
+  let toastStyles = document.getElementById(toastStyleId);
+  const toastCss = `
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      padding: 16px 24px;
+      border-radius: 12px;
+      color: #ffffff;
+      font-weight: 500;
+      z-index: 20000;
+      transform: translateX(400px);
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
 
-      .toast.error {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-      }
+    .toast.success {
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+      z-index: 21000;
+    }
 
-      .toast.show {
-        transform: translateX(0);
-      }
-    `;
+    .toast.error {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+      z-index: 21000;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+  `;
+
+  if (!toastStyles) {
+    toastStyles = document.createElement('style');
+    toastStyles.id = toastStyleId;
+    toastStyles.textContent = toastCss;
     document.head.appendChild(toastStyles);
+  } else {
+    toastStyles.textContent = toastCss;
   }
-  
+
   document.body.appendChild(toast);
 
   // Show toast
