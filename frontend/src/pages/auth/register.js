@@ -1,6 +1,8 @@
 import { router } from '../../utils/router.js';
 import { apiService } from '../../utils/api.js';
 
+const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'Darslinker_cbot').replace(/^@/, '');
+
 export function initRegisterPage() {
   const app = document.querySelector('#app');
 
@@ -917,7 +919,7 @@ function initRegisterPageFunctionality() {
       <div class="otp-modal">
         <div class="otp-header">
           <h3>Tasdiqlash kodi</h3>
-          <p>Tasdiqlash kodini <strong>@DarsLinkeer_bot</strong> orqali oling</p>
+          <p>Tasdiqlash kodini <strong>@${TELEGRAM_BOT_USERNAME}</strong> orqali oling</p>
           <p class="bot-instruction">Telegram botga o'ting va tasdiqlash kodini oling</p>
         </div>
         <div class="otp-actions-telegram">
@@ -1191,8 +1193,7 @@ function initRegisterPageFunctionality() {
 
     // Open Telegram Bot
     telegramBtn.addEventListener('click', () => {
-      // Open Telegram bot in new tab
-      window.open('https://t.me/DarsLinkeer_bot', '_blank');
+      window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}`, '_blank');
       
       // Focus on OTP input after opening bot
       setTimeout(() => {

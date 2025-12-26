@@ -3273,8 +3273,35 @@ body {
   max-width: 600px;
   margin: 0 auto;
   backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px rgba(var(--primary-color-rgb), 0.3);
+  box-shadow:
+    0 20px 60px rgba(var(--primary-color-rgb), 0.3),
+    0 -12px 40px rgba(var(--primary-color-rgb), 0.15);
   position: relative;
+  overflow: visible;
+}
+
+.advice-card::after {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  border-radius: 28px;
+  background: radial-gradient(circle, rgba(var(--primary-color-rgb), 0.35) 0%, rgba(var(--primary-color-rgb), 0.08) 55%, transparent 70%);
+  filter: blur(22px);
+  opacity: 0.7;
+  z-index: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+}
+
+.advice-card:hover::after,
+.advice-card:focus-within::after {
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+.advice-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .advice-title {

@@ -1,5 +1,6 @@
 import { router } from '../../utils/router.js';
 import { apiService } from '../../utils/api.js';
+import { showSuccessToast, showErrorToast } from '../../utils/toast.js';
 
 export function initPasswordPage() {
   const app = document.querySelector('#app');
@@ -58,13 +59,6 @@ export function initPasswordPage() {
             </div>
           </div>
 
-          <!-- Forgot Password Link -->
-          <div class="forgot-password-section">
-            <a href="#" class="forgot-password-link" id="forgotPasswordLink">
-              Parolni unutdingizmi?
-            </a>
-          </div>
-
           <!-- Login Button -->
           <button class="password-submit-btn" id="passwordSubmit">
             Kirish
@@ -118,9 +112,13 @@ function addPasswordPageStyles() {
 
 
     .password-logo {
-      margin-bottom: 30px;
+      position: absolute;
+      top: 160px;
+      left: 50%;
+      transform: translateX(-50%);
       text-align: center;
-      transform: translateY(-120px);
+      z-index: 20;
+      margin: 0;
     }
 
     .password-logo h1 {
@@ -137,9 +135,16 @@ function addPasswordPageStyles() {
     }
 
     .password-modal {
-      position: relative;
-      z-index: 10;
-      transform: translateY(-120px);
+     display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: auto !important;
+    height: auto !important;
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    z-index: 9999 !important;
     }
 
     .password-card {
@@ -165,25 +170,6 @@ function addPasswordPageStyles() {
 
     .password-input-section {
       margin-bottom: 16px;
-    }
-
-    .forgot-password-section {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    .forgot-password-link {
-      color: #7EA2D4;
-      text-decoration: none;
-      font-size: 0.9rem;
-      font-weight: 500;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    .forgot-password-link:hover {
-      color: #5A85C7;
-      text-decoration: underline;
     }
 
     .password-label {
@@ -301,37 +287,6 @@ function addPasswordPageStyles() {
       transform: none;
     }
 
-    /* Toast Notification */
-    .toast {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      padding: 16px 24px;
-      border-radius: 12px;
-      color: #ffffff;
-      font-weight: 500;
-      z-index: 20000;
-      transform: translateX(400px);
-      transition: transform 0.3s ease;
-      pointer-events: none;
-    }
-
-    .toast.success {
-      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-      z-index: 21000;
-    }
-
-    .toast.error {
-      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-      box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
-      z-index: 21000;
-    }
-
-    .toast.show {
-      transform: translateX(0);
-    }
-
     /* Responsive Design */
     @media (max-width: 768px) {
       /* Hide all 3D elements */
@@ -382,7 +337,6 @@ function addPasswordPageStyles() {
 function initPasswordPageFunctionality(userIdentifier) {
   const passwordInput = document.getElementById('passwordInput');
   const passwordSubmit = document.getElementById('passwordSubmit');
-  const forgotPasswordLink = document.getElementById('forgotPasswordLink');
   const passwordToggle = document.getElementById('passwordToggle');
 
   // Focus on password input
@@ -391,12 +345,6 @@ function initPasswordPageFunctionality(userIdentifier) {
   // Password toggle functionality
   passwordToggle.addEventListener('click', () => {
     togglePasswordVisibility(passwordInput, passwordToggle);
-  });
-
-  // Handle forgot password click
-  forgotPasswordLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    showErrorToast('SMS tasdiqlash tez orada qo\'shiladi');
   });
 
   // Handle Enter key press
@@ -435,7 +383,7 @@ function initPasswordPageFunctionality(userIdentifier) {
 
           console.log('User data from response:', response.user);
 
-          // Store tokens and user data
+          // Store tokens and user data (sync to both storages to avoid stale IDs)
           localStorage.setItem('accessToken', response.accessToken);
           if (response.refreshToken) {
             localStorage.setItem('refreshToken', response.refreshToken);
@@ -443,8 +391,12 @@ function initPasswordPageFunctionality(userIdentifier) {
 
           // Make sure user data exists before storing
           if (response.user) {
-            sessionStorage.setItem('currentUser', JSON.stringify(response.user));
-            console.log('User data stored in sessionStorage');
+            const serializedUser = JSON.stringify(response.user);
+            sessionStorage.setItem('currentUser', serializedUser);
+            localStorage.setItem('currentUser', serializedUser);
+            localStorage.setItem('isAuthenticated', 'true');
+            sessionStorage.setItem('isAuthenticated', 'true');
+            console.log('User data stored in sessionStorage and localStorage');
           } else {
             console.error('No user data in response!');
           }
@@ -493,50 +445,6 @@ function initPasswordPageFunctionality(userIdentifier) {
         passwordInput.focus();
       });
   }
-}
-
-function showSuccessToast(message) {
-  const toast = document.createElement('div');
-  toast.className = 'toast success';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  // Show toast
-  setTimeout(() => {
-    toast.classList.add('show');
-  }, 100);
-
-  // Hide and remove toast
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.parentNode.removeChild(toast);
-      }
-    }, 300);
-  }, 3000);
-}
-
-function showErrorToast(message) {
-  const toast = document.createElement('div');
-  toast.className = 'toast error';
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  // Show toast
-  setTimeout(() => {
-    toast.classList.add('show');
-  }, 100);
-
-  // Hide and remove toast
-  setTimeout(() => {
-    toast.classList.remove('show');
-    setTimeout(() => {
-      if (toast.parentNode) {
-        toast.parentNode.removeChild(toast);
-      }
-    }, 300);
-  }, 3000);
 }
 
 function togglePasswordVisibility(inputField, toggleButton) {
