@@ -7,7 +7,7 @@ import { showSuccessToast, showErrorToast, showInfoToast, showToast } from '../.
 import { config } from '../../utils/config.js';
 import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
-export async function initDashboard() {
+export async function initDashboard(routeParams = {}) {
   console.log('=== Dashboard initializing ===');
 
   // Initialize i18n and theme
@@ -93,7 +93,7 @@ export async function initDashboard() {
     lastName: userData.lastName,
     fullData: userData
   });
-  await renderTeacherDashboard(userData);
+  await renderTeacherDashboard(userData, routeParams);
 
   // Original logic (commented out for testing):
   // if (userData.role === 'teacher') {
@@ -122,7 +122,7 @@ function cleanupPageStyles() {
   });
 }
 
-async function renderTeacherDashboard(user) {
+async function renderTeacherDashboard(user, routeParams = {}) {
   console.log('=== renderTeacherDashboard user data ===', user);
   console.log('specialization:', user.specialization);
   console.log('city:', user.city);
@@ -311,10 +311,10 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="general-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="general-children">
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event); loadMainDashboard()">${t('sidebar.dashboard')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">${t('sidebar.profile')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openLandingSettings()">Landing</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">${t('sidebar.messages')}</a>
+              <a href="#" class="figma-menu-child active" data-path="" onclick="setActiveChild(this, event); loadMainDashboard()">${t('sidebar.dashboard')}</a>
+              <a href="#" class="figma-menu-child" data-path="profile" onclick="setActiveChild(this, event); openEditProfile()">${t('sidebar.profile')}</a>
+              <a href="#" class="figma-menu-child" data-path="landing" onclick="setActiveChild(this, event); openLandingSettings()">Landing</a>
+              <a href="#" class="figma-menu-child" data-path="messages" onclick="setActiveChild(this, event); openMessagesPage()">${t('sidebar.messages')}</a>
             </div>
           </div>
 
@@ -325,10 +325,10 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="content-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="content-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">${t('sidebar.createCourse')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">${t('sidebar.myCourses')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">${t('sidebar.finance')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">${t('sidebar.assignments')}</a>
+              <a href="#" class="figma-menu-child" data-path="create-course" onclick="setActiveChild(this, event); openCreateCourse()">${t('sidebar.createCourse')}</a>
+              <a href="#" class="figma-menu-child" data-path="my-courses" onclick="setActiveChild(this, event); openMyCourses()">${t('sidebar.myCourses')}</a>
+              <a href="#" class="figma-menu-child" data-path="finance" onclick="setActiveChild(this, event); openFinancePage()">${t('sidebar.finance')}</a>
+              <a href="#" class="figma-menu-child" data-path="assignments" onclick="setActiveChild(this, event); openAssignmentsPage()">${t('sidebar.assignments')}</a>
             </div>
           </div>
 
@@ -339,7 +339,7 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="ai-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="ai-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAIAssistantPage()">${t('sidebar.aiAssistant')}</a>
+              <a href="#" class="figma-menu-child" data-path="ai-assistant" onclick="setActiveChild(this, event); openAIAssistantPage()">${t('sidebar.aiAssistant')}</a>
             </div>
           </div>
 
@@ -350,10 +350,10 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="analytics-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="analytics-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.students')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
+              <a href="#" class="figma-menu-child" data-path="quiz-analytics" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
+              <a href="#" class="figma-menu-child" data-path="rating-comments" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
+              <a href="#" class="figma-menu-child" data-path="students" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.students')}</a>
+              <a href="#" class="figma-menu-child" data-path="progress" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
             </div>
           </div>
 
@@ -364,7 +364,7 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="rolls-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="rolls-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openSubAdmin(); return false;">${t('sidebar.subAdmin')}</a>
+              <a href="#" class="figma-menu-child" data-path="sub-admin" onclick="setActiveChild(this, event); openSubAdmin(); return false;">${t('sidebar.subAdmin')}</a>
             </div>
           </div>
 
@@ -375,8 +375,8 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="settings-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="settings-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openLanguagePage(); return false;">${t('sidebar.language')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCustomizeUI(); return false;">${t('sidebar.customizeUI')}</a>
+              <a href="#" class="figma-menu-child" data-path="language" onclick="setActiveChild(this, event); openLanguagePage(); return false;">${t('sidebar.language')}</a>
+              <a href="#" class="figma-menu-child" data-path="customize-ui" onclick="setActiveChild(this, event); openCustomizeUI(); return false;">${t('sidebar.customizeUI')}</a>
             </div>
           </div>
 
@@ -722,13 +722,15 @@ async function renderTeacherDashboard(user) {
     });
   }, 100);
 
-  // Load dashboard data from API
-  if (typeof window.loadMainDashboard === 'function') {
-    window.loadMainDashboard();
-  }
+  // Load initial section based on the current path
+  const initialSection = routeParams.section || routeParams.subsection || getDashboardSectionFromPath();
+  handleInitialDashboardSection(initialSection || '');
 
   // Set up event listeners
   setupTeacherEventListeners();
+
+  // Guard against accidental back navigation/logout without confirmation
+  setupLogoutGuard();
 
   // Load notification count after dashboard renders
   setTimeout(() => {
@@ -1120,19 +1122,50 @@ async function handleCreateCourse(e) {
 }
 
 // Global functions for onclick handlers
-window.handleLogout = async function () {
+window.performLogout = async function () {
   try {
     await apiService.logout();
-    localStorage.removeItem('accessToken');
-    store.setState({ user: null, isAuthenticated: false });
-    router.navigate('/login');
   } catch (error) {
     console.error('Logout error:', error);
-    // Force logout even if API call fails
-    localStorage.removeItem('accessToken');
+  } finally {
+    // Always clear local data and navigate away
+    localStorage.clear();
+    sessionStorage.clear();
     store.setState({ user: null, isAuthenticated: false });
     router.navigate('/login');
   }
+};
+
+window.confirmLogout = function () {
+  const content = `
+    <div style="padding: 8px 0; color: var(--text-primary);">
+      <p style="margin: 0 0 16px;">Are you sure you want to logout?</p>
+      <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+        <button onclick="closeModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Cancel</button>
+        <button onclick="performLogout()" style="background: var(--primary-color); border: 1px solid var(--primary-color); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Logout</button>
+      </div>
+    </div>
+  `;
+  showModal('Confirm Logout', content);
+};
+
+window.handleLogout = function () {
+  window.confirmLogout();
+};
+
+window.logoutGuardHandler = function (event) {
+  if (event?.state && event.state.logoutGuard) {
+    event.preventDefault?.();
+    window.confirmLogout();
+    history.pushState({ logoutGuard: true }, '', window.location.href);
+  }
+};
+
+window.setupLogoutGuard = function () {
+  if (window.logoutGuardActive) return;
+  window.logoutGuardActive = true;
+  history.pushState({ logoutGuard: true }, '', window.location.href);
+  window.addEventListener('popstate', window.logoutGuardHandler);
 };
 
 // openCreateCourse is defined later in the file (line ~9692)
@@ -1171,7 +1204,10 @@ window.editProfile = function () {
   openEditProfile();
 };
 
-window.openEditProfile = function () {
+window.openEditProfile = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('profile');
+  }
   // Get fresh user data from state
   const user = store.getState().user;
 
@@ -1401,7 +1437,10 @@ window.openEditProfile = function () {
 };
 
 // Open Landing Page Settings
-window.openLandingSettings = async function () {
+window.openLandingSettings = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('landing');
+  }
   // Get fresh user data from state
   const user = store.getState().user;
 
@@ -1656,6 +1695,39 @@ function getLandingSettingsHTML(user, landingData = null) {
 
         .form-input:focus, .form-textarea:focus {
           border-color: var(--primary-color);
+        }
+
+        /* Create Course number inputs: hide default spinners and add styled hover controls */
+        .course-section .form-input[type="number"] {
+          -moz-appearance: textfield;
+          appearance: textfield;
+          padding-right: 40px;
+        }
+        .course-section .form-input[type="number"]::-webkit-outer-spin-button,
+        .course-section .form-input[type="number"]::-webkit-inner-spin-button {
+          -webkit-appearance: inner-spin-button;
+          margin: 0;
+          height: 70%;
+          width: 18px;
+          border-radius: 6px;
+          background: rgba(var(--primary-color-rgb, 126, 162, 212), 0.15);
+          color: var(--primary-color, #7ea2d4);
+          opacity: 0;
+          transition: opacity 0.15s ease;
+        }
+        .course-section .form-input[type="number"]:hover::-webkit-outer-spin-button,
+        .course-section .form-input[type="number"]:hover::-webkit-inner-spin-button,
+        .course-section .form-input[type="number"]:focus::-webkit-outer-spin-button,
+        .course-section .form-input[type="number"]:focus::-webkit-inner-spin-button {
+          opacity: 1;
+          background: rgba(var(--primary-color-rgb, 126, 162, 212), 0.2);
+          cursor: pointer;
+        }
+        .course-section .form-input[type="number"]::-moz-focus-inner {
+          border: 0;
+        }
+        .course-section .form-input[type="number"]::-moz-inner-spin-button {
+          display: none;
         }
 
         .form-textarea {
@@ -7113,13 +7185,66 @@ function reloadDashboard() {
   location.reload();
 }
 
-// Load main dashboard content (without reloading entire page)
-function loadMainDashboard() {
-  // This function should contain the main dashboard loading logic
-  console.log('Loading main dashboard...');
+const dashboardSectionHandlers = {
+  '': () => window.loadMainDashboard?.(),
+  dashboard: () => window.loadMainDashboard?.(),
+  profile: () => window.openEditProfile?.(),
+  landing: () => window.openLandingSettings?.(),
+  messages: () => window.openMessagesPage?.(),
+  'create-course': () => window.openCreateCourse?.(),
+  'my-courses': () => window.openMyCourses?.(),
+  finance: () => window.openFinancePage?.(),
+  assignments: () => window.openAssignmentsPage?.(),
+  'quiz-analytics': () => window.openQuizAnalytics?.(),
+  'rating-comments': () => window.openRatingComments?.(),
+  students: () => window.openStudentsAnalytics?.(),
+  progress: () => window.openProgress?.(),
+  'sub-admin': () => window.openSubAdmin?.(),
+  language: () => window.openLanguagePage?.(),
+  'customize-ui': () => window.openCustomizeUI?.(),
+  subscription: () => window.openMySubscription?.(),
+  'ai-assistant': () => window.openAIAssistantPage?.()
+};
+
+function buildDashboardPath(sectionSlug = '') {
+  const cleanSlug = (sectionSlug || '').replace(/^\/+|\/+$/g, '');
+  return cleanSlug ? `/dashboard/${cleanSlug}` : '/dashboard';
 }
 
-// Additional dashboard functions can be added here
+function getDashboardSectionFromPath() {
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  if (parts[0] !== 'dashboard') return '';
+  return parts[1] || '';
+}
+
+window.navigateDashboardSection = function (sectionSlug = '', actionFn, options = {}) {
+  const { skipPathUpdate = false, skipAction = false } = options;
+  const targetPath = buildDashboardPath(sectionSlug);
+
+  if (!skipPathUpdate && window.location.pathname !== targetPath) {
+    const state = window.history.state && window.history.state.logoutGuard ? { logoutGuard: true } : {};
+    window.history.pushState(state, '', targetPath);
+  }
+
+  if (skipAction) return;
+
+  if (typeof actionFn === 'function') {
+    actionFn();
+    return;
+  }
+
+  const handler = dashboardSectionHandlers[sectionSlug] || dashboardSectionHandlers[''];
+  if (handler) handler();
+};
+
+function updateDashboardPathOnly(sectionSlug = '') {
+  navigateDashboardSection(sectionSlug, null, { skipAction: true });
+}
+
+function handleInitialDashboardSection(sectionSlug = '') {
+  const handler = dashboardSectionHandlers[sectionSlug] || dashboardSectionHandlers[''];
+  if (handler) handler();
+}
 
 // Helper function to update active menu item
 function updateActiveMenuItem(itemName) {
@@ -7132,7 +7257,10 @@ function updateActiveMenuItem(itemName) {
 }
 
 // Open Sub Admin Page
-window.openSubAdmin = function () {
+window.openSubAdmin = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('sub-admin');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -7428,6 +7556,16 @@ function getSubAdminHTML() {
           color: rgba(156, 163, 175, 0.8);
           margin-top: 4px;
         }
+        .admin-error {
+          color: #dc3545;
+          font-size: 12px;
+          margin-top: 4px;
+          margin-left: 2px;
+          display: none;
+        }
+        .admin-error.show {
+          display: block;
+        }
         .modal-actions {
           display: flex;
           gap: 12px;
@@ -7567,6 +7705,7 @@ ${t('subAdmin.addSubadmin')}
                        autocomplete="off"
                        oninput="formatPhoneNumber(this)" required>
               </div>
+              <div class="admin-error" id="adminPhoneError"></div>
             </div>
 
             <div class="form-group">
@@ -7576,6 +7715,7 @@ ${t('subAdmin.addSubadmin')}
                      autocomplete="new-password"
                      required minlength="6">
               <div class="password-requirements">At least 6 characters</div>
+              <div class="admin-error" id="adminPasswordError"></div>
             </div>
 
             <div class="form-group">
@@ -7584,6 +7724,7 @@ ${t('subAdmin.addSubadmin')}
                      placeholder="Confirm your password"
                      autocomplete="new-password"
                      required minlength="6">
+              <div class="admin-error" id="adminConfirmPasswordError"></div>
             </div>
 
             <div class="modal-actions">
@@ -7608,6 +7749,12 @@ window.openAddAdminModal = function () {
     if (sidebar) {
       sidebar.classList.add('sidebar-hidden');
     }
+
+    // Bind validation once
+    if (!modal.dataset.validationBound) {
+      bindAddAdminValidation();
+      modal.dataset.validationBound = 'true';
+    }
   }
 };
 
@@ -7631,6 +7778,13 @@ window.closeAddAdminModal = function () {
     document.getElementById('adminPassword').value = '';
     const confirmPasswordInput = document.getElementById('adminPasswordConfirm');
     if (confirmPasswordInput) confirmPasswordInput.value = '';
+    ['adminPhoneError', 'adminPasswordError', 'adminConfirmPasswordError'].forEach(id => {
+      const errorEl = document.getElementById(id);
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.classList.remove('show');
+      }
+    });
 
     // Reset submit button
     const submitBtn = document.getElementById('submitBtn');
@@ -7639,35 +7793,127 @@ window.closeAddAdminModal = function () {
   }
 };
 
+function showAdminError(el, message) {
+  if (!el) return;
+  el.textContent = message;
+  el.classList.add('show');
+}
+
+function hideAdminError(el) {
+  if (!el) return;
+  el.textContent = '';
+  el.classList.remove('show');
+}
+
+function validateAdminPhone(value, errorEl) {
+  const cleaned = (value || '').replace(/\s/g, '');
+  if (!cleaned) {
+    showAdminError(errorEl, 'Phone number is required');
+    return false;
+  }
+  if (!/^[0-9]{9}$/.test(cleaned)) {
+    showAdminError(errorEl, 'Phone number must be exactly 9 digits');
+    return false;
+  }
+  hideAdminError(errorEl);
+  return true;
+}
+
+function validateAdminPassword(password, errorEl) {
+  if (!password) {
+    showAdminError(errorEl, 'Password is required');
+    return false;
+  }
+  if (password.length < 6) {
+    showAdminError(errorEl, 'Password must be at least 6 characters');
+    return false;
+  }
+  hideAdminError(errorEl);
+  return true;
+}
+
+function validateAdminConfirmPassword(password, confirmPassword, errorEl) {
+  if (!confirmPassword) {
+    showAdminError(errorEl, 'Please confirm your password');
+    return false;
+  }
+  if (password !== confirmPassword) {
+    showAdminError(errorEl, 'Passwords do not match');
+    return false;
+  }
+  hideAdminError(errorEl);
+  return true;
+}
+
+function bindAddAdminValidation() {
+  const phoneInput = document.getElementById('adminPhone');
+  const passwordInput = document.getElementById('adminPassword');
+  const confirmPasswordInput = document.getElementById('adminPasswordConfirm');
+  const phoneError = document.getElementById('adminPhoneError');
+  const passwordError = document.getElementById('adminPasswordError');
+  const confirmPasswordError = document.getElementById('adminConfirmPasswordError');
+
+  if (phoneInput) {
+    phoneInput.addEventListener('input', () => {
+      if (typeof window.formatPhoneNumber === 'function') {
+        window.formatPhoneNumber(phoneInput);
+      }
+      validateAdminPhone(phoneInput.value, phoneError);
+    });
+    phoneInput.addEventListener('blur', () => validateAdminPhone(phoneInput.value, phoneError));
+  }
+
+  if (passwordInput) {
+    passwordInput.addEventListener('input', () => validateAdminPassword(passwordInput.value, passwordError));
+    passwordInput.addEventListener('blur', () => validateAdminPassword(passwordInput.value, passwordError));
+  }
+
+  if (confirmPasswordInput) {
+    const handler = () => validateAdminConfirmPassword(passwordInput.value, confirmPasswordInput.value, confirmPasswordError);
+    confirmPasswordInput.addEventListener('input', handler);
+    confirmPasswordInput.addEventListener('blur', handler);
+  }
+}
+
 // Submit new admin
 window.submitNewAdmin = async function (event) {
   event.preventDefault();
 
   const submitBtn = document.getElementById('submitBtn');
   const originalText = submitBtn.textContent;
+  const phoneError = document.getElementById('adminPhoneError');
+  const passwordError = document.getElementById('adminPasswordError');
+  const confirmPasswordError = document.getElementById('adminConfirmPasswordError');
+
+  const clearError = (el) => {
+    if (el) {
+      el.textContent = '';
+      el.classList.remove('show');
+    }
+  };
+  [phoneError, passwordError, confirmPasswordError].forEach(clearError);
+
+  const fullName = document.getElementById('adminName').value.trim();
+  const phone = document.getElementById('adminPhone').value.trim();
+  const cleanedPhone = phone.replace(/\s/g, '');
+  const password = document.getElementById('adminPassword').value;
+  const confirmPassword = document.getElementById('adminPasswordConfirm').value;
+
+  const isPhoneValid = validateAdminPhone(cleanedPhone, phoneError);
+  const isPasswordValid = validateAdminPassword(password, passwordError);
+  const isConfirmValid = validateAdminConfirmPassword(password, confirmPassword, confirmPasswordError);
+
+  if (!isPhoneValid || !isPasswordValid || !isConfirmValid) {
+    return;
+  }
 
   try {
     // Show loading state
     submitBtn.disabled = true;
     submitBtn.textContent = 'Adding...';
 
-    const fullName = document.getElementById('adminName').value.trim();
-    const phone = document.getElementById('adminPhone').value.trim();
-    const password = document.getElementById('adminPassword').value;
-    const confirmPassword = document.getElementById('adminPasswordConfirm').value;
-
-    // Validate passwords match
-    if (password !== confirmPassword) {
-      throw new Error('Passwords do not match');
-    }
-
-    // Validate phone format (must be 9 digits)
-    if (!/^[0-9]{9}$/.test(phone.replace(/\s/g, ''))) {
-      throw new Error('Phone number must be exactly 9 digits');
-    }
-
     // Format phone with +998 prefix
-    const formattedPhone = '+998' + phone.replace(/\s/g, '');
+    const formattedPhone = '+998' + cleanedPhone;
 
     // Get current user data
     const userData = JSON.parse(localStorage.getItem('currentUser'));
@@ -8087,7 +8333,10 @@ function createSubAdminCard(subAdmin) {
 
 
 // Open Language Page
-window.openLanguagePage = function () {
+window.openLanguagePage = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('language');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -8288,7 +8537,10 @@ window.applyLanguageChanges = function () {
 };
 
 // Open Customize UI Page
-window.openCustomizeUI = function () {
+window.openCustomizeUI = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('customize-ui');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -8915,23 +9167,37 @@ window.applyPrimaryColor = function (color) {
     .edit-btn,
     .promo-edit-btn,
     .edit-bio-btn,
-    .figma-header-buttons button,
-    .figma-header-buttons .figma-btn,
-    .figma-btn-primary,
-    .save-profile-btn,
-    button[onclick*="openEditProfile"],
-    button[onclick*="openCustomizeUI"],
-    button[onclick*="customizeUI"],
-    button[onclick*="openCreateCourse"],
-    button[onclick*="saveProfile"] {
+    .save-profile-btn {
       border-color: ${color} !important;
       color: ${color} !important;
     }
-    
-    /* New Course button - transparent background like other buttons */
-    .figma-btn-primary:not(.edit-profile-form button[type="submit"]),
-    button[onclick*="openCreateCourse"] {
+
+    /* Header buttons (non-primary/non-logout) keep outline with primary hover */
+    .figma-header-buttons .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout) {
       background: transparent !important;
+      border-color: rgba(255, 255, 255, 0.65) !important;
+      color: #ffffff !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .figma-header-buttons .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout):hover {
+      border-color: ${color} !important;
+      background: rgba(${r}, ${g}, ${b}, 0.12) !important;
+      color: #ffffff !important;
+    }
+
+    /* Inline edit buttons match header styling */
+    .edit-bio-btn {
+      background: transparent !important;
+      border-color: rgba(255, 255, 255, 0.65) !important;
+      color: #ffffff !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .edit-bio-btn:hover {
+      border-color: ${color} !important;
+      background: rgba(${r}, ${g}, ${b}, 0.12) !important;
+      color: #ffffff !important;
     }
     
     /* Create Group button - use dynamic color background */
@@ -8959,9 +9225,7 @@ window.applyPrimaryColor = function (color) {
     
     .action-btn:hover,
     .grade-btn:hover,
-    .figma-header-buttons .figma-btn:hover,
-    .figma-btn-primary:hover,
-    button[onclick*="openCreateCourse"]:hover {
+    .figma-header-buttons .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout):hover {
       background: rgba(${r}, ${g}, ${b}, 0.1) !important;
     }
     
@@ -9032,7 +9296,9 @@ window.loadSavedPrimaryColor = function () {
     applyPrimaryColor(savedColor);
     console.log('Loaded saved primary color:', savedColor);
   } else {
-    console.log('No saved color, using default: #7ea2d4');
+    const defaultColor = '#7ea2d4';
+    applyPrimaryColor(defaultColor);
+    console.log('No saved color, using default:', defaultColor);
   }
 };
 
@@ -9299,7 +9565,10 @@ window.saveCustomization = function () {
 };
 
 // Open My Subscription Page
-window.openMySubscription = function () {
+window.openMySubscription = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('subscription');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -9607,7 +9876,10 @@ window.payNow = function () {
 };
 
 // Open Progress Page
-window.openProgress = async function () {
+window.openProgress = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('progress');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -10600,7 +10872,10 @@ window.loadMoreProgress = function () {
 };
 
 // Open Students Analytics Page
-window.openStudentsAnalytics = function () {
+window.openStudentsAnalytics = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('students');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -11371,7 +11646,10 @@ window.loadMoreStudents = function () {
 };
 
 // Open Rating & Comments Page
-window.openRatingComments = function () {
+window.openRatingComments = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('rating-comments');
+  }
   // Show coming soon toast
   showInfoToast(t('comingSoon.ratingComments'));
   return;
@@ -12018,6 +12296,11 @@ window.setActiveChild = function (element, event) {
   // Add active to clicked element
   element.classList.add('active');
 
+  // Update URL for SPA navigation without re-rendering
+  if (element?.dataset?.path !== undefined) {
+    navigateDashboardSection(element.dataset.path, null, { skipAction: true });
+  }
+
   // Don't navigate or reload - let the onclick handler do its job
   return false;
 };
@@ -12034,8 +12317,11 @@ window.backToDashboard = function () {
     console.log('💾 User data saved before reload:', currentUser);
   }
 
-  // Reload dashboard to show updated data
-  location.reload();
+  navigateDashboardSection('', () => {
+    if (typeof window.loadMainDashboard === 'function') {
+      window.loadMainDashboard();
+    }
+  });
 };
 
 // Load main dashboard content (without reloading entire page)
@@ -12771,7 +13057,10 @@ async function handleProfileSave(e) {
 }
 
 // Open Messages Page
-window.openMessagesPage = function () {
+window.openMessagesPage = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('messages');
+  }
   // Show coming soon toast
   showInfoToast(t('comingSoon.messages'));
   return;
@@ -15318,7 +15607,10 @@ window.toggleLessonDropdown = function (button, event) {
 };
 
 // Open My Courses Page
-window.openMyCourses = async function () {
+window.openMyCourses = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('my-courses');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -15689,7 +15981,10 @@ window.sortCourses = (event) => {
 
 
 // Open Finance Page - Payment Requests
-window.openFinancePage = async function () {
+window.openFinancePage = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('finance');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -16499,7 +16794,10 @@ window.openFinancePage = async function () {
 };
 
 // Open AI Assistant Page
-function openAIAssistantPage() {
+function openAIAssistantPage(skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('ai-assistant');
+  }
   console.log('Opening AI Assistant Page');
 
   // Show coming soon toast
@@ -16508,7 +16806,10 @@ function openAIAssistantPage() {
 
 
 // Open Assignments Page
-window.openAssignmentsPage = async function () {
+window.openAssignmentsPage = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('assignments');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -18893,7 +19194,10 @@ window.toggleAISetting = function (toggleElement) {
   }
 };
 
-window.openQuizAnalytics = async function () {
+window.openQuizAnalytics = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('quiz-analytics');
+  }
   console.log('openQuizAnalytics function called');
 
   const contentArea = document.querySelector('.figma-content-area');
@@ -19633,7 +19937,10 @@ window.submitPayout = function () {
 };
 
 // Open Create Course Page
-window.openCreateCourse = async function () {
+window.openCreateCourse = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('create-course');
+  }
   const userData = store.getState().user;
 
   // Show loading toast while checking
@@ -22322,17 +22629,7 @@ window.openNotificationsPage = async function () {
   }
 };
 
-// Logout function
-window.handleLogout = function () {
-  // Clear all localStorage
-  localStorage.clear();
-
-  // Clear all sessionStorage
-  sessionStorage.clear();
-
-  // Navigate to login page
-  router.navigate('/login');
-};
+// Logout function is defined earlier with confirmation (window.handleLogout)
 
 // Removed old setTimeout - notification count now loads in renderTeacherDashboard
 
@@ -22639,7 +22936,10 @@ window.openTelegramBot = function () {
 
 // Open create course function (if not already defined)
 if (typeof window.openCreateCourse === 'undefined') {
-  window.openCreateCourse = function () {
+  window.openCreateCourse = function (skipPathUpdate = false) {
+    if (!skipPathUpdate) {
+      updateDashboardPathOnly('create-course');
+    }
     showSuccessToast('Create course feature coming soon!');
   };
 }
