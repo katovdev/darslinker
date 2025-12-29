@@ -1554,6 +1554,7 @@ function getLandingSettingsHTML(user, landingData = null) {
     title: landingData?.title || `${user.firstName} ${user.lastName}'s Courses`,
     subtitle: landingData?.subtitle || user.specialization || 'Expert Instructor',
     description: landingData?.description || 'Discover amazing courses and start your learning journey today.',
+    logoText: landingData?.logoText || user.landingPageSettings?.logoText || 'DarsLinker',
     heroText: landingData?.heroText || 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING',
     heroImage: landingData?.heroImage || user.heroImage || '',
     primaryColor: landingData?.primaryColor || '#7ea2d4',
@@ -1624,7 +1625,8 @@ function getLandingSettingsHTML(user, landingData = null) {
         }
 
         .copy-link-btn:hover {
-          background: var(--primary-color-80);
+          background: var(--primary-color);
+          opacity: 0.85;
         }
 
         .profile-upload-section {
@@ -1697,37 +1699,15 @@ function getLandingSettingsHTML(user, landingData = null) {
           border-color: var(--primary-color);
         }
 
-        /* Create Course number inputs: hide default spinners and add styled hover controls */
-        .course-section .form-input[type="number"] {
+        /* Create Course number inputs: hide native spinners (using text inputs) */
+        input.form-input[type="number"]::-webkit-outer-spin-button,
+        input.form-input[type="number"]::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input.form-input[type="number"] {
           -moz-appearance: textfield;
           appearance: textfield;
-          padding-right: 40px;
-        }
-        .course-section .form-input[type="number"]::-webkit-outer-spin-button,
-        .course-section .form-input[type="number"]::-webkit-inner-spin-button {
-          -webkit-appearance: inner-spin-button;
-          margin: 0;
-          height: 70%;
-          width: 18px;
-          border-radius: 6px;
-          background: rgba(var(--primary-color-rgb, 126, 162, 212), 0.15);
-          color: var(--primary-color, #7ea2d4);
-          opacity: 0;
-          transition: opacity 0.15s ease;
-        }
-        .course-section .form-input[type="number"]:hover::-webkit-outer-spin-button,
-        .course-section .form-input[type="number"]:hover::-webkit-inner-spin-button,
-        .course-section .form-input[type="number"]:focus::-webkit-outer-spin-button,
-        .course-section .form-input[type="number"]:focus::-webkit-inner-spin-button {
-          opacity: 1;
-          background: rgba(var(--primary-color-rgb, 126, 162, 212), 0.2);
-          cursor: pointer;
-        }
-        .course-section .form-input[type="number"]::-moz-focus-inner {
-          border: 0;
-        }
-        .course-section .form-input[type="number"]::-moz-inner-spin-button {
-          display: none;
         }
 
         .form-textarea {
@@ -9291,15 +9271,17 @@ window.applyPrimaryColor = function (color) {
 
 // Load saved primary color from localStorage
 window.loadSavedPrimaryColor = function () {
+  const isValidHex = (value) => /^#[0-9A-F]{6}$/i.test(value);
+  const themeColor = getTheme()?.primaryColor;
   const savedColor = localStorage.getItem('primaryColor');
-  if (savedColor && /^#[0-9A-F]{6}$/i.test(savedColor)) {
-    applyPrimaryColor(savedColor);
-    console.log('Loaded saved primary color:', savedColor);
-  } else {
-    const defaultColor = '#7ea2d4';
-    applyPrimaryColor(defaultColor);
-    console.log('No saved color, using default:', defaultColor);
-  }
+  const defaultColor = '#7ea2d4';
+  const colorToApply = isValidHex(themeColor)
+    ? themeColor
+    : (isValidHex(savedColor) ? savedColor : defaultColor);
+
+  applyPrimaryColor(colorToApply);
+  localStorage.setItem('primaryColor', colorToApply);
+  console.log('Loaded primary color:', colorToApply);
 };
 
 // Update color from picker
@@ -13349,6 +13331,33 @@ window.addLesson = function (type, dropdownLink, event) {
             font-size: 14px;
             font-weight: 500;
           }
+          .lesson-form .input-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+          }
+          .lesson-form .input-error.show {
+            display: block;
+          }
+          .lesson-form .input-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+          }
+          .lesson-form .input-error.show {
+            display: block;
+          }
+          .lesson-form .input-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+          }
+          .lesson-form .input-error.show {
+            display: block;
+          }
           .lesson-form .lesson-title-input {
             width: 100%;
             padding: 12px;
@@ -13457,8 +13466,10 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+            opacity: 0.9;
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -13472,9 +13483,27 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--border-hover);
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: none;
+            box-shadow: none;
+          }
+          /* Unified hover behavior */
+          .lesson-form .save-lesson-btn:hover,
+          .lesson-form .save-lesson-btn:focus {
+            opacity: 0.9 !important;
+            background: var(--primary-color) !important;
+            transform: none !important;
+            box-shadow: none !important;
+          }
+          .lesson-form .cancel-lesson-btn:hover,
+          .lesson-form .cancel-lesson-btn:focus {
+            background: transparent !important;
+            color: var(--text-secondary) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            box-shadow: none !important;
+            transform: none !important;
           }
         </style>
         <div class="lesson-form">
@@ -13482,6 +13511,7 @@ window.addLesson = function (type, dropdownLink, event) {
           <div class="form-group">
             <label>Lesson Title</label>
             <input type="text" class="lesson-title-input" placeholder="Enter lesson title" required />
+            <div class="input-error lesson-title-error"></div>
           </div>
           <div class="form-group">
             <label>Video File</label>
@@ -13598,8 +13628,10 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+            opacity: 0.9;
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -13613,9 +13645,11 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--border-hover);
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: none;
+            box-shadow: none;
           }
           .quiz-type-selector {
             display: flex;
@@ -13686,9 +13720,33 @@ window.addLesson = function (type, dropdownLink, event) {
             gap: 6px;
             transition: all 0.2s ease;
           }
-          .add-question-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+          .add-question-btn:hover,
+          .add-question-btn:focus {
+            opacity: 0.9;
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
+          }
+          .create-questions-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+          }
+          .create-questions-btn:hover,
+          .create-questions-btn:focus {
+            opacity: 0.9;
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
           }
           .question-item {
             background: var(--bg-tertiary);
@@ -13800,6 +13858,7 @@ window.addLesson = function (type, dropdownLink, event) {
           <div class="form-group">
             <label>Quiz Title</label>
             <input type="text" class="quiz-title-input" placeholder="Enter quiz title" />
+            <div class="input-error quiz-title-error" style="color: #dc3545; font-size: 12px; margin-top: 4px; display: none;"></div>
           </div>
           <div class="form-group">
             <label>Time Limit (minutes)</label>
@@ -13920,8 +13979,7 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+            opacity: 0.9;
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -13935,16 +13993,17 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--border-hover);
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, 0.35);
           }
         </style>
-        <div class="lesson-form">
+        <div class="lesson-form assignment-lesson-form">
           <h5>${t('createCourse.addAssignment')} ${lessonNumber}</h5>
           <div class="form-group">
             <label>Assignment Title</label>
             <input type="text" placeholder="Enter assignment title" class="assignment-title" />
+            <div class="input-error assignment-title-error"></div>
           </div>
           <div class="form-group">
             <label>Instructions</label>
@@ -14075,8 +14134,7 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+            opacity: 0.9;
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -14090,9 +14148,43 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--border-hover);
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, 0.35);
+          }
+          .lesson-form .lesson-file-input::file-selector-button {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin-right: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+          }
+          .lesson-form .lesson-file-input::-webkit-file-upload-button {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin-right: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+          }
+          .lesson-form .lesson-file-input::file-selector-button:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary-color);
+          }
+          .lesson-form .lesson-file-input::-webkit-file-upload-button:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary-color);
           }
         </style>
         <div class="lesson-form">
@@ -14103,7 +14195,7 @@ window.addLesson = function (type, dropdownLink, event) {
           </div>
           <div class="form-group">
             <label>File Upload</label>
-            <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" />
+            <input type="file" class="lesson-file-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" />
           </div>
           <div class="form-group">
             <label>Description</label>
@@ -14135,16 +14227,44 @@ window.saveLesson = async function (button, type) {
 
   // Extract lesson title based on type
   let titleInput;
+  let titleError;
   if (type === 'quiz') {
     titleInput = lessonForm.querySelector('.quiz-title-input');
+    titleError = lessonForm.querySelector('.quiz-title-error');
+  } else if (type === 'assignment') {
+    titleInput = lessonForm.querySelector('.assignment-title');
+    titleError = lessonForm.querySelector('.assignment-title-error');
   } else {
     titleInput = lessonForm.querySelector('.lesson-title-input') || lessonForm.querySelector('input[type="text"]');
+    titleError = lessonForm.querySelector('.lesson-title-error');
   }
+
+  const showTitleError = (msg) => {
+    if (titleError) {
+      titleError.textContent = msg;
+      titleError.classList.add('show');
+      titleError.style.display = 'block';
+    }
+    showErrorToast(msg);
+  };
+  const clearTitleError = () => {
+    if (titleError) {
+      titleError.textContent = '';
+      titleError.classList.remove('show');
+      titleError.style.display = 'none';
+    }
+  };
+  clearTitleError();
 
   if (titleInput && titleInput.value.trim()) {
     lessonTitle = titleInput.value.trim();
   } else {
-    showErrorToast('Please enter a lesson title');
+    const titleMessage = type === 'quiz'
+      ? 'Quiz title is required'
+      : type === 'assignment'
+        ? 'Assignment title is required'
+        : 'Lesson title is required';
+    showTitleError(titleMessage);
     return;
   }
 
@@ -14325,6 +14445,12 @@ window.saveLesson = async function (button, type) {
     console.log('🎯 SAVE: Final lessonData for quiz:', JSON.stringify(lessonData, null, 2));
   } else if (type === 'assignment') {
     const instructionsInput = lessonForm.querySelector('.assignment-instructions');
+    const titleError = lessonForm.querySelector('.assignment-title-error');
+    if (titleError) {
+      titleError.textContent = '';
+      titleError.classList.remove('show');
+      titleError.style.display = 'none';
+    }
 
     // Get content type (text or file)
     const contentTypeRadio = lessonForm.querySelector('input[name*="assignment-content-type"]:checked');
@@ -14720,6 +14846,7 @@ function createQuizEditForm(lessonData) {
       <div class="form-group">
         <label>Quiz Title</label>
         <input type="text" class="quiz-title-input" value="${escapedTitle}" placeholder="Enter quiz title" />
+        <div class="input-error quiz-title-error" style="color: #dc3545; font-size: 12px; margin-top: 4px; display: none;"></div>
       </div>
       <div class="form-group">
         <label>Time Limit (minutes)</label>
@@ -14756,6 +14883,7 @@ function createVideoEditForm(lessonData) {
       <div class="form-group">
         <label>Lesson Title</label>
         <input type="text" class="lesson-title-input" value="${lessonData.title}" placeholder="Enter lesson title" required />
+        <div class="input-error lesson-title-error" style="color: #dc3545; font-size: 12px; margin-top: 4px; display: none;"></div>
       </div>
       <div class="form-group">
         <label>Video File</label>
@@ -14953,6 +15081,11 @@ window.updateLesson = function (button, type) {
 
   if (type === 'quiz') {
     const titleInput = editForm.querySelector('.quiz-title-input');
+    const titleError = editForm.querySelector('.quiz-title-error');
+    if (titleError) {
+      titleError.textContent = '';
+      titleError.style.display = 'none';
+    }
     const timeInput = editForm.querySelector('.quiz-time-input');
     const questions = [];
 
@@ -14992,15 +15125,48 @@ window.updateLesson = function (button, type) {
       }
     });
 
-    updatedData.title = titleInput ? titleInput.value.trim() : '';
+    if (!titleInput || !titleInput.value.trim()) {
+      if (titleError) {
+        titleError.textContent = 'Quiz title is required';
+        titleError.style.display = 'block';
+      }
+      showErrorToast('Quiz title is required');
+      return;
+    }
+
+    if (!titleInput || !titleInput.value.trim()) {
+      if (titleError) {
+        titleError.textContent = 'Assignment title is required';
+        titleError.classList.add('show');
+        titleError.style.display = 'block';
+      }
+      showErrorToast('Assignment title is required');
+      return;
+    }
+
+    updatedData.title = titleInput.value.trim();
     updatedData.timeLimit = timeInput ? timeInput.value : '';
     updatedData.questions = questions;
     updatedData.duration = `Quiz (${questions.length} questions)${timeInput && timeInput.value ? ` • ${timeInput.value} min` : ''}`;
 
   } else if (type === 'video') {
     const titleInput = editForm.querySelector('.lesson-title-input');
+    const titleError = editForm.querySelector('.lesson-title-error');
+    if (titleError) {
+      titleError.textContent = '';
+      titleError.style.display = 'none';
+    }
     const videoUrlInput = editForm.querySelector('.video-url-input');
     const durationInput = editForm.querySelector('.video-duration-input');
+
+    if (!titleInput || !titleInput.value.trim()) {
+      if (titleError) {
+        titleError.textContent = 'Lesson title is required';
+        titleError.style.display = 'block';
+      }
+      showErrorToast('Lesson title is required');
+      return;
+    }
 
     updatedData.title = titleInput.value.trim();
     updatedData.videoUrl = videoUrlInput.value;
@@ -15457,10 +15623,30 @@ window.editModule = function (button, event) {
           </div>
         </div>
         <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 20px;">
-          <button class="btn-secondary" onclick="closeEditModuleModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Cancel</button>
-          <button class="btn-primary" onclick="saveModuleTitle()" style="background: var(--primary-color); color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Save</button>
+          <button class="btn-secondary" onclick="closeEditModuleModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: none;">Cancel</button>
+          <button class="btn-primary" onclick="saveModuleTitle()" style="background: var(--primary-color); color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: none;">Save</button>
         </div>
       </div>
+      <style>
+        /* Remove hover effects for edit module modal buttons */
+        #editModuleModal .btn-primary,
+        #editModuleModal .btn-secondary {
+          transition: none !important;
+        }
+        #editModuleModal .btn-primary:hover,
+        #editModuleModal .btn-primary:focus {
+          background: var(--primary-color) !important;
+          color: #ffffff !important;
+          box-shadow: none !important;
+        }
+        #editModuleModal .btn-secondary:hover,
+        #editModuleModal .btn-secondary:focus {
+          background: transparent !important;
+          color: var(--text-secondary) !important;
+          border-color: var(--border-color) !important;
+          box-shadow: none !important;
+        }
+      </style>
     </div>
   `;
 
@@ -20103,16 +20289,16 @@ window.openCreateCourse = async function (skipPathUpdate = false) {
               </div>
 
               <div class="form-row">
-                <div class="form-field">
-                  <label class="field-label">${t('createCourse.coursePrice')}</label>
-                  <input type="number" class="form-input" name="price" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
-                </div>
-                <div class="form-field">
-                  <label class="field-label">${t('createCourse.discountPrice')}</label>
-                  <input type="number" class="form-input" placeholder="${t('createCourse.discountPricePlaceholder')}" step="0.01" />
-                  <small class="field-note">${t('createCourse.discountNote')}</small>
-                </div>
+              <div class="form-field">
+                <label class="field-label">${t('createCourse.coursePrice')}</label>
+                <input type="text" class="form-input" name="price" placeholder="${t('createCourse.coursePricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
               </div>
+              <div class="form-field">
+                <label class="field-label">${t('createCourse.discountPrice')}</label>
+                <input type="text" class="form-input" name="discountPrice" placeholder="${t('createCourse.discountPricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
+                <small class="field-note">${t('createCourse.discountNote')}</small>
+              </div>
+            </div>
             </div>
 
             <!-- Course Structure Section -->
@@ -21443,11 +21629,11 @@ function openCourseEditPage(courseData) {
               <div class="form-row" id="pricingFields" style="display: ${courseData.courseType === 'paid' ? 'flex' : 'none'};">
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.coursePrice')}</label>
-                  <input type="number" class="form-input" name="price" value="${courseData.price || ''}" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
+                  <input type="text" class="form-input" name="price" value="${courseData.price || ''}" placeholder="${t('createCourse.coursePricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
                 </div>
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.discountPrice')}</label>
-                  <input type="number" class="form-input" name="discountPrice" value="${courseData.discountPrice || ''}" placeholder="${t('createCourse.discountPricePlaceholder')}" step="0.01" />
+                  <input type="text" class="form-input" name="discountPrice" value="${courseData.discountPrice || ''}" placeholder="${t('createCourse.discountPricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
                   <small class="field-note">${t('createCourse.discountNote')}</small>
                 </div>
               </div>
