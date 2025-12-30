@@ -1568,23 +1568,45 @@ function updateStats(courses) {
   }
 }
 
+function getStoredStudentId() {
+  const storedUsers = [
+    localStorage.getItem('currentUser'),
+    localStorage.getItem('auth_user'),
+    localStorage.getItem('user'),
+    sessionStorage.getItem('landingUser'),
+    sessionStorage.getItem('currentUser'),
+  ];
+
+  for (const rawUser of storedUsers) {
+    if (!rawUser) continue;
+    try {
+      const userData = JSON.parse(rawUser);
+      if (userData._id || userData.id) {
+        return userData._id || userData.id;
+      }
+    } catch (error) {
+      continue;
+    }
+  }
+
+  return null;
+}
+
 // Open course - Check enrollment first, then navigate
 window.openCourse = async function(courseId, courseType = 'free') {
   console.log('Opening course:', courseId, 'courseType:', courseType);
-  
+
+  // Get student ID
+  const studentId = getStoredStudentId();
+
+  if (!studentId) {
+    showErrorToast('Please login first');
+    return;
+  }
+
   if (courseType !== 'free') {
     // For paid courses, check payment status first
-    const landingUser = sessionStorage.getItem('landingUser');
-    if (!landingUser) {
-      showErrorToast('Please login first');
-      return;
-    }
-
     try {
-      const userData = JSON.parse(landingUser);
-      const studentId = userData._id;
-
-      // Check payment status
       const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
       const paymentResponse = await fetch(`${apiBaseUrl}/payments/student/${studentId}/course/${courseId}`);
       const paymentResult = await paymentResponse.json();
@@ -1603,31 +1625,6 @@ window.openCourse = async function(courseId, courseType = 'free') {
       // On error, go to payment page
       window.location.href = `/course-payment/${courseId}`;
     }
-    return;
-  }
-
-  // Get student ID
-  let studentId = null;
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
-  if (user._id) {
-    studentId = user._id;
-  } else {
-    const landingUser = sessionStorage.getItem('landingUser');
-    if (landingUser) {
-      try {
-        const userData = JSON.parse(landingUser);
-        if (userData._id) {
-          studentId = userData._id;
-        }
-      } catch (error) {
-        console.error('Error parsing landing user:', error);
-      }
-    }
-  }
-
-  if (!studentId) {
-    // No student ID, go to course start page
-    window.location.href = `/course-start/${courseId}`;
     return;
   }
 

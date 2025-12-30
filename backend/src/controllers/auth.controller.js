@@ -5,6 +5,7 @@ import User from "../models/user.model.js";
 import Student from "../models/student.model.js";
 import Teacher from "../models/teacher.model.js";
 import Session from "../models/session.model.js";
+import SubAdmin from "../models/sub-admin.model.js";
 
 import {
   parseDeviceInfo,
@@ -21,6 +22,7 @@ import {
 import {
   generateAccessToken,
   generateRefreshToken,
+  verifyRefreshToken,
 } from "../utils/token.utils.js";
 import { BCRYPT_SALT_ROUNDS } from "../../config/env.js";
 import {
@@ -61,6 +63,7 @@ const checkUser = catchAsync(async (req, res) => {
     type: isEmail ? "email" : "phone",
   });
 
+  // Check in User model first
   const existingUser = await User.findOne({
     [isEmail ? "email" : "phone"]: normalizedIdentifier,
   });
@@ -132,18 +135,49 @@ const checkUser = catchAsync(async (req, res) => {
         phone: existingUser.phone
       }
     });
-  } else {
-    logger.info("User not found - registration required", {
-      identifier: normalizedIdentifier,
+    return;
+  }
+
+  // If not found in User model, check SubAdmin model (only for phone, not email)
+  if (!isEmail) {
+    const existingSubAdmin = await SubAdmin.findOne({
+      phone: normalizedIdentifier,
+      isActive: true
     });
 
-    res.status(200).json({
-      success: true,
-      exists: false,
-      next: "register",
-      message: "User not found. Please complete registration",
-    });
+    if (existingSubAdmin) {
+      logger.info("Sub-admin found", {
+        subAdminId: existingSubAdmin._id,
+        identifier: normalizedIdentifier,
+      });
+
+      res.status(200).json({
+        success: true,
+        exists: true,
+        next: "login",
+        message: "Sub-admin found. Please enter your password",
+        user: {
+          fullName: existingSubAdmin.fullName,
+          phone: existingSubAdmin.phone,
+          role: "subadmin"
+        },
+        isSubAdmin: true
+      });
+      return;
+    }
   }
+
+  // User not found in either model
+  logger.info("User not found - registration required", {
+    identifier: normalizedIdentifier,
+  });
+
+  res.status(200).json({
+    success: true,
+    exists: false,
+    next: "register",
+    message: "User not found. Please complete registration",
+  });
 });
 
 /**
@@ -484,16 +518,109 @@ const login = catchAsync(async (req, res) => {
     userAgent: req.headers["user-agent"],
   });
 
-  const existingUser = await User.findOne({
+  // Check in User model first
+  let existingUser = await User.findOne({
     [isEmail ? "email" : "phone"]: normalizedIdentifier,
   });
 
-  if (!existingUser) {
+  // If not found in User model and using phone, check SubAdmin model
+  let existingSubAdmin = null;
+  if (!existingUser && !isEmail) {
+    existingSubAdmin = await SubAdmin.findOne({
+      phone: normalizedIdentifier,
+      isActive: true
+    }).populate('teacher', 'firstName lastName email phone');
+  }
+
+  if (!existingUser && !existingSubAdmin) {
     logger.warn("Login failed - User not found", {
       identifier: normalizedIdentifier,
       ip: req.ip,
     });
     throw new UnauthorizedError("Invalid email address or phone number");
+  }
+
+  // Handle sub-admin login
+  if (existingSubAdmin && !existingUser) {
+    const isPasswordMatch = await existingSubAdmin.comparePassword(password);
+
+    if (!isPasswordMatch) {
+      logger.warn("Login failed - Invalid password for sub-admin", {
+        subAdminId: existingSubAdmin._id,
+        identifier: normalizedIdentifier,
+        ip: req.ip,
+      });
+      throw new UnauthorizedError("Invalid credentials");
+    }
+
+    // Update login info
+    await existingSubAdmin.updateLoginInfo();
+
+    const deviceInfo = parseDeviceInfo(req.headers["user-agent"]);
+    const deviceFingerprint = createDeviceFingerprint(deviceInfo);
+
+    const tokenPayload = {
+      userId: existingSubAdmin._id.toString(),
+      phone: existingSubAdmin.phone,
+      role: "subadmin",
+      teacherId: existingSubAdmin.teacher._id.toString(),
+      status: "active",
+    };
+
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = generateRefreshToken(tokenPayload);
+
+    const sessionData = {
+      userId: existingSubAdmin._id,
+      ipAddress: req.ip,
+      deviceInfo: deviceInfo,
+      deviceFingerprint: deviceFingerprint,
+      userAgent: req.headers["user-agent"],
+      token: refreshToken,
+      expiresAt: getSessionExpiryDate(),
+    };
+
+    await Session.findOneAndUpdate(
+      {
+        userId: existingSubAdmin._id,
+        deviceFingerprint: deviceFingerprint,
+      },
+      sessionData,
+      { upsert: true, new: true }
+    );
+
+    logger.info("Sub-admin login successful", {
+      subAdminId: existingSubAdmin._id,
+      teacherId: existingSubAdmin.teacher._id,
+      deviceType: deviceInfo.type,
+      ip: req.ip,
+    });
+
+    const userResponse = {
+      _id: existingSubAdmin._id,
+      fullName: existingSubAdmin.fullName,
+      phone: existingSubAdmin.phone,
+      role: "subadmin",
+      teacher: {
+        _id: existingSubAdmin.teacher._id,
+        firstName: existingSubAdmin.teacher.firstName,
+        lastName: existingSubAdmin.teacher.lastName,
+        email: existingSubAdmin.teacher.email,
+        phone: existingSubAdmin.teacher.phone,
+      },
+      permissions: existingSubAdmin.permissions,
+      lastLogin: existingSubAdmin.lastLogin,
+      loginCount: existingSubAdmin.loginCount,
+    };
+
+    res.status(200).json({
+      success: true,
+      message: "Logged in successfully",
+      accessToken,
+      refreshToken,
+      user: userResponse,
+    });
+    return;
   }
 
   const isPasswordMatch = await bcrypt.compare(password, existingUser.password);
@@ -705,6 +832,112 @@ const logout = catchAsync(async (req, res) => {
   res.status(200).json({ success: true, message: "Logged out successfully" });
 });
 
+/**
+ * Refresh access token using refresh token
+ * @route POST /auth/refresh-token
+ * @access Public
+ */
+const refreshToken = catchAsync(async (req, res) => {
+  const { refreshToken: refreshTokenFromBody } = req.body;
+
+  if (!refreshTokenFromBody) {
+    throw new BadRequestError("Refresh token is required");
+  }
+
+  logger.info("Refresh token attempt", {
+    ip: req.ip,
+    userAgent: req.headers["user-agent"],
+  });
+
+  // Verify the refresh token
+  let decoded;
+  try {
+    decoded = verifyRefreshToken(refreshTokenFromBody);
+  } catch (error) {
+    logger.warn("Refresh token verification failed", {
+      error: error.message,
+      ip: req.ip,
+    });
+
+    if (error.message.includes("expired")) {
+      throw new UnauthorizedError("Refresh token has expired. Please login again");
+    }
+    throw new UnauthorizedError("Invalid refresh token");
+  }
+
+  // Check if refresh token exists in session (stored in DB)
+  const session = await Session.findOne({
+    userId: decoded.userId,
+    token: refreshTokenFromBody,
+  });
+
+  if (!session) {
+    logger.warn("Refresh token not found in session", {
+      userId: decoded.userId,
+      ip: req.ip,
+    });
+    throw new UnauthorizedError("Refresh token not found or invalid. Please login again");
+  }
+
+  // Check if session is expired
+  if (session.expiresAt && new Date() > new Date(session.expiresAt)) {
+    logger.warn("Session expired", {
+      userId: decoded.userId,
+      sessionId: session._id,
+      ip: req.ip,
+    });
+
+    // Delete expired session
+    await Session.deleteOne({ _id: session._id });
+    throw new UnauthorizedError("Session has expired. Please login again");
+  }
+
+  // Get user to verify account status
+  const user = await User.findById(decoded.userId);
+  if (!user) {
+    logger.warn("User not found for refresh token", {
+      userId: decoded.userId,
+      ip: req.ip,
+    });
+    throw new NotFoundError("User not found");
+  }
+
+  if (user.status !== "active") {
+    logger.warn("Account not active for refresh token", {
+      userId: decoded.userId,
+      status: user.status,
+      ip: req.ip,
+    });
+    throw new ForbiddenError("Account is not active. Please verify your account");
+  }
+
+  // Generate new access token
+  const tokenPayload = {
+    userId: user._id.toString(),
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    status: user.status,
+  };
+
+  const newAccessToken = generateAccessToken(tokenPayload);
+
+  logger.info("Access token refreshed successfully", {
+    userId: user._id,
+    email: user.email,
+    role: user.role,
+    ip: req.ip,
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Access token refreshed successfully",
+    accessToken: newAccessToken,
+    // Optionally return the same refresh token (no rotation) or generate a new one
+    refreshToken: refreshTokenFromBody,
+  });
+});
+
 export {
   checkUser,
   register,
@@ -713,4 +946,5 @@ export {
   login,
   changePassword,
   logout,
+  refreshToken,
 };

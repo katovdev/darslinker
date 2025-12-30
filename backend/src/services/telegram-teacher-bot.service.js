@@ -7,28 +7,26 @@ import { generateOtp } from '../utils/generate_otp.utils.js';
 import bcrypt from 'bcrypt';
 import { BCRYPT_SALT_ROUNDS, HASH_OTP, OTP_EXPIRES_SECONDS, OTP_LENGTH } from '../../config/env.js';
 
-// Bot token
-const TEACHER_BOT_TOKEN = '8529221614:AAGx_XYo4x6J6Z8qAiIA2QFaazPMrYg6SLc';
+const TEACHER_BOT_TOKEN = process.env.TEACHER_BOT_TOKEN;
 
-// Create bot instance with error handling
 let teacherBot;
-try {
-  teacherBot = new TelegramBot(TEACHER_BOT_TOKEN, { 
-    polling: {
-      interval: 1000,
-      autoStart: false
-    }
-  });
-} catch (error) {
-  logger.error('Failed to create teacher bot instance:', error.message);
+if (!TEACHER_BOT_TOKEN) {
+  logger.error('❌ TEACHER_BOT_TOKEN is missing. Teacher bot will not start.');
+} else {
+  try {
+    teacherBot = new TelegramBot(TEACHER_BOT_TOKEN, {
+      polling: {
+        interval: 1000,
+        autoStart: false
+      }
+    });
+  } catch (error) {
+    logger.error('Failed to create teacher bot instance:', error.message);
+  }
 }
 
-// Store user states (in-memory, you can use Redis for production)
 const userStates = new Map();
 
-/**
- * Initialize Teacher Telegram Bot
- */
 export function initTeacherBot() {
   if (!teacherBot) {
     logger.error('❌ Teacher bot instance not available');
@@ -37,7 +35,6 @@ export function initTeacherBot() {
 
   logger.info('🤖 Teacher Telegram Bot starting...');
 
-  // Start polling with error handling
   try {
     teacherBot.startPolling();
   } catch (error) {
@@ -45,7 +42,6 @@ export function initTeacherBot() {
     return;
   }
 
-  // Handle /start command
   teacherBot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;
     const firstName = msg.from.first_name || 'Foydalanuvchi';
@@ -222,22 +218,22 @@ Ro'yxatdan o'tish uchun kontaktingizni yuboring.`;
       if (text && /[\d\s+()-]+/.test(text)) {
         // Remove all non-digit characters except +
         const cleanedPhone = text.replace(/[^\d+]/g, '');
-        
+
         // Check if it's a valid phone number format
         // Accepts: +998901234567, 998901234567, 901234567, +998 90 123 45 67, etc.
         const phoneRegex = /^(\+?998)?(\d{9})$/;
         const match = cleanedPhone.match(phoneRegex);
-        
+
         if (match) {
           // Extract the 9-digit number
           const phoneDigits = match[2];
           const fullPhone = `+998${phoneDigits}`;
-          
+
           await teacherBot.sendMessage(
             chatId,
             `📱 Telefon raqam qabul qilindi: ${fullPhone}\n\nTekshirilmoqda...`
           );
-          
+
           await processPhoneNumber(chatId, fullPhone);
         } else {
           await teacherBot.sendMessage(
@@ -260,7 +256,7 @@ Ro'yxatdan o'tish uchun kontaktingizni yuboring.`;
       error: error.message,
       code: error.code,
     });
-    
+
     // If it's a network error, stop polling to prevent spam
     if (error.code === 'EFATAL' || error.message.includes('ENOTFOUND')) {
       logger.warn('🚫 Stopping teacher bot polling due to network issues');
@@ -357,9 +353,9 @@ export async function sendPaymentNotificationToTeacher(teacherId, studentName, c
     }).sort({ createdAt: -1 });
 
     if (!previousOtp || !previousOtp.meta?.chatId) {
-      logger.warn('No chat ID found for teacher payment notification', { 
-        teacherId, 
-        phone: teacher.phone 
+      logger.warn('No chat ID found for teacher payment notification', {
+        teacherId,
+        phone: teacher.phone
       });
       return false;
     }

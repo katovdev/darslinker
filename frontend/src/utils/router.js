@@ -52,6 +52,11 @@ export class Router {
   }
 
   matchRoute(routePath, actualPath) {
+    // Wildcard route matches anything
+    if (routePath === '*') {
+      return { params: {} };
+    }
+
     // Convert route path to regex pattern
     // e.g., /course/:courseId -> /course/([^/]+)
     const paramNames = [];

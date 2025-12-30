@@ -5,6 +5,7 @@ import {
   registerSchema,
   loginSchema,
   changePasswordSchema,
+  refreshTokenSchema,
 } from "../validations/auth.validation.js";
 import {
   register,
@@ -14,6 +15,7 @@ import {
   changePassword,
   checkUser,
   logout,
+  refreshToken,
 } from "../controllers/auth.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 
@@ -650,7 +652,7 @@ authRouter.post("/resend-registration-otp", resendRegistrationOtp);
  *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNDYxMTA5MH0.abc123xyz789
  *                 refreshToken:
  *                   type: string
- *                   description: JWT refresh token (expires in 7 days) - Contains userId, email, phone, role, status
+ *                   description: JWT refresh token (expires in 14 days) - Contains userId, email, phone, role, status
  *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNTE3MjY5MH0.def456uvw123
  *                 data:
  *                   type: object
@@ -879,5 +881,119 @@ authRouter.patch(
  *         description: Internal server error
  */
 authRouter.post("/logout", authenticate, logout);
+
+/**
+ * @swagger
+ * /auth/refresh-token:
+ *   post:
+ *     summary: Refresh access token
+ *     description: Generate a new access token using a valid refresh token. The refresh token must be stored in the database session and not expired. Returns a new access token.
+ *     tags: [Auth]
+ *     security: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - refreshToken
+ *             properties:
+ *               refreshToken:
+ *                 type: string
+ *                 description: JWT refresh token (expires in 14 days)
+ *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNTE3MjY5MH0.def456uvw123
+ *           examples:
+ *             refreshToken:
+ *               summary: Refresh access token
+ *               value:
+ *                 refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNTE3MjY5MH0.def456uvw123
+ *     responses:
+ *       200:
+ *         description: Access token refreshed successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Access token refreshed successfully
+ *                 accessToken:
+ *                   type: string
+ *                   description: New JWT access token (expires in 12 hours)
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNDYxMTA5MH0.abc123xyz789
+ *                 refreshToken:
+ *                   type: string
+ *                   description: Same refresh token (no rotation)
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNTE3MjY5MH0.def456uvw123
+ *             example:
+ *               success: true
+ *               message: Access token refreshed successfully
+ *               accessToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJlbWFpbCI6ImpvaG4uZG9lQGV4YW1wbGUuY29tIiwicm9sZSI6InN0dWRlbnQiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNDYxMTA5MH0.abc123xyz789
+ *               refreshToken: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NWE3YjNjMmQxMjM0NTY3ODkwYWJjZGUiLCJpYXQiOjE2MzQ1Njc4OTAsImV4cCI6MTYzNTE3MjY5MH0.def456uvw123
+ *       400:
+ *         description: Bad request - Missing refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: Refresh token is required
+ *       401:
+ *         description: Unauthorized - Invalid or expired refresh token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             examples:
+ *               invalidToken:
+ *                 summary: Invalid refresh token
+ *                 value:
+ *                   success: false
+ *                   message: Invalid refresh token
+ *               expiredToken:
+ *                 summary: Expired refresh token
+ *                 value:
+ *                   success: false
+ *                   message: Refresh token has expired. Please login again
+ *               tokenNotFound:
+ *                 summary: Refresh token not found in session
+ *                 value:
+ *                   success: false
+ *                   message: Refresh token not found or invalid. Please login again
+ *       403:
+ *         description: Forbidden - Account not active
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: Account is not active. Please verify your account
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: User not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *             example:
+ *               success: false
+ *               message: An error occurred while refreshing the token
+ */
+authRouter.post("/refresh-token", validate(refreshTokenSchema), refreshToken);
 
 export default authRouter;

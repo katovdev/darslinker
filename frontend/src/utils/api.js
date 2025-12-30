@@ -19,6 +19,9 @@ class ApiService {
    * @returns {Promise} - API response
    */
   async request(endpoint, options = {}) {
+    // Allow callers to opt out of global error handling
+    const { skipErrorHandler, ...restOptions } = options;
+
     // Generate request ID for tracking
     const requestId = this.generateRequestId();
     const url = `${this.baseURL}${endpoint}`;
@@ -29,7 +32,7 @@ class ApiService {
     }
 
     // Prepare request options
-    const requestOptions = this.prepareRequestOptions(options);
+    const requestOptions = this.prepareRequestOptions(restOptions);
 
     // Add request to active requests for cancellation support
     const controller = new AbortController();
@@ -48,13 +51,15 @@ class ApiService {
     } catch (error) {
       const enhancedError = this.enhanceError(error, endpoint, options);
 
-      // Handle error through error handler
-      errorHandler.handleError(
-        enhancedError,
-        this.getErrorType(enhancedError),
-        this.getErrorSeverity(enhancedError),
-        { endpoint, requestId, retryFunction: () => this.request(endpoint, options) }
-      );
+      if (!skipErrorHandler) {
+        // Handle error through error handler
+        errorHandler.handleError(
+          enhancedError,
+          this.getErrorType(enhancedError),
+          this.getErrorSeverity(enhancedError),
+          { endpoint, requestId, retryFunction: () => this.request(endpoint, options) }
+        );
+      }
 
       throw enhancedError;
     } finally {
@@ -421,10 +426,11 @@ class ApiService {
     });
   }
 
-  async login(identifier, password) {
+  async login(identifier, password, options = {}) {
     return this.request('/auth/login', {
       method: 'POST',
       body: JSON.stringify({ identifier, password }),
+      ...options,
     });
   }
 

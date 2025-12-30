@@ -50,6 +50,8 @@ class App {
     router.register('/password', initPasswordPage);
     router.register('/register', initRegisterPage);
     router.register('/dashboard', initDashboard);
+    router.register('/dashboard/:section', (params) => initDashboard(params));
+    router.register('/dashboard/:section/:subsection', (params) => initDashboard(params));
     router.register('/student-dashboard', initStudentDashboard);
     router.register('/pricing', initPricingPage);
     router.register('/course/:courseId', (params) => initCourseDetailPage(params.courseId));

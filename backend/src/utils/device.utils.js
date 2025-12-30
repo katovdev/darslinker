@@ -53,18 +53,18 @@ function createDeviceFingerprint(deviceInfo) {
 }
 
 /**
- * Session uchun expiry date yaratish (30 kun)
- * @returns {Date} - 30 kun keyingi Date object
+ * Session uchun expiry date yaratish (14 kun)
+ * @returns {Date} - 14 kun keyingi Date object
  */
 function getSessionExpiryDate() {
   try {
     const expiryDate = new Date();
-    expiryDate.setDate(expiryDate.getDate() + 30);
+    expiryDate.setDate(expiryDate.getDate() + 14);
 
     return expiryDate;
   } catch (error) {
     const fallbackDate = new Date();
-    fallbackDate.setDate(fallbackDate.getDate() + 30);
+    fallbackDate.setDate(fallbackDate.getDate() + 14);
 
     return fallbackDate;
   }
