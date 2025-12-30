@@ -1,6 +1,24 @@
 // Assignment player page - Use renderAssignmentContent for unified player
 import { t, initI18n } from '../../utils/i18n.js';
 
+function syncAssignmentCompletion(course, lesson) {
+  if (!course || !lesson) return;
+
+  if (window.markLessonComplete) {
+    window.markLessonComplete(course._id, lesson._id);
+  }
+
+  if (window.courseProgress && Array.isArray(window.courseProgress.completedLessons)) {
+    if (!window.courseProgress.completedLessons.includes(lesson._id)) {
+      window.courseProgress.completedLessons.push(lesson._id);
+    }
+  }
+
+  if (window.updateSidebarActiveLesson) {
+    window.updateSidebarActiveLesson(course, lesson);
+  }
+}
+
 export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
   // Initialize i18n
   initI18n();
@@ -632,7 +650,8 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .btn-primary:hover {
-        background: color-mix(in srgb, var(--primary-color) 85%, #000);
+        background: var(--primary-color);
+        opacity: 0.85;
       }
 
       .btn-primary:disabled {
@@ -648,7 +667,8 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       }
 
       .btn-secondary:hover {
-        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+        background: rgba(58, 56, 56, 0.65);
+        opacity: 1;
       }
 
       .upload-progress {
@@ -715,7 +735,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         border: 1px solid rgba(126, 162, 212, 0.3);
         border-radius: 12px;
         padding: 16px 20px;
-        color: #ffffff;
+        color: #111111;
         min-width: 300px;
         max-width: 400px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -778,7 +798,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
 
       .toast-message {
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.8);
+        color: #111111;
         line-height: 1.4;
       }
 
@@ -1192,6 +1212,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
     }
 
     console.log('📋 Assignment already submitted:', submission.fileName);
+    syncAssignmentCompletion(course, lesson);
   }
 
   // Mark assignment as submitted
@@ -1395,8 +1416,11 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
         showToast('Upload Failed', 'Failed to upload file. Please check your connection and try again.', 'error', 5000);
       };
 
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const uploadUrl = `${apiBaseUrl}/upload/document`;
+
       // Send request to upload endpoint
-      xhr.open('POST', 'http://localhost:8001/api/upload/document');
+      xhr.open('POST', uploadUrl);
 
       // Add auth header if available
       if (landingUser.token) {
@@ -1473,6 +1497,7 @@ export async function loadAssignmentPlayer(course, lesson, sidebarHtml) {
       // Mark as submitted and clear saved file data
       markAsSubmitted(uploadedFileUrl, uploadedFileName);
       clearSavedFile();
+      syncAssignmentCompletion(course, lesson);
 
       showToast('Assignment Submitted!', 'Your submission has been recorded successfully.', 'success', 3000);
       console.log('✅ Assignment submitted successfully!');
@@ -1910,7 +1935,8 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
       }
 
       .btn-primary:hover {
-        background: color-mix(in srgb, var(--primary-color) 85%, #000);
+        background: var(--primary-color);
+        opacity: 0.85;
       }
 
       .btn-primary:disabled {
@@ -1926,7 +1952,8 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
       }
 
       .btn-secondary:hover {
-        background: color-mix(in srgb, var(--primary-color) 10%, transparent);
+        background: rgba(58, 56, 56, 0.65);
+        opacity: 1;
       }
 
       .upload-progress {
@@ -1993,7 +2020,7 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
         border: 1px solid rgba(126, 162, 212, 0.3);
         border-radius: 12px;
         padding: 16px 20px;
-        color: #ffffff;
+        color: #111111;
         min-width: 300px;
         max-width: 400px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
@@ -2056,7 +2083,7 @@ export async function renderAssignmentContent(contentArea, course, lesson) {
 
       .toast-message {
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.8);
+        color: #111111;
         line-height: 1.4;
       }
 
@@ -2437,6 +2464,7 @@ async function initializeAssignmentFunctionality(course, lesson) {
     }
 
     console.log('📋 Assignment already submitted:', submission.fileName);
+    syncAssignmentCompletion(course, lesson);
   }
 
   function markAsSubmitted(fileUrl, fileName) {
@@ -2611,7 +2639,10 @@ async function initializeAssignmentFunctionality(course, lesson) {
         showToast('Upload Failed', 'Failed to upload file. Please check your connection and try again.', 'error', 5000);
       };
 
-      xhr.open('POST', 'http://localhost:8001/api/upload/document');
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const uploadUrl = `${apiBaseUrl}/upload/document`;
+
+      xhr.open('POST', uploadUrl);
 
       if (landingUser.token) {
         xhr.setRequestHeader('Authorization', 'Bearer ' + landingUser.token);
@@ -2684,6 +2715,7 @@ async function initializeAssignmentFunctionality(course, lesson) {
 
       markAsSubmitted(uploadedFileUrl, uploadedFileName);
       clearSavedFile();
+      syncAssignmentCompletion(course, lesson);
 
       showToast('Assignment Submitted!', 'Your submission has been recorded successfully.', 'success', 3000);
       console.log('✅ Assignment submitted successfully!');
