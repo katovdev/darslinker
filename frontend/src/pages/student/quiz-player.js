@@ -924,6 +924,18 @@ function getQuizActiveStyles() {
       border-color: var(--primary-color);
       background: var(--primary-color);
     }
+
+    .checkbox.checked::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 6px;
+      height: 10px;
+      border: solid #ffffff;
+      border-width: 0 2px 2px 0;
+      transform: translate(-50%, -55%) rotate(45deg);
+    }
     
     .checkbox:hover {
       border-color: var(--primary-color);
@@ -1188,11 +1200,7 @@ function renderQuizQuestions(questions) {
                    onclick="selectAnswer(${currentIndex}, ${aIndex})">
                 <div class="option-indicator">
                   ${isMultipleCorrect 
-                    ? `<div class="checkbox ${isSelected ? 'checked' : ''}">
-                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="opacity: ${isSelected ? '1' : '0'};">
-                           <polyline points="20,6 9,17 4,12"/>
-                         </svg>
-                       </div>`
+                    ? ''
                     : `<div class="radio ${isSelected ? 'checked' : ''}"></div>`
                   }
                 </div>
@@ -1308,12 +1316,15 @@ window.selectAnswer = function(questionIndex, answerIndex) {
       const options = currentQuestionContainer.querySelectorAll('.question-option');
       options.forEach((opt, idx) => {
         const checkbox = opt.querySelector('.checkbox');
+        const checkboxIcon = checkbox ? checkbox.querySelector('svg') : null;
         if (currentAnswers.includes(idx)) {
           opt.classList.add('selected');
           if (checkbox) checkbox.classList.add('checked');
+          if (checkboxIcon) checkboxIcon.style.opacity = '1';
         } else {
           opt.classList.remove('selected');
           if (checkbox) checkbox.classList.remove('checked');
+          if (checkboxIcon) checkboxIcon.style.opacity = '0';
         }
       });
     }
@@ -2076,6 +2087,18 @@ function renderQuizActiveContent(contentArea, lesson, questions) {
         background: var(--primary-color);
       }
 
+      .checkbox.checked::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 6px;
+        height: 10px;
+        border: solid #ffffff;
+        border-width: 0 2px 2px 0;
+        transform: translate(-50%, -55%) rotate(45deg);
+      }
+
       .checkbox:hover {
         border-color: var(--primary-color);
       }
@@ -2417,12 +2440,15 @@ function attachQuizContentEventListeners() {
         const options = currentQuestionContainer.querySelectorAll('.question-option');
         options.forEach((opt, idx) => {
           const checkbox = opt.querySelector('.checkbox');
+          const checkboxIcon = checkbox ? checkbox.querySelector('svg') : null;
           if (currentAnswers.includes(idx)) {
             opt.classList.add('selected');
             if (checkbox) checkbox.classList.add('checked');
+            if (checkboxIcon) checkboxIcon.style.opacity = '1';
           } else {
             opt.classList.remove('selected');
             if (checkbox) checkbox.classList.remove('checked');
+            if (checkboxIcon) checkboxIcon.style.opacity = '0';
           }
         });
       }

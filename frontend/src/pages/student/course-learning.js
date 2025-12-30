@@ -2473,6 +2473,8 @@ function updateSidebarActiveLesson(course, lesson) {
   }
 }
 
+window.updateSidebarActiveLesson = updateSidebarActiveLesson;
+
 // Sidebar toggle functionality for unified player
 window.togglePlayerSidebar = function() {
   const sidebar = document.getElementById('lessonSidebar');

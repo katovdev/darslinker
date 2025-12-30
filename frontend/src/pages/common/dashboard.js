@@ -7,6 +7,8 @@ import { showSuccessToast, showErrorToast, showInfoToast, showToast } from '../.
 import { config } from '../../utils/config.js';
 import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
+const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'Darslinker_sbot').replace(/^@/, '');
+
 export async function initDashboard(routeParams = {}) {
   console.log('=== Dashboard initializing ===');
 
@@ -1197,7 +1199,7 @@ window.openNewMeeting = function () {
 
 window.openTelegramBot = function () {
   // Open Telegram bot in new tab
-  window.open('https://t.me/darslinker_bot', '_blank');
+  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}`, '_blank');
 };
 
 window.editProfile = function () {
@@ -6007,7 +6009,7 @@ async function generateLandingPageHTML(teacher) {
                     showToast('Telegram botga /login yozing va kontaktingizni yuboring', 'success', 8000);
                     
                     // Show bot info modal
-                    const botUsername = 'darslinker_bot';
+                    const botUsername = TELEGRAM_BOT_USERNAME;
                     showBotInfoModal(botUsername, null);
                     
                     // Close login modal and open reset password modal
@@ -6564,8 +6566,10 @@ async function generateLandingPageHTML(teacher) {
         }
 
         function showBotInfoModal(botUsername, code) {
+            const resolvedBotUsername = botUsername || TELEGRAM_BOT_USERNAME;
             const infoModal = document.createElement('div');
             infoModal.className = 'bot-info-overlay';
+            infoModal.dataset.botUsername = resolvedBotUsername;
             infoModal.innerHTML = \`
                 <div class="bot-info-modal">
                     <div class="bot-info-header">
@@ -6573,7 +6577,7 @@ async function generateLandingPageHTML(teacher) {
                         <h3>Telegram Botga O'ting</h3>
                     </div>
                     <div class="bot-info-content">
-                        <p class="bot-info-text">Tasdiqlash kodi <strong>@\${botUsername}</strong> botga yuborildi</p>
+                        <p class="bot-info-text">Tasdiqlash kodi <strong>@\${resolvedBotUsername}</strong> botga yuborildi</p>
                         <div class="bot-info-steps">
                             <div class="bot-step">
                                 <span class="step-number">1</span>
@@ -6710,7 +6714,7 @@ async function generateLandingPageHTML(teacher) {
             if (modal) {
                 modal.remove();
                 // Redirect to Telegram bot
-                const botUsername = 'darslinker_bot';
+                const botUsername = modal.dataset.botUsername || TELEGRAM_BOT_USERNAME;
                 window.open(\`https://t.me/\${botUsername}\`, '_blank');
             }
         }
@@ -6784,7 +6788,7 @@ async function generateLandingPageHTML(teacher) {
                 const data = await response.json();
                 
                 if (data.success) {
-                    const botUsername = data.data.telegramBot;
+                    const botUsername = TELEGRAM_BOT_USERNAME || data.data.telegramBot;
                     const code = data.data.code; // Only in development
                     
                     // Show beautiful info modal
@@ -13291,8 +13295,18 @@ window.addLesson = function (type, dropdownLink, event) {
   }
 
   const moduleItem = dropdownLink.closest('.module-item');
-  const lessonsList = moduleItem.querySelector('.lessons-list');
-  const addDropdown = lessonsList.querySelector('.add-lesson-dropdown');
+  if (!moduleItem) {
+    console.error('Add lesson failed: module container not found.');
+    showErrorToast('Unable to add lesson. Please try again.');
+    return;
+  }
+  const lessonsList = moduleItem.querySelector('.lessons-list') || moduleItem.querySelector('.lessons-container');
+  const addDropdown = dropdownLink.closest('.add-lesson-dropdown') || moduleItem.querySelector('.add-lesson-dropdown');
+  if (!lessonsList || !addDropdown) {
+    console.error('Add lesson failed: lessons list or dropdown not found.');
+    showErrorToast('Unable to add lesson. Please try again.');
+    return;
+  }
 
   // Hide dropdown
   const dropdownMenu = dropdownLink.closest('.dropdown-menu');
@@ -14210,8 +14224,12 @@ window.addLesson = function (type, dropdownLink, event) {
       break;
   }
 
-  // Insert the form before the add dropdown
-  addDropdown.insertAdjacentHTML('beforebegin', lessonHTML);
+  // Insert the form in the correct lessons container
+  if (lessonsList.contains(addDropdown)) {
+    addDropdown.insertAdjacentHTML('beforebegin', lessonHTML);
+  } else {
+    lessonsList.insertAdjacentHTML('beforeend', lessonHTML);
+  }
 };
 
 // Save Lesson Function
@@ -20276,19 +20294,19 @@ window.openCreateCourse = async function (skipPathUpdate = false) {
                 <label class="field-label">${t('createCourse.courseType')}</label>
                 <div class="radio-group">
                   <label class="radio-option">
-                    <input type="radio" name="courseType" value="paid" checked />
+                    <input type="radio" name="courseType" value="paid" checked onchange="toggleCreatePricing(this)" />
                     <span class="radio-custom"></span>
                     <span>${t('createCourse.paid')}</span>
                   </label>
                   <label class="radio-option">
-                    <input type="radio" name="courseType" value="free" />
+                    <input type="radio" name="courseType" value="free" onchange="toggleCreatePricing(this)" />
                     <span class="radio-custom"></span>
                     <span>${t('createCourse.free')}</span>
                   </label>
                 </div>
               </div>
 
-              <div class="form-row">
+              <div class="form-row" id="createPricingFields">
               <div class="form-field">
                 <label class="field-label">${t('createCourse.coursePrice')}</label>
                 <input type="text" class="form-input" name="price" placeholder="${t('createCourse.coursePricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
@@ -21494,6 +21512,7 @@ function openCourseEditPage(courseData) {
 
   const userData = store.getState().user;
   const contentArea = document.querySelector('.figma-content-area');
+  const isDraftCourse = String(courseData.status || '').toLowerCase() === 'draft';
 
   if (!contentArea) {
     console.error('Content area not found');
@@ -21661,7 +21680,7 @@ function openCourseEditPage(courseData) {
             <div class="form-actions course-actions">
               <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
               <button type="submit" class="btn-secondary" name="action" value="draft">Save as Draft</button>
-              <button type="submit" class="btn-save" name="action" value="publish">Update Course</button>
+              <button type="submit" class="btn-save" name="action" value="publish">${isDraftCourse ? 'Publish Course' : 'Update Course'}</button>
             </div>
 
           </form>
@@ -22023,6 +22042,14 @@ window.togglePricing = function (radio) {
 // Toggle Pricing Fields for Edit Course
 window.toggleEditPricing = function (radio) {
   const pricingFields = document.getElementById('pricingFields');
+  if (pricingFields) {
+    pricingFields.style.display = radio.value === 'paid' ? 'flex' : 'none';
+  }
+};
+
+// Toggle Pricing Fields for Create Course
+window.toggleCreatePricing = function (radio) {
+  const pricingFields = document.getElementById('createPricingFields');
   if (pricingFields) {
     pricingFields.style.display = radio.value === 'paid' ? 'flex' : 'none';
   }
@@ -23117,7 +23144,7 @@ window.startNewMeeting = function () {
 // Open Telegram bot function
 window.openTelegramBot = function () {
   // Open Telegram bot in new tab
-  window.open('https://t.me/darslinker_bot', '_blank');
+  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}`, '_blank');
 };
 
 // Open create course function (if not already defined)
