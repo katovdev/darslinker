@@ -40,7 +40,7 @@ function generateRefreshToken(payload) {
     }
 
     return jwt.sign(payload, JWT_REFRESH_TOKEN_SECRET_KEY, {
-      expiresIn: JWT_REFRESH_TOKEN_EXPIRES_IN || "7d",
+      expiresIn: JWT_REFRESH_TOKEN_EXPIRES_IN || "14d",
     });
   } catch (error) {
     throw new Error(`Failed to generate refresh token: ${error.message}`);

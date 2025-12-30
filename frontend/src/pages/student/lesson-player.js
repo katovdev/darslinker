@@ -11,6 +11,11 @@ export async function initLessonPlayerPage(courseId, lessonId) {
     showErrorPage();
     return;
   }
+
+  const teacherId = courseData.course?.teacher?._id || courseData.course?.teacher;
+  if (teacherId) {
+    sessionStorage.setItem('currentTeacherId', teacherId);
+  }
   
   // Find the lesson
   let currentLesson = null;
@@ -511,6 +516,30 @@ function renderLessonViewPage(courseData, currentLesson) {
         flex-shrink: 0;
       }
 
+      .lesson-toast-message {
+        flex: 1;
+      }
+
+      .lesson-toast-action {
+        margin-left: auto;
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: opacity 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        white-space: nowrap;
+      }
+
+      .lesson-toast-action:hover {
+        opacity: 0.85;
+        background: rgba(255, 255, 255, 0.25);
+        border-color: rgba(255, 255, 255, 0.6);
+      }
+
       /* Right Side - Video Player */
       .lesson-view-content {
         background: #1a1a1a;
@@ -641,7 +670,7 @@ function renderLessonViewPage(courseData, currentLesson) {
 }
 
 // Show toast notification
-function showLessonToast(message) {
+function showLessonToast(message, withRegister = false) {
   const existingToast = document.querySelector('.lesson-toast');
   if (existingToast) {
     existingToast.remove();
@@ -654,7 +683,8 @@ function showLessonToast(message) {
       <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
       <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
     </svg>
-    <span>${message}</span>
+    <span class="lesson-toast-message">${message}</span>
+    ${withRegister ? '<button type="button" class="lesson-toast-action" onclick="goToRegisterFromLesson()">Ro&#39;yxatdan o&#39;tish</button>' : ''}
   `;
   
   document.body.appendChild(toast);
@@ -668,7 +698,20 @@ function showLessonToast(message) {
 
 // Show locked lesson toast
 window.showLessonLockedToast = function() {
-  showLessonToast('Ro\'yxatdan o\'ting va kursni to\'liq ko\'ring!');
+  showLessonToast('Ro\'yxatdan o\'ting va kursni to\'liq ko\'ring!', true);
+};
+
+window.goToRegisterFromLesson = function() {
+  const teacherId = sessionStorage.getItem('currentTeacherId');
+  sessionStorage.setItem('returnUrl', window.location.pathname);
+  sessionStorage.setItem('openRegisterModal', 'true');
+  sessionStorage.removeItem('openLoginModal');
+  if (teacherId) {
+    window.location.href = `/teacher/${teacherId}`;
+  } else {
+    window.location.href = '/register';
+  }
+  document.querySelector('.lesson-toast')?.remove();
 };
 
 // Toggle sidebar
