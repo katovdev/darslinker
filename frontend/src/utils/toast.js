@@ -26,7 +26,8 @@ const TOAST_TYPES = {
     className: 'toast-error',
     duration: 5000,
     color: '#EF4444',
-    bgColor: '#FEF2F2'
+    bgColor: '#FEF2F2',
+    showClose: false
   },
   warning: {
     icon: '⚠',
@@ -81,7 +82,7 @@ class ToastManager {
       position: fixed;
       top: 20px;
       right: 20px;
-      z-index: 10000;
+      z-index: 11000;
       max-width: 400px;
       width: 100%;
       pointer-events: none;
@@ -276,6 +277,12 @@ class ToastManager {
    */
   show(message, type = 'info', duration = null, actions = []) {
     try {
+      if (!this.container || !document.body.contains(this.container)) {
+        this.setupContainer();
+      }
+      if (!document.getElementById('toast-styles')) {
+        this.injectStyles();
+      }
       // Validate inputs
       if (!message || typeof message !== 'string') {
         logger.warn('Invalid toast message:', message);
@@ -315,12 +322,16 @@ class ToastManager {
       let toastContent = `
         <div class="toast-icon">${config.iconSvg}</div>
         <div class="toast-message">${sanitizedMessage}</div>
-        <button class="toast-close" aria-label="${t('common.close') || 'Close'}" type="button">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-            <path d="M13 1L1 13M1 1l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </button>
       `;
+      if (config.showClose !== false) {
+        toastContent += `
+          <button class="toast-close" aria-label="${t('common.close') || 'Close'}" type="button">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <path d="M13 1L1 13M1 1l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        `;
+      }
 
       // Add progress bar for timed toasts
       if (toastDuration > 0) {

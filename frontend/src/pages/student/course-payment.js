@@ -2,6 +2,28 @@
 import { t } from '../../utils/i18n.js';
 import { showSuccessToast, showErrorToast } from '../../utils/toast.js';
 
+function getStoredStudent() {
+  const storedUsers = [
+    localStorage.getItem('currentUser'),
+    localStorage.getItem('auth_user'),
+    localStorage.getItem('user'),
+    sessionStorage.getItem('landingUser'),
+    sessionStorage.getItem('currentUser'),
+  ];
+
+  for (const rawUser of storedUsers) {
+    if (!rawUser) continue;
+    try {
+      const user = JSON.parse(rawUser);
+      if (user._id || user.id) return user;
+    } catch (error) {
+      continue;
+    }
+  }
+
+  return null;
+}
+
 export async function initCoursePaymentPage(courseId) {
   console.log('💳 Loading course payment page for:', courseId);
 
@@ -40,12 +62,13 @@ export async function initCoursePaymentPage(courseId) {
     const course = result.course;
 
     // Check if student already submitted payment
-    const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
+    const landingUser = getStoredStudent() || {};
     let paymentStatus = null;
     
-    if (landingUser._id) {
+    const studentId = landingUser._id || landingUser.id;
+    if (studentId) {
       try {
-        const statusResponse = await fetch(`${apiBaseUrl}/payments/student/${landingUser._id}/course/${courseId}`);
+        const statusResponse = await fetch(`${apiBaseUrl}/payments/student/${studentId}/course/${courseId}`);
         const statusResult = await statusResponse.json();
         if (statusResult.success && statusResult.payment) {
           paymentStatus = statusResult.payment;
@@ -763,8 +786,9 @@ window.submitPayment = async function() {
 
   try {
     // Get student ID
-    const landingUser = JSON.parse(sessionStorage.getItem('landingUser') || '{}');
-    if (!landingUser._id) {
+    const landingUser = getStoredStudent() || {};
+    const studentId = landingUser._id || landingUser.id;
+    if (!studentId) {
       throw new Error('Student not found');
     }
 
@@ -785,7 +809,7 @@ window.submitPayment = async function() {
 
     // Submit payment
     const paymentData = {
-      studentId: landingUser._id,
+      studentId,
       courseId: window.currentCourse._id,
       teacherId: window.currentCourse.teacher._id || window.currentCourse.teacher,
       amount: window.currentCourse.price || 0,

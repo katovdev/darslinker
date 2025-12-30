@@ -7,7 +7,9 @@ import { showSuccessToast, showErrorToast, showInfoToast, showToast } from '../.
 import { config } from '../../utils/config.js';
 import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
-export async function initDashboard() {
+const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'Darslinker_sbot').replace(/^@/, '');
+
+export async function initDashboard(routeParams = {}) {
   console.log('=== Dashboard initializing ===');
 
   // Initialize i18n and theme
@@ -93,7 +95,7 @@ export async function initDashboard() {
     lastName: userData.lastName,
     fullData: userData
   });
-  await renderTeacherDashboard(userData);
+  await renderTeacherDashboard(userData, routeParams);
 
   // Original logic (commented out for testing):
   // if (userData.role === 'teacher') {
@@ -122,7 +124,7 @@ function cleanupPageStyles() {
   });
 }
 
-async function renderTeacherDashboard(user) {
+async function renderTeacherDashboard(user, routeParams = {}) {
   console.log('=== renderTeacherDashboard user data ===', user);
   console.log('specialization:', user.specialization);
   console.log('city:', user.city);
@@ -311,10 +313,10 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="general-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="general-children">
-              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event); loadMainDashboard()">${t('sidebar.dashboard')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">${t('sidebar.profile')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openLandingSettings()">Landing</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">${t('sidebar.messages')}</a>
+              <a href="#" class="figma-menu-child active" data-path="" onclick="setActiveChild(this, event); loadMainDashboard()">${t('sidebar.dashboard')}</a>
+              <a href="#" class="figma-menu-child" data-path="profile" onclick="setActiveChild(this, event); openEditProfile()">${t('sidebar.profile')}</a>
+              <a href="#" class="figma-menu-child" data-path="landing" onclick="setActiveChild(this, event); openLandingSettings()">Landing</a>
+              <a href="#" class="figma-menu-child" data-path="messages" onclick="setActiveChild(this, event); openMessagesPage()">${t('sidebar.messages')}</a>
             </div>
           </div>
 
@@ -325,10 +327,10 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="content-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="content-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">${t('sidebar.createCourse')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">${t('sidebar.myCourses')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">${t('sidebar.finance')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">${t('sidebar.assignments')}</a>
+              <a href="#" class="figma-menu-child" data-path="create-course" onclick="setActiveChild(this, event); openCreateCourse()">${t('sidebar.createCourse')}</a>
+              <a href="#" class="figma-menu-child" data-path="my-courses" onclick="setActiveChild(this, event); openMyCourses()">${t('sidebar.myCourses')}</a>
+              <a href="#" class="figma-menu-child" data-path="finance" onclick="setActiveChild(this, event); openFinancePage()">${t('sidebar.finance')}</a>
+              <a href="#" class="figma-menu-child" data-path="assignments" onclick="setActiveChild(this, event); openAssignmentsPage()">${t('sidebar.assignments')}</a>
             </div>
           </div>
 
@@ -339,7 +341,7 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="ai-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="ai-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAIAssistantPage()">${t('sidebar.aiAssistant')}</a>
+              <a href="#" class="figma-menu-child" data-path="ai-assistant" onclick="setActiveChild(this, event); openAIAssistantPage()">${t('sidebar.aiAssistant')}</a>
             </div>
           </div>
 
@@ -350,10 +352,10 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="analytics-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="analytics-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.students')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
+              <a href="#" class="figma-menu-child" data-path="quiz-analytics" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
+              <a href="#" class="figma-menu-child" data-path="rating-comments" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
+              <a href="#" class="figma-menu-child" data-path="students" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.students')}</a>
+              <a href="#" class="figma-menu-child" data-path="progress" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
             </div>
           </div>
 
@@ -364,7 +366,7 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="rolls-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="rolls-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openSubAdmin(); return false;">${t('sidebar.subAdmin')}</a>
+              <a href="#" class="figma-menu-child" data-path="sub-admin" onclick="setActiveChild(this, event); openSubAdmin(); return false;">${t('sidebar.subAdmin')}</a>
             </div>
           </div>
 
@@ -375,8 +377,8 @@ async function renderTeacherDashboard(user) {
               <span class="figma-menu-arrow" id="settings-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="settings-children">
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openLanguagePage(); return false;">${t('sidebar.language')}</a>
-              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCustomizeUI(); return false;">${t('sidebar.customizeUI')}</a>
+              <a href="#" class="figma-menu-child" data-path="language" onclick="setActiveChild(this, event); openLanguagePage(); return false;">${t('sidebar.language')}</a>
+              <a href="#" class="figma-menu-child" data-path="customize-ui" onclick="setActiveChild(this, event); openCustomizeUI(); return false;">${t('sidebar.customizeUI')}</a>
             </div>
           </div>
 
@@ -722,13 +724,15 @@ async function renderTeacherDashboard(user) {
     });
   }, 100);
 
-  // Load dashboard data from API
-  if (typeof window.loadMainDashboard === 'function') {
-    window.loadMainDashboard();
-  }
+  // Load initial section based on the current path
+  const initialSection = routeParams.section || routeParams.subsection || getDashboardSectionFromPath();
+  handleInitialDashboardSection(initialSection || '');
 
   // Set up event listeners
   setupTeacherEventListeners();
+
+  // Guard against accidental back navigation/logout without confirmation
+  setupLogoutGuard();
 
   // Load notification count after dashboard renders
   setTimeout(() => {
@@ -1120,19 +1124,50 @@ async function handleCreateCourse(e) {
 }
 
 // Global functions for onclick handlers
-window.handleLogout = async function () {
+window.performLogout = async function () {
   try {
     await apiService.logout();
-    localStorage.removeItem('accessToken');
-    store.setState({ user: null, isAuthenticated: false });
-    router.navigate('/login');
   } catch (error) {
     console.error('Logout error:', error);
-    // Force logout even if API call fails
-    localStorage.removeItem('accessToken');
+  } finally {
+    // Always clear local data and navigate away
+    localStorage.clear();
+    sessionStorage.clear();
     store.setState({ user: null, isAuthenticated: false });
     router.navigate('/login');
   }
+};
+
+window.confirmLogout = function () {
+  const content = `
+    <div style="padding: 8px 0; color: var(--text-primary);">
+      <p style="margin: 0 0 16px;">Are you sure you want to logout?</p>
+      <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
+        <button onclick="closeModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Cancel</button>
+        <button onclick="performLogout()" style="background: var(--primary-color); border: 1px solid var(--primary-color); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Logout</button>
+      </div>
+    </div>
+  `;
+  showModal('Confirm Logout', content);
+};
+
+window.handleLogout = function () {
+  window.confirmLogout();
+};
+
+window.logoutGuardHandler = function (event) {
+  if (event?.state && event.state.logoutGuard) {
+    event.preventDefault?.();
+    window.confirmLogout();
+    history.pushState({ logoutGuard: true }, '', window.location.href);
+  }
+};
+
+window.setupLogoutGuard = function () {
+  if (window.logoutGuardActive) return;
+  window.logoutGuardActive = true;
+  history.pushState({ logoutGuard: true }, '', window.location.href);
+  window.addEventListener('popstate', window.logoutGuardHandler);
 };
 
 // openCreateCourse is defined later in the file (line ~9692)
@@ -1164,14 +1199,17 @@ window.openNewMeeting = function () {
 
 window.openTelegramBot = function () {
   // Open Telegram bot in new tab
-  window.open('https://t.me/darslinker_bot', '_blank');
+  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}`, '_blank');
 };
 
 window.editProfile = function () {
   openEditProfile();
 };
 
-window.openEditProfile = function () {
+window.openEditProfile = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('profile');
+  }
   // Get fresh user data from state
   const user = store.getState().user;
 
@@ -1401,7 +1439,10 @@ window.openEditProfile = function () {
 };
 
 // Open Landing Page Settings
-window.openLandingSettings = async function () {
+window.openLandingSettings = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('landing');
+  }
   // Get fresh user data from state
   const user = store.getState().user;
 
@@ -1515,6 +1556,7 @@ function getLandingSettingsHTML(user, landingData = null) {
     title: landingData?.title || `${user.firstName} ${user.lastName}'s Courses`,
     subtitle: landingData?.subtitle || user.specialization || 'Expert Instructor',
     description: landingData?.description || 'Discover amazing courses and start your learning journey today.',
+    logoText: landingData?.logoText || user.landingPageSettings?.logoText || 'DarsLinker',
     heroText: landingData?.heroText || 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING',
     heroImage: landingData?.heroImage || user.heroImage || '',
     primaryColor: landingData?.primaryColor || '#7ea2d4',
@@ -1585,7 +1627,8 @@ function getLandingSettingsHTML(user, landingData = null) {
         }
 
         .copy-link-btn:hover {
-          background: var(--primary-color-80);
+          background: var(--primary-color);
+          opacity: 0.85;
         }
 
         .profile-upload-section {
@@ -1656,6 +1699,17 @@ function getLandingSettingsHTML(user, landingData = null) {
 
         .form-input:focus, .form-textarea:focus {
           border-color: var(--primary-color);
+        }
+
+        /* Create Course number inputs: hide native spinners (using text inputs) */
+        input.form-input[type="number"]::-webkit-outer-spin-button,
+        input.form-input[type="number"]::-webkit-inner-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+        input.form-input[type="number"] {
+          -moz-appearance: textfield;
+          appearance: textfield;
         }
 
         .form-textarea {
@@ -5593,7 +5647,6 @@ async function generateLandingPageHTML(teacher) {
                             </div>
                             
                             <button class="modal-button" onclick="handleLogin()" data-i18n="loginButton">Kirish</button>
-                            <button class="modal-button back-button" onclick="handleForgotPassword()" data-i18n="forgotPassword">Parolni unutdingizmi?</button>
                         </div>
                     </div>
                 </div>
@@ -5956,7 +6009,7 @@ async function generateLandingPageHTML(teacher) {
                     showToast('Telegram botga /login yozing va kontaktingizni yuboring', 'success', 8000);
                     
                     // Show bot info modal
-                    const botUsername = 'darslinker_bot';
+                    const botUsername = TELEGRAM_BOT_USERNAME;
                     showBotInfoModal(botUsername, null);
                     
                     // Close login modal and open reset password modal
@@ -6513,8 +6566,10 @@ async function generateLandingPageHTML(teacher) {
         }
 
         function showBotInfoModal(botUsername, code) {
+            const resolvedBotUsername = botUsername || TELEGRAM_BOT_USERNAME;
             const infoModal = document.createElement('div');
             infoModal.className = 'bot-info-overlay';
+            infoModal.dataset.botUsername = resolvedBotUsername;
             infoModal.innerHTML = \`
                 <div class="bot-info-modal">
                     <div class="bot-info-header">
@@ -6522,7 +6577,7 @@ async function generateLandingPageHTML(teacher) {
                         <h3>Telegram Botga O'ting</h3>
                     </div>
                     <div class="bot-info-content">
-                        <p class="bot-info-text">Tasdiqlash kodi <strong>@\${botUsername}</strong> botga yuborildi</p>
+                        <p class="bot-info-text">Tasdiqlash kodi <strong>@\${resolvedBotUsername}</strong> botga yuborildi</p>
                         <div class="bot-info-steps">
                             <div class="bot-step">
                                 <span class="step-number">1</span>
@@ -6659,7 +6714,7 @@ async function generateLandingPageHTML(teacher) {
             if (modal) {
                 modal.remove();
                 // Redirect to Telegram bot
-                const botUsername = 'darslinker_bot';
+                const botUsername = modal.dataset.botUsername || TELEGRAM_BOT_USERNAME;
                 window.open(\`https://t.me/\${botUsername}\`, '_blank');
             }
         }
@@ -6733,7 +6788,7 @@ async function generateLandingPageHTML(teacher) {
                 const data = await response.json();
                 
                 if (data.success) {
-                    const botUsername = data.data.telegramBot;
+                    const botUsername = TELEGRAM_BOT_USERNAME || data.data.telegramBot;
                     const code = data.data.code; // Only in development
                     
                     // Show beautiful info modal
@@ -7114,13 +7169,66 @@ function reloadDashboard() {
   location.reload();
 }
 
-// Load main dashboard content (without reloading entire page)
-function loadMainDashboard() {
-  // This function should contain the main dashboard loading logic
-  console.log('Loading main dashboard...');
+const dashboardSectionHandlers = {
+  '': () => window.loadMainDashboard?.(),
+  dashboard: () => window.loadMainDashboard?.(),
+  profile: () => window.openEditProfile?.(),
+  landing: () => window.openLandingSettings?.(),
+  messages: () => window.openMessagesPage?.(),
+  'create-course': () => window.openCreateCourse?.(),
+  'my-courses': () => window.openMyCourses?.(),
+  finance: () => window.openFinancePage?.(),
+  assignments: () => window.openAssignmentsPage?.(),
+  'quiz-analytics': () => window.openQuizAnalytics?.(),
+  'rating-comments': () => window.openRatingComments?.(),
+  students: () => window.openStudentsAnalytics?.(),
+  progress: () => window.openProgress?.(),
+  'sub-admin': () => window.openSubAdmin?.(),
+  language: () => window.openLanguagePage?.(),
+  'customize-ui': () => window.openCustomizeUI?.(),
+  subscription: () => window.openMySubscription?.(),
+  'ai-assistant': () => window.openAIAssistantPage?.()
+};
+
+function buildDashboardPath(sectionSlug = '') {
+  const cleanSlug = (sectionSlug || '').replace(/^\/+|\/+$/g, '');
+  return cleanSlug ? `/dashboard/${cleanSlug}` : '/dashboard';
 }
 
-// Additional dashboard functions can be added here
+function getDashboardSectionFromPath() {
+  const parts = window.location.pathname.split('/').filter(Boolean);
+  if (parts[0] !== 'dashboard') return '';
+  return parts[1] || '';
+}
+
+window.navigateDashboardSection = function (sectionSlug = '', actionFn, options = {}) {
+  const { skipPathUpdate = false, skipAction = false } = options;
+  const targetPath = buildDashboardPath(sectionSlug);
+
+  if (!skipPathUpdate && window.location.pathname !== targetPath) {
+    const state = window.history.state && window.history.state.logoutGuard ? { logoutGuard: true } : {};
+    window.history.pushState(state, '', targetPath);
+  }
+
+  if (skipAction) return;
+
+  if (typeof actionFn === 'function') {
+    actionFn();
+    return;
+  }
+
+  const handler = dashboardSectionHandlers[sectionSlug] || dashboardSectionHandlers[''];
+  if (handler) handler();
+};
+
+function updateDashboardPathOnly(sectionSlug = '') {
+  navigateDashboardSection(sectionSlug, null, { skipAction: true });
+}
+
+function handleInitialDashboardSection(sectionSlug = '') {
+  const handler = dashboardSectionHandlers[sectionSlug] || dashboardSectionHandlers[''];
+  if (handler) handler();
+}
 
 // Helper function to update active menu item
 function updateActiveMenuItem(itemName) {
@@ -7133,7 +7241,10 @@ function updateActiveMenuItem(itemName) {
 }
 
 // Open Sub Admin Page
-window.openSubAdmin = function () {
+window.openSubAdmin = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('sub-admin');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -7429,6 +7540,16 @@ function getSubAdminHTML() {
           color: rgba(156, 163, 175, 0.8);
           margin-top: 4px;
         }
+        .admin-error {
+          color: #dc3545;
+          font-size: 12px;
+          margin-top: 4px;
+          margin-left: 2px;
+          display: none;
+        }
+        .admin-error.show {
+          display: block;
+        }
         .modal-actions {
           display: flex;
           gap: 12px;
@@ -7568,6 +7689,7 @@ ${t('subAdmin.addSubadmin')}
                        autocomplete="off"
                        oninput="formatPhoneNumber(this)" required>
               </div>
+              <div class="admin-error" id="adminPhoneError"></div>
             </div>
 
             <div class="form-group">
@@ -7577,6 +7699,7 @@ ${t('subAdmin.addSubadmin')}
                      autocomplete="new-password"
                      required minlength="6">
               <div class="password-requirements">At least 6 characters</div>
+              <div class="admin-error" id="adminPasswordError"></div>
             </div>
 
             <div class="form-group">
@@ -7585,6 +7708,7 @@ ${t('subAdmin.addSubadmin')}
                      placeholder="Confirm your password"
                      autocomplete="new-password"
                      required minlength="6">
+              <div class="admin-error" id="adminConfirmPasswordError"></div>
             </div>
 
             <div class="modal-actions">
@@ -7609,6 +7733,12 @@ window.openAddAdminModal = function () {
     if (sidebar) {
       sidebar.classList.add('sidebar-hidden');
     }
+
+    // Bind validation once
+    if (!modal.dataset.validationBound) {
+      bindAddAdminValidation();
+      modal.dataset.validationBound = 'true';
+    }
   }
 };
 
@@ -7632,6 +7762,13 @@ window.closeAddAdminModal = function () {
     document.getElementById('adminPassword').value = '';
     const confirmPasswordInput = document.getElementById('adminPasswordConfirm');
     if (confirmPasswordInput) confirmPasswordInput.value = '';
+    ['adminPhoneError', 'adminPasswordError', 'adminConfirmPasswordError'].forEach(id => {
+      const errorEl = document.getElementById(id);
+      if (errorEl) {
+        errorEl.textContent = '';
+        errorEl.classList.remove('show');
+      }
+    });
 
     // Reset submit button
     const submitBtn = document.getElementById('submitBtn');
@@ -7640,35 +7777,127 @@ window.closeAddAdminModal = function () {
   }
 };
 
+function showAdminError(el, message) {
+  if (!el) return;
+  el.textContent = message;
+  el.classList.add('show');
+}
+
+function hideAdminError(el) {
+  if (!el) return;
+  el.textContent = '';
+  el.classList.remove('show');
+}
+
+function validateAdminPhone(value, errorEl) {
+  const cleaned = (value || '').replace(/\s/g, '');
+  if (!cleaned) {
+    showAdminError(errorEl, 'Phone number is required');
+    return false;
+  }
+  if (!/^[0-9]{9}$/.test(cleaned)) {
+    showAdminError(errorEl, 'Phone number must be exactly 9 digits');
+    return false;
+  }
+  hideAdminError(errorEl);
+  return true;
+}
+
+function validateAdminPassword(password, errorEl) {
+  if (!password) {
+    showAdminError(errorEl, 'Password is required');
+    return false;
+  }
+  if (password.length < 6) {
+    showAdminError(errorEl, 'Password must be at least 6 characters');
+    return false;
+  }
+  hideAdminError(errorEl);
+  return true;
+}
+
+function validateAdminConfirmPassword(password, confirmPassword, errorEl) {
+  if (!confirmPassword) {
+    showAdminError(errorEl, 'Please confirm your password');
+    return false;
+  }
+  if (password !== confirmPassword) {
+    showAdminError(errorEl, 'Passwords do not match');
+    return false;
+  }
+  hideAdminError(errorEl);
+  return true;
+}
+
+function bindAddAdminValidation() {
+  const phoneInput = document.getElementById('adminPhone');
+  const passwordInput = document.getElementById('adminPassword');
+  const confirmPasswordInput = document.getElementById('adminPasswordConfirm');
+  const phoneError = document.getElementById('adminPhoneError');
+  const passwordError = document.getElementById('adminPasswordError');
+  const confirmPasswordError = document.getElementById('adminConfirmPasswordError');
+
+  if (phoneInput) {
+    phoneInput.addEventListener('input', () => {
+      if (typeof window.formatPhoneNumber === 'function') {
+        window.formatPhoneNumber(phoneInput);
+      }
+      validateAdminPhone(phoneInput.value, phoneError);
+    });
+    phoneInput.addEventListener('blur', () => validateAdminPhone(phoneInput.value, phoneError));
+  }
+
+  if (passwordInput) {
+    passwordInput.addEventListener('input', () => validateAdminPassword(passwordInput.value, passwordError));
+    passwordInput.addEventListener('blur', () => validateAdminPassword(passwordInput.value, passwordError));
+  }
+
+  if (confirmPasswordInput) {
+    const handler = () => validateAdminConfirmPassword(passwordInput.value, confirmPasswordInput.value, confirmPasswordError);
+    confirmPasswordInput.addEventListener('input', handler);
+    confirmPasswordInput.addEventListener('blur', handler);
+  }
+}
+
 // Submit new admin
 window.submitNewAdmin = async function (event) {
   event.preventDefault();
 
   const submitBtn = document.getElementById('submitBtn');
   const originalText = submitBtn.textContent;
+  const phoneError = document.getElementById('adminPhoneError');
+  const passwordError = document.getElementById('adminPasswordError');
+  const confirmPasswordError = document.getElementById('adminConfirmPasswordError');
+
+  const clearError = (el) => {
+    if (el) {
+      el.textContent = '';
+      el.classList.remove('show');
+    }
+  };
+  [phoneError, passwordError, confirmPasswordError].forEach(clearError);
+
+  const fullName = document.getElementById('adminName').value.trim();
+  const phone = document.getElementById('adminPhone').value.trim();
+  const cleanedPhone = phone.replace(/\s/g, '');
+  const password = document.getElementById('adminPassword').value;
+  const confirmPassword = document.getElementById('adminPasswordConfirm').value;
+
+  const isPhoneValid = validateAdminPhone(cleanedPhone, phoneError);
+  const isPasswordValid = validateAdminPassword(password, passwordError);
+  const isConfirmValid = validateAdminConfirmPassword(password, confirmPassword, confirmPasswordError);
+
+  if (!isPhoneValid || !isPasswordValid || !isConfirmValid) {
+    return;
+  }
 
   try {
     // Show loading state
     submitBtn.disabled = true;
     submitBtn.textContent = 'Adding...';
 
-    const fullName = document.getElementById('adminName').value.trim();
-    const phone = document.getElementById('adminPhone').value.trim();
-    const password = document.getElementById('adminPassword').value;
-    const confirmPassword = document.getElementById('adminPasswordConfirm').value;
-
-    // Validate passwords match
-    if (password !== confirmPassword) {
-      throw new Error('Passwords do not match');
-    }
-
-    // Validate phone format (must be 9 digits)
-    if (!/^[0-9]{9}$/.test(phone.replace(/\s/g, ''))) {
-      throw new Error('Phone number must be exactly 9 digits');
-    }
-
     // Format phone with +998 prefix
-    const formattedPhone = '+998' + phone.replace(/\s/g, '');
+    const formattedPhone = '+998' + cleanedPhone;
 
     // Get current user data
     const userData = JSON.parse(localStorage.getItem('currentUser'));
@@ -8088,7 +8317,10 @@ function createSubAdminCard(subAdmin) {
 
 
 // Open Language Page
-window.openLanguagePage = function () {
+window.openLanguagePage = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('language');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -8289,7 +8521,10 @@ window.applyLanguageChanges = function () {
 };
 
 // Open Customize UI Page
-window.openCustomizeUI = function () {
+window.openCustomizeUI = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('customize-ui');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -8916,23 +9151,37 @@ window.applyPrimaryColor = function (color) {
     .edit-btn,
     .promo-edit-btn,
     .edit-bio-btn,
-    .figma-header-buttons button,
-    .figma-header-buttons .figma-btn,
-    .figma-btn-primary,
-    .save-profile-btn,
-    button[onclick*="openEditProfile"],
-    button[onclick*="openCustomizeUI"],
-    button[onclick*="customizeUI"],
-    button[onclick*="openCreateCourse"],
-    button[onclick*="saveProfile"] {
+    .save-profile-btn {
       border-color: ${color} !important;
       color: ${color} !important;
     }
-    
-    /* New Course button - transparent background like other buttons */
-    .figma-btn-primary:not(.edit-profile-form button[type="submit"]),
-    button[onclick*="openCreateCourse"] {
+
+    /* Header buttons (non-primary/non-logout) keep outline with primary hover */
+    .figma-header-buttons .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout) {
       background: transparent !important;
+      border-color: rgba(255, 255, 255, 0.65) !important;
+      color: #ffffff !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .figma-header-buttons .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout):hover {
+      border-color: ${color} !important;
+      background: rgba(${r}, ${g}, ${b}, 0.12) !important;
+      color: #ffffff !important;
+    }
+
+    /* Inline edit buttons match header styling */
+    .edit-bio-btn {
+      background: transparent !important;
+      border-color: rgba(255, 255, 255, 0.65) !important;
+      color: #ffffff !important;
+      transition: all 0.2s ease !important;
+    }
+
+    .edit-bio-btn:hover {
+      border-color: ${color} !important;
+      background: rgba(${r}, ${g}, ${b}, 0.12) !important;
+      color: #ffffff !important;
     }
     
     /* Create Group button - use dynamic color background */
@@ -8960,9 +9209,7 @@ window.applyPrimaryColor = function (color) {
     
     .action-btn:hover,
     .grade-btn:hover,
-    .figma-header-buttons .figma-btn:hover,
-    .figma-btn-primary:hover,
-    button[onclick*="openCreateCourse"]:hover {
+    .figma-header-buttons .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout):hover {
       background: rgba(${r}, ${g}, ${b}, 0.1) !important;
     }
     
@@ -9028,13 +9275,17 @@ window.applyPrimaryColor = function (color) {
 
 // Load saved primary color from localStorage
 window.loadSavedPrimaryColor = function () {
+  const isValidHex = (value) => /^#[0-9A-F]{6}$/i.test(value);
+  const themeColor = getTheme()?.primaryColor;
   const savedColor = localStorage.getItem('primaryColor');
-  if (savedColor && /^#[0-9A-F]{6}$/i.test(savedColor)) {
-    applyPrimaryColor(savedColor);
-    console.log('Loaded saved primary color:', savedColor);
-  } else {
-    console.log('No saved color, using default: #7ea2d4');
-  }
+  const defaultColor = '#7ea2d4';
+  const colorToApply = isValidHex(themeColor)
+    ? themeColor
+    : (isValidHex(savedColor) ? savedColor : defaultColor);
+
+  applyPrimaryColor(colorToApply);
+  localStorage.setItem('primaryColor', colorToApply);
+  console.log('Loaded primary color:', colorToApply);
 };
 
 // Update color from picker
@@ -9300,7 +9551,10 @@ window.saveCustomization = function () {
 };
 
 // Open My Subscription Page
-window.openMySubscription = function () {
+window.openMySubscription = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('subscription');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -9608,7 +9862,10 @@ window.payNow = function () {
 };
 
 // Open Progress Page
-window.openProgress = async function () {
+window.openProgress = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('progress');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -10601,7 +10858,10 @@ window.loadMoreProgress = function () {
 };
 
 // Open Students Analytics Page
-window.openStudentsAnalytics = function () {
+window.openStudentsAnalytics = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('students');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -11372,7 +11632,10 @@ window.loadMoreStudents = function () {
 };
 
 // Open Rating & Comments Page
-window.openRatingComments = function () {
+window.openRatingComments = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('rating-comments');
+  }
   // Show coming soon toast
   showInfoToast(t('comingSoon.ratingComments'));
   return;
@@ -12019,6 +12282,11 @@ window.setActiveChild = function (element, event) {
   // Add active to clicked element
   element.classList.add('active');
 
+  // Update URL for SPA navigation without re-rendering
+  if (element?.dataset?.path !== undefined) {
+    navigateDashboardSection(element.dataset.path, null, { skipAction: true });
+  }
+
   // Don't navigate or reload - let the onclick handler do its job
   return false;
 };
@@ -12035,8 +12303,11 @@ window.backToDashboard = function () {
     console.log('💾 User data saved before reload:', currentUser);
   }
 
-  // Reload dashboard to show updated data
-  location.reload();
+  navigateDashboardSection('', () => {
+    if (typeof window.loadMainDashboard === 'function') {
+      window.loadMainDashboard();
+    }
+  });
 };
 
 // Load main dashboard content (without reloading entire page)
@@ -12772,7 +13043,10 @@ async function handleProfileSave(e) {
 }
 
 // Open Messages Page
-window.openMessagesPage = function () {
+window.openMessagesPage = function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('messages');
+  }
   // Show coming soon toast
   showInfoToast(t('comingSoon.messages'));
   return;
@@ -13021,8 +13295,18 @@ window.addLesson = function (type, dropdownLink, event) {
   }
 
   const moduleItem = dropdownLink.closest('.module-item');
-  const lessonsList = moduleItem.querySelector('.lessons-list');
-  const addDropdown = lessonsList.querySelector('.add-lesson-dropdown');
+  if (!moduleItem) {
+    console.error('Add lesson failed: module container not found.');
+    showErrorToast('Unable to add lesson. Please try again.');
+    return;
+  }
+  const lessonsList = moduleItem.querySelector('.lessons-list') || moduleItem.querySelector('.lessons-container');
+  const addDropdown = dropdownLink.closest('.add-lesson-dropdown') || moduleItem.querySelector('.add-lesson-dropdown');
+  if (!lessonsList || !addDropdown) {
+    console.error('Add lesson failed: lessons list or dropdown not found.');
+    showErrorToast('Unable to add lesson. Please try again.');
+    return;
+  }
 
   // Hide dropdown
   const dropdownMenu = dropdownLink.closest('.dropdown-menu');
@@ -13060,6 +13344,33 @@ window.addLesson = function (type, dropdownLink, event) {
             color: var(--text-primary);
             font-size: 14px;
             font-weight: 500;
+          }
+          .lesson-form .input-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+          }
+          .lesson-form .input-error.show {
+            display: block;
+          }
+          .lesson-form .input-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+          }
+          .lesson-form .input-error.show {
+            display: block;
+          }
+          .lesson-form .input-error {
+            color: #dc3545;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+          }
+          .lesson-form .input-error.show {
+            display: block;
           }
           .lesson-form .lesson-title-input {
             width: 100%;
@@ -13169,8 +13480,10 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+            opacity: 0.9;
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -13184,9 +13497,27 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--border-hover);
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: none;
+            box-shadow: none;
+          }
+          /* Unified hover behavior */
+          .lesson-form .save-lesson-btn:hover,
+          .lesson-form .save-lesson-btn:focus {
+            opacity: 0.9 !important;
+            background: var(--primary-color) !important;
+            transform: none !important;
+            box-shadow: none !important;
+          }
+          .lesson-form .cancel-lesson-btn:hover,
+          .lesson-form .cancel-lesson-btn:focus {
+            background: transparent !important;
+            color: var(--text-secondary) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            box-shadow: none !important;
+            transform: none !important;
           }
         </style>
         <div class="lesson-form">
@@ -13194,6 +13525,7 @@ window.addLesson = function (type, dropdownLink, event) {
           <div class="form-group">
             <label>Lesson Title</label>
             <input type="text" class="lesson-title-input" placeholder="Enter lesson title" required />
+            <div class="input-error lesson-title-error"></div>
           </div>
           <div class="form-group">
             <label>Video File</label>
@@ -13310,8 +13642,10 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+            opacity: 0.9;
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -13325,9 +13659,11 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--border-hover);
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: none;
+            box-shadow: none;
           }
           .quiz-type-selector {
             display: flex;
@@ -13398,9 +13734,33 @@ window.addLesson = function (type, dropdownLink, event) {
             gap: 6px;
             transition: all 0.2s ease;
           }
-          .add-question-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+          .add-question-btn:hover,
+          .add-question-btn:focus {
+            opacity: 0.9;
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
+          }
+          .create-questions-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+          }
+          .create-questions-btn:hover,
+          .create-questions-btn:focus {
+            opacity: 0.9;
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
           }
           .question-item {
             background: var(--bg-tertiary);
@@ -13512,6 +13872,7 @@ window.addLesson = function (type, dropdownLink, event) {
           <div class="form-group">
             <label>Quiz Title</label>
             <input type="text" class="quiz-title-input" placeholder="Enter quiz title" />
+            <div class="input-error quiz-title-error" style="color: #dc3545; font-size: 12px; margin-top: 4px; display: none;"></div>
           </div>
           <div class="form-group">
             <label>Time Limit (minutes)</label>
@@ -13632,8 +13993,7 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+            opacity: 0.9;
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -13647,16 +14007,17 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--border-hover);
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, 0.35);
           }
         </style>
-        <div class="lesson-form">
+        <div class="lesson-form assignment-lesson-form">
           <h5>${t('createCourse.addAssignment')} ${lessonNumber}</h5>
           <div class="form-group">
             <label>Assignment Title</label>
             <input type="text" placeholder="Enter assignment title" class="assignment-title" />
+            <div class="input-error assignment-title-error"></div>
           </div>
           <div class="form-group">
             <label>Instructions</label>
@@ -13787,8 +14148,7 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            background: var(--primary-color-80);
-            transform: translateY(-1px);
+            opacity: 0.9;
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -13802,9 +14162,43 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: var(--bg-hover);
-            color: var(--text-primary);
-            border-color: var(--border-hover);
+            background: transparent;
+            color: var(--text-secondary);
+            border-color: rgba(255, 255, 255, 0.35);
+          }
+          .lesson-form .lesson-file-input::file-selector-button {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin-right: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+          }
+          .lesson-form .lesson-file-input::-webkit-file-upload-button {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin-right: 12px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+          }
+          .lesson-form .lesson-file-input::file-selector-button:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary-color);
+          }
+          .lesson-form .lesson-file-input::-webkit-file-upload-button:hover {
+            background: var(--bg-secondary);
+            border-color: var(--primary-color);
           }
         </style>
         <div class="lesson-form">
@@ -13815,7 +14209,7 @@ window.addLesson = function (type, dropdownLink, event) {
           </div>
           <div class="form-group">
             <label>File Upload</label>
-            <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" />
+            <input type="file" class="lesson-file-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" />
           </div>
           <div class="form-group">
             <label>Description</label>
@@ -13830,8 +14224,12 @@ window.addLesson = function (type, dropdownLink, event) {
       break;
   }
 
-  // Insert the form before the add dropdown
-  addDropdown.insertAdjacentHTML('beforebegin', lessonHTML);
+  // Insert the form in the correct lessons container
+  if (lessonsList.contains(addDropdown)) {
+    addDropdown.insertAdjacentHTML('beforebegin', lessonHTML);
+  } else {
+    lessonsList.insertAdjacentHTML('beforeend', lessonHTML);
+  }
 };
 
 // Save Lesson Function
@@ -13847,16 +14245,44 @@ window.saveLesson = async function (button, type) {
 
   // Extract lesson title based on type
   let titleInput;
+  let titleError;
   if (type === 'quiz') {
     titleInput = lessonForm.querySelector('.quiz-title-input');
+    titleError = lessonForm.querySelector('.quiz-title-error');
+  } else if (type === 'assignment') {
+    titleInput = lessonForm.querySelector('.assignment-title');
+    titleError = lessonForm.querySelector('.assignment-title-error');
   } else {
     titleInput = lessonForm.querySelector('.lesson-title-input') || lessonForm.querySelector('input[type="text"]');
+    titleError = lessonForm.querySelector('.lesson-title-error');
   }
+
+  const showTitleError = (msg) => {
+    if (titleError) {
+      titleError.textContent = msg;
+      titleError.classList.add('show');
+      titleError.style.display = 'block';
+    }
+    showErrorToast(msg);
+  };
+  const clearTitleError = () => {
+    if (titleError) {
+      titleError.textContent = '';
+      titleError.classList.remove('show');
+      titleError.style.display = 'none';
+    }
+  };
+  clearTitleError();
 
   if (titleInput && titleInput.value.trim()) {
     lessonTitle = titleInput.value.trim();
   } else {
-    showErrorToast('Please enter a lesson title');
+    const titleMessage = type === 'quiz'
+      ? 'Quiz title is required'
+      : type === 'assignment'
+        ? 'Assignment title is required'
+        : 'Lesson title is required';
+    showTitleError(titleMessage);
     return;
   }
 
@@ -14037,6 +14463,12 @@ window.saveLesson = async function (button, type) {
     console.log('🎯 SAVE: Final lessonData for quiz:', JSON.stringify(lessonData, null, 2));
   } else if (type === 'assignment') {
     const instructionsInput = lessonForm.querySelector('.assignment-instructions');
+    const titleError = lessonForm.querySelector('.assignment-title-error');
+    if (titleError) {
+      titleError.textContent = '';
+      titleError.classList.remove('show');
+      titleError.style.display = 'none';
+    }
 
     // Get content type (text or file)
     const contentTypeRadio = lessonForm.querySelector('input[name*="assignment-content-type"]:checked');
@@ -14432,6 +14864,7 @@ function createQuizEditForm(lessonData) {
       <div class="form-group">
         <label>Quiz Title</label>
         <input type="text" class="quiz-title-input" value="${escapedTitle}" placeholder="Enter quiz title" />
+        <div class="input-error quiz-title-error" style="color: #dc3545; font-size: 12px; margin-top: 4px; display: none;"></div>
       </div>
       <div class="form-group">
         <label>Time Limit (minutes)</label>
@@ -14468,6 +14901,7 @@ function createVideoEditForm(lessonData) {
       <div class="form-group">
         <label>Lesson Title</label>
         <input type="text" class="lesson-title-input" value="${lessonData.title}" placeholder="Enter lesson title" required />
+        <div class="input-error lesson-title-error" style="color: #dc3545; font-size: 12px; margin-top: 4px; display: none;"></div>
       </div>
       <div class="form-group">
         <label>Video File</label>
@@ -14665,6 +15099,11 @@ window.updateLesson = function (button, type) {
 
   if (type === 'quiz') {
     const titleInput = editForm.querySelector('.quiz-title-input');
+    const titleError = editForm.querySelector('.quiz-title-error');
+    if (titleError) {
+      titleError.textContent = '';
+      titleError.style.display = 'none';
+    }
     const timeInput = editForm.querySelector('.quiz-time-input');
     const questions = [];
 
@@ -14704,15 +15143,48 @@ window.updateLesson = function (button, type) {
       }
     });
 
-    updatedData.title = titleInput ? titleInput.value.trim() : '';
+    if (!titleInput || !titleInput.value.trim()) {
+      if (titleError) {
+        titleError.textContent = 'Quiz title is required';
+        titleError.style.display = 'block';
+      }
+      showErrorToast('Quiz title is required');
+      return;
+    }
+
+    if (!titleInput || !titleInput.value.trim()) {
+      if (titleError) {
+        titleError.textContent = 'Assignment title is required';
+        titleError.classList.add('show');
+        titleError.style.display = 'block';
+      }
+      showErrorToast('Assignment title is required');
+      return;
+    }
+
+    updatedData.title = titleInput.value.trim();
     updatedData.timeLimit = timeInput ? timeInput.value : '';
     updatedData.questions = questions;
     updatedData.duration = `Quiz (${questions.length} questions)${timeInput && timeInput.value ? ` • ${timeInput.value} min` : ''}`;
 
   } else if (type === 'video') {
     const titleInput = editForm.querySelector('.lesson-title-input');
+    const titleError = editForm.querySelector('.lesson-title-error');
+    if (titleError) {
+      titleError.textContent = '';
+      titleError.style.display = 'none';
+    }
     const videoUrlInput = editForm.querySelector('.video-url-input');
     const durationInput = editForm.querySelector('.video-duration-input');
+
+    if (!titleInput || !titleInput.value.trim()) {
+      if (titleError) {
+        titleError.textContent = 'Lesson title is required';
+        titleError.style.display = 'block';
+      }
+      showErrorToast('Lesson title is required');
+      return;
+    }
 
     updatedData.title = titleInput.value.trim();
     updatedData.videoUrl = videoUrlInput.value;
@@ -15169,10 +15641,30 @@ window.editModule = function (button, event) {
           </div>
         </div>
         <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 20px;">
-          <button class="btn-secondary" onclick="closeEditModuleModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Cancel</button>
-          <button class="btn-primary" onclick="saveModuleTitle()" style="background: var(--primary-color); color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Save</button>
+          <button class="btn-secondary" onclick="closeEditModuleModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: none;">Cancel</button>
+          <button class="btn-primary" onclick="saveModuleTitle()" style="background: var(--primary-color); color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: none;">Save</button>
         </div>
       </div>
+      <style>
+        /* Remove hover effects for edit module modal buttons */
+        #editModuleModal .btn-primary,
+        #editModuleModal .btn-secondary {
+          transition: none !important;
+        }
+        #editModuleModal .btn-primary:hover,
+        #editModuleModal .btn-primary:focus {
+          background: var(--primary-color) !important;
+          color: #ffffff !important;
+          box-shadow: none !important;
+        }
+        #editModuleModal .btn-secondary:hover,
+        #editModuleModal .btn-secondary:focus {
+          background: transparent !important;
+          color: var(--text-secondary) !important;
+          border-color: var(--border-color) !important;
+          box-shadow: none !important;
+        }
+      </style>
     </div>
   `;
 
@@ -15319,7 +15811,10 @@ window.toggleLessonDropdown = function (button, event) {
 };
 
 // Open My Courses Page
-window.openMyCourses = async function () {
+window.openMyCourses = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('my-courses');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -15690,7 +16185,10 @@ window.sortCourses = (event) => {
 
 
 // Open Finance Page - Payment Requests
-window.openFinancePage = async function () {
+window.openFinancePage = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('finance');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -16500,7 +16998,10 @@ window.openFinancePage = async function () {
 };
 
 // Open AI Assistant Page
-function openAIAssistantPage() {
+function openAIAssistantPage(skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('ai-assistant');
+  }
   console.log('Opening AI Assistant Page');
 
   // Show coming soon toast
@@ -16509,7 +17010,10 @@ function openAIAssistantPage() {
 
 
 // Open Assignments Page
-window.openAssignmentsPage = async function () {
+window.openAssignmentsPage = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('assignments');
+  }
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -18894,7 +19398,10 @@ window.toggleAISetting = function (toggleElement) {
   }
 };
 
-window.openQuizAnalytics = async function () {
+window.openQuizAnalytics = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('quiz-analytics');
+  }
   console.log('openQuizAnalytics function called');
 
   const contentArea = document.querySelector('.figma-content-area');
@@ -19634,7 +20141,10 @@ window.submitPayout = function () {
 };
 
 // Open Create Course Page
-window.openCreateCourse = async function () {
+window.openCreateCourse = async function (skipPathUpdate = false) {
+  if (!skipPathUpdate) {
+    updateDashboardPathOnly('create-course');
+  }
   const userData = store.getState().user;
 
   // Show loading toast while checking
@@ -19784,29 +20294,29 @@ window.openCreateCourse = async function () {
                 <label class="field-label">${t('createCourse.courseType')}</label>
                 <div class="radio-group">
                   <label class="radio-option">
-                    <input type="radio" name="courseType" value="paid" checked />
+                    <input type="radio" name="courseType" value="paid" checked onchange="toggleCreatePricing(this)" />
                     <span class="radio-custom"></span>
                     <span>${t('createCourse.paid')}</span>
                   </label>
                   <label class="radio-option">
-                    <input type="radio" name="courseType" value="free" />
+                    <input type="radio" name="courseType" value="free" onchange="toggleCreatePricing(this)" />
                     <span class="radio-custom"></span>
                     <span>${t('createCourse.free')}</span>
                   </label>
                 </div>
               </div>
 
-              <div class="form-row">
-                <div class="form-field">
-                  <label class="field-label">${t('createCourse.coursePrice')}</label>
-                  <input type="number" class="form-input" name="price" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
-                </div>
-                <div class="form-field">
-                  <label class="field-label">${t('createCourse.discountPrice')}</label>
-                  <input type="number" class="form-input" placeholder="${t('createCourse.discountPricePlaceholder')}" step="0.01" />
-                  <small class="field-note">${t('createCourse.discountNote')}</small>
-                </div>
+              <div class="form-row" id="createPricingFields">
+              <div class="form-field">
+                <label class="field-label">${t('createCourse.coursePrice')}</label>
+                <input type="text" class="form-input" name="price" placeholder="${t('createCourse.coursePricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
               </div>
+              <div class="form-field">
+                <label class="field-label">${t('createCourse.discountPrice')}</label>
+                <input type="text" class="form-input" name="discountPrice" placeholder="${t('createCourse.discountPricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
+                <small class="field-note">${t('createCourse.discountNote')}</small>
+              </div>
+            </div>
             </div>
 
             <!-- Course Structure Section -->
@@ -21002,6 +21512,7 @@ function openCourseEditPage(courseData) {
 
   const userData = store.getState().user;
   const contentArea = document.querySelector('.figma-content-area');
+  const isDraftCourse = String(courseData.status || '').toLowerCase() === 'draft';
 
   if (!contentArea) {
     console.error('Content area not found');
@@ -21137,11 +21648,11 @@ function openCourseEditPage(courseData) {
               <div class="form-row" id="pricingFields" style="display: ${courseData.courseType === 'paid' ? 'flex' : 'none'};">
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.coursePrice')}</label>
-                  <input type="number" class="form-input" name="price" value="${courseData.price || ''}" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
+                  <input type="text" class="form-input" name="price" value="${courseData.price || ''}" placeholder="${t('createCourse.coursePricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
                 </div>
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.discountPrice')}</label>
-                  <input type="number" class="form-input" name="discountPrice" value="${courseData.discountPrice || ''}" placeholder="${t('createCourse.discountPricePlaceholder')}" step="0.01" />
+                  <input type="text" class="form-input" name="discountPrice" value="${courseData.discountPrice || ''}" placeholder="${t('createCourse.discountPricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
                   <small class="field-note">${t('createCourse.discountNote')}</small>
                 </div>
               </div>
@@ -21169,7 +21680,7 @@ function openCourseEditPage(courseData) {
             <div class="form-actions course-actions">
               <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
               <button type="submit" class="btn-secondary" name="action" value="draft">Save as Draft</button>
-              <button type="submit" class="btn-save" name="action" value="publish">Update Course</button>
+              <button type="submit" class="btn-save" name="action" value="publish">${isDraftCourse ? 'Publish Course' : 'Update Course'}</button>
             </div>
 
           </form>
@@ -21531,6 +22042,14 @@ window.togglePricing = function (radio) {
 // Toggle Pricing Fields for Edit Course
 window.toggleEditPricing = function (radio) {
   const pricingFields = document.getElementById('pricingFields');
+  if (pricingFields) {
+    pricingFields.style.display = radio.value === 'paid' ? 'flex' : 'none';
+  }
+};
+
+// Toggle Pricing Fields for Create Course
+window.toggleCreatePricing = function (radio) {
+  const pricingFields = document.getElementById('createPricingFields');
   if (pricingFields) {
     pricingFields.style.display = radio.value === 'paid' ? 'flex' : 'none';
   }
@@ -22323,17 +22842,7 @@ window.openNotificationsPage = async function () {
   }
 };
 
-// Logout function
-window.handleLogout = function () {
-  // Clear all localStorage
-  localStorage.clear();
-
-  // Clear all sessionStorage
-  sessionStorage.clear();
-
-  // Navigate to login page
-  router.navigate('/login');
-};
+// Logout function is defined earlier with confirmation (window.handleLogout)
 
 // Removed old setTimeout - notification count now loads in renderTeacherDashboard
 
@@ -22635,12 +23144,15 @@ window.startNewMeeting = function () {
 // Open Telegram bot function
 window.openTelegramBot = function () {
   // Open Telegram bot in new tab
-  window.open('https://t.me/darslinker_bot', '_blank');
+  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}`, '_blank');
 };
 
 // Open create course function (if not already defined)
 if (typeof window.openCreateCourse === 'undefined') {
-  window.openCreateCourse = function () {
+  window.openCreateCourse = function (skipPathUpdate = false) {
+    if (!skipPathUpdate) {
+      updateDashboardPathOnly('create-course');
+    }
     showSuccessToast('Create course feature coming soon!');
   };
 }
