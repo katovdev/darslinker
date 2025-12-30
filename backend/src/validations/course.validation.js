@@ -117,6 +117,10 @@ export const updateCourseSchema = Joi.object({
     "string.max": "Course title cannot exceed 200 characters",
   }),
 
+  description: Joi.string().trim().min(10).optional().messages({
+    "string.min": "Course description must be at least 10 characters long",
+  }),
+
   shortDescription: Joi.string().trim().min(10).max(300).optional().messages({
     "string.min":
       "Course short description must be at least 10 characters long",
@@ -148,6 +152,10 @@ export const updateCourseSchema = Joi.object({
     "string.empty": "Course duration cannot be empty",
   }),
 
+  thumbnail: Joi.string().trim().uri().optional().messages({
+    "string.uri": "Course thumbnail must be a valid URL",
+  }),
+
   courseImage: Joi.string().trim().uri().optional().messages({
     "string.uri": "Course image must be a valid URL",
   }),
@@ -162,6 +170,11 @@ export const updateCourseSchema = Joi.object({
 
   status: Joi.string().valid("active", "draft", "archived").default("draft"),
 
+  price: Joi.number().min(0).optional().messages({
+    "number.base": "Course price must be a number",
+    "number.min": "Course price cannot be negative",
+  }),
+
   coursePrice: Joi.number().min(0).optional().messages({
     "number.base": "Course price must be a number",
     "number.min": "Course price cannot be negative",
@@ -171,6 +184,8 @@ export const updateCourseSchema = Joi.object({
     "number.base": "Discount price must be a number",
     "number.min": "Discount price cannot be negative",
   }),
+
+  modules: Joi.array().optional().items(Joi.object().unknown(true)),
 })
   .min(1)
   .messages({

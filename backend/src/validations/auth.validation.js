@@ -193,6 +193,17 @@ const phoneSchema = Joi.object({
     }),
 });
 
+/**
+ * Refresh Token Validation Schema
+ * Validates refresh token request
+ */
+const refreshTokenSchema = Joi.object({
+  refreshToken: Joi.string().required().messages({
+    "string.empty": "Refresh token is required",
+    "any.required": "Refresh token is required",
+  }),
+});
+
 export {
   checkUserSchema,
   registerSchema,
@@ -200,4 +211,5 @@ export {
   changePasswordSchema,
   emailSchema,
   phoneSchema,
+  refreshTokenSchema,
 };

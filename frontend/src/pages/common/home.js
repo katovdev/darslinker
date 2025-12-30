@@ -4,6 +4,8 @@ import { cleanupPricingStyles } from '../pricing.js';
 import { replaceLandingArticles } from '../../components/dynamic-articles.js';
 import '../../styles/dynamic-articles.css';
 
+const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'Darslinker_sbot').replace(/^@/, '');
+
 // Home page translations - separate from other pages
 const homeTranslations = {
   uz: {
@@ -3371,7 +3373,7 @@ function closeChatBubble() {
 
 function openTelegramBot() {
   // Open Telegram bot in new tab
-  window.open('https://t.me/darslinker_bot', '_blank');
+  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}`, '_blank');
   // Close popup after opening bot
   closeTelegramBotMessage();
 }

@@ -10362,6 +10362,16 @@ button.filter-tab.active {
   /* No hover effect */
 }
 
+.lesson-info-actions .view-btn:hover {
+  background: var(--primary-color) !important;
+  color: #ffffff !important;
+  opacity: 0.85;
+}
+
+.lesson-info-actions .delete-btn:hover {
+  opacity: 0.85;
+}
+
 .edit-btn {
   background: var(--card-bg);
   color: var(--text-primary);
@@ -10613,6 +10623,39 @@ button.filter-tab.active {
   border-color: inherit !important;
   transform: none !important;
   box-shadow: none !important;
+}
+
+.lesson-form.assignment-lesson-form .save-lesson-btn:hover,
+.lesson-form.assignment-lesson-form .save-lesson-btn:focus {
+  background: var(--primary-color) !important;
+  color: #ffffff !important;
+  opacity: 0.85;
+}
+
+.lesson-form.assignment-lesson-form .cancel-lesson-btn:hover,
+.lesson-form.assignment-lesson-form .cancel-lesson-btn:focus {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.lesson-form .create-questions-btn:hover,
+.lesson-form .create-questions-btn:focus {
+  background: var(--primary-color) !important;
+  color: #ffffff !important;
+  opacity: 0.85;
+}
+
+#createQuestionsModal .btn-primary:hover,
+#createQuestionsModal .btn-primary:focus {
+  background: var(--primary-color) !important;
+  color: #ffffff !important;
+  opacity: 0.85;
+}
+
+#createQuestionsModal .btn-secondary:hover,
+#createQuestionsModal .btn-secondary:focus {
+  border-color: rgba(255, 255, 255, 0.55) !important;
 }
 
 /* Delete Button Styles */

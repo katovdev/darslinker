@@ -209,15 +209,31 @@ const approvePayment = catchAsync(async (req, res) => {
 
   // Enroll student in course
   const course = await Course.findById(payment.courseId);
+  const paymentAmount = Number(payment.amount) || 0;
   if (course) {
+    let courseUpdated = false;
     if (!course.enrolledStudents) {
       course.enrolledStudents = [];
     }
     if (!course.enrolledStudents.includes(payment.studentId)) {
       course.enrolledStudents.push(payment.studentId);
       course.totalStudents = course.enrolledStudents.length;
+      courseUpdated = true;
+    }
+    if (paymentAmount > 0) {
+      course.revenue = (course.revenue || 0) + paymentAmount;
+      courseUpdated = true;
+    }
+    if (courseUpdated) {
       await course.save();
     }
+  }
+
+  if (paymentAmount > 0) {
+    await Teacher.updateOne(
+      { _id: payment.teacherId },
+      { $inc: { balance: paymentAmount, totalEarnings: paymentAmount } }
+    );
   }
 
   // Create notification for student
