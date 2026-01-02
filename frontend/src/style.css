@@ -272,7 +272,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 9999999;
   background: rgba(90, 90, 90, 0.1);
   backdrop-filter: blur(25px) saturate(180%);
   -webkit-backdrop-filter: blur(25px) saturate(180%);
@@ -298,8 +298,18 @@ body {
 }
 
 .logo {
-  height: 30px;
-  width: auto;
+  display: inline-flex;
+  align-items: baseline;
+  font-family: inherit;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  line-height: 1;
+  color: #ffffff;
+}
+
+.logo-accent {
+  color: #7EA2D4;
 }
 
 .brand-text {
@@ -3318,7 +3328,7 @@ body {
   z-index: 0;
 }
 
-.advice-card > * {
+.advice-card>* {
   position: relative;
   z-index: 1;
 }
@@ -3516,6 +3526,17 @@ body {
 /* Logo Section */
 .footer-logo-section {
   text-align: center;
+}
+
+.footer-logo-text {
+  display: inline-flex;
+  align-items: baseline;
+  font-family: inherit;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  line-height: 1;
+  color: #ffffff;
 }
 
 .footer-logo-img {
@@ -5729,6 +5750,10 @@ input:checked+.toggle-slider:before {
 @media (max-width: 768px) {
   .footer-content {
     gap: 25px;
+  }
+
+  .footer-logo-text {
+    font-size: 30px;
   }
 
   .footer-logo-img {

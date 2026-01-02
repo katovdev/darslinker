@@ -16,21 +16,21 @@ const homeTranslations = {
     blog: 'Bloglar',
     contact: 'Aloqa',
     login: 'Kirish',
-    
+
     // Hero Section
     heroTitle: 'Online Ta\'limni Biz Bilan Boshlang',
     heroButton: 'BEPUL SINAB KO\'RISH',
     statsText: 'O\'quv markazlari bizga ishonch bildiradi!',
-    
+
     // Hero Features
     aiTitle: 'Sun\'iy intellekt (AI)',
-    aiDescription: 'O\'quvchi savollarga avtomatik javob berish, darslarni puylash va ta\'lim vazifasi mavzularini aniqlash va yecha maslahat data. Test topshiriqlarida yordam berish.',
+    aiDescription: 'O‘quvchilar savollariga avtomatik javob berish, darslarni tahlil qilish va ta’lim jarayonidagi zaif nuqtalarni aniqlash. Test va topshiriqlarni bajarishda AI orqali aqlli yordam taqdim etiladi.',
     paymentTitle: 'To\'lov integratsiyasi',
-    paymentDescription: 'Uzcard, Humo, Visa, Mastercard, Payme, Click bo\'yicha to\'lov o\'quvchi harid qilganiga integratsiya qilinb. Ixtisoriga nark tushinadi.',
+    paymentDescription: 'Uzcard, Humo, Visa, Mastercard, Payme va Click orqali to‘lovlar to‘liq integratsiya qilingan. O‘quvchi kursni xarid qilishi bilan tizim avtomatik ishlaydi va barcha to‘lovlar tarixda saqlanadi.',
     analyticsTitle: 'O\'quvchilar tahlili',
-    analyticsDescription: 'O\'quvchilar faoliyatin real vaqt rejimida kuzatish, test, topshiriq natijalarini grafik va diagrammalarga qo\'shish, individual kurslarni O\'quvchilarga avtomatik tavsiyalanib.',
+    analyticsDescription: 'O‘quvchilar faolligini real vaqt rejimida kuzatish, test va topshiriqlar natijalarini grafik va diagrammalar orqali tahlil qilish. Har bir o‘quvchi uchun individual tavsiyalar avtomatik shakllantiriladi.',
     videoGuide: 'Video qo\'llanmani ko\'rish',
-    
+
     // Platform Features
     platformTitle: 'Platformaning Asosiy Imkoniyatlari',
     feature1: '1. Tez va oson kurs joylash',
@@ -44,7 +44,7 @@ const homeTranslations = {
     feature9: '9. Moliyaviy analitika',
     useButton: 'Foydalanish',
     detailsButton: 'Batafsil',
-    
+
     // Pricing Section
     pricingTitle: 'Tariflar & Narxlar',
     minimal: 'Minimal',
@@ -53,7 +53,7 @@ const homeTranslations = {
     corporate: 'Korporativ',
     recommended: 'Tavsiya',
     specialPrice: 'Maxsus narx',
-    
+
     // Pricing Features
     courseLimit: 'Kurs joylash soni',
     adminAdd: 'Admin qo\'shish',
@@ -71,36 +71,36 @@ const homeTranslations = {
     proFeatures: 'Pro tarif imkoniyatlari',
     seo: 'SEO - Google\'da qidiruv',
     pricingInfo: 'Ta\'riflar bo\'yicha to\'liq ma\'lumot',
-    
+
     // Articles Section
     articlesTitle: 'O\'qituvchilar uchun ma\'qolalar',
     articleTitle: 'Samarali Dars',
     articleDescription: 'Samarali dars o\'tish uchun qaysi usullar haqida batafsil ma\'lumot berigan ma\'qola',
     blogButton: 'BLOG BO\'LIMIGA O\'TISH',
-    
+
     // Advice Section
     adviceTitle: 'Maslahat olish',
     namePlaceholder: 'Ismingiz',
     phonePlaceholder: 'Raqamingiz',
     commentPlaceholder: 'Izoh',
     submitButton: 'Yuborish',
-    
+
     // Login Section
     systemLogin: 'Tizimga Kirish',
-    
+
     // Footer
     mainPage: 'Asosiy sahifa',
     publicOffer: 'Ommaviy oferta',
     rightsReserved: 'Barcha huquqlar himoyalangan',
-    
+
     // Contact Info
     address: 'Toshkent shahar, Chilonzor tumani, 12-kvartal',
-    
+
     // Theme
     darkMode: 'Dark Mode',
     lightMode: 'Light Mode'
   },
-  
+
   ru: {
     // Navigation
     home: 'Главная',
@@ -109,12 +109,12 @@ const homeTranslations = {
     blog: 'Блоги',
     contact: 'Контакты',
     login: 'Войти',
-    
+
     // Hero Section
     heroTitle: 'Начните Онлайн Обучение с Нами',
     heroButton: 'ПОПРОБОВАТЬ БЕСПЛАТНО',
     statsText: 'учебных центров доверяют нам!',
-    
+
     // Hero Features
     aiTitle: 'Искусственный интеллект (ИИ)',
     aiDescription: 'Автоматические ответы на вопросы студентов, распределение уроков и определение учебных задач с советами. Помощь в тестовых заданиях.',
@@ -123,7 +123,7 @@ const homeTranslations = {
     analyticsTitle: 'Аналитика студентов',
     analyticsDescription: 'Мониторинг активности студентов в реальном времени, добавление результатов тестов и заданий в графики и диаграммы, автоматические рекомендации индивидуальных курсов студентам.',
     videoGuide: 'Посмотреть видео руководство',
-    
+
     // Platform Features
     platformTitle: 'Основные Возможности Платформы',
     feature1: '1. Быстрое и простое размещение курсов',
@@ -137,7 +137,7 @@ const homeTranslations = {
     feature9: '9. Финансовая аналитика',
     useButton: 'Использовать',
     detailsButton: 'Подробнее',
-    
+
     // Pricing Section
     pricingTitle: 'Тарифы и Цены',
     minimal: 'Минимальный',
@@ -146,7 +146,7 @@ const homeTranslations = {
     corporate: 'Корпоративный',
     recommended: 'Рекомендуем',
     specialPrice: 'Специальная цена',
-    
+
     // Pricing Features
     courseLimit: 'Количество курсов',
     adminAdd: 'Добавление админов',
@@ -164,36 +164,36 @@ const homeTranslations = {
     proFeatures: 'Возможности Pro тарифа',
     seo: 'SEO - поиск в Google',
     pricingInfo: 'Полная информация о тарифах',
-    
+
     // Articles Section
     articlesTitle: 'Статьи для преподавателей',
     articleTitle: 'Эффективный урок',
     articleDescription: 'Статья с подробной информацией о методах проведения эффективных уроков',
     blogButton: 'ПЕРЕЙТИ В РАЗДЕЛ БЛОГА',
-    
+
     // Advice Section
     adviceTitle: 'Получить консультацию',
     namePlaceholder: 'Ваше имя',
     phonePlaceholder: 'Ваш номер',
     commentPlaceholder: 'Комментарий',
     submitButton: 'Отправить',
-    
+
     // Login Section
     systemLogin: 'Войти в систему',
-    
+
     // Footer
     mainPage: 'Главная страница',
     publicOffer: 'Публичная оферта',
     rightsReserved: 'Все права защищены',
-    
+
     // Contact Info
     address: 'г. Ташкент, Чиланзарский район, 12-квартал',
-    
+
     // Theme
     darkMode: 'Темная тема',
     lightMode: 'Светлая тема'
   },
-  
+
   en: {
     // Navigation
     home: 'Home',
@@ -202,12 +202,12 @@ const homeTranslations = {
     blog: 'Blog',
     contact: 'Contact',
     login: 'Login',
-    
+
     // Hero Section
     heroTitle: 'Start Online Learning with Us',
     heroButton: 'TRY FOR FREE',
     statsText: 'educational centers trust us!',
-    
+
     // Hero Features
     aiTitle: 'Artificial Intelligence (AI)',
     aiDescription: 'Automatic answers to student questions, lesson distribution and identification of educational tasks with advice. Assistance in test assignments.',
@@ -216,7 +216,7 @@ const homeTranslations = {
     analyticsTitle: 'Student Analytics',
     analyticsDescription: 'Real-time monitoring of student activity, adding test and assignment results to graphs and charts, automatic recommendations of individual courses to students.',
     videoGuide: 'Watch video guide',
-    
+
     // Platform Features
     platformTitle: 'Main Platform Features',
     feature1: '1. Fast and easy course placement',
@@ -230,7 +230,7 @@ const homeTranslations = {
     feature9: '9. Financial analytics',
     useButton: 'Use',
     detailsButton: 'Details',
-    
+
     // Pricing Section
     pricingTitle: 'Pricing & Plans',
     minimal: 'Minimal',
@@ -239,7 +239,7 @@ const homeTranslations = {
     corporate: 'Corporate',
     recommended: 'Recommended',
     specialPrice: 'Special price',
-    
+
     // Pricing Features
     courseLimit: 'Course limit',
     adminAdd: 'Admin addition',
@@ -257,31 +257,31 @@ const homeTranslations = {
     proFeatures: 'Pro plan features',
     seo: 'SEO - Google search',
     pricingInfo: 'Complete pricing information',
-    
+
     // Articles Section
     articlesTitle: 'Articles for Teachers',
     articleTitle: 'Effective Lesson',
     articleDescription: 'Article with detailed information about methods for conducting effective lessons',
     blogButton: 'GO TO BLOG SECTION',
-    
+
     // Advice Section
     adviceTitle: 'Get Advice',
     namePlaceholder: 'Your name',
     phonePlaceholder: 'Your number',
     commentPlaceholder: 'Comment',
     submitButton: 'Submit',
-    
+
     // Login Section
     systemLogin: 'Login to System',
-    
+
     // Footer
     mainPage: 'Home page',
     publicOffer: 'Public offer',
     rightsReserved: 'All rights reserved',
-    
+
     // Contact Info
     address: 'Tashkent city, Chilanzar district, 12th quarter',
-    
+
     // Theme
     darkMode: 'Dark Mode',
     lightMode: 'Light Mode'
@@ -311,106 +311,106 @@ function updateHomeTranslations() {
     document.querySelectorAll('[data-home-i18n="blog"]').forEach(el => el.textContent = t('blog'));
     document.querySelectorAll('[data-home-i18n="contact"]').forEach(el => el.textContent = t('contact'));
     document.querySelectorAll('[data-home-i18n="login"]').forEach(el => el.textContent = t('login'));
-  
-  // Hero Section
-  document.querySelectorAll('[data-home-i18n="heroTitle"]').forEach(el => el.textContent = t('heroTitle'));
-  document.querySelectorAll('[data-home-i18n="heroButton"]').forEach(el => el.textContent = t('heroButton'));
-  document.querySelectorAll('[data-home-i18n="statsText"]').forEach(el => el.textContent = t('statsText'));
-  
-  // Hero Features
-  document.querySelectorAll('[data-home-i18n="aiTitle"]').forEach(el => el.textContent = t('aiTitle'));
-  document.querySelectorAll('[data-home-i18n="aiDescription"]').forEach(el => el.textContent = t('aiDescription'));
-  document.querySelectorAll('[data-home-i18n="paymentTitle"]').forEach(el => el.textContent = t('paymentTitle'));
-  document.querySelectorAll('[data-home-i18n="paymentDescription"]').forEach(el => el.textContent = t('paymentDescription'));
-  document.querySelectorAll('[data-home-i18n="analyticsTitle"]').forEach(el => el.textContent = t('analyticsTitle'));
-  document.querySelectorAll('[data-home-i18n="analyticsDescription"]').forEach(el => el.textContent = t('analyticsDescription'));
-  document.querySelectorAll('[data-home-i18n="videoGuide"]').forEach(el => el.textContent = t('videoGuide'));
-  
-  // Platform Features
-  document.querySelectorAll('[data-home-i18n="platformTitle"]').forEach(el => el.textContent = t('platformTitle'));
-  document.querySelectorAll('[data-home-i18n="feature1"]').forEach(el => el.textContent = t('feature1'));
-  document.querySelectorAll('[data-home-i18n="feature2"]').forEach(el => el.textContent = t('feature2'));
-  document.querySelectorAll('[data-home-i18n="feature3"]').forEach(el => el.textContent = t('feature3'));
-  document.querySelectorAll('[data-home-i18n="feature4"]').forEach(el => el.textContent = t('feature4'));
-  document.querySelectorAll('[data-home-i18n="feature5"]').forEach(el => el.textContent = t('feature5'));
-  document.querySelectorAll('[data-home-i18n="feature6"]').forEach(el => el.textContent = t('feature6'));
-  document.querySelectorAll('[data-home-i18n="feature7"]').forEach(el => el.textContent = t('feature7'));
-  document.querySelectorAll('[data-home-i18n="feature8"]').forEach(el => el.textContent = t('feature8'));
-  document.querySelectorAll('[data-home-i18n="feature9"]').forEach(el => el.textContent = t('feature9'));
-  document.querySelectorAll('[data-home-i18n="useButton"]').forEach(el => el.textContent = t('useButton'));
-  document.querySelectorAll('[data-home-i18n="detailsButton"]').forEach(el => el.textContent = t('detailsButton'));
-  
-  // Pricing Section
-  document.querySelectorAll('[data-home-i18n="pricingTitle"]').forEach(el => el.textContent = t('pricingTitle'));
-  document.querySelectorAll('[data-home-i18n="minimal"]').forEach(el => el.textContent = t('minimal'));
-  document.querySelectorAll('[data-home-i18n="standard"]').forEach(el => el.textContent = t('standard'));
-  document.querySelectorAll('[data-home-i18n="pro"]').forEach(el => el.textContent = t('pro'));
-  document.querySelectorAll('[data-home-i18n="corporate"]').forEach(el => el.textContent = t('corporate'));
-  document.querySelectorAll('[data-home-i18n="recommended"]').forEach(el => el.textContent = t('recommended'));
-  document.querySelectorAll('[data-home-i18n="specialPrice"]').forEach(el => el.textContent = t('specialPrice'));
-  
-  // Pricing Features
-  document.querySelectorAll('[data-home-i18n="courseLimit"]').forEach(el => el.textContent = t('courseLimit'));
-  document.querySelectorAll('[data-home-i18n="adminAdd"]').forEach(el => el.textContent = t('adminAdd'));
-  document.querySelectorAll('[data-home-i18n="studentBase"]').forEach(el => el.textContent = t('studentBase'));
-  document.querySelectorAll('[data-home-i18n="support"]').forEach(el => el.textContent = t('support'));
-  document.querySelectorAll('[data-home-i18n="analytics"]').forEach(el => el.textContent = t('analytics'));
-  document.querySelectorAll('[data-home-i18n="onlineMeeting"]').forEach(el => el.textContent = t('onlineMeeting'));
-  document.querySelectorAll('[data-home-i18n="certificate"]').forEach(el => el.textContent = t('certificate'));
-  document.querySelectorAll('[data-home-i18n="chat"]').forEach(el => el.textContent = t('chat'));
-  document.querySelectorAll('[data-home-i18n="paymentIntegration"]').forEach(el => el.textContent = t('paymentIntegration'));
-  document.querySelectorAll('[data-home-i18n="ai"]').forEach(el => el.textContent = t('ai'));
-  document.querySelectorAll('[data-home-i18n="contentSecurity"]').forEach(el => el.textContent = t('contentSecurity'));
-  document.querySelectorAll('[data-home-i18n="brandDesign"]').forEach(el => el.textContent = t('brandDesign'));
-  document.querySelectorAll('[data-home-i18n="personalDomain"]').forEach(el => el.textContent = t('personalDomain'));
-  document.querySelectorAll('[data-home-i18n="proFeatures"]').forEach(el => el.textContent = t('proFeatures'));
-  document.querySelectorAll('[data-home-i18n="seo"]').forEach(el => el.textContent = t('seo'));
-  document.querySelectorAll('[data-home-i18n="pricingInfo"]').forEach(el => el.textContent = t('pricingInfo'));
-  
-  // Articles Section
-  document.querySelectorAll('[data-home-i18n="articlesTitle"]').forEach(el => el.textContent = t('articlesTitle'));
-  document.querySelectorAll('[data-home-i18n="articleTitle"]').forEach(el => el.textContent = t('articleTitle'));
-  document.querySelectorAll('[data-home-i18n="articleDescription"]').forEach(el => el.textContent = t('articleDescription'));
-  document.querySelectorAll('[data-home-i18n="blogButton"]').forEach(el => el.textContent = t('blogButton'));
-  
-  // Advice Section
-  document.querySelectorAll('[data-home-i18n="adviceTitle"]').forEach(el => el.textContent = t('adviceTitle'));
-  document.querySelectorAll('[data-home-i18n="namePlaceholder"]').forEach(el => {
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      el.placeholder = t('namePlaceholder');
-    } else {
-      el.textContent = t('namePlaceholder');
-    }
-  });
-  document.querySelectorAll('[data-home-i18n="phonePlaceholder"]').forEach(el => {
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      el.placeholder = t('phonePlaceholder');
-    } else {
-      el.textContent = t('phonePlaceholder');
-    }
-  });
-  document.querySelectorAll('[data-home-i18n="commentPlaceholder"]').forEach(el => {
-    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-      el.placeholder = t('commentPlaceholder');
-    } else {
-      el.textContent = t('commentPlaceholder');
-    }
-  });
-  document.querySelectorAll('[data-home-i18n="submitButton"]').forEach(el => el.textContent = t('submitButton'));
-  
-  // Login Section
-  document.querySelectorAll('[data-home-i18n="systemLogin"]').forEach(el => el.textContent = t('systemLogin'));
-  
-  // Footer
-  document.querySelectorAll('[data-home-i18n="mainPage"]').forEach(el => el.textContent = t('mainPage'));
-  document.querySelectorAll('[data-home-i18n="publicOffer"]').forEach(el => el.textContent = t('publicOffer'));
-  document.querySelectorAll('[data-home-i18n="rightsReserved"]').forEach(el => el.textContent = t('rightsReserved'));
-  document.querySelectorAll('[data-home-i18n="address"]').forEach(el => el.textContent = t('address'));
-  
-  // Theme
-  document.querySelectorAll('[data-home-i18n="darkMode"]').forEach(el => el.textContent = t('darkMode'));
-  document.querySelectorAll('[data-home-i18n="lightMode"]').forEach(el => el.textContent = t('lightMode'));
-  
+
+    // Hero Section
+    document.querySelectorAll('[data-home-i18n="heroTitle"]').forEach(el => el.textContent = t('heroTitle'));
+    document.querySelectorAll('[data-home-i18n="heroButton"]').forEach(el => el.textContent = t('heroButton'));
+    document.querySelectorAll('[data-home-i18n="statsText"]').forEach(el => el.textContent = t('statsText'));
+
+    // Hero Features
+    document.querySelectorAll('[data-home-i18n="aiTitle"]').forEach(el => el.textContent = t('aiTitle'));
+    document.querySelectorAll('[data-home-i18n="aiDescription"]').forEach(el => el.textContent = t('aiDescription'));
+    document.querySelectorAll('[data-home-i18n="paymentTitle"]').forEach(el => el.textContent = t('paymentTitle'));
+    document.querySelectorAll('[data-home-i18n="paymentDescription"]').forEach(el => el.textContent = t('paymentDescription'));
+    document.querySelectorAll('[data-home-i18n="analyticsTitle"]').forEach(el => el.textContent = t('analyticsTitle'));
+    document.querySelectorAll('[data-home-i18n="analyticsDescription"]').forEach(el => el.textContent = t('analyticsDescription'));
+    document.querySelectorAll('[data-home-i18n="videoGuide"]').forEach(el => el.textContent = t('videoGuide'));
+
+    // Platform Features
+    document.querySelectorAll('[data-home-i18n="platformTitle"]').forEach(el => el.textContent = t('platformTitle'));
+    document.querySelectorAll('[data-home-i18n="feature1"]').forEach(el => el.textContent = t('feature1'));
+    document.querySelectorAll('[data-home-i18n="feature2"]').forEach(el => el.textContent = t('feature2'));
+    document.querySelectorAll('[data-home-i18n="feature3"]').forEach(el => el.textContent = t('feature3'));
+    document.querySelectorAll('[data-home-i18n="feature4"]').forEach(el => el.textContent = t('feature4'));
+    document.querySelectorAll('[data-home-i18n="feature5"]').forEach(el => el.textContent = t('feature5'));
+    document.querySelectorAll('[data-home-i18n="feature6"]').forEach(el => el.textContent = t('feature6'));
+    document.querySelectorAll('[data-home-i18n="feature7"]').forEach(el => el.textContent = t('feature7'));
+    document.querySelectorAll('[data-home-i18n="feature8"]').forEach(el => el.textContent = t('feature8'));
+    document.querySelectorAll('[data-home-i18n="feature9"]').forEach(el => el.textContent = t('feature9'));
+    document.querySelectorAll('[data-home-i18n="useButton"]').forEach(el => el.textContent = t('useButton'));
+    document.querySelectorAll('[data-home-i18n="detailsButton"]').forEach(el => el.textContent = t('detailsButton'));
+
+    // Pricing Section
+    document.querySelectorAll('[data-home-i18n="pricingTitle"]').forEach(el => el.textContent = t('pricingTitle'));
+    document.querySelectorAll('[data-home-i18n="minimal"]').forEach(el => el.textContent = t('minimal'));
+    document.querySelectorAll('[data-home-i18n="standard"]').forEach(el => el.textContent = t('standard'));
+    document.querySelectorAll('[data-home-i18n="pro"]').forEach(el => el.textContent = t('pro'));
+    document.querySelectorAll('[data-home-i18n="corporate"]').forEach(el => el.textContent = t('corporate'));
+    document.querySelectorAll('[data-home-i18n="recommended"]').forEach(el => el.textContent = t('recommended'));
+    document.querySelectorAll('[data-home-i18n="specialPrice"]').forEach(el => el.textContent = t('specialPrice'));
+
+    // Pricing Features
+    document.querySelectorAll('[data-home-i18n="courseLimit"]').forEach(el => el.textContent = t('courseLimit'));
+    document.querySelectorAll('[data-home-i18n="adminAdd"]').forEach(el => el.textContent = t('adminAdd'));
+    document.querySelectorAll('[data-home-i18n="studentBase"]').forEach(el => el.textContent = t('studentBase'));
+    document.querySelectorAll('[data-home-i18n="support"]').forEach(el => el.textContent = t('support'));
+    document.querySelectorAll('[data-home-i18n="analytics"]').forEach(el => el.textContent = t('analytics'));
+    document.querySelectorAll('[data-home-i18n="onlineMeeting"]').forEach(el => el.textContent = t('onlineMeeting'));
+    document.querySelectorAll('[data-home-i18n="certificate"]').forEach(el => el.textContent = t('certificate'));
+    document.querySelectorAll('[data-home-i18n="chat"]').forEach(el => el.textContent = t('chat'));
+    document.querySelectorAll('[data-home-i18n="paymentIntegration"]').forEach(el => el.textContent = t('paymentIntegration'));
+    document.querySelectorAll('[data-home-i18n="ai"]').forEach(el => el.textContent = t('ai'));
+    document.querySelectorAll('[data-home-i18n="contentSecurity"]').forEach(el => el.textContent = t('contentSecurity'));
+    document.querySelectorAll('[data-home-i18n="brandDesign"]').forEach(el => el.textContent = t('brandDesign'));
+    document.querySelectorAll('[data-home-i18n="personalDomain"]').forEach(el => el.textContent = t('personalDomain'));
+    document.querySelectorAll('[data-home-i18n="proFeatures"]').forEach(el => el.textContent = t('proFeatures'));
+    document.querySelectorAll('[data-home-i18n="seo"]').forEach(el => el.textContent = t('seo'));
+    document.querySelectorAll('[data-home-i18n="pricingInfo"]').forEach(el => el.textContent = t('pricingInfo'));
+
+    // Articles Section
+    document.querySelectorAll('[data-home-i18n="articlesTitle"]').forEach(el => el.textContent = t('articlesTitle'));
+    document.querySelectorAll('[data-home-i18n="articleTitle"]').forEach(el => el.textContent = t('articleTitle'));
+    document.querySelectorAll('[data-home-i18n="articleDescription"]').forEach(el => el.textContent = t('articleDescription'));
+    document.querySelectorAll('[data-home-i18n="blogButton"]').forEach(el => el.textContent = t('blogButton'));
+
+    // Advice Section
+    document.querySelectorAll('[data-home-i18n="adviceTitle"]').forEach(el => el.textContent = t('adviceTitle'));
+    document.querySelectorAll('[data-home-i18n="namePlaceholder"]').forEach(el => {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = t('namePlaceholder');
+      } else {
+        el.textContent = t('namePlaceholder');
+      }
+    });
+    document.querySelectorAll('[data-home-i18n="phonePlaceholder"]').forEach(el => {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = t('phonePlaceholder');
+      } else {
+        el.textContent = t('phonePlaceholder');
+      }
+    });
+    document.querySelectorAll('[data-home-i18n="commentPlaceholder"]').forEach(el => {
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = t('commentPlaceholder');
+      } else {
+        el.textContent = t('commentPlaceholder');
+      }
+    });
+    document.querySelectorAll('[data-home-i18n="submitButton"]').forEach(el => el.textContent = t('submitButton'));
+
+    // Login Section
+    document.querySelectorAll('[data-home-i18n="systemLogin"]').forEach(el => el.textContent = t('systemLogin'));
+
+    // Footer
+    document.querySelectorAll('[data-home-i18n="mainPage"]').forEach(el => el.textContent = t('mainPage'));
+    document.querySelectorAll('[data-home-i18n="publicOffer"]').forEach(el => el.textContent = t('publicOffer'));
+    document.querySelectorAll('[data-home-i18n="rightsReserved"]').forEach(el => el.textContent = t('rightsReserved'));
+    document.querySelectorAll('[data-home-i18n="address"]').forEach(el => el.textContent = t('address'));
+
+    // Theme
+    document.querySelectorAll('[data-home-i18n="darkMode"]').forEach(el => el.textContent = t('darkMode'));
+    document.querySelectorAll('[data-home-i18n="lightMode"]').forEach(el => el.textContent = t('lightMode'));
+
   } catch (error) {
     console.error('Error updating home translations:', error);
   }
@@ -433,7 +433,7 @@ export function initHomePage() {
     <header class="header">
       <div class="container">
         <div class="nav-brand">
-          <img src="/images/darslinker.png" alt="Dars Linker" class="logo" />
+          <span class="logo">dars<span class="logo-accent">linker</span></span>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -528,27 +528,23 @@ export function initHomePage() {
 
             <div class="hero-actions">
               <button class="btn-primary" onclick="router.navigate('/register'); return false;" data-home-i18n="heroButton">BEPUL SINAB KO'RISH</button>
-              <div class="stats-badge">
-                <span class="stats-number">70+</span>
-                <span class="stats-text" data-home-i18n="statsText">O'quv markazlari bizga ishonch bildiradi!</span>
-              </div>
             </div>
           </div>
 
           <div class="hero-features-grid">
             <div class="hero-feature-card">
               <h3 data-home-i18n="aiTitle">Sun'iy intellekt (AI)</h3>
-              <p data-home-i18n="aiDescription">O'quvchi savollarga avtomatik javob berish, darslarni puylash va ta'lim vazifasi mavzularini aniqlash va yecha maslahat data. Test topshiriqlarida yordam berish.</p>
+              <p data-home-i18n="aiDescription">O‘quvchilar savollariga avtomatik javob berish, darslarni tahlil qilish va ta’lim jarayonidagi zaif nuqtalarni aniqlash. Test va topshiriqlarni bajarishda AI orqali aqlli yordam taqdim etiladi.</p>
             </div>
 
             <div class="hero-feature-card">
               <h3 data-home-i18n="paymentTitle">To'lov integratsiyasi</h3>
-              <p data-home-i18n="paymentDescription">Uzcard, Humo, Visa, Mastercard, Payme, Click bo'yicha to'lov o'quvchi harid qilganiga integratsiya qilinb. Ixtisoriga nark tushinadi.</p>
+              <p data-home-i18n="paymentDescription">Uzcard, Humo, Visa, Mastercard, Payme va Click orqali to‘lovlar to‘liq integratsiya qilingan. O‘quvchi kursni xarid qilishi bilan tizim avtomatik ishlaydi va barcha to‘lovlar tarixda saqlanadi.</p>
             </div>
 
             <div class="hero-feature-card analytics-card">
               <h3 data-home-i18n="analyticsTitle">O'quvchilar tahlili</h3>
-              <p data-home-i18n="analyticsDescription">O'quvchilar faoliyatin real vaqt rejimida kuzatish, test, topshiriq natijalarini grafik va diagrammalarga qo'shish, individual kurslarni O'quvchilarga avtomatik tavsiyalanib.</p>
+              <p data-home-i18n="analyticsDescription">O‘quvchilar faolligini real vaqt rejimida kuzatish, test va topshiriqlar natijalarini grafik va diagrammalar orqali tahlil qilish. Har bir o‘quvchi uchun individual tavsiyalar avtomatik shakllantiriladi.</p>
             </div>
 <!-- 3D Analytics Icon - Outside card (clear) -->
               <div class="analytics-3d-icon analytics-outside">
@@ -716,7 +712,7 @@ export function initHomePage() {
         <div class="footer-content">
           <!-- Logo -->
           <div class="footer-logo-section">
-            <img src="/images/darslinker.png" alt="Darslinker" class="footer-logo-img" />
+            <span class="footer-logo-text">dars<span class="logo-accent">linker</span></span>
           </div>
 
           <!-- Navigation -->
@@ -725,7 +721,6 @@ export function initHomePage() {
             <a href="#" class="footer-nav-item" data-home-i18n="about">Ma'lumot</a>
             <!-- <a href="#" class="footer-nav-item" data-home-i18n="pricing">Tariflar</a> -->
             <a href="#" class="footer-nav-item" data-home-i18n="contact">Aloqa</a>
-            <a href="#" class="footer-nav-item" data-home-i18n="publicOffer">Ommaviy oferta</a>
             <a href="#" class="footer-nav-item" onclick="router.navigate('/login'); return false;" data-home-i18n="login">Kirish</a>
           </nav>
 
@@ -750,7 +745,7 @@ export function initHomePage() {
               <svg class="contact-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
               </svg>
-              <span>+998 90 123 45 67</span>
+              <span>+998 33 888 01 33</span>
             </div>
           </div>
 
@@ -784,7 +779,7 @@ export function initHomePage() {
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2025 Darslinker. <span data-home-i18n="rightsReserved">Barcha huquqlar himoyalangan</span></p>
+          <p>&copy; ${new Date().getFullYear()} Darslinker. <span data-home-i18n="rightsReserved">Barcha huquqlar himoyalangan</span></p>
         </div>
       </div>
     </footer>
@@ -879,10 +874,10 @@ function initHomeTranslations() {
     if (savedLang && homeTranslations[savedLang]) {
       currentHomeLanguage = savedLang;
     }
-    
+
     // Update all translations
     updateHomeTranslations();
-    
+
     // Update language selector UI
     updateLanguageSelectorUI();
   } catch (error) {
@@ -895,16 +890,16 @@ function updateLanguageSelectorUI() {
   try {
     const langFlags = {
       uz: '/images/uz-flag.jpg',
-      ru: '/images/ru-flag.jpg', 
+      ru: '/images/ru-flag.jpg',
       en: '/images/us-flag.png'
     };
-    
+
     const langNames = {
       uz: 'UZ',
       ru: 'RU',
       en: 'EN'
     };
-    
+
     // Update desktop selector
     const desktopSelected = document.getElementById('langSelected');
     if (desktopSelected) {
@@ -913,7 +908,7 @@ function updateLanguageSelectorUI() {
       if (flagImg) flagImg.src = langFlags[currentHomeLanguage];
       if (span) span.textContent = langNames[currentHomeLanguage];
     }
-    
+
     // Update mobile selector
     const mobileSelected = document.getElementById('mobileLangSelected');
     if (mobileSelected) {
@@ -922,7 +917,7 @@ function updateLanguageSelectorUI() {
       if (flagImg) flagImg.src = langFlags[currentHomeLanguage];
       if (span) span.textContent = langNames[currentHomeLanguage];
     }
-    
+
     // Update active states
     document.querySelectorAll('.lang-option, .mobile-lang-option').forEach(option => {
       option.classList.remove('active');
@@ -943,12 +938,12 @@ function initHomePageEffects() {
   const glitterElements = document.querySelectorAll('.glitter-animation');
 
   glitterElements.forEach(element => {
-    element.addEventListener('mouseenter', function() {
+    element.addEventListener('mouseenter', function () {
       this.style.animationDuration = '1s';
       this.style.filter = 'brightness(1.5) drop-shadow(0 0 30px rgba(107, 123, 255, 1))';
     });
 
-    element.addEventListener('mouseleave', function() {
+    element.addEventListener('mouseleave', function () {
       this.style.animationDuration = '3s';
       this.style.filter = '';
     });
@@ -956,7 +951,7 @@ function initHomePageEffects() {
 
   // Add particle effect on click for 3D elements
   glitterElements.forEach(element => {
-    element.addEventListener('click', function(e) {
+    element.addEventListener('click', function (e) {
       createParticleEffect(e.clientX, e.clientY);
     });
   });
@@ -964,18 +959,18 @@ function initHomePageEffects() {
   // Enhanced button interactions
   const buttons = document.querySelectorAll('.btn-primary, .btn-outline, .login-btn, .video-btn');
   buttons.forEach(button => {
-    button.addEventListener('mouseenter', function() {
+    button.addEventListener('mouseenter', function () {
       this.style.transform = 'translateY(-3px) scale(1.02)';
     });
 
-    button.addEventListener('mouseleave', function() {
+    button.addEventListener('mouseleave', function () {
       this.style.transform = '';
     });
   });
 
   // Add ripple effect to buttons
   buttons.forEach(button => {
-    button.addEventListener('click', function(e) {
+    button.addEventListener('click', function (e) {
       const ripple = document.createElement('span');
       const rect = this.getBoundingClientRect();
       const size = Math.max(rect.width, rect.height);
@@ -1016,7 +1011,7 @@ function initHomePageEffects() {
   });
 
   // Parallax effect for hero section
-  window.addEventListener('scroll', function() {
+  window.addEventListener('scroll', function () {
     const scrolled = window.pageYOffset;
     const hero3d = document.querySelector('.hero-3d');
     const platform3d = document.querySelector('.platform-3d');
@@ -1280,12 +1275,9 @@ function initHomePageEffects() {
         color: #212529 !important;
       }
 
-      /* Logo special styling for light mode - need custom logo for this */
-      .light-theme .logo,
-      .light-theme .footer-logo-img {
-        /* We'll need a custom logo with "Dars" black and "linker" #7EA2D4 */
-        /* For now, using filter to make it darker */
-        filter: brightness(0.3) contrast(1.5) !important;
+      /* Logo accent color override in light mode */
+      .light-theme .logo-accent {
+        color: #7EA2D4 !important;
       }
 
       /* Stats badge and other elements */
@@ -1762,7 +1754,7 @@ function initLanguageDropdown() {
     e.stopPropagation();
     console.log('Language dropdown clicked');
     langDropdown.classList.toggle('open');
-    
+
     // Debug: check if dropdown is open
     if (langDropdown.classList.contains('open')) {
       console.log('Language dropdown opened');
@@ -1801,10 +1793,10 @@ function initLanguageDropdown() {
 
     // Update page language attribute
     document.documentElement.lang = lang;
-    
+
     // Update all translations on the page
     updateHomeTranslations();
-    
+
     console.log('Home page language changed to:', lang);
   });
 
@@ -1828,14 +1820,14 @@ function loadSavedLanguage() {
   // Update UI to match saved language
   const langSelected = document.getElementById('langSelected');
   if (!langSelected) return;
-  
+
   const flag = langOption.querySelector('.flag-img')?.src;
   const text = langOption.querySelector('span')?.textContent;
 
   if (flag && text) {
     const selectedFlag = langSelected.querySelector('.flag-img');
     const selectedText = langSelected.querySelector('span');
-    
+
     if (selectedFlag) selectedFlag.src = flag;
     if (selectedText) selectedText.textContent = text;
   }
@@ -1928,7 +1920,7 @@ function init3DPlayButton() {
   const playButton = document.querySelector('.play-button-3d');
   if (!playButton) return;
 
-  playButton.addEventListener('click', function() {
+  playButton.addEventListener('click', function () {
     // Add click animation
     this.style.transform = 'scale(0.9)';
 
@@ -1947,11 +1939,11 @@ function init3DPlayButton() {
   });
 
   // Add pulse animation
-  playButton.addEventListener('mouseenter', function() {
+  playButton.addEventListener('mouseenter', function () {
     this.style.animation = 'pulse 2s infinite';
   });
 
-  playButton.addEventListener('mouseleave', function() {
+  playButton.addEventListener('mouseleave', function () {
     this.style.animation = '';
   });
 }
@@ -1963,7 +1955,7 @@ function initHeaderScrollEffects() {
 
   let scrollTimeout;
 
-  window.addEventListener('scroll', function() {
+  window.addEventListener('scroll', function () {
     const scrollY = window.scrollY;
 
     // Smooth blur effect based on scroll
@@ -1994,7 +1986,7 @@ function initHeaderScrollEffects() {
 function applyTheme(isDark) {
   const body = document.body;
   const html = document.documentElement;
-  
+
   if (isDark) {
     // Dark mode styles
     body.classList.remove('light-theme');
@@ -2032,11 +2024,11 @@ function initThemeToggle() {
     sunIcon.style.display = 'none';
     moonIcon.style.display = 'block';
   }
-  
+
   // Apply initial theme
   applyTheme(isDark);
 
-  themeToggle.addEventListener('click', function() {
+  themeToggle.addEventListener('click', function () {
     // Toggle theme
     isDark = !isDark;
 
@@ -2056,18 +2048,18 @@ function initThemeToggle() {
 
     // Apply actual theme changes
     applyTheme(isDark);
-    
+
     console.log(`Theme switched to: ${isDark ? 'dark' : 'light'} mode`);
   });
 
   // Add hover sound effect (optional)
-  themeToggle.addEventListener('mouseenter', function() {
+  themeToggle.addEventListener('mouseenter', function () {
     // You can add sound effects here later
   });
 }
 
 // Advice Form Submission
-window.submitAdviceForm = function(event) {
+window.submitAdviceForm = function (event) {
   event.preventDefault();
 
   const name = document.getElementById('adviceName').value;
@@ -2102,40 +2094,40 @@ window.submitAdviceForm = function(event) {
     },
     body: JSON.stringify({ name, phone, comment })
   })
-  .then(response => response.json())
-  .then(data => {
-    if (data.success) {
-      // Show success toast
-      showToast(`Rahmat, ${name}! Sizning so'rovingiz qabul qilindi. Tez orada siz bilan bog'lanamiz.`, 'success', 6000);
-      
-      // Reset form
-      event.target.reset();
-      
-      // Reset phone input to default value
-      document.getElementById('advicePhone').value = '+998';
-      
-      // Success animation
-      submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
-      submitBtn.textContent = 'Yuborildi ✓';
-      
-      setTimeout(() => {
-        submitBtn.style.background = '';
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-      }, 3000);
-      
-    } else {
-      throw new Error(data.message || 'Xatolik yuz berdi');
-    }
-  })
-  .catch(error => {
-    console.error('Advice submission error:', error);
-    showToast('Xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.', 'error', 5000);
-    
-    // Reset button
-    submitBtn.textContent = originalText;
-    submitBtn.disabled = false;
-  });
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Show success toast
+        showToast(`Rahmat, ${name}! Sizning so'rovingiz qabul qilindi. Tez orada siz bilan bog'lanamiz.`, 'success', 6000);
+
+        // Reset form
+        event.target.reset();
+
+        // Reset phone input to default value
+        document.getElementById('advicePhone').value = '+998';
+
+        // Success animation
+        submitBtn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+        submitBtn.textContent = 'Yuborildi ✓';
+
+        setTimeout(() => {
+          submitBtn.style.background = '';
+          submitBtn.textContent = originalText;
+          submitBtn.disabled = false;
+        }, 3000);
+
+      } else {
+        throw new Error(data.message || 'Xatolik yuz berdi');
+      }
+    })
+    .catch(error => {
+      console.error('Advice submission error:', error);
+      showToast('Xatolik yuz berdi! Iltimos, qaytadan urinib ko\'ring.', 'error', 5000);
+
+      // Reset button
+      submitBtn.textContent = originalText;
+      submitBtn.disabled = false;
+    });
 
 };
 
@@ -2147,9 +2139,9 @@ function initSMSContact() {
 
   if (!smsContact || !speechBubble) return;
 
-  smsContact.addEventListener('click', function(e) {
+  smsContact.addEventListener('click', function (e) {
     e.stopPropagation();
-    
+
     // Add click animation
     const container = this.querySelector('.sms-container');
     container.style.transform = 'scale(0.9)';
@@ -2170,14 +2162,14 @@ function initSMSContact() {
 
   // Close button event listener
   if (closeBtn) {
-    closeBtn.addEventListener('click', function(e) {
+    closeBtn.addEventListener('click', function (e) {
       e.stopPropagation();
       closeSMSBubble();
     });
   }
 
   // Add hover sound effect (optional)
-  smsContact.addEventListener('mouseenter', function() {
+  smsContact.addEventListener('mouseenter', function () {
     // You can add sound effects here later
   });
 }
@@ -2203,9 +2195,9 @@ function showToast(message, type = 'success', duration = 5000) {
   // Create toast element
   const toast = document.createElement('div');
   toast.className = `toast ${type}`;
-  
+
   const icon = type === 'success' ? '✅' : '❌';
-  
+
   toast.innerHTML = `
     <div class="toast-content">
       <span class="toast-icon">${icon}</span>
@@ -2240,22 +2232,22 @@ function initPhoneFormatting() {
   const phoneInput = document.getElementById('advicePhone');
   if (!phoneInput) return;
 
-  phoneInput.addEventListener('input', function(e) {
+  phoneInput.addEventListener('input', function (e) {
     let value = e.target.value;
-    
+
     // Remove all non-digits except the + at the beginning
     let numbers = value.replace(/[^\d]/g, '');
-    
+
     // If user tries to delete 998, restore it
     if (numbers.length < 3 || !numbers.startsWith('998')) {
       numbers = '998' + numbers.replace(/^998/, '');
     }
-    
+
     // Limit to 12 digits total (998 + 9 more)
     if (numbers.length > 12) {
       numbers = numbers.substring(0, 12);
     }
-    
+
     // Format the number
     let formatted = '+998';
     if (numbers.length > 3) {
@@ -2270,12 +2262,12 @@ function initPhoneFormatting() {
     if (numbers.length > 10) {
       formatted += ' ' + numbers.substring(10, 12);
     }
-    
+
     e.target.value = formatted;
   });
 
   // Prevent cursor from going before +998
-  phoneInput.addEventListener('keydown', function(e) {
+  phoneInput.addEventListener('keydown', function (e) {
     const cursorPosition = e.target.selectionStart;
     if ((e.key === 'Backspace' || e.key === 'Delete') && cursorPosition <= 4) {
       e.preventDefault();
@@ -2283,7 +2275,7 @@ function initPhoneFormatting() {
   });
 
   // Set cursor after +998 when clicked at the beginning
-  phoneInput.addEventListener('click', function(e) {
+  phoneInput.addEventListener('click', function (e) {
     if (e.target.selectionStart < 4) {
       e.target.setSelectionRange(4, 4);
     }
@@ -2300,7 +2292,7 @@ function initNavigation() {
 
   // Logo click handler - scroll to top (Hero section)
   if (logo) {
-    logo.addEventListener('click', function(e) {
+    logo.addEventListener('click', function (e) {
       e.preventDefault();
       scrollToSection('hero');
     });
@@ -2310,7 +2302,7 @@ function initNavigation() {
 
   // Navigation menu items
   navItems.forEach((item, index) => {
-    item.addEventListener('click', function(e) {
+    item.addEventListener('click', function (e) {
       e.preventDefault();
 
       const targetKey = this.dataset.homeI18n;
@@ -2466,7 +2458,7 @@ function initFooterNavigation() {
   const footerNavItems = document.querySelectorAll('.footer-nav-item');
 
   footerNavItems.forEach(item => {
-    item.addEventListener('click', function(e) {
+    item.addEventListener('click', function (e) {
       const text = this.textContent.trim();
 
       // Only handle internal navigation, let external links work normally
@@ -2532,7 +2524,7 @@ function initMobileMenu() {
   }
 
   // Toggle mobile menu
-  mobileMenuBtn.addEventListener('click', function(e) {
+  mobileMenuBtn.addEventListener('click', function (e) {
     e.stopPropagation();
 
     // Toggle active states
@@ -2554,7 +2546,7 @@ function initMobileMenu() {
 
   [...navItems, mobileLoginBtn].forEach(item => {
     if (item) {
-      item.addEventListener('click', function() {
+      item.addEventListener('click', function () {
         // Close mobile menu
         mobileMenuBtn.classList.remove('active');
         navMenu.classList.remove('mobile-active');
@@ -2565,7 +2557,7 @@ function initMobileMenu() {
   });
 
   // Close menu when clicking outside
-  document.addEventListener('click', function(e) {
+  document.addEventListener('click', function (e) {
     if (!header.contains(e.target)) {
       mobileMenuBtn.classList.remove('active');
       navMenu.classList.remove('mobile-active');
@@ -2575,7 +2567,7 @@ function initMobileMenu() {
   });
 
   // Close menu on window resize if screen becomes large
-  window.addEventListener('resize', function() {
+  window.addEventListener('resize', function () {
     if (window.innerWidth > 768) {
       mobileMenuBtn.classList.remove('active');
       navMenu.classList.remove('mobile-active');
@@ -2660,7 +2652,7 @@ function addMobileMenuStyles() {
       }
 
       .logo {
-        height: 40px;
+        font-size: 24px;
       }
     }
 
@@ -2686,8 +2678,7 @@ function addMobileMenuStyles() {
       }
 
       .logo {
-        height: 28px;
-        width: auto;
+        font-size: 22px;
       }
 
       /* Hide desktop navigation and create dropdown menu */
@@ -3071,7 +3062,7 @@ function addMobileMenuStyles() {
     @media (max-width: 480px) {
       /* Extra small mobile adjustments - minimal changes */
       .logo {
-        height: 26px;
+        font-size: 20px;
       }
 
       .mobile-menu-btn {
@@ -3266,11 +3257,11 @@ function initMobileThemeToggle() {
     mobileToggleSlider.classList.remove('active');
     mobileThemeText.textContent = 'Dark Mode';
   }
-  
+
   // Apply initial theme
   applyTheme(isDark);
 
-  mobileThemeToggle.addEventListener('click', function() {
+  mobileThemeToggle.addEventListener('click', function () {
     // Toggle theme
     isDark = !isDark;
 
@@ -3307,7 +3298,7 @@ function initMobileThemeToggle() {
 
     // Apply actual theme changes
     applyTheme(isDark);
-    
+
     console.log(`Mobile theme switched to: ${isDark ? 'dark' : 'light'} mode`);
   });
 
@@ -3317,10 +3308,10 @@ function initMobileThemeToggle() {
 async function initDynamicArticles() {
   try {
     console.log('Initializing dynamic articles...');
-    
+
     // Wait a bit for DOM to be fully rendered
     await new Promise(resolve => setTimeout(resolve, 100));
-    
+
     // Initialize dynamic articles using the replaceLandingArticles function
     const dynamicArticles = await replaceLandingArticles({
       limit: 6,
@@ -3330,7 +3321,7 @@ async function initDynamicArticles() {
       enableRealTime: true,
       showUpdateNotifications: true
     });
-    
+
     if (dynamicArticles) {
       console.log('✅ Dynamic articles initialized successfully');
     } else {
@@ -3338,7 +3329,7 @@ async function initDynamicArticles() {
     }
   } catch (error) {
     console.error('❌ Failed to initialize dynamic articles:', error);
-    
+
     // If dynamic loading fails, show a simple message
     const container = document.getElementById('dynamic-articles-container');
     if (container) {
@@ -3379,15 +3370,15 @@ function openTelegramBot() {
 }
 
 // ESC key to close chat bubble and SMS bubble
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') {
     const chatBubble = document.getElementById('chatSpeechBubble');
     const smsBubble = document.getElementById('smsSpeechBubble');
-    
+
     if (chatBubble && chatBubble.style.display === 'block') {
       closeChatBubble();
     }
-    
+
     if (smsBubble && smsBubble.style.display === 'block') {
       closeSMSBubble();
     }
@@ -3395,19 +3386,19 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Click outside bubbles to close
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
   const chatBubble = document.getElementById('chatSpeechBubble');
   const chatIcon = document.getElementById('floatingChatIcon');
   const smsBubble = document.getElementById('smsSpeechBubble');
   const smsContact = document.getElementById('smsContact');
-  
+
   // Close chat bubble if clicked outside
   if (chatBubble && chatBubble.style.display === 'block') {
     if (!chatBubble.contains(e.target) && !chatIcon.contains(e.target)) {
       closeChatBubble();
     }
   }
-  
+
   // Close SMS bubble if clicked outside
   if (smsBubble && smsBubble.style.display === 'block') {
     if (!smsBubble.contains(e.target) && !smsContact.contains(e.target)) {
@@ -3421,3 +3412,13 @@ window.toggleChatBubble = toggleChatBubble;
 window.closeChatBubble = closeChatBubble;
 window.openTelegramBot = openTelegramBot;
 window.closeSMSBubble = closeSMSBubble;
+
+
+// Later we may add these:
+// <div class="stats-badge">
+//   <span class="stats-number">70+</span>
+//   <span class="stats-text" data-home-i18n="statsText">O'quv markazlari bizga ishonch bildiradi!</span>
+// </div>
+
+// in footer:
+// <a href="#" class="footer-nav-item" data-home-i18n="publicOffer">Ommaviy oferta</a>
