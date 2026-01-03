@@ -7,7 +7,7 @@ import { showSuccessToast, showErrorToast, showInfoToast, showToast } from '../.
 import { config } from '../../utils/config.js';
 import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
-const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'Darslinker_sbot').replace(/^@/, '');
+const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'darslinker_bot').replace(/^@/, '');
 
 export async function initDashboard(routeParams = {}) {
   console.log('=== Dashboard initializing ===');
@@ -1125,14 +1125,35 @@ async function handleCreateCourse(e) {
 
 // Global functions for onclick handlers
 window.performLogout = async function () {
+  const preservedPreferences = {
+    appLanguage: localStorage.getItem('appLanguage'),
+    language: localStorage.getItem('language'),
+    appTheme: localStorage.getItem('appTheme'),
+    primaryColor: localStorage.getItem('primaryColor')
+  };
+
   try {
     await apiService.logout();
   } catch (error) {
     console.error('Logout error:', error);
   } finally {
+    if (typeof window.closeModal === 'function') {
+      window.closeModal();
+    }
+
+    if (window.logoutGuardActive) {
+      window.logoutGuardActive = false;
+      window.removeEventListener('popstate', window.logoutGuardHandler);
+    }
+
     // Always clear local data and navigate away
     localStorage.clear();
     sessionStorage.clear();
+    Object.entries(preservedPreferences).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        localStorage.setItem(key, value);
+      }
+    });
     store.setState({ user: null, isAuthenticated: false });
     router.navigate('/login');
   }
@@ -1141,14 +1162,14 @@ window.performLogout = async function () {
 window.confirmLogout = function () {
   const content = `
     <div style="padding: 8px 0; color: var(--text-primary);">
-      <p style="margin: 0 0 16px;">Are you sure you want to logout?</p>
+      <p style="margin: 0 0 16px;">${t('logout.confirmBody')}</p>
       <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
-        <button onclick="closeModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Cancel</button>
-        <button onclick="performLogout()" style="background: var(--primary-color); border: 1px solid var(--primary-color); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Logout</button>
+        <button onclick="closeModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">${t('common.cancel')}</button>
+        <button onclick="performLogout()" style="background: var(--primary-color); border: 1px solid var(--primary-color); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">${t('header.logout')}</button>
       </div>
     </div>
   `;
-  showModal('Confirm Logout', content);
+  showModal(t('logout.confirmTitle'), content);
 };
 
 window.handleLogout = function () {
