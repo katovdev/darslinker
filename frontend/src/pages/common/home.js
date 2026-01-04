@@ -38,7 +38,7 @@ const homeTranslations = {
     feature3: '3. To\'lov tizimi integratsiya',
     feature4: '4. Onlayn uchrashuvlar',
     feature5: '5. Sun\'iy intellekt',
-    feature6: '6. Brendaga moslash',
+    feature6: '6. Brendga moslash',
     feature7: '7. Qo\'llab quvvatlash',
     feature8: '8. Ma\'lumotlar xavfsizligi',
     feature9: '9. Moliyaviy analitika',
@@ -476,13 +476,6 @@ export function initHomePage() {
               </div>
             </div>
 
-            <div class="mobile-theme-toggle" id="mobileThemeToggle">
-              <span class="mobile-theme-text" data-home-i18n="lightMode">Light Mode</span>
-              <div class="mobile-toggle-switch">
-                <div class="mobile-toggle-slider"></div>
-              </div>
-            </div>
-
             <button class="mobile-login-btn" onclick="router.navigate('/login'); return false;" data-home-i18n="login">Kirish</button>
           </div>
         </nav>
@@ -759,21 +752,6 @@ export function initHomePage() {
             <a href="#" class="social-link telegram">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
-              </svg>
-            </a>
-            <a href="#" class="social-link facebook">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M13.397 20.997v-8.196h2.765l.411-3.209h-3.176V7.548c0-.926.258-1.56 1.587-1.56h1.684V3.127A22.336 22.336 0 0 0 14.201 3c-2.444 0-4.122 1.492-4.122 4.231v2.355H7.332v3.209h2.753v8.202h3.312z"/>
-              </svg>
-            </a>
-            <a href="#" class="social-link gmail">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
-              </svg>
-            </a>
-            <a href="#" class="social-link linkedin">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
               </svg>
             </a>
           </div>
@@ -3083,17 +3061,76 @@ function addMobileMenuStyles() {
       }
     }
 
-    /* Hide all 3D elements on mobile and tablet */
+    /* Scale down 3D elements on mobile and tablet */
     @media (max-width: 1024px) {
-      .play-button-3d,
+      .play-button-3d {
+        top: 60px !important;
+        left: 15px !important;
+      }
+
+      .play-btn-image {
+        width: 60px !important;
+        height: 60px !important;
+      }
+
       .analytics-3d-icon,
-      .analytics-outside,
-      .course-3d-icon,
-      .glass-decoration,
-      .minimal-glass-decoration,
-      .korporativ-glass-decoration,
+      .analytics-outside {
+        bottom: -40px !important;
+        right: -10px !important;
+      }
+
+      .analytics-icon-image-clear {
+        width: 80px !important;
+        height: 80px !important;
+      }
+
+      .course-3d-icon {
+        left: -40px !important;
+        top: -20px !important;
+      }
+
+      .course-icon-image {
+        width: 100px !important;
+        height: 100px !important;
+      }
+
+      .glass-decoration {
+        right: -40px !important;
+        top: -20px !important;
+      }
+
+      .glass-deco-image {
+        width: 100px !important;
+        height: 100px !important;
+      }
+
+      .minimal-glass-decoration {
+        left: -30px !important;
+        top: -20px !important;
+      }
+
+      .minimal-glass-image {
+        width: 80px !important;
+        height: 80px !important;
+      }
+
+      .korporativ-glass-decoration {
+        right: -30px !important;
+        top: -20px !important;
+      }
+
+      .korporativ-glass-image {
+        width: 100px !important;
+        height: 100px !important;
+      }
+
       .samarali-dars-decoration,
-      .oxirgi-dars-decoration,
+      .oxirgi-dars-decoration {
+        width: 80px !important;
+        height: 80px !important;
+      }
+
+      /* Hide theme toggle icons on mobile */
       .theme-toggle .sun-icon,
       .theme-toggle .moon-icon {
         display: none !important;
@@ -3126,7 +3163,7 @@ function addMobileMenuStyles() {
         display: none !important;
       }
 
-      /* Simplify cards without 3D elements */
+      /* Maintain card positioning with 3D elements */
       .hero-feature-card.analytics-card,
       .platform-feature-card.course-card,
       .platform-feature-card.brending-card,
@@ -3137,12 +3174,82 @@ function addMobileMenuStyles() {
         position: relative;
       }
 
-      /* Clean up positioning without 3D elements */
+      /* Ensure grids maintain positioning for 3D elements */
       .hero-features-grid,
       .platform-features-grid,
       .pricing-grid,
       .articles-grid {
-        position: static;
+        position: relative;
+      }
+    }
+
+    /* Smaller mobile screens - further reduce 3D element sizes */
+    @media (max-width: 768px) {
+      .play-button-3d {
+        top: 40px !important;
+        left: 10px !important;
+      }
+
+      .play-btn-image {
+        width: 50px !important;
+        height: 50px !important;
+      }
+
+      .analytics-3d-icon,
+      .analytics-outside {
+        bottom: -30px !important;
+        right: -5px !important;
+      }
+
+      .analytics-icon-image-clear {
+        width: 60px !important;
+        height: 60px !important;
+      }
+
+      .course-3d-icon {
+        left: -30px !important;
+        top: -15px !important;
+      }
+
+      .course-icon-image {
+        width: 80px !important;
+        height: 80px !important;
+      }
+
+      .glass-decoration {
+        right: -30px !important;
+        top: -15px !important;
+      }
+
+      .glass-deco-image {
+        width: 80px !important;
+        height: 80px !important;
+      }
+
+      .minimal-glass-decoration {
+        left: -20px !important;
+        top: -15px !important;
+      }
+
+      .minimal-glass-image {
+        width: 60px !important;
+        height: 60px !important;
+      }
+
+      .korporativ-glass-decoration {
+        right: -20px !important;
+        top: -15px !important;
+      }
+
+      .korporativ-glass-image {
+        width: 80px !important;
+        height: 80px !important;
+      }
+
+      .samarali-dars-decoration,
+      .oxirgi-dars-decoration {
+        width: 60px !important;
+        height: 60px !important;
       }
     }
 
@@ -3422,3 +3529,27 @@ window.closeSMSBubble = closeSMSBubble;
 
 // in footer:
 // <a href="#" class="footer-nav-item" data-home-i18n="publicOffer">Ommaviy oferta</a>
+{/* <a href="#" class="social-link facebook">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M13.397 20.997v-8.196h2.765l.411-3.209h-3.176V7.548c0-.926.258-1.56 1.587-1.56h1.684V3.127A22.336 22.336 0 0 0 14.201 3c-2.444 0-4.122 1.492-4.122 4.231v2.355H7.332v3.209h2.753v8.202h3.312z"/>
+</svg>
+</a>
+<a href="#" class="social-link gmail">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.309-3.178 3.927-1.964L5.455 4.64 12 9.548l6.545-4.91 1.528-1.145C21.69 2.28 24 3.434 24 5.457z"/>
+</svg>
+</a>
+<a href="#" class="social-link linkedin">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+</svg>
+</a> */}
+
+
+//  in 477 line
+{/* <div class="mobile-theme-toggle" id="mobileThemeToggle">
+              <span class="mobile-theme-text" data-home-i18n="lightMode">Light Mode</span>
+              <div class="mobile-toggle-switch">
+                <div class="mobile-toggle-slider"></div>
+              </div>
+            </div> */}
