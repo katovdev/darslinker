@@ -84,25 +84,48 @@ class App {
       // Check if it's a teacher landing page
       const currentPath = window.location.pathname;
       
-      // Check for teacher landing page pattern: /teacher/:teacherId
-      const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9]+)$/;
+      // Check for teacher landing page pattern: /teacher/:identifier (can be custom URL or teacher ID)
+      const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9-]+)$/;
       const teacherMatch = currentPath.match(teacherPagePattern);
       
       if (teacherMatch) {
-        const teacherId = teacherMatch[1];
-        console.log('📄 Loading teacher landing page for ID:', teacherId);
+        const identifier = teacherMatch[1];
+        console.log('📄 Loading teacher landing page for identifier:', identifier);
         
-        // Save teacherId to sessionStorage
-        sessionStorage.setItem('currentTeacherId', teacherId);
+        // Save identifier to sessionStorage (could be custom URL or teacher ID)
+        sessionStorage.setItem('currentTeacherId', identifier);
         
         // Check if landing page function exists in dashboard.js
         if (typeof window.loadTeacherLandingPage === 'function') {
-          window.loadTeacherLandingPage(teacherId);
+          window.loadTeacherLandingPage(identifier);
         } else {
           // Load dashboard.js which contains the landing page function
           import('./pages/common/dashboard.js').then(() => {
             if (typeof window.loadTeacherLandingPage === 'function') {
-              window.loadTeacherLandingPage(teacherId);
+              window.loadTeacherLandingPage(identifier);
+            }
+          });
+        }
+        return;
+      }
+      
+      // Check for custom URL pattern (direct path like /english, /math, etc.)
+      // Only match if it's not a known route
+      const knownRoutes = ['/', '/login', '/register', '/dashboard', '/pricing', '/blog', '/student-dashboard'];
+      const isKnownRoute = knownRoutes.some(route => currentPath === route || currentPath.startsWith(route + '/'));
+      
+      if (!isKnownRoute && currentPath.match(/^\/[a-z0-9-]+$/)) {
+        const customUrl = currentPath.substring(1); // Remove leading slash
+        console.log('📄 Loading teacher landing page for custom URL:', customUrl);
+        
+        sessionStorage.setItem('currentTeacherId', customUrl);
+        
+        if (typeof window.loadTeacherLandingPage === 'function') {
+          window.loadTeacherLandingPage(customUrl);
+        } else {
+          import('./pages/common/dashboard.js').then(() => {
+            if (typeof window.loadTeacherLandingPage === 'function') {
+              window.loadTeacherLandingPage(customUrl);
             }
           });
         }

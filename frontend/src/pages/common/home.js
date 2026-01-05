@@ -3064,7 +3064,7 @@ function addMobileMenuStyles() {
     /* Scale down 3D elements on mobile and tablet */
     @media (max-width: 1024px) {
       .play-button-3d {
-        top: 60px !important;
+        top: 40px !important;
         left: 15px !important;
       }
 
@@ -3124,6 +3124,14 @@ function addMobileMenuStyles() {
         height: 100px !important;
       }
 
+      .samarali-dars-decoration {
+        left: 20px !important;
+      }
+      
+      .oxirgi-dars-decoration {
+        right: -30px !important;
+      }
+      
       .samarali-dars-decoration,
       .oxirgi-dars-decoration {
         width: 80px !important;
@@ -3186,24 +3194,24 @@ function addMobileMenuStyles() {
     /* Smaller mobile screens - further reduce 3D element sizes */
     @media (max-width: 768px) {
       .play-button-3d {
-        top: 40px !important;
-        left: 10px !important;
+        top: 20px !important;
+        left: -5px !important;
       }
 
       .play-btn-image {
-        width: 50px !important;
-        height: 50px !important;
+        width: 70px !important;
+        height: 70px !important;
       }
 
       .analytics-3d-icon,
       .analytics-outside {
-        bottom: -30px !important;
-        right: -5px !important;
+        top: -50px !important;
+        right: -20px !important;
       }
 
       .analytics-icon-image-clear {
-        width: 60px !important;
-        height: 60px !important;
+        width: 70px !important;
+        height: 70px !important;
       }
 
       .course-3d-icon {
@@ -3246,6 +3254,14 @@ function addMobileMenuStyles() {
         height: 80px !important;
       }
 
+      .samarali-dars-decoration {
+        left: 20px !important;
+      }
+      
+      .oxirgi-dars-decoration {
+        right: -30px !important;
+      }
+      
       .samarali-dars-decoration,
       .oxirgi-dars-decoration {
         width: 60px !important;

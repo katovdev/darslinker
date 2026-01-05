@@ -66,6 +66,30 @@ const updateLandingSettings = catchAsync(async (req, res) => {
     }
   }
 
+  // Validate and check custom URL uniqueness if provided
+  if (updateData.customUrl !== undefined) {
+    const customUrl = updateData.customUrl.trim().toLowerCase();
+    
+    // Validate format
+    if (customUrl && !/^[a-z0-9-]+$/.test(customUrl)) {
+      throw new BadRequestError('Custom URL can only contain lowercase letters, numbers, and hyphens');
+    }
+
+    // Check if URL is already taken by another teacher
+    if (customUrl) {
+      const existingLanding = await Landing.findOne({ 
+        customUrl: customUrl,
+        teacher: { $ne: teacherId } // Exclude current teacher
+      });
+      
+      if (existingLanding) {
+        throw new BadRequestError('This custom URL is already taken. Please choose another one.');
+      }
+    }
+
+    updateData.customUrl = customUrl || '';
+  }
+
   // Find or create landing settings
   let landing = await Landing.findOne({ teacher: teacherId });
   
@@ -95,22 +119,66 @@ const updateLandingSettings = catchAsync(async (req, res) => {
 });
 
 /**
- * Get public landing page data
- * @route GET /landing/public/:teacherId
+ * Check if custom URL is available
+ * @route GET /landing/check-url/:customUrl
+ * @access Public
+ */
+const checkUrlAvailability = catchAsync(async (req, res) => {
+  const { customUrl } = req.params;
+  const { teacherId } = req.query; // Optional: exclude current teacher's URL
+
+  if (!customUrl || !/^[a-z0-9-]+$/.test(customUrl)) {
+    throw new BadRequestError('Invalid custom URL format');
+  }
+
+  const query = { customUrl: customUrl.toLowerCase() };
+  if (teacherId) {
+    query.teacher = { $ne: teacherId };
+  }
+
+  const existing = await Landing.findOne(query);
+
+  res.status(200).json({
+    success: true,
+    available: !existing,
+    message: existing ? 'This URL is already taken' : 'URL is available'
+  });
+});
+
+/**
+ * Get public landing page data by custom URL or teacher ID
+ * @route GET /landing/public/:identifier
  * @access Public
  */
 const getPublicLandingPage = catchAsync(async (req, res) => {
   const { teacherId } = req.params;
+  let teacher = null;
+  let landing = null;
 
-  // Find teacher
-  const teacher = await User.findById(teacherId);
+  // First, try to find by custom URL
+  landing = await Landing.findOne({ customUrl: teacherId.toLowerCase() });
+  
+  if (landing) {
+    // Found by custom URL
+    teacher = await User.findById(landing.teacher);
+  } else {
+    // Fallback to teacher ID
+    teacher = await User.findById(teacherId);
+    if (teacher && teacher.role === 'teacher') {
+      landing = await Landing.findOne({ teacher: teacherId });
+    }
+  }
+
   if (!teacher || teacher.role !== 'teacher') {
     throw new NotFoundError('Teacher not found');
   }
 
-  // Find landing settings
-  let landing = await Landing.findOne({ teacher: teacherId });
+  // If landing not found yet, try to find by teacher ID (in case we found by custom URL but need to get full landing data)
+  if (!landing) {
+    landing = await Landing.findOne({ teacher: teacher._id });
+  }
   
+  // If still no landing settings, create default object
   if (!landing) {
     landing = {
       title: `${teacher.firstName} ${teacher.lastName}'s Courses`,
@@ -133,7 +201,7 @@ const getPublicLandingPage = catchAsync(async (req, res) => {
 
   // Get teacher's active courses
   const courses = await Course.find({ 
-    teacher: teacherId, 
+    teacher: teacher._id, 
     status: 'active' 
   }).select('title description thumbnail courseType price discountPrice category totalLessons');
 
@@ -156,4 +224,4 @@ const getPublicLandingPage = catchAsync(async (req, res) => {
   });
 });
 
-export { getLandingSettings, updateLandingSettings, getPublicLandingPage };
+export { getLandingSettings, updateLandingSettings, getPublicLandingPage, checkUrlAvailability };
