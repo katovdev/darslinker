@@ -1104,6 +1104,87 @@ function getQuizActiveStyles() {
       justify-content: center;
       gap: 16px;
     }
+
+    .logout-modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .logout-modal.is-active {
+      display: flex;
+    }
+
+    .logout-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(2px);
+    }
+
+    .logout-modal-content {
+      position: relative;
+      z-index: 1;
+      width: min(420px, 90vw);
+      background: #232323;
+      border: 1px solid rgba(126, 162, 212, 0.2);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    .logout-modal-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .logout-modal-text {
+      font-size: 14px;
+      color: #9CA3AF;
+      line-height: 1.5;
+    }
+
+    .logout-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .logout-modal-btn {
+      border-radius: 10px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .logout-modal-cancel {
+      background: rgba(255, 255, 255, 0.06);
+      color: #e5e7eb;
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    .logout-modal-cancel:hover {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .logout-modal-confirm {
+      background: color-mix(in srgb, var(--primary-color) 25%, transparent);
+      color: var(--primary-color);
+      border-color: color-mix(in srgb, var(--primary-color) 45%, transparent);
+    }
+
+    .logout-modal-confirm:hover {
+      background: color-mix(in srgb, var(--primary-color) 35%, transparent);
+    }
   `;
 }
 
@@ -1130,6 +1211,12 @@ function getHeaderHtml() {
             <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
           </svg>
         </button>
+        <button class="icon-btn back-btn" title="${t('success.backToDashboard')}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M19 12H5m7 7l-7-7 7-7"/>
+          </svg>
+          <span class="back-text">${t('success.backToDashboard')}</span>
+        </button>
         <button class="icon-btn logout-btn" title="Logout">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
@@ -1138,6 +1225,18 @@ function getHeaderHtml() {
         </button>
       </div>
     </header>
+
+    <div class="logout-modal" id="logoutModal" aria-hidden="true">
+      <div class="logout-modal-backdrop"></div>
+      <div class="logout-modal-content" role="dialog" aria-modal="true" aria-labelledby="logoutModalTitle">
+        <h3 class="logout-modal-title" id="logoutModalTitle">${t('courseLearning.logoutConfirmTitle')}</h3>
+        <p class="logout-modal-text">${t('courseLearning.logoutConfirmBody')}</p>
+        <div class="logout-modal-actions">
+          <button class="logout-modal-btn logout-modal-cancel" type="button">${t('courseLearning.logoutConfirmCancel')}</button>
+          <button class="logout-modal-btn logout-modal-confirm" type="button">${t('courseLearning.logoutConfirmConfirm')}</button>
+        </div>
+      </div>
+    </div>
   `;
 }
 
@@ -1583,10 +1682,38 @@ function attachQuizEventListeners(course, lesson, sidebarHtml) {
   if (notificationBtn) {
     notificationBtn.addEventListener('click', () => showToast(t('courseLearning.comingSoon')));
   }
-  
+
+  const backBtn = document.querySelector('.back-btn');
+  if (backBtn) {
+    backBtn.addEventListener('click', handleBackToDashboard);
+  }
+
   const logoutBtn = document.querySelector('.logout-btn');
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', handleLogout);
+    logoutBtn.addEventListener('click', openLogoutModal);
+  }
+
+  const logoutModal = document.getElementById('logoutModal');
+  if (logoutModal && !logoutModal.dataset.bound) {
+    logoutModal.dataset.bound = 'true';
+    const cancelBtn = logoutModal.querySelector('.logout-modal-cancel');
+    const confirmBtn = logoutModal.querySelector('.logout-modal-confirm');
+    const backdrop = logoutModal.querySelector('.logout-modal-backdrop');
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', closeLogoutModal);
+    }
+
+    if (backdrop) {
+      backdrop.addEventListener('click', closeLogoutModal);
+    }
+
+    if (confirmBtn) {
+      confirmBtn.addEventListener('click', () => {
+        closeLogoutModal();
+        handleLogout();
+      });
+    }
   }
   
   // Auto-expand the module containing current lesson
@@ -1627,8 +1754,40 @@ function showToast(message) {
   setTimeout(() => toast.remove(), 3000);
 }
 
+function openLogoutModal() {
+  const logoutModal = document.getElementById('logoutModal');
+  if (!logoutModal) return;
+  logoutModal.dataset.prevOverflow = document.body.style.overflow || '';
+  logoutModal.classList.add('is-active');
+  logoutModal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLogoutModal() {
+  const logoutModal = document.getElementById('logoutModal');
+  if (!logoutModal) return;
+  logoutModal.classList.remove('is-active');
+  logoutModal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = logoutModal.dataset.prevOverflow || '';
+}
+
+function handleBackToDashboard() {
+  const teacherId = sessionStorage.getItem('currentTeacherId');
+  const landingUser = sessionStorage.getItem('landingUser');
+  const target = teacherId && landingUser
+    ? `/teacher/${teacherId}/student-dashboard`
+    : '/student-dashboard';
+
+  import('../../utils/router.js').then(({ router }) => {
+    router.navigate(target);
+  }).catch(() => {
+    window.location.href = target;
+  });
+}
+
 // Handle logout
 function handleLogout() {
+  closeLogoutModal();
   sessionStorage.clear();
   showToast(t('courseLearning.loggingOut'));
   setTimeout(() => window.location.href = '/', 1000);

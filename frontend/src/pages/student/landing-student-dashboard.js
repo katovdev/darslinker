@@ -47,6 +47,10 @@ let teacherTheme = {
 // Global variable to store notification count
 let notificationCount = 0;
 
+// Store original dashboard content for navigation
+let originalDashboardContent = null;
+let isNotificationsView = false;
+
 // Get logo HTML based on teacher theme
 function getLogoHTML() {
   const logoText = teacherTheme.logoText || 'darslinker';
@@ -534,6 +538,110 @@ export function renderLandingStudentDashboard() {
         color: var(--primary-color);
       }
 
+      /* Logout Confirmation Modal */
+      .landing-logout-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        animation: fadeIn 0.3s ease;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .landing-logout-modal-content {
+        background: rgba(45, 45, 45, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(126, 162, 212, 0.3);
+        border-radius: 16px;
+        padding: 24px;
+        max-width: 400px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.3s ease;
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .landing-logout-modal-header {
+        margin-bottom: 16px;
+      }
+
+      .landing-logout-modal-title {
+        font-size: 20px;
+        font-weight: 600;
+        color: #ffffff;
+        margin: 0 0 8px 0;
+      }
+
+      .landing-logout-modal-body {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 14px;
+        line-height: 1.5;
+        margin-bottom: 20px;
+      }
+
+      .landing-logout-modal-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+      }
+
+      .landing-logout-modal-btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: all 0.3s ease;
+      }
+
+      .landing-logout-modal-cancel {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .landing-logout-modal-cancel:hover {
+        background: rgba(255, 255, 255, 0.15);
+        color: #ffffff;
+      }
+
+      .landing-logout-modal-confirm {
+        background: linear-gradient(135deg, var(--primary-color), color-mix(in srgb, var(--primary-color) 85%, #000));
+        color: #ffffff;
+      }
+
+      .landing-logout-modal-confirm:hover {
+        background: linear-gradient(135deg, color-mix(in srgb, var(--primary-color) 85%, #000), var(--primary-color));
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(126, 162, 212, 0.4);
+      }
+
       /* Dashboard Content */
       .landing-dashboard-content {
         padding: 40px;
@@ -754,14 +862,43 @@ export function renderLandingStudentDashboard() {
         background: transparent;
         border: none;
         color: var(--primary-color);
-        padding: 4px;
+        padding: 0;
         cursor: pointer;
         transition: all 0.3s ease;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: stretch;
+        width: 30px;
+        height: 24px;
+        gap: 0;
       }
 
       .landing-mobile-menu-toggle:hover {
         opacity: 0.8;
         transform: scale(1.1);
+      }
+
+      .hamburger-line {
+        width: 100%;
+        height: 3px;
+        background: currentColor;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+        transform-origin: center;
+        display: block;
+        flex-shrink: 0;
+      }
+
+      .landing-mobile-menu-toggle.active .hamburger-line:nth-child(1) {
+        transform: translateY(10.5px) rotate(45deg);
+      }
+
+      .landing-mobile-menu-toggle.active .hamburger-line:nth-child(2) {
+        opacity: 0;
+      }
+
+      .landing-mobile-menu-toggle.active .hamburger-line:nth-child(3) {
+        transform: translateY(-10.5px) rotate(-45deg);
       }
 
       /* Mobile Sidebar Overlay */
@@ -792,8 +929,8 @@ export function renderLandingStudentDashboard() {
       @media (max-width: 968px) {
         .landing-mobile-menu-toggle {
           display: flex;
-          align-items: center;
-          justify-content: center;
+          align-items: stretch;
+          justify-content: space-between;
         }
 
         .landing-sidebar {
@@ -833,6 +970,23 @@ export function renderLandingStudentDashboard() {
       }
 
       @media (max-width: 480px) {
+        .landing-mobile-menu-toggle {
+          width: 25px;
+          height: 20px;
+        }
+
+        .hamburger-line {
+          height: 2px;
+        }
+
+        .landing-mobile-menu-toggle.active .hamburger-line:nth-child(1) {
+          transform: translateY(9px) rotate(45deg);
+        }
+
+        .landing-mobile-menu-toggle.active .hamburger-line:nth-child(3) {
+          transform: translateY(-9px) rotate(-45deg);
+        }
+
         .landing-header {
           padding: 15px 15px 15px 60px;
         }
@@ -878,12 +1032,10 @@ export function renderLandingStudentDashboard() {
 
     <div class="landing-dashboard-container">
       <!-- Mobile Menu Toggle -->
-      <button class="landing-mobile-menu-toggle" onclick="toggleMobileSidebar()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
+      <button class="landing-mobile-menu-toggle" id="landingMobileMenuToggle" onclick="toggleMobileSidebar()" aria-label="Toggle Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
       </button>
 
       <!-- Sidebar Overlay -->
@@ -1019,6 +1171,15 @@ export function renderLandingStudentDashboard() {
   `;
 
   attachEventListeners();
+  
+  // Save original dashboard content and reset notifications view flag
+  setTimeout(() => {
+    const content = document.querySelector('.landing-dashboard-content');
+    if (content && !isNotificationsView) {
+      originalDashboardContent = content.innerHTML;
+    }
+    isNotificationsView = false;
+  }, 100);
 }
 
 // Toggle menu function
@@ -1038,10 +1199,16 @@ window.toggleLandingMenu = function(menuId) {
 window.toggleMobileSidebar = function() {
   const sidebar = document.getElementById('landing-sidebar');
   const overlay = document.querySelector('.landing-sidebar-overlay');
+  const menuToggle = document.getElementById('landingMobileMenuToggle');
   
   if (sidebar && overlay) {
     sidebar.classList.toggle('mobile-open');
     overlay.classList.toggle('active');
+    
+    // Toggle active class on menu button to change icon to X
+    if (menuToggle) {
+      menuToggle.classList.toggle('active');
+    }
     
     if (sidebar.classList.contains('mobile-open')) {
       overlay.style.display = 'block';
@@ -1058,10 +1225,16 @@ window.toggleMobileSidebar = function() {
 window.closeMobileSidebar = function() {
   const sidebar = document.getElementById('landing-sidebar');
   const overlay = document.querySelector('.landing-sidebar-overlay');
+  const menuToggle = document.getElementById('landingMobileMenuToggle');
   
   if (sidebar && overlay) {
     sidebar.classList.remove('mobile-open');
     overlay.classList.remove('active');
+    
+    // Remove active class from menu button to change icon back to hamburger
+    if (menuToggle) {
+      menuToggle.classList.remove('active');
+    }
     
     setTimeout(() => {
       overlay.style.display = 'none';
@@ -1132,12 +1305,94 @@ function attachEventListeners() {
       await handleCourseFilter(filter);
     });
   });
+
+  // Handle browser back button - only add listener once
+  if (!window.popstateHandlerAdded) {
+    window.addEventListener('popstate', function(event) {
+      // If we're in notifications view and user presses back, go back to dashboard
+      if (isNotificationsView) {
+        // Don't call history.back() again, just restore the dashboard
+        const content = document.querySelector('.landing-dashboard-content');
+        if (originalDashboardContent) {
+          content.innerHTML = originalDashboardContent;
+          isNotificationsView = false;
+          loadNotificationCount();
+          loadTeacherCourses();
+          attachEventListeners();
+        } else {
+          isNotificationsView = false;
+          renderLandingStudentDashboard();
+        }
+      }
+    });
+    window.popstateHandlerAdded = true;
+  }
 }
 
 // Toast functions are imported from utils/toast.js
 
-// Handle logout
-function handleLogout() {
+// Show logout confirmation modal
+window.showLogoutConfirmation = function() {
+  // Get current language for translations
+  const currentLang = getCurrentLanguage();
+  
+  // Get translations based on current language
+  const translations = {
+    title: t('logout.confirmTitle'),
+    body: t('logout.confirmBody'),
+    cancel: t('common.cancel') || 'Cancel',
+    confirm: t('header.logout') || 'Logout'
+  };
+
+  // Remove existing modal if any
+  const existingModal = document.querySelector('.landing-logout-modal-overlay');
+  if (existingModal) {
+    existingModal.remove();
+  }
+
+  // Create modal HTML
+  const modalHTML = `
+    <div class="landing-logout-modal-overlay" onclick="closeLandingLogoutModal(event)">
+      <div class="landing-logout-modal-content" onclick="event.stopPropagation()">
+        <div class="landing-logout-modal-header">
+          <h3 class="landing-logout-modal-title">${translations.title}</h3>
+        </div>
+        <div class="landing-logout-modal-body">
+          <p>${translations.body}</p>
+        </div>
+        <div class="landing-logout-modal-actions">
+          <button class="landing-logout-modal-btn landing-logout-modal-cancel" onclick="closeLandingLogoutModal()">
+            ${translations.cancel}
+          </button>
+          <button class="landing-logout-modal-btn landing-logout-modal-confirm" onclick="confirmLandingLogout()">
+            ${translations.confirm}
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Add modal to DOM
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+};
+
+// Close logout modal
+window.closeLandingLogoutModal = function(event) {
+  // Only close if clicking overlay, not the modal content
+  if (event && event.target && !event.target.classList.contains('landing-logout-modal-overlay')) {
+    return;
+  }
+  const modal = document.querySelector('.landing-logout-modal-overlay');
+  if (modal) {
+    modal.remove();
+  }
+};
+
+// Confirm logout and redirect
+window.confirmLandingLogout = function() {
+  // Close modal
+  closeLandingLogoutModal();
+  
   // Get teacher ID before clearing session
   const teacherId = sessionStorage.getItem('currentTeacherId');
   
@@ -1156,7 +1411,24 @@ function handleLogout() {
       window.location.href = '/';
     }
   }, 1000);
+};
+
+// Handle logout - show confirmation modal
+function handleLogout() {
+  showLogoutConfirmation();
 }
+
+// Listen for language changes to update modal if it's open
+window.addEventListener('languageChanged', function() {
+  const modal = document.querySelector('.landing-logout-modal-overlay');
+  if (modal) {
+    // Re-show modal with updated translations
+    closeLandingLogoutModal();
+    setTimeout(() => {
+      showLogoutConfirmation();
+    }, 100);
+  }
+});
 
 function handleNavigation(page) {
   console.log('Navigate to:', page);
@@ -1693,10 +1965,23 @@ window.openStudentNotifications = async function() {
   }
   
   const content = document.querySelector('.landing-dashboard-content');
+  
+  // Save original dashboard content if not already saved
+  if (!originalDashboardContent && !isNotificationsView) {
+    originalDashboardContent = content.innerHTML;
+  }
+  
+  // Mark that we're in notifications view
+  isNotificationsView = true;
+  
+  // Add to browser history
+  window.history.pushState({ view: 'notifications' }, '', window.location.href);
+  
   content.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--primary-color); font-size: 18px;">${t('notifications.loading')}</div>`;
   
   try {
-    const response = await fetch('http://localhost:8001/api/notifications/user/' + userId + '?userType=Student');
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}?userType=Student`);
     const data = await response.json();
     
     if (data.success) {
@@ -1805,7 +2090,7 @@ window.openStudentNotifications = async function() {
                 ${unreadText}
               </p>
             </div>
-            <button onclick="location.reload()" style="background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">${t('notifications.back')}</button>
+            <button onclick="goBackToDashboard()" style="background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">${t('notifications.back')}</button>
           </div>
           ${notifs.length === 0 ?
             `<div style="text-align: center; padding: 80px 20px; color: rgba(255,255,255,0.5);">
@@ -1824,9 +2109,37 @@ window.openStudentNotifications = async function() {
   }
 };
 
+// Go back to dashboard from notifications
+window.goBackToDashboard = function() {
+  const content = document.querySelector('.landing-dashboard-content');
+  
+  if (originalDashboardContent) {
+    // Restore original dashboard content
+    content.innerHTML = originalDashboardContent;
+    isNotificationsView = false;
+    
+    // Reload notification count and courses
+    loadNotificationCount();
+    loadTeacherCourses();
+    
+    // Re-attach event listeners
+    attachEventListeners();
+    
+    // Update history state without navigation
+    if (window.history.state && window.history.state.view === 'notifications') {
+      window.history.replaceState({ view: 'dashboard' }, '', window.location.href);
+    }
+  } else {
+    // If no saved content, re-render the dashboard
+    isNotificationsView = false;
+    renderLandingStudentDashboard();
+  }
+};
+
 // Mark notification as read
 window.markAsRead = function(notificationId) {
-  fetch('http://localhost:8001/api/notifications/' + notificationId + '/read', {
+  const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+  fetch(`${apiBaseUrl}/notifications/${notificationId}/read`, {
     method: 'PATCH'
   })
   .then(r => r.json())

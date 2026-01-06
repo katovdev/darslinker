@@ -36,6 +36,11 @@ export function initRegisterPage() {
       <!-- Register Modal -->
       <div class="register-modal">
         <div class="register-card">
+          <button class="register-back-btn" id="registerBackBtn" onclick="router.navigate('/'); return false;" aria-label="Orqaga">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+          </button>
           <h2 class="register-title">Ro'yxatdan o'tish</h2>
 
 
@@ -328,6 +333,42 @@ function addRegisterPageStyles() {
       border: 1px solid #7EA2D4;
       transform: none;
       margin: 0;
+      position: relative;
+    }
+
+    .register-back-btn {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(126, 162, 212, 0.3);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+      padding: 0;
+      z-index: 1;
+    }
+
+    .register-back-btn:hover {
+      background: rgba(126, 162, 212, 0.2);
+      border-color: #7EA2D4;
+      color: #ffffff;
+      transform: translateX(-2px);
+    }
+
+    .register-back-btn:active {
+      transform: translateX(-4px);
+    }
+
+    .register-back-btn svg {
+      width: 20px;
+      height: 20px;
     }
 
     .register-title {
@@ -590,6 +631,18 @@ function addRegisterPageStyles() {
         max-height: 90vh;
       }
 
+      .register-back-btn {
+        top: 16px;
+        left: 16px;
+        width: 36px;
+        height: 36px;
+      }
+
+      .register-back-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
       .register-logo {
         margin-bottom: 25px;
         transform: translateY(-20px);
@@ -610,6 +663,18 @@ function addRegisterPageStyles() {
     @media (max-width: 480px) {
       .register-card {
         padding: 24px 20px;
+      }
+
+      .register-back-btn {
+        top: 12px;
+        left: 12px;
+        width: 32px;
+        height: 32px;
+      }
+
+      .register-back-btn svg {
+        width: 16px;
+        height: 16px;
       }
 
       .register-logo {
@@ -1194,7 +1259,7 @@ function initRegisterPageFunctionality() {
     // Open Telegram Bot
     telegramBtn.addEventListener('click', () => {
       window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}`, '_blank');
-      
+
       // Focus on OTP input after opening bot
       setTimeout(() => {
         otpInput.focus();

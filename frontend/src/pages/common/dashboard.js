@@ -7,7 +7,7 @@ import { showSuccessToast, showErrorToast, showInfoToast, showToast } from '../.
 import { config } from '../../utils/config.js';
 import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
-const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'Darslinker_sbot').replace(/^@/, '');
+const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'darslinker_bot').replace(/^@/, '');
 
 export async function initDashboard(routeParams = {}) {
   console.log('=== Dashboard initializing ===');
@@ -1125,14 +1125,35 @@ async function handleCreateCourse(e) {
 
 // Global functions for onclick handlers
 window.performLogout = async function () {
+  const preservedPreferences = {
+    appLanguage: localStorage.getItem('appLanguage'),
+    language: localStorage.getItem('language'),
+    appTheme: localStorage.getItem('appTheme'),
+    primaryColor: localStorage.getItem('primaryColor')
+  };
+
   try {
     await apiService.logout();
   } catch (error) {
     console.error('Logout error:', error);
   } finally {
+    if (typeof window.closeModal === 'function') {
+      window.closeModal();
+    }
+
+    if (window.logoutGuardActive) {
+      window.logoutGuardActive = false;
+      window.removeEventListener('popstate', window.logoutGuardHandler);
+    }
+
     // Always clear local data and navigate away
     localStorage.clear();
     sessionStorage.clear();
+    Object.entries(preservedPreferences).forEach(([key, value]) => {
+      if (value !== null && value !== undefined) {
+        localStorage.setItem(key, value);
+      }
+    });
     store.setState({ user: null, isAuthenticated: false });
     router.navigate('/login');
   }
@@ -1141,14 +1162,14 @@ window.performLogout = async function () {
 window.confirmLogout = function () {
   const content = `
     <div style="padding: 8px 0; color: var(--text-primary);">
-      <p style="margin: 0 0 16px;">Are you sure you want to logout?</p>
+      <p style="margin: 0 0 16px;">${t('logout.confirmBody')}</p>
       <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
-        <button onclick="closeModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Cancel</button>
-        <button onclick="performLogout()" style="background: var(--primary-color); border: 1px solid var(--primary-color); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">Logout</button>
+        <button onclick="closeModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">${t('common.cancel')}</button>
+        <button onclick="performLogout()" style="background: var(--primary-color); border: 1px solid var(--primary-color); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">${t('header.logout')}</button>
       </div>
     </div>
   `;
-  showModal('Confirm Logout', content);
+  showModal(t('logout.confirmTitle'), content);
 };
 
 window.handleLogout = function () {
@@ -1549,7 +1570,10 @@ window.openLandingSettings = async function (skipPathUpdate = false) {
 function getLandingSettingsHTML(user, landingData = null) {
   const theme = getTheme();
   const landingBase = (import.meta.env.VITE_LANDING_BASE_URL || window.location.origin || '').replace(/\/+$/, '');
-  const landingURL = `${landingBase}/teacher/${user._id}`;
+  const customUrl = landingData?.customUrl || '';
+  const landingURL = customUrl
+    ? `${landingBase}/${customUrl}`
+    : `${landingBase}/teacher/${user._id}`;
 
   // Default values or from landingData
   const settings = {
@@ -2071,9 +2095,37 @@ function getLandingSettingsHTML(user, landingData = null) {
           <p style="color: rgba(255, 255, 255, 0.6); margin-bottom: 16px; font-size: 14px;">
             Share this link with your students
           </p>
+          
+          <!-- Custom URL Input -->
+          <div class="form-field" style="margin-bottom: 20px;">
+            <label class="field-label">Custom URL (Optional)</label>
+            <div style="display: flex; gap: 12px; align-items: flex-start;">
+              <div style="flex: 1;">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                  <span style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">${landingBase}/</span>
+                  <input 
+                    type="text" 
+                    id="customUrlInput" 
+                    name="customUrl" 
+                    class="form-input" 
+                    value="${customUrl}" 
+                    placeholder="english"
+                    pattern="[a-z0-9-]+"
+                    style="flex: 1; min-width: 150px;"
+                    oninput="validateCustomUrl(this)"
+                  />
+                  <span id="urlAvailabilityStatus" style="font-size: 12px; margin-left: 8px;"></span>
+                </div>
+                <small style="color: rgba(255, 255, 255, 0.5); font-size: 12px; display: block; margin-top: 4px;">
+                  Choose a custom URL for your landing page (e.g., "english" for ${landingBase}/english). Only lowercase letters, numbers, and hyphens allowed.
+                </small>
+              </div>
+            </div>
+          </div>
+          
           <div class="landing-url-container">
-            <input type="text" class="landing-url-input" value="${landingURL}" readonly>
-            <button type="button" class="copy-link-btn" onclick="copyLandingURL('${landingURL}')">Copy link</button>
+            <input type="text" class="landing-url-input" id="landingUrlDisplay" value="${landingURL}" readonly>
+            <button type="button" class="copy-link-btn" onclick="copyLandingURL(document.getElementById('landingUrlDisplay').value)">Copy link</button>
           </div>
         </div>
 
@@ -2312,11 +2364,81 @@ function getLandingSettingsHTML(user, landingData = null) {
   `;
 }
 
+// Validate custom URL input
+window.validateCustomUrl = async function (input) {
+  const customUrl = input.value.trim().toLowerCase();
+  const statusEl = document.getElementById('urlAvailabilityStatus');
+  const urlDisplayEl = document.getElementById('landingUrlDisplay');
+  const user = store.getState().user;
+  const landingBase = (import.meta.env.VITE_LANDING_BASE_URL || window.location.origin || '').replace(/\/+$/, '');
+
+  // Clear previous status
+  if (statusEl) {
+    statusEl.textContent = '';
+    statusEl.style.color = '';
+  }
+
+  // Validate format
+  if (customUrl && !/^[a-z0-9-]+$/.test(customUrl)) {
+    if (statusEl) {
+      statusEl.textContent = '❌ Invalid format';
+      statusEl.style.color = '#ef4444';
+    }
+    if (urlDisplayEl) {
+      urlDisplayEl.value = `${landingBase}/teacher/${user._id}`;
+    }
+    return false;
+  }
+
+  // Update URL display
+  if (urlDisplayEl) {
+    if (customUrl) {
+      urlDisplayEl.value = `${landingBase}/${customUrl}`;
+    } else {
+      urlDisplayEl.value = `${landingBase}/teacher/${user._id}`;
+    }
+  }
+
+  // Check availability if URL is provided
+  if (customUrl) {
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+      const response = await fetch(`${apiBaseUrl}/landing/check-url/${customUrl}?teacherId=${user._id}`);
+      const result = await response.json();
+
+      if (statusEl) {
+        if (result.available) {
+          statusEl.textContent = '✅ Available';
+          statusEl.style.color = '#10b981';
+        } else {
+          statusEl.textContent = '❌ Already taken';
+          statusEl.style.color = '#ef4444';
+        }
+      }
+    } catch (error) {
+      console.error('Error checking URL availability:', error);
+      if (statusEl) {
+        statusEl.textContent = '⚠️ Check failed';
+        statusEl.style.color = '#f59e0b';
+      }
+    }
+  }
+};
+
 // Initialize landing settings functionality
-function initializeLandingSettings() {
+function initializeLandingSettings(landingData = null) {
   // Load testimonials and certificates
   // loadFeaturedCourses(); // Removed - all courses will be shown automatically
   // loadFeaturedTestimonials(); // Disabled - feature coming soon
+
+  // Initialize custom URL input if it exists
+  const customUrlInput = document.getElementById('customUrlInput');
+  if (customUrlInput && landingData?.customUrl) {
+    // Trigger validation to update URL display
+    setTimeout(() => {
+      validateCustomUrl(customUrlInput);
+    }, 100);
+  }
   loadCertificates();
 
   // Setup hero image upload
@@ -3740,6 +3862,16 @@ async function handleLandingSettingsSave(event) {
     const formData = new FormData(event.target);
     const user = store.getState().user;
 
+    // Get custom URL
+    const customUrlInput = document.getElementById('customUrlInput');
+    const customUrl = customUrlInput ? customUrlInput.value.trim().toLowerCase() : '';
+
+    // Validate custom URL format if provided
+    if (customUrl && !/^[a-z0-9-]+$/.test(customUrl)) {
+      showErrorToast('Custom URL can only contain lowercase letters, numbers, and hyphens');
+      return;
+    }
+
     // Collect form data
     const landingData = {
       firstName: formData.get('firstName'),
@@ -3748,6 +3880,7 @@ async function handleLandingSettingsSave(event) {
       bio: formData.get('bio'),
       logoText: formData.get('logoText'),
       heroText: formData.get('heroText'),
+      customUrl: customUrl || '',
       socialLinks: {
         linkedin: formData.get('linkedin'),
         instagram: formData.get('instagram'),
@@ -3780,7 +3913,8 @@ async function handleLandingSettingsSave(event) {
         heroImage: user.heroImage || '',
         aboutText: landingData.bio,
         socialLinks: landingData.socialLinks,
-        primaryColor: landingData.themeColor
+        primaryColor: landingData.themeColor,
+        customUrl: landingData.customUrl
       })
     });
 
@@ -3798,10 +3932,10 @@ async function handleLandingSettingsSave(event) {
 
       showSuccessToast('Landing page settings saved successfully!');
 
-      // Optionally redirect back to dashboard
+      // Reload landing settings to show updated URL
       setTimeout(() => {
-        backToDashboard();
-      }, 1500);
+        openLandingSettings(true); // Pass true to skip path update
+      }, 500);
     } else {
       throw new Error(result.message || 'Failed to save landing page settings');
     }
@@ -22171,19 +22305,32 @@ window.checkAndServeLandingPage = function () {
     return true;
   }
 
-  // Check if URL matches teacher landing page pattern: /teacher/teacherId
-  const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9]+)$/;
+  // Check if URL matches teacher landing page pattern: /teacher/:identifier (custom URL or teacher ID)
+  const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9-]+)$/;
   const match = currentPath.match(teacherPagePattern);
 
   if (match) {
-    const teacherId = match[1];
-    console.log('📄 Loading teacher landing page for ID:', teacherId);
+    const identifier = match[1];
+    console.log('📄 Loading teacher landing page for identifier:', identifier);
 
-    // Save teacherId to sessionStorage for later use
-    sessionStorage.setItem('currentTeacherId', teacherId);
+    // Save identifier to sessionStorage for later use
+    sessionStorage.setItem('currentTeacherId', identifier);
 
     // Load and display teacher landing page
-    loadTeacherLandingPage(teacherId);
+    loadTeacherLandingPage(identifier);
+    return true;
+  }
+
+  // Check for custom URL pattern (direct path like /english, /math, etc.)
+  const knownRoutes = ['/', '/login', '/register', '/dashboard', '/pricing', '/blog', '/student-dashboard'];
+  const isKnownRoute = knownRoutes.some(route => currentPath === route || currentPath.startsWith(route + '/'));
+
+  if (!isKnownRoute && currentPath.match(/^\/[a-z0-9-]+$/)) {
+    const customUrl = currentPath.substring(1); // Remove leading slash
+    console.log('📄 Loading teacher landing page for custom URL:', customUrl);
+
+    sessionStorage.setItem('currentTeacherId', customUrl);
+    loadTeacherLandingPage(customUrl);
     return true;
   }
 
@@ -22209,12 +22356,12 @@ async function loadTeacherLandingPage(teacherId) {
       </style>
     `;
 
-    // Get teacher profile by ID (public endpoint, no token needed)
-    console.log('📡 Fetching teacher profile from API...');
-    const apiBaseUrl = window.location.hostname === 'localhost'
-      ? 'http://localhost:8001/api'
-      : 'https://darslinker-backend.onrender.com/api';
-    const response = await fetch(`${apiBaseUrl}/teachers/${teacherId}`);
+    // Get teacher profile by custom URL or ID (public endpoint, no token needed)
+    console.log('📡 Fetching teacher landing page from API...');
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+
+    // Try to fetch by custom URL or teacher ID (API will handle both)
+    const response = await fetch(`${apiBaseUrl}/landing/public/${teacherId}`);
     const teacherResult = await response.json();
     console.log('📡 API Response:', teacherResult);
 

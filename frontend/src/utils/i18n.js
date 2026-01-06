@@ -150,6 +150,10 @@ const translations = {
     'common.saving': 'Saving...',
     'common.close': 'Close',
 
+    // Logout
+    'logout.confirmTitle': 'Confirm logout',
+    'logout.confirmBody': 'Are you sure you want to log out?',
+
     // Error Messages
     'errors.generalError': 'An error occurred. Please try again.',
     'errors.networkError': 'Network connection failed. Please check your internet connection.',
@@ -201,6 +205,10 @@ const translations = {
     'courseLearning.noDuration': 'No duration',
     'courseLearning.logout': 'Log out',
     'courseLearning.logoutTitle': 'Logout',
+    'courseLearning.logoutConfirmTitle': 'Log out?',
+    'courseLearning.logoutConfirmBody': 'Are you sure you want to log out?',
+    'courseLearning.logoutConfirmCancel': 'Cancel',
+    'courseLearning.logoutConfirmConfirm': 'Log out',
     'courseLearning.nextLesson': 'Next Lesson →',
     'courseLearning.finishCourse': 'Finish Course',
     'courseLearning.comingSoon': 'Coming soon',
@@ -888,6 +896,10 @@ const translations = {
     'common.saving': 'Saqlanmoqda...',
     'common.close': 'Yopish',
 
+    // Logout
+    'logout.confirmTitle': 'Chiqishni tasdiqlash',
+    'logout.confirmBody': 'Haqiqatan ham tizimdan chiqmoqchimisiz?',
+
     // Error Messages
     'errors.generalError': 'Xatolik yuz berdi. Iltimos qayta urinib ko\'ring.',
     'errors.networkError': 'Internet aloqasi uzildi. Internetingizni tekshiring.',
@@ -939,6 +951,10 @@ const translations = {
     'courseLearning.noDuration': 'Vaqt ko\'rsatilmagan',
     'courseLearning.logout': 'Chiqish',
     'courseLearning.logoutTitle': 'Chiqish',
+    'courseLearning.logoutConfirmTitle': 'Chiqishni tasdiqlaysizmi?',
+    'courseLearning.logoutConfirmBody': 'Haqiqatan ham tizimdan chiqmoqchimisiz?',
+    'courseLearning.logoutConfirmCancel': 'Bekor qilish',
+    'courseLearning.logoutConfirmConfirm': 'Chiqish',
     'courseLearning.nextLesson': 'Keyingi dars →',
     'courseLearning.finishCourse': 'Kursni tugatish',
     'courseLearning.comingSoon': 'Tez orada',
@@ -1626,6 +1642,10 @@ const translations = {
     'common.saving': 'Сохранение...',
     'common.close': 'Закрыть',
 
+    // Logout
+    'logout.confirmTitle': 'Подтвердите выход',
+    'logout.confirmBody': 'Вы уверены, что хотите выйти?',
+
     // Error Messages
     'errors.generalError': 'Произошла ошибка. Пожалуйста, попробуйте снова.',
     'errors.networkError': 'Ошибка подключения к сети. Проверьте интернет-соединение.',
@@ -1677,6 +1697,10 @@ const translations = {
     'courseLearning.noDuration': 'Время не указано',
     'courseLearning.logout': 'Выйти',
     'courseLearning.logoutTitle': 'Выход',
+    'courseLearning.logoutConfirmTitle': 'Выйти?',
+    'courseLearning.logoutConfirmBody': 'Вы уверены, что хотите выйти?',
+    'courseLearning.logoutConfirmCancel': 'Отмена',
+    'courseLearning.logoutConfirmConfirm': 'Выйти',
     'courseLearning.nextLesson': 'Следующий урок →',
     'courseLearning.finishCourse': 'Завершить курс',
     'courseLearning.comingSoon': 'Скоро',

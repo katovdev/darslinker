@@ -65,6 +65,15 @@ const landingSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  customUrl: {
+    type: String,
+    default: '',
+    trim: true,
+    lowercase: true,
+    match: [/^[a-z0-9-]+$/, 'Custom URL can only contain lowercase letters, numbers, and hyphens'],
+    unique: true,
+    sparse: true
+  },
   isActive: {
     type: Boolean,
     default: true

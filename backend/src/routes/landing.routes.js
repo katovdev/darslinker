@@ -2,7 +2,8 @@ import { Router } from "express";
 import { 
   getLandingSettings, 
   updateLandingSettings, 
-  getPublicLandingPage 
+  getPublicLandingPage,
+  checkUrlAvailability
 } from "../controllers/landing.controller.js";
 import { authenticate } from "../middlewares/auth.middleware.js";
 
@@ -26,6 +27,7 @@ const landingRouter = Router();
  *       404:
  *         description: Teacher not found
  */
+landingRouter.get("/check-url/:customUrl", checkUrlAvailability);
 landingRouter.get("/public/:teacherId", getPublicLandingPage);
 
 /**
