@@ -7,9 +7,7 @@ import { showSuccessToast, showErrorToast, showInfoToast, showToast } from '../.
 import { config } from '../../utils/config.js';
 import heroImage from '../../assets/images/undraw_online-stats_d57c.png';
 
-const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'darslinker_bot').replace(/^@/, '');
-
-export async function initDashboard(routeParams = {}) {
+export async function initDashboard() {
   console.log('=== Dashboard initializing ===');
 
   // Initialize i18n and theme
@@ -95,7 +93,7 @@ export async function initDashboard(routeParams = {}) {
     lastName: userData.lastName,
     fullData: userData
   });
-  await renderTeacherDashboard(userData, routeParams);
+  await renderTeacherDashboard(userData);
 
   // Original logic (commented out for testing):
   // if (userData.role === 'teacher') {
@@ -124,7 +122,7 @@ function cleanupPageStyles() {
   });
 }
 
-async function renderTeacherDashboard(user, routeParams = {}) {
+async function renderTeacherDashboard(user) {
   console.log('=== renderTeacherDashboard user data ===', user);
   console.log('specialization:', user.specialization);
   console.log('city:', user.city);
@@ -313,10 +311,10 @@ async function renderTeacherDashboard(user, routeParams = {}) {
               <span class="figma-menu-arrow" id="general-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="general-children">
-              <a href="#" class="figma-menu-child active" data-path="" onclick="setActiveChild(this, event); loadMainDashboard()">${t('sidebar.dashboard')}</a>
-              <a href="#" class="figma-menu-child" data-path="profile" onclick="setActiveChild(this, event); openEditProfile()">${t('sidebar.profile')}</a>
-              <a href="#" class="figma-menu-child" data-path="landing" onclick="setActiveChild(this, event); openLandingSettings()">Landing</a>
-              <a href="#" class="figma-menu-child" data-path="messages" onclick="setActiveChild(this, event); openMessagesPage()">${t('sidebar.messages')}</a>
+              <a href="#" class="figma-menu-child active" onclick="setActiveChild(this, event); loadMainDashboard()">${t('sidebar.dashboard')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openEditProfile()">${t('sidebar.profile')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openLandingSettings()">Landing</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMessagesPage()">${t('sidebar.messages')}</a>
             </div>
           </div>
 
@@ -327,10 +325,10 @@ async function renderTeacherDashboard(user, routeParams = {}) {
               <span class="figma-menu-arrow" id="content-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="content-children">
-              <a href="#" class="figma-menu-child" data-path="create-course" onclick="setActiveChild(this, event); openCreateCourse()">${t('sidebar.createCourse')}</a>
-              <a href="#" class="figma-menu-child" data-path="my-courses" onclick="setActiveChild(this, event); openMyCourses()">${t('sidebar.myCourses')}</a>
-              <a href="#" class="figma-menu-child" data-path="finance" onclick="setActiveChild(this, event); openFinancePage()">${t('sidebar.finance')}</a>
-              <a href="#" class="figma-menu-child" data-path="assignments" onclick="setActiveChild(this, event); openAssignmentsPage()">${t('sidebar.assignments')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCreateCourse()">${t('sidebar.createCourse')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openMyCourses()">${t('sidebar.myCourses')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openFinancePage()">${t('sidebar.finance')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAssignmentsPage()">${t('sidebar.assignments')}</a>
             </div>
           </div>
 
@@ -341,7 +339,7 @@ async function renderTeacherDashboard(user, routeParams = {}) {
               <span class="figma-menu-arrow" id="ai-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="ai-children">
-              <a href="#" class="figma-menu-child" data-path="ai-assistant" onclick="setActiveChild(this, event); openAIAssistantPage()">${t('sidebar.aiAssistant')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openAIAssistantPage()">${t('sidebar.aiAssistant')}</a>
             </div>
           </div>
 
@@ -352,10 +350,10 @@ async function renderTeacherDashboard(user, routeParams = {}) {
               <span class="figma-menu-arrow" id="analytics-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="analytics-children">
-              <a href="#" class="figma-menu-child" data-path="quiz-analytics" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
-              <a href="#" class="figma-menu-child" data-path="rating-comments" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
-              <a href="#" class="figma-menu-child" data-path="students" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.students')}</a>
-              <a href="#" class="figma-menu-child" data-path="progress" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openQuizAnalytics()">${t('sidebar.quizAnalytics')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openRatingComments(); return false;">${t('sidebar.ratingComments')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openStudentsAnalytics(); return false;">${t('sidebar.students')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openProgress(); return false;">${t('sidebar.progress')}</a>
             </div>
           </div>
 
@@ -366,7 +364,7 @@ async function renderTeacherDashboard(user, routeParams = {}) {
               <span class="figma-menu-arrow" id="rolls-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="rolls-children">
-              <a href="#" class="figma-menu-child" data-path="sub-admin" onclick="setActiveChild(this, event); openSubAdmin(); return false;">${t('sidebar.subAdmin')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openSubAdmin(); return false;">${t('sidebar.subAdmin')}</a>
             </div>
           </div>
 
@@ -377,8 +375,8 @@ async function renderTeacherDashboard(user, routeParams = {}) {
               <span class="figma-menu-arrow" id="settings-arrow">▶</span>
             </div>
             <div class="figma-menu-children hidden" id="settings-children">
-              <a href="#" class="figma-menu-child" data-path="language" onclick="setActiveChild(this, event); openLanguagePage(); return false;">${t('sidebar.language')}</a>
-              <a href="#" class="figma-menu-child" data-path="customize-ui" onclick="setActiveChild(this, event); openCustomizeUI(); return false;">${t('sidebar.customizeUI')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openLanguagePage(); return false;">${t('sidebar.language')}</a>
+              <a href="#" class="figma-menu-child" onclick="setActiveChild(this, event); openCustomizeUI(); return false;">${t('sidebar.customizeUI')}</a>
             </div>
           </div>
 
@@ -724,15 +722,13 @@ async function renderTeacherDashboard(user, routeParams = {}) {
     });
   }, 100);
 
-  // Load initial section based on the current path
-  const initialSection = routeParams.section || routeParams.subsection || getDashboardSectionFromPath();
-  handleInitialDashboardSection(initialSection || '');
+  // Load dashboard data from API
+  if (typeof window.loadMainDashboard === 'function') {
+    window.loadMainDashboard();
+  }
 
   // Set up event listeners
   setupTeacherEventListeners();
-
-  // Guard against accidental back navigation/logout without confirmation
-  setupLogoutGuard();
 
   // Load notification count after dashboard renders
   setTimeout(() => {
@@ -1124,71 +1120,19 @@ async function handleCreateCourse(e) {
 }
 
 // Global functions for onclick handlers
-window.performLogout = async function () {
-  const preservedPreferences = {
-    appLanguage: localStorage.getItem('appLanguage'),
-    language: localStorage.getItem('language'),
-    appTheme: localStorage.getItem('appTheme'),
-    primaryColor: localStorage.getItem('primaryColor')
-  };
-
+window.handleLogout = async function () {
   try {
     await apiService.logout();
+    localStorage.removeItem('accessToken');
+    store.setState({ user: null, isAuthenticated: false });
+    router.navigate('/login');
   } catch (error) {
     console.error('Logout error:', error);
-  } finally {
-    if (typeof window.closeModal === 'function') {
-      window.closeModal();
-    }
-
-    if (window.logoutGuardActive) {
-      window.logoutGuardActive = false;
-      window.removeEventListener('popstate', window.logoutGuardHandler);
-    }
-
-    // Always clear local data and navigate away
-    localStorage.clear();
-    sessionStorage.clear();
-    Object.entries(preservedPreferences).forEach(([key, value]) => {
-      if (value !== null && value !== undefined) {
-        localStorage.setItem(key, value);
-      }
-    });
+    // Force logout even if API call fails
+    localStorage.removeItem('accessToken');
     store.setState({ user: null, isAuthenticated: false });
     router.navigate('/login');
   }
-};
-
-window.confirmLogout = function () {
-  const content = `
-    <div style="padding: 8px 0; color: var(--text-primary);">
-      <p style="margin: 0 0 16px;">${t('logout.confirmBody')}</p>
-      <div style="display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap;">
-        <button onclick="closeModal()" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">${t('common.cancel')}</button>
-        <button onclick="performLogout()" style="background: var(--primary-color); border: 1px solid var(--primary-color); color: #fff; padding: 10px 16px; border-radius: 8px; cursor: pointer;">${t('header.logout')}</button>
-      </div>
-    </div>
-  `;
-  showModal(t('logout.confirmTitle'), content);
-};
-
-window.handleLogout = function () {
-  window.confirmLogout();
-};
-
-window.logoutGuardHandler = function (event) {
-  if (event?.state && event.state.logoutGuard) {
-    event.preventDefault?.();
-    window.confirmLogout();
-    history.pushState({ logoutGuard: true }, '', window.location.href);
-  }
-};
-
-window.setupLogoutGuard = function () {
-  if (window.logoutGuardActive) return;
-  window.logoutGuardActive = true;
-  history.pushState({ logoutGuard: true }, '', window.location.href);
-  window.addEventListener('popstate', window.logoutGuardHandler);
 };
 
 // openCreateCourse is defined later in the file (line ~9692)
@@ -1220,17 +1164,14 @@ window.openNewMeeting = function () {
 
 window.openTelegramBot = function () {
   // Open Telegram bot in new tab
-  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}`, '_blank');
+  window.open('https://t.me/darslinker_bot', '_blank');
 };
 
 window.editProfile = function () {
   openEditProfile();
 };
 
-window.openEditProfile = function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('profile');
-  }
+window.openEditProfile = function () {
   // Get fresh user data from state
   const user = store.getState().user;
 
@@ -1460,10 +1401,7 @@ window.openEditProfile = function (skipPathUpdate = false) {
 };
 
 // Open Landing Page Settings
-window.openLandingSettings = async function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('landing');
-  }
+window.openLandingSettings = async function () {
   // Get fresh user data from state
   const user = store.getState().user;
 
@@ -1569,18 +1507,22 @@ window.openLandingSettings = async function (skipPathUpdate = false) {
 // Helper function to get landing settings HTML
 function getLandingSettingsHTML(user, landingData = null) {
   const theme = getTheme();
-  const landingBase = (import.meta.env.VITE_LANDING_BASE_URL || window.location.origin || '').replace(/\/+$/, '');
+  const baseDomain = 'darslinker.uz'; // Base domain without protocol
+  const productionURL = `https://${baseDomain}`;
+
+  // Get custom URL from landing data or empty string
   const customUrl = landingData?.customUrl || '';
+
+  // Construct landing URL - use subdomain if customUrl exists, otherwise fallback to teacher ID path
   const landingURL = customUrl
-    ? `${landingBase}/${customUrl}`
-    : `${landingBase}/teacher/${user._id}`;
+    ? `https://${customUrl}.${baseDomain}`
+    : `${productionURL}/teacher/${user._id}`;
 
   // Default values or from landingData
   const settings = {
     title: landingData?.title || `${user.firstName} ${user.lastName}'s Courses`,
     subtitle: landingData?.subtitle || user.specialization || 'Expert Instructor',
     description: landingData?.description || 'Discover amazing courses and start your learning journey today.',
-    logoText: landingData?.logoText || user.landingPageSettings?.logoText || 'DarsLinker',
     heroText: landingData?.heroText || 'DASTURLASH NI\nPROFESSIONAL\nO\'QITUVCHI BILAN O\'RGANING',
     heroImage: landingData?.heroImage || user.heroImage || '',
     primaryColor: landingData?.primaryColor || '#7ea2d4',
@@ -1589,6 +1531,7 @@ function getLandingSettingsHTML(user, landingData = null) {
     showCourses: landingData?.showCourses !== undefined ? landingData.showCourses : true,
     showAbout: landingData?.showAbout !== undefined ? landingData.showAbout : true,
     aboutText: landingData?.aboutText || user.bio || '',
+    customUrl: customUrl,
     socialLinks: {
       telegram: landingData?.socialLinks?.telegram || user.telegramUsername || '',
       instagram: '',
@@ -1651,8 +1594,7 @@ function getLandingSettingsHTML(user, landingData = null) {
         }
 
         .copy-link-btn:hover {
-          background: var(--primary-color);
-          opacity: 0.85;
+          background: var(--primary-color-80);
         }
 
         .profile-upload-section {
@@ -1723,17 +1665,6 @@ function getLandingSettingsHTML(user, landingData = null) {
 
         .form-input:focus, .form-textarea:focus {
           border-color: var(--primary-color);
-        }
-
-        /* Create Course number inputs: hide native spinners (using text inputs) */
-        input.form-input[type="number"]::-webkit-outer-spin-button,
-        input.form-input[type="number"]::-webkit-inner-spin-button {
-          -webkit-appearance: none;
-          margin: 0;
-        }
-        input.form-input[type="number"] {
-          -moz-appearance: textfield;
-          appearance: textfield;
         }
 
         .form-textarea {
@@ -2096,36 +2027,34 @@ function getLandingSettingsHTML(user, landingData = null) {
             Share this link with your students
           </p>
           
-          <!-- Custom URL Input -->
-          <div class="form-field" style="margin-bottom: 20px;">
+          <!-- Custom URL (Optional) Input Field -->
+          <div class="form-field" style="margin-bottom: 16px;">
             <label class="field-label">Custom URL (Optional)</label>
-            <div style="display: flex; gap: 12px; align-items: flex-start;">
-              <div style="flex: 1;">
-                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-                  <span style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">${landingBase}/</span>
-                  <input 
-                    type="text" 
-                    id="customUrlInput" 
-                    name="customUrl" 
-                    class="form-input" 
-                    value="${customUrl}" 
-                    placeholder="english"
-                    pattern="[a-z0-9-]+"
-                    style="flex: 1; min-width: 150px;"
-                    oninput="validateCustomUrl(this)"
-                  />
-                  <span id="urlAvailabilityStatus" style="font-size: 12px; margin-left: 8px;"></span>
-                </div>
-                <small style="color: rgba(255, 255, 255, 0.5); font-size: 12px; display: block; margin-top: 4px;">
-                  Choose a custom URL for your landing page (e.g., "english" for ${landingBase}/english). Only lowercase letters, numbers, and hyphens allowed.
-                </small>
-              </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span style="color: rgba(255, 255, 255, 0.8); font-size: 14px; white-space: nowrap;">https://</span>
+              <input 
+                type="text" 
+                class="form-input" 
+                id="customUrlInput" 
+                name="customUrl" 
+                value="${customUrl}" 
+                placeholder="my-landing"
+                pattern="[a-z0-9-]+"
+                style="flex: 1;"
+                oninput="validateCustomUrl(this.value)"
+              />
+              <span style="color: rgba(255, 255, 255, 0.8); font-size: 14px; white-space: nowrap;">.${baseDomain}</span>
             </div>
+            <div id="customUrlStatus" style="margin-top: 8px; font-size: 12px;"></div>
+            <small style="color: rgba(255, 255, 255, 0.6); font-size: 12px; margin-top: 4px; display: block;">
+              Choose a custom URL for your landing page (e.g., "english" for https://english.${baseDomain}). Only lowercase letters, numbers, and hyphens allowed.
+            </small>
           </div>
           
-          <div class="landing-url-container">
-            <input type="text" class="landing-url-input" id="landingUrlDisplay" value="${landingURL}" readonly>
-            <button type="button" class="copy-link-btn" onclick="copyLandingURL(document.getElementById('landingUrlDisplay').value)">Copy link</button>
+          <!-- Full URL Display (Read-only) -->
+          <div class="landing-url-container" style="margin-top: 16px;">
+            <input type="text" class="landing-url-input" id="fullLandingURL" value="${landingURL}" readonly>
+            <button type="button" class="copy-link-btn" onclick="copyLandingURL(document.getElementById('fullLandingURL').value)">Copy link</button>
           </div>
         </div>
 
@@ -2364,81 +2293,11 @@ function getLandingSettingsHTML(user, landingData = null) {
   `;
 }
 
-// Validate custom URL input
-window.validateCustomUrl = async function (input) {
-  const customUrl = input.value.trim().toLowerCase();
-  const statusEl = document.getElementById('urlAvailabilityStatus');
-  const urlDisplayEl = document.getElementById('landingUrlDisplay');
-  const user = store.getState().user;
-  const landingBase = (import.meta.env.VITE_LANDING_BASE_URL || window.location.origin || '').replace(/\/+$/, '');
-
-  // Clear previous status
-  if (statusEl) {
-    statusEl.textContent = '';
-    statusEl.style.color = '';
-  }
-
-  // Validate format
-  if (customUrl && !/^[a-z0-9-]+$/.test(customUrl)) {
-    if (statusEl) {
-      statusEl.textContent = '❌ Invalid format';
-      statusEl.style.color = '#ef4444';
-    }
-    if (urlDisplayEl) {
-      urlDisplayEl.value = `${landingBase}/teacher/${user._id}`;
-    }
-    return false;
-  }
-
-  // Update URL display
-  if (urlDisplayEl) {
-    if (customUrl) {
-      urlDisplayEl.value = `${landingBase}/${customUrl}`;
-    } else {
-      urlDisplayEl.value = `${landingBase}/teacher/${user._id}`;
-    }
-  }
-
-  // Check availability if URL is provided
-  if (customUrl) {
-    try {
-      const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-      const response = await fetch(`${apiBaseUrl}/landing/check-url/${customUrl}?teacherId=${user._id}`);
-      const result = await response.json();
-
-      if (statusEl) {
-        if (result.available) {
-          statusEl.textContent = '✅ Available';
-          statusEl.style.color = '#10b981';
-        } else {
-          statusEl.textContent = '❌ Already taken';
-          statusEl.style.color = '#ef4444';
-        }
-      }
-    } catch (error) {
-      console.error('Error checking URL availability:', error);
-      if (statusEl) {
-        statusEl.textContent = '⚠️ Check failed';
-        statusEl.style.color = '#f59e0b';
-      }
-    }
-  }
-};
-
 // Initialize landing settings functionality
-function initializeLandingSettings(landingData = null) {
+function initializeLandingSettings() {
   // Load testimonials and certificates
   // loadFeaturedCourses(); // Removed - all courses will be shown automatically
   // loadFeaturedTestimonials(); // Disabled - feature coming soon
-
-  // Initialize custom URL input if it exists
-  const customUrlInput = document.getElementById('customUrlInput');
-  if (customUrlInput && landingData?.customUrl) {
-    // Trigger validation to update URL display
-    setTimeout(() => {
-      validateCustomUrl(customUrlInput);
-    }, 100);
-  }
   loadCertificates();
 
   // Setup hero image upload
@@ -2451,6 +2310,26 @@ function initializeLandingSettings(landingData = null) {
   const form = document.getElementById('landingSettingsForm');
   if (form) {
     form.addEventListener('submit', handleLandingSettingsSave);
+  }
+
+  // Setup custom URL input handler
+  const customUrlInput = document.getElementById('customUrlInput');
+  if (customUrlInput) {
+    // Update full URL display when custom URL changes
+    customUrlInput.addEventListener('input', function () {
+      const customUrl = this.value.trim().toLowerCase();
+      const baseDomain = 'darslinker.uz';
+      const fullUrlInput = document.getElementById('fullLandingURL');
+
+      if (fullUrlInput) {
+        if (customUrl) {
+          fullUrlInput.value = `https://${customUrl}.${baseDomain}`;
+        } else {
+          const user = store.getState().user;
+          fullUrlInput.value = `https://${baseDomain}/teacher/${user._id}`;
+        }
+      }
+    });
   }
 
   // Add color selection handlers
@@ -3855,6 +3734,88 @@ window.confirmRemoveCertificate = async function (index) {
 };
 
 // Handle landing settings form submission
+// Validate custom URL format and availability
+window.validateCustomUrl = async function (customUrl) {
+  const statusElement = document.getElementById('customUrlStatus');
+  if (!statusElement) return;
+
+  // Clear previous status
+  statusElement.innerHTML = '';
+  statusElement.style.color = '';
+
+  // If empty, clear status
+  if (!customUrl || !customUrl.trim()) {
+    statusElement.innerHTML = '';
+    // Update full URL to default
+    const user = store.getState().user;
+    const fullUrlInput = document.getElementById('fullLandingURL');
+    if (fullUrlInput) {
+      fullUrlInput.value = `https://darslinker.uz/teacher/${user._id}`;
+    }
+    return;
+  }
+
+  const trimmedUrl = customUrl.trim().toLowerCase();
+
+  // Client-side format validation
+  const urlPattern = /^[a-z0-9-]+$/;
+  if (!urlPattern.test(trimmedUrl)) {
+    statusElement.innerHTML = '<span style="color: #ef4444;">⚠️ Only lowercase letters, numbers, and hyphens allowed</span>';
+    statusElement.style.color = '#ef4444';
+    return;
+  }
+
+  // Check length (reasonable subdomain length)
+  if (trimmedUrl.length < 3) {
+    statusElement.innerHTML = '<span style="color: #ef4444;">⚠️ URL must be at least 3 characters</span>';
+    statusElement.style.color = '#ef4444';
+    return;
+  }
+
+  if (trimmedUrl.length > 63) {
+    statusElement.innerHTML = '<span style="color: #ef4444;">⚠️ URL must be less than 63 characters</span>';
+    statusElement.style.color = '#ef4444';
+    return;
+  }
+
+  // Show checking status
+  statusElement.innerHTML = '<span style="color: #3b82f6;">⏳ Checking availability...</span>';
+  statusElement.style.color = '#3b82f6';
+
+  try {
+    // Check availability via API
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const token = localStorage.getItem('accessToken');
+    const user = store.getState().user;
+
+    const response = await fetch(`${apiBaseUrl}/landing/check-url/${trimmedUrl}?teacherId=${user._id}`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const result = await response.json();
+
+    if (result.available) {
+      statusElement.innerHTML = '<span style="color: #10b981;">✅ Available</span>';
+      statusElement.style.color = '#10b981';
+      // Update full URL display
+      const fullUrlInput = document.getElementById('fullLandingURL');
+      if (fullUrlInput) {
+        fullUrlInput.value = `https://${trimmedUrl}.darslinker.uz`;
+      }
+    } else {
+      statusElement.innerHTML = '<span style="color: #ef4444;">❌ This URL is already taken</span>';
+      statusElement.style.color = '#ef4444';
+    }
+  } catch (error) {
+    console.error('Error checking URL availability:', error);
+    statusElement.innerHTML = '<span style="color: #f59e0b;">⚠️ Could not verify availability. Please try again.</span>';
+    statusElement.style.color = '#f59e0b';
+  }
+};
+
 async function handleLandingSettingsSave(event) {
   event.preventDefault();
 
@@ -3862,15 +3823,8 @@ async function handleLandingSettingsSave(event) {
     const formData = new FormData(event.target);
     const user = store.getState().user;
 
-    // Get custom URL
-    const customUrlInput = document.getElementById('customUrlInput');
-    const customUrl = customUrlInput ? customUrlInput.value.trim().toLowerCase() : '';
-
-    // Validate custom URL format if provided
-    if (customUrl && !/^[a-z0-9-]+$/.test(customUrl)) {
-      showErrorToast('Custom URL can only contain lowercase letters, numbers, and hyphens');
-      return;
-    }
+    // Get custom URL (trim and lowercase)
+    const customUrl = formData.get('customUrl')?.trim().toLowerCase() || '';
 
     // Collect form data
     const landingData = {
@@ -3880,7 +3834,7 @@ async function handleLandingSettingsSave(event) {
       bio: formData.get('bio'),
       logoText: formData.get('logoText'),
       heroText: formData.get('heroText'),
-      customUrl: customUrl || '',
+      customUrl: customUrl,
       socialLinks: {
         linkedin: formData.get('linkedin'),
         instagram: formData.get('instagram'),
@@ -3912,9 +3866,9 @@ async function handleLandingSettingsSave(event) {
         heroText: landingData.heroText,
         heroImage: user.heroImage || '',
         aboutText: landingData.bio,
+        customUrl: landingData.customUrl,
         socialLinks: landingData.socialLinks,
-        primaryColor: landingData.themeColor,
-        customUrl: landingData.customUrl
+        primaryColor: landingData.themeColor
       })
     });
 
@@ -3934,8 +3888,8 @@ async function handleLandingSettingsSave(event) {
 
       // Reload landing settings to show updated URL
       setTimeout(() => {
-        openLandingSettings(true); // Pass true to skip path update
-      }, 500);
+        openLandingSettings();
+      }, 1500);
     } else {
       throw new Error(result.message || 'Failed to save landing page settings');
     }
@@ -5781,6 +5735,7 @@ async function generateLandingPageHTML(teacher) {
                             </div>
                             
                             <button class="modal-button" onclick="handleLogin()" data-i18n="loginButton">Kirish</button>
+                            <button class="modal-button back-button" onclick="handleForgotPassword()" data-i18n="forgotPassword">Parolni unutdingizmi?</button>
                         </div>
                     </div>
                 </div>
@@ -6143,7 +6098,7 @@ async function generateLandingPageHTML(teacher) {
                     showToast('Telegram botga /login yozing va kontaktingizni yuboring', 'success', 8000);
                     
                     // Show bot info modal
-                    const botUsername = TELEGRAM_BOT_USERNAME;
+                    const botUsername = 'darslinker_bot';
                     showBotInfoModal(botUsername, null);
                     
                     // Close login modal and open reset password modal
@@ -6700,10 +6655,8 @@ async function generateLandingPageHTML(teacher) {
         }
 
         function showBotInfoModal(botUsername, code) {
-            const resolvedBotUsername = botUsername || TELEGRAM_BOT_USERNAME;
             const infoModal = document.createElement('div');
             infoModal.className = 'bot-info-overlay';
-            infoModal.dataset.botUsername = resolvedBotUsername;
             infoModal.innerHTML = \`
                 <div class="bot-info-modal">
                     <div class="bot-info-header">
@@ -6711,7 +6664,7 @@ async function generateLandingPageHTML(teacher) {
                         <h3>Telegram Botga O'ting</h3>
                     </div>
                     <div class="bot-info-content">
-                        <p class="bot-info-text">Tasdiqlash kodi <strong>@\${resolvedBotUsername}</strong> botga yuborildi</p>
+                        <p class="bot-info-text">Tasdiqlash kodi <strong>@\${botUsername}</strong> botga yuborildi</p>
                         <div class="bot-info-steps">
                             <div class="bot-step">
                                 <span class="step-number">1</span>
@@ -6848,7 +6801,7 @@ async function generateLandingPageHTML(teacher) {
             if (modal) {
                 modal.remove();
                 // Redirect to Telegram bot
-                const botUsername = modal.dataset.botUsername || TELEGRAM_BOT_USERNAME;
+                const botUsername = 'darslinker_bot';
                 window.open(\`https://t.me/\${botUsername}\`, '_blank');
             }
         }
@@ -6922,7 +6875,7 @@ async function generateLandingPageHTML(teacher) {
                 const data = await response.json();
                 
                 if (data.success) {
-                    const botUsername = TELEGRAM_BOT_USERNAME || data.data.telegramBot;
+                    const botUsername = data.data.telegramBot;
                     const code = data.data.code; // Only in development
                     
                     // Show beautiful info modal
@@ -7303,66 +7256,13 @@ function reloadDashboard() {
   location.reload();
 }
 
-const dashboardSectionHandlers = {
-  '': () => window.loadMainDashboard?.(),
-  dashboard: () => window.loadMainDashboard?.(),
-  profile: () => window.openEditProfile?.(),
-  landing: () => window.openLandingSettings?.(),
-  messages: () => window.openMessagesPage?.(),
-  'create-course': () => window.openCreateCourse?.(),
-  'my-courses': () => window.openMyCourses?.(),
-  finance: () => window.openFinancePage?.(),
-  assignments: () => window.openAssignmentsPage?.(),
-  'quiz-analytics': () => window.openQuizAnalytics?.(),
-  'rating-comments': () => window.openRatingComments?.(),
-  students: () => window.openStudentsAnalytics?.(),
-  progress: () => window.openProgress?.(),
-  'sub-admin': () => window.openSubAdmin?.(),
-  language: () => window.openLanguagePage?.(),
-  'customize-ui': () => window.openCustomizeUI?.(),
-  subscription: () => window.openMySubscription?.(),
-  'ai-assistant': () => window.openAIAssistantPage?.()
-};
-
-function buildDashboardPath(sectionSlug = '') {
-  const cleanSlug = (sectionSlug || '').replace(/^\/+|\/+$/g, '');
-  return cleanSlug ? `/dashboard/${cleanSlug}` : '/dashboard';
+// Load main dashboard content (without reloading entire page)
+function loadMainDashboard() {
+  // This function should contain the main dashboard loading logic
+  console.log('Loading main dashboard...');
 }
 
-function getDashboardSectionFromPath() {
-  const parts = window.location.pathname.split('/').filter(Boolean);
-  if (parts[0] !== 'dashboard') return '';
-  return parts[1] || '';
-}
-
-window.navigateDashboardSection = function (sectionSlug = '', actionFn, options = {}) {
-  const { skipPathUpdate = false, skipAction = false } = options;
-  const targetPath = buildDashboardPath(sectionSlug);
-
-  if (!skipPathUpdate && window.location.pathname !== targetPath) {
-    const state = window.history.state && window.history.state.logoutGuard ? { logoutGuard: true } : {};
-    window.history.pushState(state, '', targetPath);
-  }
-
-  if (skipAction) return;
-
-  if (typeof actionFn === 'function') {
-    actionFn();
-    return;
-  }
-
-  const handler = dashboardSectionHandlers[sectionSlug] || dashboardSectionHandlers[''];
-  if (handler) handler();
-};
-
-function updateDashboardPathOnly(sectionSlug = '') {
-  navigateDashboardSection(sectionSlug, null, { skipAction: true });
-}
-
-function handleInitialDashboardSection(sectionSlug = '') {
-  const handler = dashboardSectionHandlers[sectionSlug] || dashboardSectionHandlers[''];
-  if (handler) handler();
-}
+// Additional dashboard functions can be added here
 
 // Helper function to update active menu item
 function updateActiveMenuItem(itemName) {
@@ -7375,10 +7275,7 @@ function updateActiveMenuItem(itemName) {
 }
 
 // Open Sub Admin Page
-window.openSubAdmin = function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('sub-admin');
-  }
+window.openSubAdmin = function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -7674,16 +7571,6 @@ function getSubAdminHTML() {
           color: rgba(156, 163, 175, 0.8);
           margin-top: 4px;
         }
-        .admin-error {
-          color: #dc3545;
-          font-size: 12px;
-          margin-top: 4px;
-          margin-left: 2px;
-          display: none;
-        }
-        .admin-error.show {
-          display: block;
-        }
         .modal-actions {
           display: flex;
           gap: 12px;
@@ -7823,7 +7710,6 @@ ${t('subAdmin.addSubadmin')}
                        autocomplete="off"
                        oninput="formatPhoneNumber(this)" required>
               </div>
-              <div class="admin-error" id="adminPhoneError"></div>
             </div>
 
             <div class="form-group">
@@ -7833,7 +7719,6 @@ ${t('subAdmin.addSubadmin')}
                      autocomplete="new-password"
                      required minlength="6">
               <div class="password-requirements">At least 6 characters</div>
-              <div class="admin-error" id="adminPasswordError"></div>
             </div>
 
             <div class="form-group">
@@ -7842,7 +7727,6 @@ ${t('subAdmin.addSubadmin')}
                      placeholder="Confirm your password"
                      autocomplete="new-password"
                      required minlength="6">
-              <div class="admin-error" id="adminConfirmPasswordError"></div>
             </div>
 
             <div class="modal-actions">
@@ -7867,12 +7751,6 @@ window.openAddAdminModal = function () {
     if (sidebar) {
       sidebar.classList.add('sidebar-hidden');
     }
-
-    // Bind validation once
-    if (!modal.dataset.validationBound) {
-      bindAddAdminValidation();
-      modal.dataset.validationBound = 'true';
-    }
   }
 };
 
@@ -7896,13 +7774,6 @@ window.closeAddAdminModal = function () {
     document.getElementById('adminPassword').value = '';
     const confirmPasswordInput = document.getElementById('adminPasswordConfirm');
     if (confirmPasswordInput) confirmPasswordInput.value = '';
-    ['adminPhoneError', 'adminPasswordError', 'adminConfirmPasswordError'].forEach(id => {
-      const errorEl = document.getElementById(id);
-      if (errorEl) {
-        errorEl.textContent = '';
-        errorEl.classList.remove('show');
-      }
-    });
 
     // Reset submit button
     const submitBtn = document.getElementById('submitBtn');
@@ -7911,127 +7782,35 @@ window.closeAddAdminModal = function () {
   }
 };
 
-function showAdminError(el, message) {
-  if (!el) return;
-  el.textContent = message;
-  el.classList.add('show');
-}
-
-function hideAdminError(el) {
-  if (!el) return;
-  el.textContent = '';
-  el.classList.remove('show');
-}
-
-function validateAdminPhone(value, errorEl) {
-  const cleaned = (value || '').replace(/\s/g, '');
-  if (!cleaned) {
-    showAdminError(errorEl, 'Phone number is required');
-    return false;
-  }
-  if (!/^[0-9]{9}$/.test(cleaned)) {
-    showAdminError(errorEl, 'Phone number must be exactly 9 digits');
-    return false;
-  }
-  hideAdminError(errorEl);
-  return true;
-}
-
-function validateAdminPassword(password, errorEl) {
-  if (!password) {
-    showAdminError(errorEl, 'Password is required');
-    return false;
-  }
-  if (password.length < 6) {
-    showAdminError(errorEl, 'Password must be at least 6 characters');
-    return false;
-  }
-  hideAdminError(errorEl);
-  return true;
-}
-
-function validateAdminConfirmPassword(password, confirmPassword, errorEl) {
-  if (!confirmPassword) {
-    showAdminError(errorEl, 'Please confirm your password');
-    return false;
-  }
-  if (password !== confirmPassword) {
-    showAdminError(errorEl, 'Passwords do not match');
-    return false;
-  }
-  hideAdminError(errorEl);
-  return true;
-}
-
-function bindAddAdminValidation() {
-  const phoneInput = document.getElementById('adminPhone');
-  const passwordInput = document.getElementById('adminPassword');
-  const confirmPasswordInput = document.getElementById('adminPasswordConfirm');
-  const phoneError = document.getElementById('adminPhoneError');
-  const passwordError = document.getElementById('adminPasswordError');
-  const confirmPasswordError = document.getElementById('adminConfirmPasswordError');
-
-  if (phoneInput) {
-    phoneInput.addEventListener('input', () => {
-      if (typeof window.formatPhoneNumber === 'function') {
-        window.formatPhoneNumber(phoneInput);
-      }
-      validateAdminPhone(phoneInput.value, phoneError);
-    });
-    phoneInput.addEventListener('blur', () => validateAdminPhone(phoneInput.value, phoneError));
-  }
-
-  if (passwordInput) {
-    passwordInput.addEventListener('input', () => validateAdminPassword(passwordInput.value, passwordError));
-    passwordInput.addEventListener('blur', () => validateAdminPassword(passwordInput.value, passwordError));
-  }
-
-  if (confirmPasswordInput) {
-    const handler = () => validateAdminConfirmPassword(passwordInput.value, confirmPasswordInput.value, confirmPasswordError);
-    confirmPasswordInput.addEventListener('input', handler);
-    confirmPasswordInput.addEventListener('blur', handler);
-  }
-}
-
 // Submit new admin
 window.submitNewAdmin = async function (event) {
   event.preventDefault();
 
   const submitBtn = document.getElementById('submitBtn');
   const originalText = submitBtn.textContent;
-  const phoneError = document.getElementById('adminPhoneError');
-  const passwordError = document.getElementById('adminPasswordError');
-  const confirmPasswordError = document.getElementById('adminConfirmPasswordError');
-
-  const clearError = (el) => {
-    if (el) {
-      el.textContent = '';
-      el.classList.remove('show');
-    }
-  };
-  [phoneError, passwordError, confirmPasswordError].forEach(clearError);
-
-  const fullName = document.getElementById('adminName').value.trim();
-  const phone = document.getElementById('adminPhone').value.trim();
-  const cleanedPhone = phone.replace(/\s/g, '');
-  const password = document.getElementById('adminPassword').value;
-  const confirmPassword = document.getElementById('adminPasswordConfirm').value;
-
-  const isPhoneValid = validateAdminPhone(cleanedPhone, phoneError);
-  const isPasswordValid = validateAdminPassword(password, passwordError);
-  const isConfirmValid = validateAdminConfirmPassword(password, confirmPassword, confirmPasswordError);
-
-  if (!isPhoneValid || !isPasswordValid || !isConfirmValid) {
-    return;
-  }
 
   try {
     // Show loading state
     submitBtn.disabled = true;
     submitBtn.textContent = 'Adding...';
 
+    const fullName = document.getElementById('adminName').value.trim();
+    const phone = document.getElementById('adminPhone').value.trim();
+    const password = document.getElementById('adminPassword').value;
+    const confirmPassword = document.getElementById('adminPasswordConfirm').value;
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      throw new Error('Passwords do not match');
+    }
+
+    // Validate phone format (must be 9 digits)
+    if (!/^[0-9]{9}$/.test(phone.replace(/\s/g, ''))) {
+      throw new Error('Phone number must be exactly 9 digits');
+    }
+
     // Format phone with +998 prefix
-    const formattedPhone = '+998' + cleanedPhone;
+    const formattedPhone = '+998' + phone.replace(/\s/g, '');
 
     // Get current user data
     const userData = JSON.parse(localStorage.getItem('currentUser'));
@@ -8451,10 +8230,7 @@ function createSubAdminCard(subAdmin) {
 
 
 // Open Language Page
-window.openLanguagePage = function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('language');
-  }
+window.openLanguagePage = function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -8655,10 +8431,7 @@ window.applyLanguageChanges = function () {
 };
 
 // Open Customize UI Page
-window.openCustomizeUI = function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('customize-ui');
-  }
+window.openCustomizeUI = function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -9285,37 +9058,23 @@ window.applyPrimaryColor = function (color) {
     .edit-btn,
     .promo-edit-btn,
     .edit-bio-btn,
-    .save-profile-btn {
+    .figma-header-buttons button,
+    .figma-header-buttons .figma-btn,
+    .figma-btn-primary,
+    .save-profile-btn,
+    button[onclick*="openEditProfile"],
+    button[onclick*="openCustomizeUI"],
+    button[onclick*="customizeUI"],
+    button[onclick*="openCreateCourse"],
+    button[onclick*="saveProfile"] {
       border-color: ${color} !important;
       color: ${color} !important;
     }
-
-    /* Header buttons (non-primary/non-logout) keep outline with primary hover */
-    .figma-header-buttons .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout) {
+    
+    /* New Course button - transparent background like other buttons */
+    .figma-btn-primary:not(.edit-profile-form button[type="submit"]),
+    button[onclick*="openCreateCourse"] {
       background: transparent !important;
-      border-color: rgba(255, 255, 255, 0.65) !important;
-      color: #ffffff !important;
-      transition: all 0.2s ease !important;
-    }
-
-    .figma-header-buttons .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout):hover {
-      border-color: ${color} !important;
-      background: rgba(${r}, ${g}, ${b}, 0.12) !important;
-      color: #ffffff !important;
-    }
-
-    /* Inline edit buttons match header styling */
-    .edit-bio-btn {
-      background: transparent !important;
-      border-color: rgba(255, 255, 255, 0.65) !important;
-      color: #ffffff !important;
-      transition: all 0.2s ease !important;
-    }
-
-    .edit-bio-btn:hover {
-      border-color: ${color} !important;
-      background: rgba(${r}, ${g}, ${b}, 0.12) !important;
-      color: #ffffff !important;
     }
     
     /* Create Group button - use dynamic color background */
@@ -9343,7 +9102,9 @@ window.applyPrimaryColor = function (color) {
     
     .action-btn:hover,
     .grade-btn:hover,
-    .figma-header-buttons .figma-btn:not(.figma-notification-btn):not(.figma-btn-primary):not(.figma-btn-logout):hover {
+    .figma-header-buttons .figma-btn:hover,
+    .figma-btn-primary:hover,
+    button[onclick*="openCreateCourse"]:hover {
       background: rgba(${r}, ${g}, ${b}, 0.1) !important;
     }
     
@@ -9409,17 +9170,13 @@ window.applyPrimaryColor = function (color) {
 
 // Load saved primary color from localStorage
 window.loadSavedPrimaryColor = function () {
-  const isValidHex = (value) => /^#[0-9A-F]{6}$/i.test(value);
-  const themeColor = getTheme()?.primaryColor;
   const savedColor = localStorage.getItem('primaryColor');
-  const defaultColor = '#7ea2d4';
-  const colorToApply = isValidHex(themeColor)
-    ? themeColor
-    : (isValidHex(savedColor) ? savedColor : defaultColor);
-
-  applyPrimaryColor(colorToApply);
-  localStorage.setItem('primaryColor', colorToApply);
-  console.log('Loaded primary color:', colorToApply);
+  if (savedColor && /^#[0-9A-F]{6}$/i.test(savedColor)) {
+    applyPrimaryColor(savedColor);
+    console.log('Loaded saved primary color:', savedColor);
+  } else {
+    console.log('No saved color, using default: #7ea2d4');
+  }
 };
 
 // Update color from picker
@@ -9685,10 +9442,7 @@ window.saveCustomization = function () {
 };
 
 // Open My Subscription Page
-window.openMySubscription = function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('subscription');
-  }
+window.openMySubscription = function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -9996,10 +9750,7 @@ window.payNow = function () {
 };
 
 // Open Progress Page
-window.openProgress = async function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('progress');
-  }
+window.openProgress = async function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -10992,10 +10743,7 @@ window.loadMoreProgress = function () {
 };
 
 // Open Students Analytics Page
-window.openStudentsAnalytics = function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('students');
-  }
+window.openStudentsAnalytics = function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (contentArea) {
@@ -11766,10 +11514,7 @@ window.loadMoreStudents = function () {
 };
 
 // Open Rating & Comments Page
-window.openRatingComments = function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('rating-comments');
-  }
+window.openRatingComments = function () {
   // Show coming soon toast
   showInfoToast(t('comingSoon.ratingComments'));
   return;
@@ -12416,11 +12161,6 @@ window.setActiveChild = function (element, event) {
   // Add active to clicked element
   element.classList.add('active');
 
-  // Update URL for SPA navigation without re-rendering
-  if (element?.dataset?.path !== undefined) {
-    navigateDashboardSection(element.dataset.path, null, { skipAction: true });
-  }
-
   // Don't navigate or reload - let the onclick handler do its job
   return false;
 };
@@ -12437,11 +12177,8 @@ window.backToDashboard = function () {
     console.log('💾 User data saved before reload:', currentUser);
   }
 
-  navigateDashboardSection('', () => {
-    if (typeof window.loadMainDashboard === 'function') {
-      window.loadMainDashboard();
-    }
-  });
+  // Reload dashboard to show updated data
+  location.reload();
 };
 
 // Load main dashboard content (without reloading entire page)
@@ -13039,17 +12776,9 @@ async function handleImageUpload(e) {
       body: formData
     });
 
-    // Be defensive: Render/nginx may return non-JSON on errors (e.g., 405/HTML)
-    const contentType = response.headers.get('content-type') || '';
-    let data;
-    if (contentType.includes('application/json')) {
-      data = await response.json();
-    } else {
-      const text = await response.text();
-      throw new Error(`Upload failed (${response.status}): ${text || 'Non-JSON response'}`);
-    }
+    const data = await response.json();
 
-    if (response.ok && data.success) {
+    if (data.success) {
       // Update preview
       preview.innerHTML = `<img src="${data.url}" alt="Profile" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover;">`;
 
@@ -13177,10 +12906,7 @@ async function handleProfileSave(e) {
 }
 
 // Open Messages Page
-window.openMessagesPage = function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('messages');
-  }
+window.openMessagesPage = function () {
   // Show coming soon toast
   showInfoToast(t('comingSoon.messages'));
   return;
@@ -13368,11 +13094,11 @@ window.handleImageUpload = async function (event) {
   // Upload to server
   try {
     const formData = new FormData();
-    formData.append('file', file);
+    formData.append('file', file); // Backend expects 'file' not 'image'
 
-    // Build absolute URL safely
-    const apiBaseUrl = config?.api?.baseUrl || (import.meta.env.VITE_API_URL || 'http://localhost:8001/api');
-    const uploadUrl = new URL('/api/upload/image', apiBaseUrl).toString();
+    // Use API base URL from config
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+    const uploadUrl = apiBaseUrl.replace('/api', '') + '/api/upload/image';
 
     console.log('📤 Uploading to:', uploadUrl);
 
@@ -13429,18 +13155,8 @@ window.addLesson = function (type, dropdownLink, event) {
   }
 
   const moduleItem = dropdownLink.closest('.module-item');
-  if (!moduleItem) {
-    console.error('Add lesson failed: module container not found.');
-    showErrorToast('Unable to add lesson. Please try again.');
-    return;
-  }
-  const lessonsList = moduleItem.querySelector('.lessons-list') || moduleItem.querySelector('.lessons-container');
-  const addDropdown = dropdownLink.closest('.add-lesson-dropdown') || moduleItem.querySelector('.add-lesson-dropdown');
-  if (!lessonsList || !addDropdown) {
-    console.error('Add lesson failed: lessons list or dropdown not found.');
-    showErrorToast('Unable to add lesson. Please try again.');
-    return;
-  }
+  const lessonsList = moduleItem.querySelector('.lessons-list');
+  const addDropdown = lessonsList.querySelector('.add-lesson-dropdown');
 
   // Hide dropdown
   const dropdownMenu = dropdownLink.closest('.dropdown-menu');
@@ -13478,33 +13194,6 @@ window.addLesson = function (type, dropdownLink, event) {
             color: var(--text-primary);
             font-size: 14px;
             font-weight: 500;
-          }
-          .lesson-form .input-error {
-            color: #dc3545;
-            font-size: 12px;
-            margin-top: 4px;
-            display: none;
-          }
-          .lesson-form .input-error.show {
-            display: block;
-          }
-          .lesson-form .input-error {
-            color: #dc3545;
-            font-size: 12px;
-            margin-top: 4px;
-            display: none;
-          }
-          .lesson-form .input-error.show {
-            display: block;
-          }
-          .lesson-form .input-error {
-            color: #dc3545;
-            font-size: 12px;
-            margin-top: 4px;
-            display: none;
-          }
-          .lesson-form .input-error.show {
-            display: block;
           }
           .lesson-form .lesson-title-input {
             width: 100%;
@@ -13614,10 +13303,8 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            opacity: 0.9;
-            background: var(--primary-color);
-            transform: none;
-            box-shadow: none;
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -13631,27 +13318,9 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: transparent;
-            color: var(--text-secondary);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: none;
-            box-shadow: none;
-          }
-          /* Unified hover behavior */
-          .lesson-form .save-lesson-btn:hover,
-          .lesson-form .save-lesson-btn:focus {
-            opacity: 0.9 !important;
-            background: var(--primary-color) !important;
-            transform: none !important;
-            box-shadow: none !important;
-          }
-          .lesson-form .cancel-lesson-btn:hover,
-          .lesson-form .cancel-lesson-btn:focus {
-            background: transparent !important;
-            color: var(--text-secondary) !important;
-            border-color: rgba(255, 255, 255, 0.4) !important;
-            box-shadow: none !important;
-            transform: none !important;
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
           }
         </style>
         <div class="lesson-form">
@@ -13659,7 +13328,6 @@ window.addLesson = function (type, dropdownLink, event) {
           <div class="form-group">
             <label>Lesson Title</label>
             <input type="text" class="lesson-title-input" placeholder="Enter lesson title" required />
-            <div class="input-error lesson-title-error"></div>
           </div>
           <div class="form-group">
             <label>Video File</label>
@@ -13776,10 +13444,8 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            opacity: 0.9;
-            background: var(--primary-color);
-            transform: none;
-            box-shadow: none;
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -13793,11 +13459,9 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: transparent;
-            color: var(--text-secondary);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: none;
-            box-shadow: none;
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
           }
           .quiz-type-selector {
             display: flex;
@@ -13868,33 +13532,9 @@ window.addLesson = function (type, dropdownLink, event) {
             gap: 6px;
             transition: all 0.2s ease;
           }
-          .add-question-btn:hover,
-          .add-question-btn:focus {
-            opacity: 0.9;
-            background: var(--primary-color);
-            transform: none;
-            box-shadow: none;
-          }
-          .create-questions-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 500;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s ease;
-          }
-          .create-questions-btn:hover,
-          .create-questions-btn:focus {
-            opacity: 0.9;
-            background: var(--primary-color);
-            transform: none;
-            box-shadow: none;
+          .add-question-btn:hover {
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
           }
           .question-item {
             background: var(--bg-tertiary);
@@ -14006,7 +13646,6 @@ window.addLesson = function (type, dropdownLink, event) {
           <div class="form-group">
             <label>Quiz Title</label>
             <input type="text" class="quiz-title-input" placeholder="Enter quiz title" />
-            <div class="input-error quiz-title-error" style="color: #dc3545; font-size: 12px; margin-top: 4px; display: none;"></div>
           </div>
           <div class="form-group">
             <label>Time Limit (minutes)</label>
@@ -14127,7 +13766,8 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            opacity: 0.9;
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -14141,17 +13781,16 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: transparent;
-            color: var(--text-secondary);
-            border-color: rgba(255, 255, 255, 0.35);
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
           }
         </style>
-        <div class="lesson-form assignment-lesson-form">
+        <div class="lesson-form">
           <h5>${t('createCourse.addAssignment')} ${lessonNumber}</h5>
           <div class="form-group">
             <label>Assignment Title</label>
             <input type="text" placeholder="Enter assignment title" class="assignment-title" />
-            <div class="input-error assignment-title-error"></div>
           </div>
           <div class="form-group">
             <label>Instructions</label>
@@ -14282,7 +13921,8 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .save-lesson-btn:hover {
-            opacity: 0.9;
+            background: var(--primary-color-80);
+            transform: translateY(-1px);
           }
           .lesson-form .cancel-lesson-btn {
             background: transparent;
@@ -14296,43 +13936,9 @@ window.addLesson = function (type, dropdownLink, event) {
             transition: all 0.2s ease;
           }
           .lesson-form .cancel-lesson-btn:hover {
-            background: transparent;
-            color: var(--text-secondary);
-            border-color: rgba(255, 255, 255, 0.35);
-          }
-          .lesson-form .lesson-file-input::file-selector-button {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 8px 16px;
-            margin-right: 12px;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-          }
-          .lesson-form .lesson-file-input::-webkit-file-upload-button {
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 8px 16px;
-            margin-right: 12px;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: inherit;
-          }
-          .lesson-form .lesson-file-input::file-selector-button:hover {
-            background: var(--bg-secondary);
-            border-color: var(--primary-color);
-          }
-          .lesson-form .lesson-file-input::-webkit-file-upload-button:hover {
-            background: var(--bg-secondary);
-            border-color: var(--primary-color);
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            border-color: var(--border-hover);
           }
         </style>
         <div class="lesson-form">
@@ -14343,7 +13949,7 @@ window.addLesson = function (type, dropdownLink, event) {
           </div>
           <div class="form-group">
             <label>File Upload</label>
-            <input type="file" class="lesson-file-input" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" />
+            <input type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt" />
           </div>
           <div class="form-group">
             <label>Description</label>
@@ -14358,12 +13964,8 @@ window.addLesson = function (type, dropdownLink, event) {
       break;
   }
 
-  // Insert the form in the correct lessons container
-  if (lessonsList.contains(addDropdown)) {
-    addDropdown.insertAdjacentHTML('beforebegin', lessonHTML);
-  } else {
-    lessonsList.insertAdjacentHTML('beforeend', lessonHTML);
-  }
+  // Insert the form before the add dropdown
+  addDropdown.insertAdjacentHTML('beforebegin', lessonHTML);
 };
 
 // Save Lesson Function
@@ -14379,44 +13981,16 @@ window.saveLesson = async function (button, type) {
 
   // Extract lesson title based on type
   let titleInput;
-  let titleError;
   if (type === 'quiz') {
     titleInput = lessonForm.querySelector('.quiz-title-input');
-    titleError = lessonForm.querySelector('.quiz-title-error');
-  } else if (type === 'assignment') {
-    titleInput = lessonForm.querySelector('.assignment-title');
-    titleError = lessonForm.querySelector('.assignment-title-error');
   } else {
     titleInput = lessonForm.querySelector('.lesson-title-input') || lessonForm.querySelector('input[type="text"]');
-    titleError = lessonForm.querySelector('.lesson-title-error');
   }
-
-  const showTitleError = (msg) => {
-    if (titleError) {
-      titleError.textContent = msg;
-      titleError.classList.add('show');
-      titleError.style.display = 'block';
-    }
-    showErrorToast(msg);
-  };
-  const clearTitleError = () => {
-    if (titleError) {
-      titleError.textContent = '';
-      titleError.classList.remove('show');
-      titleError.style.display = 'none';
-    }
-  };
-  clearTitleError();
 
   if (titleInput && titleInput.value.trim()) {
     lessonTitle = titleInput.value.trim();
   } else {
-    const titleMessage = type === 'quiz'
-      ? 'Quiz title is required'
-      : type === 'assignment'
-        ? 'Assignment title is required'
-        : 'Lesson title is required';
-    showTitleError(titleMessage);
+    showErrorToast('Please enter a lesson title');
     return;
   }
 
@@ -14597,12 +14171,6 @@ window.saveLesson = async function (button, type) {
     console.log('🎯 SAVE: Final lessonData for quiz:', JSON.stringify(lessonData, null, 2));
   } else if (type === 'assignment') {
     const instructionsInput = lessonForm.querySelector('.assignment-instructions');
-    const titleError = lessonForm.querySelector('.assignment-title-error');
-    if (titleError) {
-      titleError.textContent = '';
-      titleError.classList.remove('show');
-      titleError.style.display = 'none';
-    }
 
     // Get content type (text or file)
     const contentTypeRadio = lessonForm.querySelector('input[name*="assignment-content-type"]:checked');
@@ -14628,8 +14196,8 @@ window.saveLesson = async function (button, type) {
           const formData = new FormData();
           formData.append('file', file);
 
-          const apiBaseUrl = config?.api?.baseUrl || (import.meta.env.VITE_API_URL || 'http://localhost:8001/api');
-          const uploadUrl = new URL('/api/upload/document', apiBaseUrl).toString();
+          const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+          const uploadUrl = `${apiBaseUrl}/upload/document`;
           console.log('📤 Uploading assignment file to:', uploadUrl);
 
           const response = await fetch(uploadUrl, {
@@ -14669,8 +14237,8 @@ window.saveLesson = async function (button, type) {
         const formData = new FormData();
         formData.append('file', file);
 
-        const apiBaseUrl = config?.api?.baseUrl || (import.meta.env.VITE_API_URL || 'http://localhost:8001/api');
-        const uploadUrl = new URL('/api/upload/document', apiBaseUrl).toString();
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
+        const uploadUrl = `${apiBaseUrl}/upload/document`;
         console.log('📤 Uploading file lesson to:', uploadUrl);
 
         const response = await fetch(uploadUrl, {
@@ -14998,7 +14566,6 @@ function createQuizEditForm(lessonData) {
       <div class="form-group">
         <label>Quiz Title</label>
         <input type="text" class="quiz-title-input" value="${escapedTitle}" placeholder="Enter quiz title" />
-        <div class="input-error quiz-title-error" style="color: #dc3545; font-size: 12px; margin-top: 4px; display: none;"></div>
       </div>
       <div class="form-group">
         <label>Time Limit (minutes)</label>
@@ -15035,7 +14602,6 @@ function createVideoEditForm(lessonData) {
       <div class="form-group">
         <label>Lesson Title</label>
         <input type="text" class="lesson-title-input" value="${lessonData.title}" placeholder="Enter lesson title" required />
-        <div class="input-error lesson-title-error" style="color: #dc3545; font-size: 12px; margin-top: 4px; display: none;"></div>
       </div>
       <div class="form-group">
         <label>Video File</label>
@@ -15233,11 +14799,6 @@ window.updateLesson = function (button, type) {
 
   if (type === 'quiz') {
     const titleInput = editForm.querySelector('.quiz-title-input');
-    const titleError = editForm.querySelector('.quiz-title-error');
-    if (titleError) {
-      titleError.textContent = '';
-      titleError.style.display = 'none';
-    }
     const timeInput = editForm.querySelector('.quiz-time-input');
     const questions = [];
 
@@ -15277,48 +14838,15 @@ window.updateLesson = function (button, type) {
       }
     });
 
-    if (!titleInput || !titleInput.value.trim()) {
-      if (titleError) {
-        titleError.textContent = 'Quiz title is required';
-        titleError.style.display = 'block';
-      }
-      showErrorToast('Quiz title is required');
-      return;
-    }
-
-    if (!titleInput || !titleInput.value.trim()) {
-      if (titleError) {
-        titleError.textContent = 'Assignment title is required';
-        titleError.classList.add('show');
-        titleError.style.display = 'block';
-      }
-      showErrorToast('Assignment title is required');
-      return;
-    }
-
-    updatedData.title = titleInput.value.trim();
+    updatedData.title = titleInput ? titleInput.value.trim() : '';
     updatedData.timeLimit = timeInput ? timeInput.value : '';
     updatedData.questions = questions;
     updatedData.duration = `Quiz (${questions.length} questions)${timeInput && timeInput.value ? ` • ${timeInput.value} min` : ''}`;
 
   } else if (type === 'video') {
     const titleInput = editForm.querySelector('.lesson-title-input');
-    const titleError = editForm.querySelector('.lesson-title-error');
-    if (titleError) {
-      titleError.textContent = '';
-      titleError.style.display = 'none';
-    }
     const videoUrlInput = editForm.querySelector('.video-url-input');
     const durationInput = editForm.querySelector('.video-duration-input');
-
-    if (!titleInput || !titleInput.value.trim()) {
-      if (titleError) {
-        titleError.textContent = 'Lesson title is required';
-        titleError.style.display = 'block';
-      }
-      showErrorToast('Lesson title is required');
-      return;
-    }
 
     updatedData.title = titleInput.value.trim();
     updatedData.videoUrl = videoUrlInput.value;
@@ -15775,30 +15303,10 @@ window.editModule = function (button, event) {
           </div>
         </div>
         <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 12px; padding-top: 20px; border-top: 1px solid var(--border-color); margin-top: 20px;">
-          <button class="btn-secondary" onclick="closeEditModuleModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: none;">Cancel</button>
-          <button class="btn-primary" onclick="saveModuleTitle()" style="background: var(--primary-color); color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer; transition: none;">Save</button>
+          <button class="btn-secondary" onclick="closeEditModuleModal()" style="background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color); padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Cancel</button>
+          <button class="btn-primary" onclick="saveModuleTitle()" style="background: var(--primary-color); color: #ffffff; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Save</button>
         </div>
       </div>
-      <style>
-        /* Remove hover effects for edit module modal buttons */
-        #editModuleModal .btn-primary,
-        #editModuleModal .btn-secondary {
-          transition: none !important;
-        }
-        #editModuleModal .btn-primary:hover,
-        #editModuleModal .btn-primary:focus {
-          background: var(--primary-color) !important;
-          color: #ffffff !important;
-          box-shadow: none !important;
-        }
-        #editModuleModal .btn-secondary:hover,
-        #editModuleModal .btn-secondary:focus {
-          background: transparent !important;
-          color: var(--text-secondary) !important;
-          border-color: var(--border-color) !important;
-          box-shadow: none !important;
-        }
-      </style>
     </div>
   `;
 
@@ -15945,10 +15453,7 @@ window.toggleLessonDropdown = function (button, event) {
 };
 
 // Open My Courses Page
-window.openMyCourses = async function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('my-courses');
-  }
+window.openMyCourses = async function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -16319,10 +15824,7 @@ window.sortCourses = (event) => {
 
 
 // Open Finance Page - Payment Requests
-window.openFinancePage = async function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('finance');
-  }
+window.openFinancePage = async function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -17132,10 +16634,7 @@ window.openFinancePage = async function (skipPathUpdate = false) {
 };
 
 // Open AI Assistant Page
-function openAIAssistantPage(skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('ai-assistant');
-  }
+function openAIAssistantPage() {
   console.log('Opening AI Assistant Page');
 
   // Show coming soon toast
@@ -17144,10 +16643,7 @@ function openAIAssistantPage(skipPathUpdate = false) {
 
 
 // Open Assignments Page
-window.openAssignmentsPage = async function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('assignments');
-  }
+window.openAssignmentsPage = async function () {
   const contentArea = document.querySelector('.figma-content-area');
 
   if (!contentArea) {
@@ -19532,10 +19028,7 @@ window.toggleAISetting = function (toggleElement) {
   }
 };
 
-window.openQuizAnalytics = async function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('quiz-analytics');
-  }
+window.openQuizAnalytics = async function () {
   console.log('openQuizAnalytics function called');
 
   const contentArea = document.querySelector('.figma-content-area');
@@ -20275,10 +19768,7 @@ window.submitPayout = function () {
 };
 
 // Open Create Course Page
-window.openCreateCourse = async function (skipPathUpdate = false) {
-  if (!skipPathUpdate) {
-    updateDashboardPathOnly('create-course');
-  }
+window.openCreateCourse = async function () {
   const userData = store.getState().user;
 
   // Show loading toast while checking
@@ -20428,29 +19918,29 @@ window.openCreateCourse = async function (skipPathUpdate = false) {
                 <label class="field-label">${t('createCourse.courseType')}</label>
                 <div class="radio-group">
                   <label class="radio-option">
-                    <input type="radio" name="courseType" value="paid" checked onchange="toggleCreatePricing(this)" />
+                    <input type="radio" name="courseType" value="paid" checked />
                     <span class="radio-custom"></span>
                     <span>${t('createCourse.paid')}</span>
                   </label>
                   <label class="radio-option">
-                    <input type="radio" name="courseType" value="free" onchange="toggleCreatePricing(this)" />
+                    <input type="radio" name="courseType" value="free" />
                     <span class="radio-custom"></span>
                     <span>${t('createCourse.free')}</span>
                   </label>
                 </div>
               </div>
 
-              <div class="form-row" id="createPricingFields">
-              <div class="form-field">
-                <label class="field-label">${t('createCourse.coursePrice')}</label>
-                <input type="text" class="form-input" name="price" placeholder="${t('createCourse.coursePricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
+              <div class="form-row">
+                <div class="form-field">
+                  <label class="field-label">${t('createCourse.coursePrice')}</label>
+                  <input type="number" class="form-input" name="price" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
+                </div>
+                <div class="form-field">
+                  <label class="field-label">${t('createCourse.discountPrice')}</label>
+                  <input type="number" class="form-input" placeholder="${t('createCourse.discountPricePlaceholder')}" step="0.01" />
+                  <small class="field-note">${t('createCourse.discountNote')}</small>
+                </div>
               </div>
-              <div class="form-field">
-                <label class="field-label">${t('createCourse.discountPrice')}</label>
-                <input type="text" class="form-input" name="discountPrice" placeholder="${t('createCourse.discountPricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
-                <small class="field-note">${t('createCourse.discountNote')}</small>
-              </div>
-            </div>
             </div>
 
             <!-- Course Structure Section -->
@@ -21646,7 +21136,6 @@ function openCourseEditPage(courseData) {
 
   const userData = store.getState().user;
   const contentArea = document.querySelector('.figma-content-area');
-  const isDraftCourse = String(courseData.status || '').toLowerCase() === 'draft';
 
   if (!contentArea) {
     console.error('Content area not found');
@@ -21782,11 +21271,11 @@ function openCourseEditPage(courseData) {
               <div class="form-row" id="pricingFields" style="display: ${courseData.courseType === 'paid' ? 'flex' : 'none'};">
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.coursePrice')}</label>
-                  <input type="text" class="form-input" name="price" value="${courseData.price || ''}" placeholder="${t('createCourse.coursePricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
+                  <input type="number" class="form-input" name="price" value="${courseData.price || ''}" placeholder="${t('createCourse.coursePricePlaceholder')}" step="0.01" />
                 </div>
                 <div class="form-field">
                   <label class="field-label">${t('createCourse.discountPrice')}</label>
-                  <input type="text" class="form-input" name="discountPrice" value="${courseData.discountPrice || ''}" placeholder="${t('createCourse.discountPricePlaceholder')}" inputmode="decimal" pattern="\\d*" />
+                  <input type="number" class="form-input" name="discountPrice" value="${courseData.discountPrice || ''}" placeholder="${t('createCourse.discountPricePlaceholder')}" step="0.01" />
                   <small class="field-note">${t('createCourse.discountNote')}</small>
                 </div>
               </div>
@@ -21814,7 +21303,7 @@ function openCourseEditPage(courseData) {
             <div class="form-actions course-actions">
               <button type="button" class="btn-cancel" onclick="backToDashboard()">Cancel</button>
               <button type="submit" class="btn-secondary" name="action" value="draft">Save as Draft</button>
-              <button type="submit" class="btn-save" name="action" value="publish">${isDraftCourse ? 'Publish Course' : 'Update Course'}</button>
+              <button type="submit" class="btn-save" name="action" value="publish">Update Course</button>
             </div>
 
           </form>
@@ -22181,14 +21670,6 @@ window.toggleEditPricing = function (radio) {
   }
 };
 
-// Toggle Pricing Fields for Create Course
-window.toggleCreatePricing = function (radio) {
-  const pricingFields = document.getElementById('createPricingFields');
-  if (pricingFields) {
-    pricingFields.style.display = radio.value === 'paid' ? 'flex' : 'none';
-  }
-};
-
 // View Quiz Questions Function
 window.viewQuizQuestions = function (button, event) {
   if (event) {
@@ -22305,32 +21786,19 @@ window.checkAndServeLandingPage = function () {
     return true;
   }
 
-  // Check if URL matches teacher landing page pattern: /teacher/:identifier (custom URL or teacher ID)
-  const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9-]+)$/;
+  // Check if URL matches teacher landing page pattern: /teacher/teacherId
+  const teacherPagePattern = /^\/teacher\/([a-zA-Z0-9]+)$/;
   const match = currentPath.match(teacherPagePattern);
 
   if (match) {
-    const identifier = match[1];
-    console.log('📄 Loading teacher landing page for identifier:', identifier);
+    const teacherId = match[1];
+    console.log('📄 Loading teacher landing page for ID:', teacherId);
 
-    // Save identifier to sessionStorage for later use
-    sessionStorage.setItem('currentTeacherId', identifier);
+    // Save teacherId to sessionStorage for later use
+    sessionStorage.setItem('currentTeacherId', teacherId);
 
     // Load and display teacher landing page
-    loadTeacherLandingPage(identifier);
-    return true;
-  }
-
-  // Check for custom URL pattern (direct path like /english, /math, etc.)
-  const knownRoutes = ['/', '/login', '/register', '/dashboard', '/pricing', '/blog', '/student-dashboard'];
-  const isKnownRoute = knownRoutes.some(route => currentPath === route || currentPath.startsWith(route + '/'));
-
-  if (!isKnownRoute && currentPath.match(/^\/[a-z0-9-]+$/)) {
-    const customUrl = currentPath.substring(1); // Remove leading slash
-    console.log('📄 Loading teacher landing page for custom URL:', customUrl);
-
-    sessionStorage.setItem('currentTeacherId', customUrl);
-    loadTeacherLandingPage(customUrl);
+    loadTeacherLandingPage(teacherId);
     return true;
   }
 
@@ -22356,12 +21824,12 @@ async function loadTeacherLandingPage(teacherId) {
       </style>
     `;
 
-    // Get teacher profile by custom URL or ID (public endpoint, no token needed)
-    console.log('📡 Fetching teacher landing page from API...');
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-
-    // Try to fetch by custom URL or teacher ID (API will handle both)
-    const response = await fetch(`${apiBaseUrl}/landing/public/${teacherId}`);
+    // Get teacher profile by ID (public endpoint, no token needed)
+    console.log('📡 Fetching teacher profile from API...');
+    const apiBaseUrl = window.location.hostname === 'localhost'
+      ? 'http://localhost:8001/api'
+      : 'https://darslinker-backend.onrender.com/api';
+    const response = await fetch(`${apiBaseUrl}/teachers/${teacherId}`);
     const teacherResult = await response.json();
     console.log('📡 API Response:', teacherResult);
 
@@ -22453,8 +21921,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // New Landing Settings HTML
 function getNewLandingSettingsHTML(user, landingData = null) {
   const productionURL = 'https://darslinker.uz';
-  const landingBase = (import.meta.env.VITE_LANDING_BASE_URL || window.location.origin || '').replace(/\/+$/, '');
-  const landingURL = `${landingBase}/teacher/${user._id}`;
+  const landingURL = `${productionURL}/teacher/${user._id}`;
 
   // Default values or from landingData
   const settings = landingData || {
@@ -22989,7 +22456,17 @@ window.openNotificationsPage = async function () {
   }
 };
 
-// Logout function is defined earlier with confirmation (window.handleLogout)
+// Logout function
+window.handleLogout = function () {
+  // Clear all localStorage
+  localStorage.clear();
+
+  // Clear all sessionStorage
+  sessionStorage.clear();
+
+  // Navigate to login page
+  router.navigate('/login');
+};
 
 // Removed old setTimeout - notification count now loads in renderTeacherDashboard
 
@@ -23291,15 +22768,12 @@ window.startNewMeeting = function () {
 // Open Telegram bot function
 window.openTelegramBot = function () {
   // Open Telegram bot in new tab
-  window.open(`https://t.me/${TELEGRAM_BOT_USERNAME}`, '_blank');
+  window.open('https://t.me/darslinker_bot', '_blank');
 };
 
 // Open create course function (if not already defined)
 if (typeof window.openCreateCourse === 'undefined') {
-  window.openCreateCourse = function (skipPathUpdate = false) {
-    if (!skipPathUpdate) {
-      updateDashboardPathOnly('create-course');
-    }
+  window.openCreateCourse = function () {
     showSuccessToast('Create course feature coming soon!');
   };
 }
