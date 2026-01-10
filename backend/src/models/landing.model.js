@@ -61,6 +61,15 @@ const landingSchema = new mongoose.Schema({
     youtube: { type: String, default: '' },
     linkedin: { type: String, default: '' }
   },
+  customUrl: {
+    type: String,
+    default: '',
+    trim: true,
+    lowercase: true,
+    match: [/^[a-z0-9-]+$/, 'Custom URL can only contain lowercase letters, numbers, and hyphens'],
+    index: true,
+    sparse: true
+  },
   customCSS: {
     type: String,
     default: ''

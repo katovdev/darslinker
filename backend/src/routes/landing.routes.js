@@ -99,4 +99,30 @@ landingRouter.get("/:teacherId", getLandingSettings);
  */
 landingRouter.put("/:teacherId", authenticate, updateLandingSettings);
 
+/**
+ * @swagger
+ * /landing/check-url/{customUrl}:
+ *   get:
+ *     summary: Check if custom URL (subdomain) is available
+ *     tags: [Landing]
+ *     security:
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: customUrl
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: teacherId
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: URL availability checked successfully
+ *       400:
+ *         description: Bad request (invalid format)
+ */
+landingRouter.get("/check-url/:customUrl", authenticate, checkUrlAvailability);
+
 export default landingRouter;
