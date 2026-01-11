@@ -49,7 +49,7 @@ class ErrorHandler {
 
     window.addEventListener('offline', () => {
       this.isOnline = false;
-      this.showToast(t('network.offline'), 'warning', 0); // Persist until online
+      this.showToast(t('network.offline'), 'warning', 5000); // Persist until online
     });
   }
 
