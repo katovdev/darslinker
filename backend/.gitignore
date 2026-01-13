@@ -9,3 +9,7 @@ uploads/*
 # Logs
 logs/
 *.log
+/src/generated/prisma
+
+
+node_modules/
