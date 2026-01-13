@@ -8,4 +8,4 @@ uploads/*
 
 # Logs
 logs/
-*.log
+*.lognode_modules/
