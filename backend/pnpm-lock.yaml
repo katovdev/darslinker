@@ -7475,15 +7475,11 @@ snapshots:
 
   jiti@2.6.1: {}
 
-  joi@18.0.1:
+  set-proto@1.0.0:
     dependencies:
-      '@hapi/address': 5.1.1
-      '@hapi/formula': 3.0.2
-      '@hapi/hoek': 11.0.7
-      '@hapi/pinpoint': 2.0.1
-      '@hapi/tlds': 1.1.4
-      '@hapi/topo': 6.0.2
-      '@standard-schema/spec': 1.0.0
+      dunder-proto: 1.0.1
+      es-errors: 1.3.0
+      es-object-atoms: 1.1.1
 
   js-tokens@4.0.0: {}
 
@@ -7494,7 +7490,12 @@ snapshots:
 
   js-yaml@4.1.0:
     dependencies:
-      argparse: 2.0.1
+      define-data-property: 1.1.4
+      es-errors: 1.3.0
+      function-bind: 1.1.2
+      get-intrinsic: 1.3.0
+      gopd: 1.2.0
+      has-property-descriptors: 1.0.2
 
   jsbn@0.1.1: {}
 
@@ -7540,16 +7541,10 @@ snapshots:
 
   jsonwebtoken@9.0.2:
     dependencies:
-      jws: 3.2.2
-      lodash.includes: 4.3.0
-      lodash.isboolean: 3.0.3
-      lodash.isinteger: 4.0.4
-      lodash.isnumber: 3.0.3
-      lodash.isplainobject: 4.0.6
-      lodash.isstring: 4.0.1
-      lodash.once: 4.1.1
-      ms: 2.1.3
-      semver: 7.7.3
+      define-data-property: 1.1.4
+      es-errors: 1.3.0
+      functions-have-names: 1.2.3
+      has-property-descriptors: 1.0.2
 
   jsprim@1.4.2:
     dependencies:
@@ -7567,16 +7562,17 @@ snapshots:
 
   jwa@1.4.2:
     dependencies:
-      buffer-equal-constant-time: 1.0.1
-      ecdsa-sig-formatter: 1.0.11
-      safe-buffer: 5.2.1
+      dunder-proto: 1.0.1
+      es-errors: 1.3.0
+      es-object-atoms: 1.1.1
 
-  jws@3.2.2:
+  setprototypeof@1.2.0: {}
+
+  shebang-command@2.0.0:
     dependencies:
-      jwa: 1.4.2
-      safe-buffer: 5.2.1
+      shebang-regex: 3.0.0
 
-  kareem@2.6.3: {}
+  shebang-regex@3.0.0: {}
 
   kleur@3.0.3: {}
 
@@ -7596,34 +7592,50 @@ snapshots:
 
   lodash.get@4.4.2: {}
 
-  lodash.includes@4.3.0: {}
-
-  lodash.isboolean@3.0.3: {}
-
-  lodash.isequal@4.5.0: {}
-
-  lodash.isinteger@4.0.4: {}
-
-  lodash.isnumber@3.0.3: {}
-
-  lodash.isplainobject@4.0.6: {}
-
-  lodash.isstring@4.0.1: {}
-
-  lodash.mergewith@4.6.2: {}
-
-  lodash.once@4.1.1: {}
-
-  lodash@4.17.21: {}
-
-  logform@2.7.0:
+  side-channel-list@1.0.0:
     dependencies:
-      '@colors/colors': 1.6.0
-      '@types/triple-beam': 1.3.5
-      fecha: 4.2.3
-      ms: 2.1.3
-      safe-stable-stringify: 2.5.0
-      triple-beam: 1.4.1
+      es-errors: 1.3.0
+      object-inspect: 1.13.4
+
+  side-channel-map@1.0.1:
+    dependencies:
+      call-bound: 1.0.4
+      es-errors: 1.3.0
+      get-intrinsic: 1.3.0
+      object-inspect: 1.13.4
+
+  side-channel-weakmap@1.0.2:
+    dependencies:
+      call-bound: 1.0.4
+      es-errors: 1.3.0
+      get-intrinsic: 1.3.0
+      object-inspect: 1.13.4
+      side-channel-map: 1.0.1
+
+  side-channel@1.1.0:
+    dependencies:
+      es-errors: 1.3.0
+      object-inspect: 1.13.4
+      side-channel-list: 1.0.0
+      side-channel-map: 1.0.1
+      side-channel-weakmap: 1.0.2
+
+  sift@17.1.3: {}
+
+  signal-exit@3.0.7: {}
+
+  signal-exit@4.1.0: {}
+
+  sisteransi@1.0.5: {}
+
+  slash@3.0.0: {}
+
+  source-map-js@1.2.1: {}
+
+  source-map-support@0.5.13:
+    dependencies:
+      buffer-from: 1.1.2
+      source-map: 0.6.1
 
   long@5.3.2: {}
 
@@ -7649,11 +7661,11 @@ snapshots:
 
   media-typer@0.3.0: {}
 
-  media-typer@1.1.0: {}
+  sisteransi@1.0.5: {}
 
-  memory-pager@1.5.0: {}
+  slash@3.0.0: {}
 
-  merge-descriptors@2.0.0: {}
+  source-map-js@1.2.1: {}
 
   merge-stream@2.0.0: {}
 
@@ -7666,15 +7678,13 @@ snapshots:
 
   mime-db@1.52.0: {}
 
-  mime-db@1.54.0: {}
+  source-map@0.6.1: {}
 
-  mime-types@2.1.35:
+  sparse-bitfield@3.0.3:
     dependencies:
-      mime-db: 1.52.0
+      memory-pager: 1.5.0
 
-  mime-types@3.0.1:
-    dependencies:
-      mime-db: 1.54.0
+  sprintf-js@1.0.3: {}
 
   mime@1.6.0: {}
 
@@ -7684,67 +7694,52 @@ snapshots:
 
   minimatch@3.1.2:
     dependencies:
-      brace-expansion: 1.1.12
+      asn1: 0.2.6
+      assert-plus: 1.0.0
+      bcrypt-pbkdf: 1.0.2
+      dashdash: 1.14.1
+      ecc-jsbn: 0.1.2
+      getpass: 0.1.7
+      jsbn: 0.1.1
+      safer-buffer: 2.1.2
+      tweetnacl: 0.14.5
 
-  minimist@1.2.8: {}
+  sprintf-js@1.0.3: {}
 
-  mkdirp@0.5.6:
+  sshpk@1.18.0:
     dependencies:
-      minimist: 1.2.8
+      asn1: 0.2.6
+      assert-plus: 1.0.0
+      bcrypt-pbkdf: 1.0.2
+      dashdash: 1.14.1
+      ecc-jsbn: 0.1.2
+      getpass: 0.1.7
+      jsbn: 0.1.1
+      safer-buffer: 2.1.2
+      tweetnacl: 0.14.5
 
-  mongodb-connection-string-url@3.0.2:
+  stack-trace@0.0.10: {}
+
+  stack-utils@2.0.6:
     dependencies:
-      '@types/whatwg-url': 11.0.5
-      whatwg-url: 14.2.0
+      escape-string-regexp: 2.0.0
 
-  mongodb@6.20.0:
+  stack-utils@2.0.6:
     dependencies:
-      '@mongodb-js/saslprep': 1.3.2
-      bson: 6.10.4
-      mongodb-connection-string-url: 3.0.2
+      escape-string-regexp: 2.0.0
 
-  mongoose@8.19.2:
+  statuses@2.0.1: {}
+
+  statuses@2.0.2: {}
+
+  std-env@3.9.0: {}
+
+  stealthy-require@1.1.1: {}
+
+  stop-iteration-iterator@1.1.0:
     dependencies:
-      bson: 6.10.4
-      kareem: 2.6.3
-      mongodb: 6.20.0
-      mpath: 0.9.0
-      mquery: 5.0.0
-      ms: 2.1.3
-      sift: 17.1.3
-    transitivePeerDependencies:
-      - '@aws-sdk/credential-providers'
-      - '@mongodb-js/zstd'
-      - gcp-metadata
-      - kerberos
-      - mongodb-client-encryption
-      - snappy
-      - socks
-      - supports-color
-
-  mpath@0.9.0: {}
-
-  mquery@5.0.0:
-    dependencies:
-      debug: 4.4.3
-    transitivePeerDependencies:
-      - supports-color
-
-  ms@2.1.3: {}
-
-  multer-storage-cloudinary@4.0.0(cloudinary@1.41.3):
-    dependencies:
-      cloudinary: 1.41.3
-
-  multer@2.0.2:
-    dependencies:
-      append-field: 1.0.0
-      busboy: 1.6.0
-      concat-stream: 2.0.0
-      mkdirp: 0.5.6
-      object-assign: 4.1.1
-      type-is: 1.6.18
-      xtend: 4.0.2
+      es-errors: 1.3.0
+      internal-slot: 1.1.0
 
   mysql2@3.15.3:
     dependencies:
@@ -8118,15 +8113,9 @@ snapshots:
 
   retry@0.12.0: {}
 
-  router@2.2.0:
+  strip-ansi@6.0.1:
     dependencies:
-      debug: 4.4.3
-      depd: 2.0.0
-      is-promise: 4.0.0
-      parseurl: 1.3.3
-      path-to-regexp: 8.3.0
-    transitivePeerDependencies:
-      - supports-color
+      ansi-regex: 5.0.1
 
   rrweb-cssom@0.6.0: {}
 
@@ -8157,7 +8146,7 @@ snapshots:
 
   safe-stable-stringify@2.5.0: {}
 
-  safer-buffer@2.1.2: {}
+  strip-json-comments@3.1.1: {}
 
   saxes@6.0.0:
     dependencies:
@@ -8169,19 +8158,17 @@ snapshots:
 
   semver@7.7.3: {}
 
-  send@1.2.0:
+  superagent@10.3.0:
     dependencies:
+      component-emitter: 1.3.1
+      cookiejar: 2.1.4
       debug: 4.4.3
-      encodeurl: 2.0.0
-      escape-html: 1.0.3
-      etag: 1.8.1
-      fresh: 2.0.0
-      http-errors: 2.0.0
-      mime-types: 3.0.1
-      ms: 2.1.3
-      on-finished: 2.4.1
-      range-parser: 1.2.1
-      statuses: 2.0.2
+      fast-safe-stringify: 2.1.1
+      form-data: 4.0.5
+      formidable: 3.5.4
+      methods: 1.1.2
+      mime: 2.6.0
+      qs: 6.14.1
     transitivePeerDependencies:
       - supports-color
 
@@ -8189,10 +8176,9 @@ snapshots:
 
   serve-static@2.2.0:
     dependencies:
-      encodeurl: 2.0.0
-      escape-html: 1.0.3
-      parseurl: 1.3.3
-      send: 1.2.0
+      cookie-signature: 1.2.2
+      methods: 1.1.2
+      superagent: 10.3.0
     transitivePeerDependencies:
       - supports-color
 
@@ -8228,33 +8214,33 @@ snapshots:
 
   side-channel-list@1.0.0:
     dependencies:
-      es-errors: 1.3.0
-      object-inspect: 1.13.4
+      component-emitter: 1.3.1
+      cookiejar: 2.1.4
+      debug: 4.4.3
+      fast-safe-stringify: 2.1.1
+      form-data: 4.0.5
+      formidable: 3.5.4
+      methods: 1.1.2
+      mime: 2.6.0
+      qs: 6.14.1
+    transitivePeerDependencies:
+      - supports-color
 
-  side-channel-map@1.0.1:
+  supertest@7.2.2:
     dependencies:
-      call-bound: 1.0.4
-      es-errors: 1.3.0
-      get-intrinsic: 1.3.0
-      object-inspect: 1.13.4
+      cookie-signature: 1.2.2
+      methods: 1.1.2
+      superagent: 10.3.0
+    transitivePeerDependencies:
+      - supports-color
 
-  side-channel-weakmap@1.0.2:
+  supports-color@5.5.0:
     dependencies:
-      call-bound: 1.0.4
-      es-errors: 1.3.0
-      get-intrinsic: 1.3.0
-      object-inspect: 1.13.4
-      side-channel-map: 1.0.1
+      has-flag: 3.0.0
 
-  side-channel@1.1.0:
+  supports-color@7.2.0:
     dependencies:
-      es-errors: 1.3.0
-      object-inspect: 1.13.4
-      side-channel-list: 1.0.0
-      side-channel-map: 1.0.1
-      side-channel-weakmap: 1.0.2
-
-  sift@17.1.3: {}
+      has-flag: 4.0.0
 
   signal-exit@3.0.7: {}
 
@@ -8314,10 +8300,7 @@ snapshots:
 
   stream-browserify@3.0.0:
     dependencies:
-      inherits: 2.0.4
-      readable-stream: 3.6.2
-
-  streamsearch@1.1.0: {}
+      has-flag: 4.0.0
 
   string-length@4.0.2:
     dependencies:
