@@ -2216,7 +2216,6 @@ const translations = {
 
 const SUPPORTED_LANGUAGES = ['uz', 'ru', 'en'];
 
-// Parse language from the first segment of a path
 export function detectLanguageFromPath(pathname = '/') {
   const [, maybeLang] = pathname.split('/');
   if (SUPPORTED_LANGUAGES.includes(maybeLang)) {
@@ -2243,19 +2242,16 @@ export function applyLanguageToPath(pathname = '/', lang = 'uz') {
   return `/${lang}${normalized}`;
 }
 
-// Get current language from localStorage or default to 'uz'
 export function getCurrentLanguage() {
   const stored = localStorage.getItem('appLanguage') || localStorage.getItem('language');
   return SUPPORTED_LANGUAGES.includes(stored) ? stored : 'uz';
 }
 
-// Set language (optionally skip emitting change event)
 export function setLanguage(lang, options = {}) {
   const { emitEvent = true, updateUrl = true } = options;
   const targetLang = SUPPORTED_LANGUAGES.includes(lang) ? lang : 'uz';
   localStorage.setItem('appLanguage', targetLang);
 
-  // Update URL to reflect language (remove prefix for default 'uz')
   try {
     if (updateUrl && typeof window !== 'undefined') {
       const { path } = stripLanguageFromPath(window.location.pathname);
@@ -2265,7 +2261,6 @@ export function setLanguage(lang, options = {}) {
       }
     }
   } catch (e) {
-    // Non-fatal; just log in console to avoid breaking UX
     console.warn('setLanguage URL update skipped:', e);
   }
 
@@ -2274,15 +2269,12 @@ export function setLanguage(lang, options = {}) {
   }
 }
 
-// Helper function to handle plurals for different languages
 function getPluralForm(lang, count, singularKey = '', pluralKey = '') {
   if (lang === 'en') {
     return count === 1 ? '' : 's';
   } else if (lang === 'uz') {
-    // Uzbek doesn't change word endings for plurals
     return '';
   } else if (lang === 'ru') {
-    // Russian has complex plural rules
     if (count % 10 === 1 && count % 100 !== 11) {
       return '';
     } else if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) {
@@ -2294,17 +2286,14 @@ function getPluralForm(lang, count, singularKey = '', pluralKey = '') {
   return '';
 }
 
-// Get translation
 export function t(key, params = {}) {
   const lang = getCurrentLanguage();
   let translation = translations[lang]?.[key] || translations['en']?.[key] || key;
 
-  // Replace template variables like {name} with actual values
   if (params && typeof translation === 'string') {
     Object.keys(params).forEach(param => {
       const placeholder = `{${param}}`;
 
-      // Handle special plural cases
       if (param === 'plural' && params.count !== undefined) {
         const pluralForm = getPluralForm(lang, params.count);
         translation = translation.replace(new RegExp(placeholder, 'g'), pluralForm);
@@ -2317,7 +2306,6 @@ export function t(key, params = {}) {
   return translation;
 }
 
-// Initialize language system
 export function initI18n() {
   const urlLang = detectLanguageFromPath(window.location.pathname);
   const stored = getCurrentLanguage();
