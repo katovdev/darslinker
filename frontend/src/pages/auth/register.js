@@ -1,7 +1,7 @@
 import { router } from '../../utils/router.js';
 import { apiService } from '../../utils/api.js';
 
-const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'Darslinker_sbot').replace(/^@/, '');
+const TELEGRAM_BOT_USERNAME = (import.meta.env.VITE_TEACHER_BOT_USERNAME || 'Darslinker_cbot').replace(/^@/, '');
 
 export function initRegisterPage() {
   const app = document.querySelector('#app');

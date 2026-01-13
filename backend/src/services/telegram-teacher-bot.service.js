@@ -11,7 +11,7 @@ const TEACHER_BOT_TOKEN = process.env.TEACHER_BOT_TOKEN;
 
 let teacherBot;
 if (!TEACHER_BOT_TOKEN) {
-  logger.error('❌ TEACHER_BOT_TOKEN is missing. Teacher bot will not start.');
+  logger.error('❌ Teacher bot token is missing. Teacher bot will not start.');
 } else {
   try {
     teacherBot = new TelegramBot(TEACHER_BOT_TOKEN, {
@@ -26,6 +26,8 @@ if (!TEACHER_BOT_TOKEN) {
 }
 
 const userStates = new Map();
+const processedMessageIds = new Set();
+const resendTimers = new Map();
 
 export function initTeacherBot() {
   if (!teacherBot) {
@@ -42,6 +44,39 @@ export function initTeacherBot() {
     return;
   }
 
+  const contactKeyboard = {
+    keyboard: [
+      [
+        {
+          text: '📱 Telefon raqamni yuborish',
+          request_contact: true,
+        },
+      ],
+    ],
+    resize_keyboard: true,
+    one_time_keyboard: true,
+  };
+
+  async function promptForContact(chatId, firstName = 'Foydalanuvchi') {
+    const welcomeMessage = `@darslinker ning rasmiy botiga xush kelibsiz!
+
+${firstName}, ro'yxatdan o'tish uchun kontaktingizni yuboring.`;
+
+    try {
+      await teacherBot.sendMessage(chatId, welcomeMessage, {
+        parse_mode: 'Markdown',
+        reply_markup: contactKeyboard,
+      });
+
+      userStates.set(chatId, { state: 'waiting_contact' });
+    } catch (error) {
+      logger.error('Error sending contact request', {
+        chatId,
+        error: error.message,
+      });
+    }
+  }
+
   teacherBot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;
     const firstName = msg.from.first_name || 'Foydalanuvchi';
@@ -52,43 +87,153 @@ export function initTeacherBot() {
       firstName,
     });
 
-    // Send welcome message with contact request button
-    const welcomeMessage = `@darslinker ning rasmiy botiga xush kelibsiz!
-
-Ro'yxatdan o'tish uchun kontaktingizni yuboring.`;
-
-    const keyboard = {
-      keyboard: [
-        [
-          {
-            text: '📱 Telefon raqamni yuborish',
-            request_contact: true,
-          },
-        ],
-      ],
-      resize_keyboard: true,
-      one_time_keyboard: true,
-    };
-
-    try {
-      await teacherBot.sendMessage(chatId, welcomeMessage, {
-        parse_mode: 'Markdown',
-        reply_markup: keyboard,
-      });
-
-      // Set user state to waiting for contact
-      userStates.set(chatId, { state: 'waiting_contact' });
-    } catch (error) {
-      logger.error('Error sending welcome message', {
-        chatId,
-        error: error.message,
-      });
-    }
+    await promptForContact(chatId, firstName);
   });
+
+  function scheduleOtpResend({ chatId, normalizedPhone, userId }) {
+    const key = `${chatId}:${normalizedPhone}`;
+
+    // Only one scheduled resend per chat/phone
+    if (resendTimers.has(key)) {
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      resendTimers.delete(key);
+
+      try {
+        const pendingOtp = await Otp.findOne({
+          identifier: normalizedPhone,
+          purpose: 'register',
+          verified: false
+        }).sort({ createdAt: -1 });
+
+        if (!pendingOtp || pendingOtp.verified || pendingOtp.expiresAt < new Date()) {
+          return;
+        }
+
+        logger.info('⏳ Resending teacher OTP after delay', { chatId, phone: normalizedPhone });
+
+        await createAndSendOtp({
+          chatId,
+          normalizedPhone,
+          userId,
+          isResend: true,
+          scheduleResend: false
+        });
+      } catch (error) {
+        logger.error('Error during delayed teacher OTP resend', {
+          chatId,
+          phone: normalizedPhone,
+          error: error.message
+        });
+      }
+    }, 10000);
+
+    resendTimers.set(key, timer);
+  }
+
+  async function createAndSendOtp({
+    chatId,
+    normalizedPhone,
+    userId,
+    isResend = false,
+    scheduleResend = true
+  }) {
+    // Replace any previous pending OTPs for this identifier
+    await Otp.deleteMany({ identifier: normalizedPhone, purpose: 'register', verified: false });
+
+    const otp = generateOtp(parseInt(OTP_LENGTH || '6', 10));
+    const expiresInSeconds = parseInt(OTP_EXPIRES_SECONDS || '1800', 10);
+    const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
+
+    let otpToStore = otp;
+    if (HASH_OTP !== 'false') {
+      otpToStore = await bcrypt.hash(
+        otp,
+        parseInt(BCRYPT_SALT_ROUNDS || '10', 10)
+      );
+    }
+
+    await Otp.create({
+      identifier: normalizedPhone,
+      otpHash: otpToStore,
+      purpose: 'register',
+      expiresAt,
+      meta: {
+        channel: 'telegram',
+        chatId: chatId.toString(),
+        botType: 'teacher',
+      },
+    });
+
+    const otpMessage = isResend
+      ? `🔁 Yangi tasdiqlash kodi: ${otp}`
+      : `Tasdiqlash kodi: ${otp}`;
+
+    await teacherBot.sendMessage(chatId, otpMessage);
+
+    userStates.set(chatId, {
+      state: 'otp_sent',
+      phone: normalizedPhone,
+      userId,
+    });
+
+    if (scheduleResend) {
+      scheduleOtpResend({ chatId, normalizedPhone, userId });
+    }
+  }
 
   // Helper function to process phone number and send OTP
   async function processPhoneNumber(chatId, phoneNumber) {
     const normalizedPhone = normalizePhone(phoneNumber);
+
+    // Prevent duplicate sends for the same chat/phone
+    const existingState = userStates.get(chatId);
+    if (existingState?.state === 'otp_sent' && existingState.phone === normalizedPhone) {
+      await teacherBot.sendMessage(
+        chatId,
+        '✅ Tasdiqlash kodi allaqachon yuborilgan. Oxirgi kodni kiriting.'
+      );
+      return;
+    }
+
+    // Reuse pending OTP instead of creating a new one
+    const existingOtp = await Otp.findOne({
+      identifier: normalizedPhone,
+      purpose: 'register',
+      verified: false,
+      expiresAt: { $gt: new Date() }
+    }).sort({ createdAt: -1 });
+
+    if (existingOtp) {
+      await Otp.findByIdAndUpdate(
+        existingOtp._id,
+        {
+          $set: {
+            'meta.chatId': chatId.toString(),
+            'meta.botType': 'teacher',
+            'meta.channel': 'telegram'
+          }
+        },
+        { new: true }
+      );
+
+      await teacherBot.sendMessage(
+        chatId,
+        '✅ Tasdiqlash kodi avval yuborilgan. Agar tasdiqlamasangiz, 10 soniyadan so\'ng yana yuboramiz.'
+      );
+
+      userStates.set(chatId, {
+        state: 'otp_sent',
+        phone: normalizedPhone,
+        userId: existingState?.userId
+      });
+
+      // Schedule a single resend if user still hasn't confirmed
+      scheduleOtpResend({ chatId, normalizedPhone, userId: existingState?.userId });
+      return;
+    }
 
     logger.info('Teacher bot processing phone number', {
       chatId,
@@ -118,49 +263,12 @@ Ro'yxatdan o'tish uchun kontaktingizni yuboring.`;
         return;
       }
 
-      // Generate OTP
-      const otp = generateOtp(parseInt(OTP_LENGTH || '6', 10));
-      const expiresInSeconds = parseInt(OTP_EXPIRES_SECONDS || '1800', 10);
-      const expiresAt = new Date(Date.now() + expiresInSeconds * 1000);
-
-      // Hash OTP if needed
-      let otpToStore = otp;
-      if (HASH_OTP !== 'false') {
-        otpToStore = await bcrypt.hash(
-          otp,
-          parseInt(BCRYPT_SALT_ROUNDS || '10', 10)
-        );
-      }
-
-      // Save OTP to database
-      await Otp.create({
-        identifier: normalizedPhone,
-        otpHash: otpToStore,
-        purpose: 'register',
-        expiresAt,
-        meta: {
-          channel: 'telegram',
-          chatId: chatId.toString(),
-          botType: 'teacher',
-        },
-      });
-
-      // Send OTP to user
-      const otpMessage = `Tasdiqlash kodi: ${otp}`;
-
-      await teacherBot.sendMessage(chatId, otpMessage);
-
-      logger.info('Teacher OTP sent successfully', {
+      await createAndSendOtp({
         chatId,
-        phoneNumber: normalizedPhone,
+        normalizedPhone,
         userId: user._id,
-      });
-
-      // Update user state
-      userStates.set(chatId, {
-        state: 'otp_sent',
-        phone: normalizedPhone,
-        userId: user._id,
+        isResend: false,
+        scheduleResend: true
       });
     } catch (error) {
       logger.error('Error processing teacher phone number', {
@@ -177,6 +285,11 @@ Ro'yxatdan o'tish uchun kontaktingizni yuboring.`;
 
   // Handle contact sharing
   teacherBot.on('contact', async (msg) => {
+    if (processedMessageIds.has(msg.message_id)) {
+      return;
+    }
+    processedMessageIds.add(msg.message_id);
+
     const chatId = msg.chat.id;
     const contact = msg.contact;
 
@@ -194,21 +307,29 @@ Ro'yxatdan o'tish uchun kontaktingizni yuboring.`;
 
   // Handle text messages (phone numbers)
   teacherBot.on('message', async (msg) => {
-    // Skip if it's a command or contact
-    if (msg.text?.startsWith('/') || msg.contact) {
+    const chatId = msg.chat.id;
+
+    // Contact messages also trigger the generic message event; dedupe them
+    if (msg.contact?.phone_number) {
+      if (processedMessageIds.has(msg.message_id)) {
+        return;
+      }
+      processedMessageIds.add(msg.message_id);
+      await processPhoneNumber(chatId, msg.contact.phone_number);
       return;
     }
 
-    const chatId = msg.chat.id;
+    // Skip other commands
+    if (msg.text?.startsWith('/')) {
+      return;
+    }
+
     const text = msg.text?.trim();
     const userState = userStates.get(chatId);
 
     // If user hasn't started, prompt them
     if (!userState) {
-      await teacherBot.sendMessage(
-        chatId,
-        'Iltimos, avval /start bosing.'
-      );
+      await promptForContact(chatId);
       return;
     }
 
