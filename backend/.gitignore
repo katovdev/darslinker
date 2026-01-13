@@ -10,5 +10,5 @@ logs/
 *.log
 /src/generated/prisma
 
+
 node_modules/
-*.lognode_modules/
