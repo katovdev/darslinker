@@ -11,7 +11,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum UserStatus {
@@ -141,11 +140,9 @@ model User {
   sessions       Session[]
   tokens         TokenBlacklist[]
   notifications  Notification[]
-  paymentsMade   Payment[]       @relation("PaymentStudent")
-  coursesTaught  Course[]        @relation("CourseTeacher")
-  paymentsApproved Payment[]     @relation("PaymentApprovedBy")
   landings       Landing[]
-  subAdmins      SubAdmin[]      @relation("TeacherSubAdmins")
+  chatParticipants ChatParticipants[] @relation("UserChatParticipants")
+  sentMessages     ChatMessages[]     @relation("UserSentMessages")
 
   @@index([role])
   @@index([status])
@@ -176,10 +173,13 @@ model Teacher {
   socialLinks      Json?
   landingPageSettings Json?
   paymentsReceived   Payment[] @relation("PaymentTeacher")
+  paymentsApproved   Payment[] @relation("PaymentApprovedBy")
   assignmentsCreated Assignment[]
   quizzesCreated     Quiz[]
   subAdmins          SubAdmin[] @relation("TeacherSubAdmins")
-  landingsOne        Landing?
+  students           Student[] @relation("StudentTeacher")
+  submissions        Submission[] @relation("SubmissionTeacher")
+  chats              Chats[]     @relation("TeacherChats")
 
   @@map("teacher_profiles")
 }
@@ -193,7 +193,7 @@ model Student {
   interests String[] @default([])
   dateOfBirth DateTime?
   teacherId   String?  @db.Uuid
-  teacher     Teacher? @relation(fields: [teacherId], references: [userId])
+  teacher     Teacher? @relation("StudentTeacher", fields: [teacherId], references: [userId])
   enrolledCourses   StudentCourseEnrollment[]
   completedCourses  StudentCourseCompletion[]
   points      Int     @default(0)
@@ -289,6 +289,7 @@ model Course {
   submissions   Submission[]
   payments      Payment[]
   enrollments   StudentCourseEnrollment[]
+  completions   StudentCourseCompletion[]
 
   @@index([title])
   @@index([category])
@@ -318,6 +319,8 @@ model Lesson {
   updatedAt      DateTime @updatedAt
   moduleId       String   @db.Uuid
   module         Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  courseId       String   @db.Uuid
+  course         Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   title          String
   content        String?
   videoUrl       String?
@@ -326,6 +329,7 @@ model Lesson {
   submissions    Submission[]
 
   @@index([moduleId, order])
+  @@index([courseId])
 }
 
 model Assignment {
@@ -361,7 +365,7 @@ model Submission {
   studentId   String   @db.Uuid
   student     Student  @relation(fields: [studentId], references: [userId], onDelete: Cascade)
   teacherId   String   @db.Uuid
-  teacher     Teacher  @relation(fields: [teacherId], references: [userId], onDelete: Cascade)
+  teacher     Teacher  @relation("SubmissionTeacher", fields: [teacherId], references: [userId], onDelete: Cascade)
   lessonTitle String
   instructions String?
   fileUrl     String
@@ -553,7 +557,7 @@ model Chats {
   createdAt DateTime @default(now())
   chatName  String
   teacherId String   @db.Uuid
-  teacher   Teacher  @relation(fields: [teacherId], references: [userId], onDelete: Cascade)
+  teacher   Teacher  @relation("TeacherChats", fields: [teacherId], references: [userId], onDelete: Cascade)
   chatType  ChatType
   participants ChatParticipants[]
   messages     ChatMessages[]
@@ -565,7 +569,7 @@ model ChatParticipants {
   chatId   String @db.Uuid
   chat     Chats  @relation(fields: [chatId], references: [id], onDelete: Cascade)
   userId   String @db.Uuid
-  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User   @relation("UserChatParticipants", fields: [userId], references: [id], onDelete: Cascade)
   userType UserRole
   @@unique([chatId, userId])
   @@index([chatId])
@@ -578,7 +582,7 @@ model ChatMessages {
   chatId     String   @db.Uuid
   chat       Chats    @relation(fields: [chatId], references: [id], onDelete: Cascade)
   senderId   String   @db.Uuid
-  sender     User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  sender     User     @relation("UserSentMessages", fields: [senderId], references: [id], onDelete: Cascade)
   senderType UserRole
   content    String
   @@index([chatId])
