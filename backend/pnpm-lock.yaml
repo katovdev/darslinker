@@ -8378,9 +8378,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  supports-color@5.5.0:
-    dependencies:
-      has-flag: 3.0.0
+  supports-preserve-symlinks-flag@1.0.0: {}
 
   supports-color@7.2.0:
     dependencies:
