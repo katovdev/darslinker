@@ -4,8 +4,8 @@ import User from "./user.model.js";
 
 const studentSchema = new mongoose.Schema(
   {
-    uniqueId: { 
-      type: String, 
+    uniqueId: {
+      type: String,
       unique: true,
       sparse: true
     },
@@ -102,12 +102,12 @@ const studentSchema = new mongoose.Schema(
 );
 
 // Pre-save hook to generate uniqueId
-studentSchema.pre('save', async function(next) {
+studentSchema.pre('save', async function (next) {
   if (!this.uniqueId) {
     // Generate unique ID like "68510" (5 digits)
     const randomNum = Math.floor(10000 + Math.random() * 90000);
     this.uniqueId = randomNum.toString();
-    
+
     // Check if this ID already exists
     const Student = mongoose.model('Student');
     const existing = await Student.findOne({ uniqueId: this.uniqueId });

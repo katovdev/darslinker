@@ -3,8 +3,6 @@ import { t, getCurrentLanguage, setLanguage, initI18n } from '../../utils/i18n.j
 import { logger } from '../../utils/logger.js';
 import { safeSetInnerHTML, validateInput, escapeHtml } from '../../utils/security.js';
 import { showToast, showErrorToast, showSuccessToast, showWarningToast } from '../../utils/toast.js';
-import { errorHandler, ErrorTypes, ErrorSeverity } from '../../utils/errorHandler.js';
-import { showLoading, hideLoading } from '../../utils/loading.js';
 
 // Initialize function called from dashboard.jsana
 export async function initLandingStudentDashboard() {
@@ -55,7 +53,7 @@ let isNotificationsView = false;
 function getLogoHTML() {
   const logoText = teacherTheme.logoText || 'darslinker';
   const lowerText = logoText.toLowerCase();
-  
+
   if (lowerText.includes('linker')) {
     const parts = logoText.split(/linker/i);
     const firstPart = parts[0] || '';
@@ -105,14 +103,14 @@ async function loadTeacherTheme() {
 
 export function renderLandingStudentDashboard() {
   console.log('🎨 Rendering dashboard... notificationCount:', notificationCount);
-  
+
   // Render directly to body
   const container = document.body;
 
   // Get user data from sessionStorage (saved during login/register)
   const landingUser = sessionStorage.getItem("landingUser");
   const userData = landingUser ? JSON.parse(landingUser) : {};
-  
+
   // Check if _id exists, if not, show error and redirect
   if (!userData._id) {
     logger.error('No user ID found in sessionStorage', {
@@ -135,25 +133,25 @@ export function renderLandingStudentDashboard() {
     }, 2000);
     return;
   }
-  
+
   // Build full name from firstName and lastName
   const firstName = userData.firstName || "Student";
   const lastName = userData.lastName || "";
   const fullName = `${firstName} ${lastName}`.trim();
   const phone = userData.phone || "";
-  
+
   // Default values for level and points (new user starts with 0)
   const userLevel = userData.level || 1;
   const userPoints = userData.points || 0;
-  
-  console.log('👤 Landing User Data:', { 
-    firstName, 
-    lastName, 
-    fullName, 
-    phone, 
+
+  console.log('👤 Landing User Data:', {
+    firstName,
+    lastName,
+    fullName,
+    phone,
     _id: userData._id,
     displayId: userData._id ? userData._id.slice(-5) : 'N/A',
-    fullUserData: userData 
+    fullUserData: userData
   });
 
   container.innerHTML = `
@@ -1171,7 +1169,7 @@ export function renderLandingStudentDashboard() {
   `;
 
   attachEventListeners();
-  
+
   // Save original dashboard content and reset notifications view flag
   setTimeout(() => {
     const content = document.querySelector('.landing-dashboard-content');
@@ -1183,11 +1181,11 @@ export function renderLandingStudentDashboard() {
 }
 
 // Toggle menu function
-window.toggleLandingMenu = function(menuId) {
+window.toggleLandingMenu = function (menuId) {
   const children = document.getElementById(`${menuId}-children`);
   const arrow = document.getElementById(`${menuId}-arrow`);
   const parent = arrow?.closest('.landing-nav-parent');
-  
+
   if (children && arrow && parent) {
     children.classList.toggle('hidden');
     arrow.classList.toggle('rotated');
@@ -1196,20 +1194,20 @@ window.toggleLandingMenu = function(menuId) {
 };
 
 // Mobile sidebar functions
-window.toggleMobileSidebar = function() {
+window.toggleMobileSidebar = function () {
   const sidebar = document.getElementById('landing-sidebar');
   const overlay = document.querySelector('.landing-sidebar-overlay');
   const menuToggle = document.getElementById('landingMobileMenuToggle');
-  
+
   if (sidebar && overlay) {
     sidebar.classList.toggle('mobile-open');
     overlay.classList.toggle('active');
-    
+
     // Toggle active class on menu button to change icon to X
     if (menuToggle) {
       menuToggle.classList.toggle('active');
     }
-    
+
     if (sidebar.classList.contains('mobile-open')) {
       overlay.style.display = 'block';
       document.body.style.overflow = 'hidden';
@@ -1222,20 +1220,20 @@ window.toggleMobileSidebar = function() {
   }
 };
 
-window.closeMobileSidebar = function() {
+window.closeMobileSidebar = function () {
   const sidebar = document.getElementById('landing-sidebar');
   const overlay = document.querySelector('.landing-sidebar-overlay');
   const menuToggle = document.getElementById('landingMobileMenuToggle');
-  
+
   if (sidebar && overlay) {
     sidebar.classList.remove('mobile-open');
     overlay.classList.remove('active');
-    
+
     // Remove active class from menu button to change icon back to hamburger
     if (menuToggle) {
       menuToggle.classList.remove('active');
     }
-    
+
     setTimeout(() => {
       overlay.style.display = 'none';
     }, 300);
@@ -1250,10 +1248,10 @@ function attachEventListeners() {
       e.preventDefault();
       document.querySelectorAll('.landing-nav-item').forEach(i => i.classList.remove('active'));
       item.classList.add('active');
-      
+
       const page = item.dataset.page;
       handleNavigation(page);
-      
+
       // Close mobile sidebar on navigation
       closeMobileSidebar();
     });
@@ -1300,7 +1298,7 @@ function attachEventListeners() {
       document.querySelectorAll('.landing-filter-tab').forEach(t => t.classList.remove('active'));
       // Add active class to clicked tab
       tab.classList.add('active');
-      
+
       const filter = tab.dataset.filter;
       await handleCourseFilter(filter);
     });
@@ -1308,7 +1306,7 @@ function attachEventListeners() {
 
   // Handle browser back button - only add listener once
   if (!window.popstateHandlerAdded) {
-    window.addEventListener('popstate', function(event) {
+    window.addEventListener('popstate', function (event) {
       // If we're in notifications view and user presses back, go back to dashboard
       if (isNotificationsView) {
         // Don't call history.back() again, just restore the dashboard
@@ -1332,10 +1330,10 @@ function attachEventListeners() {
 // Toast functions are imported from utils/toast.js
 
 // Show logout confirmation modal
-window.showLogoutConfirmation = function() {
+window.showLogoutConfirmation = function () {
   // Get current language for translations
   const currentLang = getCurrentLanguage();
-  
+
   // Get translations based on current language
   const translations = {
     title: t('logout.confirmTitle'),
@@ -1377,7 +1375,7 @@ window.showLogoutConfirmation = function() {
 };
 
 // Close logout modal
-window.closeLandingLogoutModal = function(event) {
+window.closeLandingLogoutModal = function (event) {
   // Only close if clicking overlay, not the modal content
   if (event && event.target && !event.target.classList.contains('landing-logout-modal-overlay')) {
     return;
@@ -1389,20 +1387,20 @@ window.closeLandingLogoutModal = function(event) {
 };
 
 // Confirm logout and redirect
-window.confirmLandingLogout = function() {
+window.confirmLandingLogout = function () {
   // Close modal
   closeLandingLogoutModal();
-  
+
   // Get teacher ID before clearing session
   const teacherId = sessionStorage.getItem('currentTeacherId');
-  
+
   // Clear session storage
   sessionStorage.removeItem('landingUser');
   sessionStorage.removeItem('currentTeacherId');
-  
+
   // Show toast
   showSuccessToast(t('dashboard.loggingOut'));
-  
+
   // Redirect to teacher landing page after short delay
   setTimeout(() => {
     if (teacherId) {
@@ -1419,7 +1417,7 @@ function handleLogout() {
 }
 
 // Listen for language changes to update modal if it's open
-window.addEventListener('languageChanged', function() {
+window.addEventListener('languageChanged', function () {
   const modal = document.querySelector('.landing-logout-modal-overlay');
   if (modal) {
     // Re-show modal with updated translations
@@ -1458,14 +1456,14 @@ function applyLandingTheme(landing) {
   const backgroundColor = landing.backgroundColor || '#232323';
   const textColor = landing.textColor || '#ffffff';
   const logoText = landing.logoText || 'darslinker';
-  
+
   console.log('🎨 Applying theme:', { primaryColor, backgroundColor, textColor, logoText });
-  
+
   // Update CSS variables
   document.documentElement.style.setProperty('--primary-color', primaryColor);
   document.documentElement.style.setProperty('--background-color', backgroundColor);
   document.documentElement.style.setProperty('--text-color', textColor);
-  
+
   // Update logo in header
   const logoElement = document.querySelector('.landing-header-logo');
   if (logoElement) {
@@ -1508,13 +1506,13 @@ async function getEnrolledCourses(courses) {
 
   // Filter courses where student is enrolled
   const enrolledCourses = [];
-  
+
   for (const course of courses) {
     try {
       const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
       const response = await fetch(`${apiBaseUrl}/students/${studentId}/check-enrollment/${course._id}`);
       const result = await response.json();
-      
+
       if (result.success && result.isEnrolled) {
         enrolledCourses.push(course);
       }
@@ -1522,19 +1520,19 @@ async function getEnrolledCourses(courses) {
       console.error('Error checking enrollment:', error);
     }
   }
-  
+
   return enrolledCourses;
 }
 
 async function handleCourseFilter(filter) {
   console.log('Filter changed to:', filter);
-  
+
   const coursesGrid = document.querySelector('.landing-courses-grid');
-  
+
   if (filter === 'my-courses') {
     // Filter enrolled courses
     const enrolledCourses = await getEnrolledCourses(allCoursesData);
-    
+
     if (enrolledCourses.length > 0) {
       await updateCoursesGrid(enrolledCourses, true); // true = isEnrolledView
     } else {
@@ -1563,7 +1561,7 @@ async function handleCourseFilter(filter) {
 // Load notification count and update badge
 async function loadNotificationCount() {
   console.log('🔔 Loading notification count... Current count:', notificationCount);
-  
+
   try {
     // Get student ID
     const landingUser = sessionStorage.getItem('landingUser');
@@ -1571,20 +1569,20 @@ async function loadNotificationCount() {
       console.log('⚠️ No landing user found');
       return;
     }
-    
+
     const userData = JSON.parse(landingUser);
     const studentId = userData._id;
-    
+
     if (!studentId) {
       console.log('⚠️ No student ID found');
       return;
     }
-    
+
     console.log('📡 Fetching notifications for student:', studentId);
-    
+
     // Get API base URL
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    
+
     // Fetch all notifications and count unread ones
     const response = await fetch(`${apiBaseUrl}/notifications/user/${studentId}?userType=Student`, {
       method: 'GET',
@@ -1592,20 +1590,20 @@ async function loadNotificationCount() {
         'Content-Type': 'application/json',
       },
     });
-    
+
     const result = await response.json();
-    
+
     console.log('📬 API Response:', result);
-    
+
     if (result.success) {
       // Use unreadCount from backend if available, otherwise count manually
-      const unreadCount = result.unreadCount !== undefined 
-        ? result.unreadCount 
+      const unreadCount = result.unreadCount !== undefined
+        ? result.unreadCount
         : (result.notifications ? result.notifications.filter(n => !n.isRead).length : 0);
-      
+
       notificationCount = unreadCount;
       console.log('✅ Notification count updated to:', notificationCount, '(from backend:', result.unreadCount, ')');
-      
+
       // Update badge
       const badge = document.getElementById('notification-badge');
       if (badge) {
@@ -1634,22 +1632,22 @@ async function loadTeacherCourses() {
   try {
     // Get teacher ID from sessionStorage
     const teacherId = sessionStorage.getItem('currentTeacherId');
-    
+
     if (!teacherId) {
       console.error('❌ Teacher ID not found in sessionStorage');
       return;
     }
-    
+
     console.log('📚 Loading courses for teacher:', teacherId);
-    
+
     // Get API base URL from env
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-    
+
     // Fetch teacher's landing settings first
     try {
       const landingResponse = await fetch(`${apiBaseUrl}/landing/public/${teacherId}`);
       const landingResult = await landingResponse.json();
-      
+
       if (landingResult.success && landingResult.landing) {
         console.log('✅ Landing settings loaded:', landingResult.landing);
         applyLandingTheme(landingResult.landing);
@@ -1657,7 +1655,7 @@ async function loadTeacherCourses() {
     } catch (error) {
       console.error('⚠️ Could not load landing settings:', error);
     }
-    
+
     // Fetch teacher's courses
     const response = await fetch(`${apiBaseUrl}/courses?teacher=${teacherId}`, {
       method: 'GET',
@@ -1665,18 +1663,18 @@ async function loadTeacherCourses() {
         'Content-Type': 'application/json',
       },
     });
-    
+
     const result = await response.json();
-    
+
     if (result.success && result.courses) {
       console.log('✅ Courses loaded:', result.courses);
-      
+
       // Store courses globally
       allCoursesData = result.courses;
-      
+
       // Update the courses grid with real data
       updateCoursesGrid(result.courses);
-      
+
       // Update stats
       updateStats(result.courses);
     } else {
@@ -1692,12 +1690,12 @@ async function loadTeacherCourses() {
 // Update courses grid with real data
 async function updateCoursesGrid(courses, isEnrolledView = false) {
   const coursesGrid = document.querySelector('.landing-courses-grid');
-  
+
   if (!coursesGrid) {
     console.error('❌ Courses grid not found');
     return;
   }
-  
+
   if (!courses || courses.length === 0) {
     coursesGrid.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: #9CA3AF;">
@@ -1706,9 +1704,9 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
     `;
     return;
   }
-  
+
   console.log('📝 Rendering courses:', courses);
-  
+
   // Get student ID
   let studentId = null;
   const user = JSON.parse(localStorage.getItem('user') || '{}');
@@ -1727,23 +1725,23 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
       }
     }
   }
-  
+
   // Check enrollment and progress for each course
   const coursesWithEnrollment = await Promise.all(courses.map(async (course) => {
     let isEnrolled = false;
     let progressPercentage = 0;
-    
+
     if (studentId) {
       try {
         const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
-        
+
         // Check enrollment
         const enrollResponse = await fetch(`${apiBaseUrl}/students/${studentId}/check-enrollment/${course._id}`);
         const enrollResult = await enrollResponse.json();
         if (enrollResult.success) {
           isEnrolled = enrollResult.isEnrolled;
         }
-        
+
         // Get progress if enrolled
         if (isEnrolled) {
           const progressResponse = await fetch(`${apiBaseUrl}/students/${studentId}/progress/${course._id}`);
@@ -1758,21 +1756,21 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
     }
     return { ...course, isEnrolled, progressPercentage };
   }));
-  
+
   // Generate course cards from real data
   coursesGrid.innerHTML = coursesWithEnrollment.map(course => {
     // Use real progress from backend
     const progress = course.progressPercentage || 0;
     const hasStarted = course.isEnrolled; // Show progress bar if enrolled
-    
+
     // Get teacher name
-    const teacherName = course.teacher 
+    const teacherName = course.teacher
       ? `${course.teacher.firstName || ''} ${course.teacher.lastName || ''}`.trim() || 'Instructor'
       : 'Instructor';
-    
+
     // Get course image (field name is 'thumbnail' in database)
     const courseImage = course.thumbnail || course.courseImage || '';
-    
+
     console.log('Course:', {
       title: course.title,
       image: courseImage,
@@ -1782,17 +1780,17 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
       price: course.price,
       rawCourse: course
     });
-    
+
     return `
       <div class="landing-course-card">
         <div class="landing-course-thumbnail">
-          ${courseImage 
-            ? `<img src="${courseImage}" alt="${course.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />`
-            : `<svg width="80" height="60" viewBox="0 0 80 60" fill="none">
+          ${courseImage
+        ? `<img src="${courseImage}" alt="${course.title}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />`
+        : `<svg width="80" height="60" viewBox="0 0 80 60" fill="none">
                 <rect width="80" height="60" rx="8" fill="#374151"/>
                 <rect x="20" y="15" width="40" height="30" rx="4" fill="#E5E7EB"/>
               </svg>`
-          }
+      }
         </div>
         ${hasStarted ? `
         <div class="landing-course-progress-bar">
@@ -1832,7 +1830,7 @@ async function updateCoursesGrid(courses, isEnrolledView = false) {
 function updateStats(courses) {
   // Count active courses
   const activeCourses = courses.filter(c => c.status === 'active' || !c.status).length;
-  
+
   // Update stat cards
   const statCards = document.querySelectorAll('.landing-stat-card');
   if (statCards[0]) {
@@ -1865,7 +1863,7 @@ function getStoredStudentId() {
 }
 
 // Open course - Check enrollment first, then navigate
-window.openCourse = async function(courseId, courseType = 'free') {
+window.openCourse = async function (courseId, courseType = 'free') {
   console.log('Opening course:', courseId, 'courseType:', courseType);
 
   // Get student ID
@@ -1905,7 +1903,7 @@ window.openCourse = async function(courseId, courseType = 'free') {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const response = await fetch(`${apiBaseUrl}/students/${studentId}/check-enrollment/${courseId}`);
     const result = await response.json();
-    
+
     if (result.success && result.isEnrolled) {
       // Already enrolled, go directly to course learning
       console.log('✅ Already enrolled, going to course learning');
@@ -1922,7 +1920,7 @@ window.openCourse = async function(courseId, courseType = 'free') {
   }
 };
 
- 
+
 
 
 // Add navigation event listeners for sidebar
@@ -1956,34 +1954,34 @@ setTimeout(() => {
   });
 }, 100);
 // Student notification function
-window.openStudentNotifications = async function() {
+window.openStudentNotifications = async function () {
   const userId = JSON.parse(sessionStorage.getItem('landingUser') || '{}')._id;
-  if (!userId) { 
+  if (!userId) {
     showErrorToast(t('errors.authenticationError'));
     logger.error('No user found for notifications');
     return;
   }
-  
+
   const content = document.querySelector('.landing-dashboard-content');
-  
+
   // Save original dashboard content if not already saved
   if (!originalDashboardContent && !isNotificationsView) {
     originalDashboardContent = content.innerHTML;
   }
-  
+
   // Mark that we're in notifications view
   isNotificationsView = true;
-  
+
   // Add to browser history
   window.history.pushState({ view: 'notifications' }, '', window.location.href);
-  
+
   content.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--primary-color); font-size: 18px;">${t('notifications.loading')}</div>`;
-  
+
   try {
     const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
     const response = await fetch(`${apiBaseUrl}/notifications/user/${userId}?userType=Student`);
     const data = await response.json();
-    
+
     if (data.success) {
       const notifs = data.notifications || [];
       const unreadCount = notifs.filter(n => !n.read).length;
@@ -2016,11 +2014,11 @@ window.openStudentNotifications = async function() {
               plural: diffDays > 1 ? 's' : ''
             });
           }
-          
+
           // Translate notification title and message based on type
           let translatedTitle = n.title;
           let translatedMessage = n.message;
-          
+
           // Map notification types to translation keys
           if (n.type === 'assignment_graded') {
             translatedTitle = t('notifications.assignmentGraded');
@@ -2029,7 +2027,7 @@ window.openStudentNotifications = async function() {
             const gradeMatch = n.message.match(/Grade: (\d+)%/);
             const lessonTitle = lessonMatch ? lessonMatch[1] : 'Assignment';
             const grade = gradeMatch ? gradeMatch[1] : '';
-            
+
             if (grade) {
               translatedMessage = `${t('notifications.assignmentGradedMessage')}: "${lessonTitle}". ${t('notifications.grade')}: ${grade}%`;
             } else {
@@ -2071,7 +2069,7 @@ window.openStudentNotifications = async function() {
           `;
         }).join('');
       }
-      
+
       // Format unread count text
       let unreadText = t('notifications.allCaughtUp');
       if (unreadCount > 0) {
@@ -2093,15 +2091,15 @@ window.openStudentNotifications = async function() {
             <button onclick="goBackToDashboard()" style="background: var(--primary-color); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 600;">${t('notifications.back')}</button>
           </div>
           ${notifs.length === 0 ?
-            `<div style="text-align: center; padding: 80px 20px; color: rgba(255,255,255,0.5);">
+          `<div style="text-align: center; padding: 80px 20px; color: rgba(255,255,255,0.5);">
               <div style="font-size: 48px; margin-bottom: 20px; opacity: 0.3;">🔔</div>
               <div style="font-size: 20px; font-weight: 600; margin-bottom: 8px; color: rgba(255,255,255,0.7);">${t('notifications.noNotificationsYet')}</div>
             </div>` :
-            `<div style="display: flex; flex-direction: column; gap: 15px;">${notificationCards}</div>`
-          }
+          `<div style="display: flex; flex-direction: column; gap: 15px;">${notificationCards}</div>`
+        }
         </div>
       `;
-      
+
       document.getElementById('notification-badge').style.display = 'none';
     }
   } catch (e) {
@@ -2110,21 +2108,21 @@ window.openStudentNotifications = async function() {
 };
 
 // Go back to dashboard from notifications
-window.goBackToDashboard = function() {
+window.goBackToDashboard = function () {
   const content = document.querySelector('.landing-dashboard-content');
-  
+
   if (originalDashboardContent) {
     // Restore original dashboard content
     content.innerHTML = originalDashboardContent;
     isNotificationsView = false;
-    
+
     // Reload notification count and courses
     loadNotificationCount();
     loadTeacherCourses();
-    
+
     // Re-attach event listeners
     attachEventListeners();
-    
+
     // Update history state without navigation
     if (window.history.state && window.history.state.view === 'notifications') {
       window.history.replaceState({ view: 'dashboard' }, '', window.location.href);
@@ -2137,24 +2135,24 @@ window.goBackToDashboard = function() {
 };
 
 // Mark notification as read
-window.markAsRead = function(notificationId) {
+window.markAsRead = function (notificationId) {
   const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:8001/api';
   fetch(`${apiBaseUrl}/notifications/${notificationId}/read`, {
     method: 'PATCH'
   })
-  .then(r => r.json())
-  .then(data => {
-    if (data.success) {
-      const notifElement = document.getElementById('notif-' + notificationId);
-      if (notifElement) {
-        notifElement.style.background = 'rgba(58, 56, 56, 0.3)';
-        notifElement.style.borderLeft = 'none';
-        const dot = notifElement.querySelector('div[style*="width: 8px"]');
-        if (dot) dot.remove();
+    .then(r => r.json())
+    .then(data => {
+      if (data.success) {
+        const notifElement = document.getElementById('notif-' + notificationId);
+        if (notifElement) {
+          notifElement.style.background = 'rgba(58, 56, 56, 0.3)';
+          notifElement.style.borderLeft = 'none';
+          const dot = notifElement.querySelector('div[style*="width: 8px"]');
+          if (dot) dot.remove();
+        }
       }
-    }
-  })
-  .catch(e => {});
+    })
+    .catch(e => { });
 };
 
 // Show language selection page
@@ -2298,11 +2296,11 @@ function showEditProfilePage() {
   // Add focus styles
   const inputs = content.querySelectorAll('input');
   inputs.forEach(input => {
-    input.addEventListener('focus', function() {
+    input.addEventListener('focus', function () {
       this.style.borderColor = 'var(--primary-color)';
       this.style.background = 'rgba(58, 56, 56, 1)';
     });
-    input.addEventListener('blur', function() {
+    input.addEventListener('blur', function () {
       this.style.borderColor = 'rgba(255, 255, 255, 0.1)';
       this.style.background = 'rgba(58, 56, 56, 0.8)';
     });
@@ -2312,7 +2310,7 @@ function showEditProfilePage() {
 // Language selection functions
 let selectedLanguage = null;
 
-window.selectLanguage = function(lang) {
+window.selectLanguage = function (lang) {
   selectedLanguage = lang;
   console.log('Selected language:', lang);
 
@@ -2346,7 +2344,7 @@ window.selectLanguage = function(lang) {
   });
 };
 
-window.applyLanguageChanges = function() {
+window.applyLanguageChanges = function () {
   if (selectedLanguage) {
     // Set the language first
     setLanguage(selectedLanguage);
@@ -2361,13 +2359,13 @@ window.applyLanguageChanges = function() {
   }
 };
 
-window.cancelLanguageChanges = function() {
+window.cancelLanguageChanges = function () {
   // Go back to dashboard
   initLandingStudentDashboard();
 };
 
 // Profile editing functions
-window.saveProfileChanges = async function(event) {
+window.saveProfileChanges = async function (event) {
   event.preventDefault();
 
   const firstName = document.getElementById('firstName').value.trim();
@@ -2456,7 +2454,7 @@ window.saveProfileChanges = async function(event) {
   }
 };
 
-window.cancelProfileChanges = function() {
+window.cancelProfileChanges = function () {
   // Go back to dashboard
   initLandingStudentDashboard();
 };

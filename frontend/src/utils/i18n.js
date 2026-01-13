@@ -8,14 +8,14 @@ const translations = {
     'header.newCourse': 'New Course',
     'header.logout': 'Logout',
     'header.notifications': 'Notifications',
-    
+
     // Dashboard
     'dashboard.title': 'Teacher dashboard',
     'dashboard.profile.editProfile': 'Edit profile',
     'dashboard.profile.customizeUI': 'Customize UI',
     'dashboard.profile.joined': 'Joined',
     'dashboard.profile.reviews': 'reviews',
-    
+
     // Sidebar
     'sidebar.general': 'General',
     'sidebar.dashboard': 'Dashboard',
@@ -42,7 +42,7 @@ const translations = {
     'sidebar.language': 'Language',
     'sidebar.customizeUI': 'Customize UI',
     'sidebar.mySubscription': 'My Subscription',
-    
+
     // Stats
     'stats.myStatistics': 'My Statistics',
     'stats.activeCourses': 'Active Courses',
@@ -60,7 +60,7 @@ const translations = {
     'stats.edit': 'Edit',
     'stats.save': 'Save',
     'stats.cancel': 'Cancel',
-    
+
     // Profile
     'profile.title': 'Web Development & UI/UX Design',
     'profile.location': 'Tashkent, Uzbekistan',
@@ -68,7 +68,7 @@ const translations = {
     'profile.joined': '• Joined 2025',
     'profile.bioDefault': '8+ years web development experience. Expert in React, UI/UX design, and teaching modern web technologies.',
     'profile.bioPlaceholder': 'No bio added yet. Click Edit to add your bio.',
-    
+
     // Sub Admin
     'subAdmin.title': 'Sub admins',
     'subAdmin.titleWithCount': 'Sub admins({count})',
@@ -87,7 +87,7 @@ const translations = {
     'subAdmin.deleteMessage': 'Are you sure you want to remove',
     'subAdmin.deleteMessageEnd': 'as sub admin? This action cannot be undone.',
     'subAdmin.remove': 'Remove',
-    
+
     // Language Page
     'language.title': 'Language',
     'language.settings': 'Language Settings',
@@ -303,7 +303,7 @@ const translations = {
     'notifications.newLessonMessage': 'A new lesson has been added',
     'notifications.certificateEarned': 'Certificate Earned',
     'notifications.certificateEarnedMessage': 'You have earned a certificate',
-    
+
     // Page Titles
     'pages.messages': 'Messages',
     'pages.myCourses': 'My Courses',
@@ -318,17 +318,17 @@ const translations = {
     'pages.mySubscription': 'My subscription',
     'pages.createCourse': 'Create Course',
     'pages.aiAssistant': 'AI Assistant',
-    
+
     // Messages
     'messages.title': 'Messages',
     'messages.createGroup': 'Create Group',
     'messages.selectChat': 'Select a chat to start messaging',
     'messages.chooseConversation': 'Choose from your existing conversations or create a new group',
-    
+
     // Notifications
     'notifications.customizationSaved': 'Customization saved successfully!',
     'notifications.profileSaved': 'Profile saved successfully!',
-    
+
     // My Courses
     'myCourses.title': 'My courses',
     'myCourses.totalCourses': 'Total courses',
@@ -344,7 +344,7 @@ const translations = {
     'myCourses.students': 'students',
     'myCourses.revenue': 'revenue',
     'myCourses.thisMonth': 'this month',
-    
+
     // Finance
     'finance.title': 'Finance',
     'finance.totalRevenue': 'Total revenue',
@@ -352,14 +352,14 @@ const translations = {
     'finance.pendingPayouts': 'Pending payouts',
     'finance.completedPayouts': 'Completed payouts',
     'finance.refunds': 'Refunds',
-    
+
     // Assignments
     'assignments.title': 'Assignments',
     'assignments.pending': 'Pending',
     'assignments.graded': 'Graded',
     'assignments.submitGrade': 'Submit Grade',
     'assignments.saveAsDraft': 'Save as Draft',
-    
+
     // Create Course
     'createCourse.title': 'Create Course',
     'createCourse.basicInfo': 'Basic information',
@@ -452,7 +452,7 @@ const translations = {
     'myCourses.edit': 'Edit',
     'myCourses.stats': 'Stats',
     'myCourses.delete': 'Delete',
-    
+
     // Customize UI
     'customizeUI.subtitle': 'Make the app truly yours with personalized colors and settings',
     'customizeUI.themeColor': 'Theme Color',
@@ -467,7 +467,7 @@ const translations = {
     'customizeUI.googleFont': "Google's font",
     'customizeUI.geometricFriendly': 'Geometric & friendly',
     'customizeUI.saveCustomization': 'Save customization',
-    
+
     // Edit Profile
     'editProfile.title': 'Edit Profile',
     'editProfile.back': 'Back',
@@ -554,7 +554,7 @@ const translations = {
     'assignment.fileUploaded': 'File "{fileName}" uploaded successfully!',
     'assignment.selected': 'Selected:',
     'assignment.submitting': 'Submitting...',
-    
+
     // Toast Messages
     'toast.fileUploaded': 'File Uploaded!',
     'toast.fileUploadedDesc': 'Your file has been uploaded successfully. You can now submit the assignment.',
@@ -568,7 +568,7 @@ const translations = {
     'toast.assignmentSubmittedDesc': 'Your submission has been recorded successfully.',
     'toast.submissionFailed': 'Submission Failed',
     'toast.submissionFailedDesc': 'Failed to submit assignment:',
-    
+
     // Upload Errors
     'upload.unauthorized': 'Unauthorized. Please log in again.',
     'upload.fileTooLarge': 'File too large. Please choose a smaller file.',
@@ -689,7 +689,7 @@ const translations = {
     'payment.alreadySubmitted': 'Already Submitted',
     'payment.waitingApproval': 'Waiting for Approval',
     'payment.paymentUnderReview': 'Your payment is currently under review by the teacher. You will be notified once it\'s approved.',
-    
+
     // Finance Page
     'finance.paymentRequests': 'Payment Requests',
     'finance.studentId': 'Student ID',
@@ -746,7 +746,7 @@ const translations = {
     'teacherLanding.newPasswordTitle': 'New Password',
     'teacherLanding.newPasswordSubtitle': 'Enter your new password',
   },
-  
+
   uz: {
     // Header
     'header.newMeeting': 'Yangi uchrashuv',
@@ -754,14 +754,14 @@ const translations = {
     'header.newCourse': 'Yangi Kurs',
     'header.logout': 'Chiqish',
     'header.notifications': 'Bildirishnomalar',
-    
+
     // Dashboard
     'dashboard.title': "O'qituvchi paneli",
     'dashboard.profile.editProfile': 'Profilni tahrirlash',
     'dashboard.profile.customizeUI': 'Interfeys sozlamalari',
     'dashboard.profile.joined': "Qo'shildi",
     'dashboard.profile.reviews': 'sharh',
-    
+
     // Sidebar
     'sidebar.general': 'Asosiy',
     'sidebar.dashboard': 'Bosh sahifa',
@@ -788,7 +788,7 @@ const translations = {
     'sidebar.language': 'Til',
     'sidebar.customizeUI': 'Interfeys sozlamalari',
     'sidebar.mySubscription': 'Mening obuna',
-    
+
     // Stats
     'stats.myStatistics': 'Mening statistikam',
     'stats.activeCourses': 'Faol kurslar',
@@ -806,7 +806,7 @@ const translations = {
     'stats.edit': 'Tahrirlash',
     'stats.save': 'Saqlash',
     'stats.cancel': 'Bekor qilish',
-    
+
     // Profile
     'profile.title': 'Web dasturlash va UI/UX dizayn',
     'profile.location': 'Toshkent, O\'zbekiston',
@@ -814,7 +814,7 @@ const translations = {
     'profile.joined': '• 2025 yilda qo\'shildi',
     'profile.bioDefault': '8+ yillik web dasturlash tajribasi. React, UI/UX dizayn va zamonaviy web texnologiyalarini o\'rgatish bo\'yicha mutaxassis.',
     'profile.bioPlaceholder': 'Hali bio qo\'shilmagan. Tahrirlash tugmasini bosib bio qo\'shing.',
-    
+
     // Sub Admin
     'subAdmin.title': 'Yordamchi adminlar',
     'subAdmin.titleWithCount': 'Yordamchi adminlar({count})',
@@ -833,7 +833,7 @@ const translations = {
     'subAdmin.deleteMessage': 'Rostdan ham',
     'subAdmin.deleteMessageEnd': 'ni yordamchi admin sifatida o\'chirmoqchimisiz? Bu amalni qaytarib bo\'lmaydi.',
     'subAdmin.remove': "O'chirish",
-    
+
     // Language Page
     'language.title': 'Til',
     'language.settings': 'Til sozlamalari',
@@ -1036,7 +1036,7 @@ const translations = {
     'notifications.minuteAgo': '{count} daqiqa{plural} oldin',
     'notifications.hourAgo': '{count} soat{plural} oldin',
     'notifications.dayAgo': '{count} kun{plural} oldin',
-    
+
     // Notification Messages
     'notifications.assignmentGraded': 'Topshiriq baholandi',
     'notifications.assignmentGradedMessage': 'Sizning topshiriqingiz baholandi',
@@ -1049,7 +1049,7 @@ const translations = {
     'notifications.newLessonMessage': 'Yangi dars qo\'shildi',
     'notifications.certificateEarned': 'Sertifikat olindi',
     'notifications.certificateEarnedMessage': 'Siz sertifikat oldingiz',
-    
+
     // Page Titles
     'pages.messages': 'Xabarlar',
     'pages.myCourses': 'Mening kurslarim',
@@ -1064,17 +1064,17 @@ const translations = {
     'pages.mySubscription': 'Mening obuna',
     'pages.createCourse': 'Kurs yaratish',
     'pages.aiAssistant': 'AI Yordamchi',
-    
+
     // Messages
     'messages.title': 'Xabarlar',
     'messages.createGroup': 'Guruh yaratish',
     'messages.selectChat': 'Xabar yozish uchun suhbatni tanlang',
     'messages.chooseConversation': 'Mavjud suhbatlardan tanlang yoki yangi guruh yarating',
-    
+
     // Notifications
     'notifications.customizationSaved': 'Sozlamalar muvaffaqiyatli saqlandi!',
     'notifications.profileSaved': 'Profil muvaffaqiyatli saqlandi!',
-    
+
     // My Courses
     'myCourses.title': 'Mening kurslarim',
     'myCourses.totalCourses': 'Jami kurslar',
@@ -1090,7 +1090,7 @@ const translations = {
     'myCourses.students': 'o\'quvchi',
     'myCourses.revenue': 'daromad',
     'myCourses.thisMonth': 'bu oy',
-    
+
     // Finance
     'finance.title': 'Moliya',
     'finance.totalRevenue': 'Jami daromad',
@@ -1098,14 +1098,14 @@ const translations = {
     'finance.pendingPayouts': 'Kutilayotgan to\'lovlar',
     'finance.completedPayouts': 'Bajarilgan to\'lovlar',
     'finance.refunds': 'Qaytarilgan to\'lovlar',
-    
+
     // Assignments
     'assignments.title': 'Topshiriqlar',
     'assignments.pending': 'Kutilmoqda',
     'assignments.graded': 'Baholangan',
     'assignments.submitGrade': 'Bahoni yuborish',
     'assignments.saveAsDraft': 'Qoralama sifatida saqlash',
-    
+
     // Create Course
     'createCourse.title': 'Kurs yaratish',
     'createCourse.basicInfo': 'Asosiy ma\'lumotlar',
@@ -1198,7 +1198,7 @@ const translations = {
     'myCourses.edit': 'Tahrirlash',
     'myCourses.stats': 'Statistika',
     'myCourses.delete': 'O\'chirish',
-    
+
     // Customize UI
     'customizeUI.subtitle': 'Ilovani o\'zingizga moslang - ranglar va sozlamalarni o\'zgartiring',
     'customizeUI.themeColor': 'Mavzu rangi',
@@ -1213,7 +1213,7 @@ const translations = {
     'customizeUI.googleFont': 'Google shrifti',
     'customizeUI.geometricFriendly': 'Geometrik va do\'stona',
     'customizeUI.saveCustomization': 'Sozlamalarni saqlash',
-    
+
     // Edit Profile
     'editProfile.title': 'Profilni tahrirlash',
     'editProfile.back': 'Orqaga',
@@ -1300,7 +1300,7 @@ const translations = {
     'assignment.fileUploaded': '"{fileName}" fayli muvaffaqiyatli yuklandi!',
     'assignment.selected': 'Tanlangan:',
     'assignment.submitting': 'Topshirilmoqda...',
-    
+
     // Toast Messages
     'toast.fileUploaded': 'Fayl yuklandi!',
     'toast.fileUploadedDesc': 'Faylingiz muvaffaqiyatli yuklandi. Endi topshiriqni yuborishingiz mumkin.',
@@ -1314,7 +1314,7 @@ const translations = {
     'toast.assignmentSubmittedDesc': 'Sizning topshiriqingiz muvaffaqiyatli qayd qilindi.',
     'toast.submissionFailed': 'Yuborish muvaffaqiyatsiz',
     'toast.submissionFailedDesc': 'Topshiriqni yuborishda xatolik:',
-    
+
     // Upload Errors
     'upload.unauthorized': 'Ruxsat yo\'q. Qayta kiring.',
     'upload.fileTooLarge': 'Fayl juda katta. Kichikroq fayl tanlang.',
@@ -1435,7 +1435,7 @@ const translations = {
     'payment.alreadySubmitted': 'Allaqachon yuborilgan',
     'payment.waitingApproval': 'Tasdiq kutilmoqda',
     'payment.paymentUnderReview': 'Sizning to\'lovingiz hozirda o\'qituvchi tomonidan ko\'rib chiqilmoqda. Tasdiqlangandan so\'ng sizga xabar beriladi.',
-    
+
     // Finance Page
     'finance.paymentRequests': 'To\'lov so\'rovlari',
     'finance.studentId': 'O\'quvchi ID',
@@ -1492,7 +1492,7 @@ const translations = {
     'teacherLanding.newPasswordTitle': 'Yangi parol',
     'teacherLanding.newPasswordSubtitle': 'Yangi parolingizni kiriting',
   },
-  
+
   ru: {
     // Header
     'header.newMeeting': 'Новая встреча',
@@ -1500,14 +1500,14 @@ const translations = {
     'header.newCourse': 'Новый курс',
     'header.logout': 'Выйти',
     'header.notifications': 'Уведомления',
-    
+
     // Dashboard
     'dashboard.title': 'Панель учителя',
     'dashboard.profile.editProfile': 'Редактировать профиль',
     'dashboard.profile.customizeUI': 'Настроить интерфейс',
     'dashboard.profile.joined': 'Присоединился',
     'dashboard.profile.reviews': 'отзывов',
-    
+
     // Sidebar
     'sidebar.general': 'Основное',
     'sidebar.dashboard': 'Главная',
@@ -1534,7 +1534,7 @@ const translations = {
     'sidebar.language': 'Язык',
     'sidebar.customizeUI': 'Настроить интерфейс',
     'sidebar.mySubscription': 'Моя подписка',
-    
+
     // Stats
     'stats.myStatistics': 'Моя статистика',
     'stats.activeCourses': 'Активные курсы',
@@ -1552,7 +1552,7 @@ const translations = {
     'stats.edit': 'Редактировать',
     'stats.save': 'Сохранить',
     'stats.cancel': 'Отмена',
-    
+
     // Profile
     'profile.title': 'Веб-разработка и UI/UX дизайн',
     'profile.location': 'Ташкент, Узбекистан',
@@ -1560,7 +1560,7 @@ const translations = {
     'profile.joined': '• Присоединился в 2025',
     'profile.bioDefault': '8+ лет опыта веб-разработки. Эксперт в React, UI/UX дизайне и обучении современным веб-технологиям.',
     'profile.bioPlaceholder': 'Биография не добавлена. Нажмите Редактировать, чтобы добавить биографию.',
-    
+
     // Sub Admin
     'subAdmin.title': 'Помощники админа',
     'subAdmin.titleWithCount': 'Помощники админа({count})',
@@ -1579,7 +1579,7 @@ const translations = {
     'subAdmin.deleteMessage': 'Вы уверены, что хотите удалить',
     'subAdmin.deleteMessageEnd': 'как помощника админа? Это действие нельзя отменить.',
     'subAdmin.remove': 'Удалить',
-    
+
     // Language Page
     'language.title': 'Язык',
     'language.settings': 'Настройки языка',
@@ -1782,7 +1782,7 @@ const translations = {
     'notifications.minuteAgo': '{count} минут{plural} назад',
     'notifications.hourAgo': '{count} час{plural} назад',
     'notifications.dayAgo': '{count} д{plural} назад',
-    
+
     // Notification Messages
     'notifications.assignmentGraded': 'Задание оценено',
     'notifications.assignmentGradedMessage': 'Ваше задание было оценено',
@@ -1795,7 +1795,7 @@ const translations = {
     'notifications.newLessonMessage': 'Добавлен новый урок',
     'notifications.certificateEarned': 'Сертификат получен',
     'notifications.certificateEarnedMessage': 'Вы получили сертификат',
-    
+
     // Page Titles
     'pages.messages': 'Сообщения',
     'pages.myCourses': 'Мои курсы',
@@ -1810,17 +1810,17 @@ const translations = {
     'pages.mySubscription': 'Моя подписка',
     'pages.createCourse': 'Создать курс',
     'pages.aiAssistant': 'AI Помощник',
-    
+
     // Messages
     'messages.title': 'Сообщения',
     'messages.createGroup': 'Создать группу',
     'messages.selectChat': 'Выберите чат для начала общения',
     'messages.chooseConversation': 'Выберите из существующих разговоров или создайте новую группу',
-    
+
     // Notifications
     'notifications.customizationSaved': 'Настройки успешно сохранены!',
     'notifications.profileSaved': 'Профиль успешно сохранен!',
-    
+
     // My Courses
     'myCourses.title': 'Мои курсы',
     'myCourses.totalCourses': 'Всего курсов',
@@ -1836,7 +1836,7 @@ const translations = {
     'myCourses.students': 'студентов',
     'myCourses.revenue': 'доход',
     'myCourses.thisMonth': 'в этом месяце',
-    
+
     // Finance
     'finance.title': 'Финансы',
     'finance.totalRevenue': 'Общий доход',
@@ -1844,14 +1844,14 @@ const translations = {
     'finance.pendingPayouts': 'Ожидающие выплаты',
     'finance.completedPayouts': 'Завершенные выплаты',
     'finance.refunds': 'Возвраты',
-    
+
     // Assignments
     'assignments.title': 'Задания',
     'assignments.pending': 'Ожидание',
     'assignments.graded': 'Оценено',
     'assignments.submitGrade': 'Отправить оценку',
     'assignments.saveAsDraft': 'Сохранить как черновик',
-    
+
     // Create Course
     'createCourse.title': 'Создать курс',
     'createCourse.basicInfo': 'Основная информация',
@@ -1944,7 +1944,7 @@ const translations = {
     'myCourses.edit': 'Редактировать',
     'myCourses.stats': 'Статистика',
     'myCourses.delete': 'Удалить',
-    
+
     // Customize UI
     'customizeUI.subtitle': 'Сделайте приложение по-настоящему своим с персонализированными цветами и настройками',
     'customizeUI.themeColor': 'Цвет темы',
@@ -1959,7 +1959,7 @@ const translations = {
     'customizeUI.googleFont': 'Шрифт Google',
     'customizeUI.geometricFriendly': 'Геометрический и дружелюбный',
     'customizeUI.saveCustomization': 'Сохранить настройки',
-    
+
     // Edit Profile
     'editProfile.title': 'Редактировать профиль',
     'editProfile.back': 'Назад',
@@ -2020,7 +2020,7 @@ const translations = {
     'assignment.fileUploaded': 'Файл "{fileName}" успешно загружен!',
     'assignment.selected': 'Выбрано:',
     'assignment.submitting': 'Отправка...',
-    
+
     // Toast Messages
     'toast.fileUploaded': 'Файл загружен!',
     'toast.fileUploadedDesc': 'Ваш файл успешно загружен. Теперь вы можете отправить задание.',
@@ -2034,7 +2034,7 @@ const translations = {
     'toast.assignmentSubmittedDesc': 'Ваша работа успешно записана.',
     'toast.submissionFailed': 'Отправка не удалась',
     'toast.submissionFailedDesc': 'Не удалось отправить задание:',
-    
+
     // Upload Errors
     'upload.unauthorized': 'Нет авторизации. Войдите снова.',
     'upload.fileTooLarge': 'Файл слишком большой. Выберите файл поменьше.',
@@ -2155,7 +2155,7 @@ const translations = {
     'payment.alreadySubmitted': 'Уже отправлено',
     'payment.waitingApproval': 'Ожидание одобрения',
     'payment.paymentUnderReview': 'Ваш платеж в настоящее время рассматривается преподавателем. Вы получите уведомление после одобрения.',
-    
+
     // Finance Page
     'finance.paymentRequests': 'Запросы на оплату',
     'finance.studentId': 'ID студента',
@@ -2214,16 +2214,50 @@ const translations = {
   }
 };
 
-// Get current language from localStorage or default to 'en'
-export function getCurrentLanguage() {
-  return localStorage.getItem('appLanguage') || localStorage.getItem('language') || 'en';
+const SUPPORTED_LANGUAGES = ['uz', 'ru', 'en'];
+
+// Parse language from the first segment of a path
+export function detectLanguageFromPath(pathname = '/') {
+  const [, maybeLang] = pathname.split('/');
+  if (SUPPORTED_LANGUAGES.includes(maybeLang)) {
+    return maybeLang;
+  }
+  return 'uz';
 }
 
-// Set language
-export function setLanguage(lang) {
-  localStorage.setItem('appLanguage', lang);
-  // Trigger custom event for language change
-  window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
+export function stripLanguageFromPath(pathname = '/') {
+  const [, maybeLang, ...rest] = pathname.split('/');
+  if (SUPPORTED_LANGUAGES.includes(maybeLang)) {
+    const remainder = `/${rest.join('/')}`.replace(/\/+$/, '') || '/';
+    return { lang: maybeLang, path: remainder === '' ? '/' : remainder };
+  }
+  return { lang: 'uz', path: pathname || '/' };
+}
+
+export function applyLanguageToPath(pathname = '/', lang = 'uz') {
+  const { path } = stripLanguageFromPath(pathname);
+  if (lang === 'uz') {
+    return path || '/';
+  }
+  const normalized = path === '/' ? '' : path;
+  return `/${lang}${normalized}`;
+}
+
+// Get current language from localStorage or default to 'uz'
+export function getCurrentLanguage() {
+  const stored = localStorage.getItem('appLanguage') || localStorage.getItem('language');
+  return SUPPORTED_LANGUAGES.includes(stored) ? stored : 'uz';
+}
+
+// Set language (optionally skip emitting change event)
+export function setLanguage(lang, options = {}) {
+  const { emitEvent = true } = options;
+  const targetLang = SUPPORTED_LANGUAGES.includes(lang) ? lang : 'uz';
+  localStorage.setItem('appLanguage', targetLang);
+
+  if (emitEvent) {
+    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: targetLang } }));
+  }
 }
 
 // Helper function to handle plurals for different languages
@@ -2271,8 +2305,8 @@ export function t(key, params = {}) {
 
 // Initialize language system
 export function initI18n() {
-  // Set default language if not set
-  if (!localStorage.getItem('appLanguage')) {
-    setLanguage('en');
-  }
+  const urlLang = detectLanguageFromPath(window.location.pathname);
+  const stored = getCurrentLanguage();
+  const effectiveLang = urlLang || stored || 'uz';
+  setLanguage(effectiveLang, { emitEvent: false });
 }
