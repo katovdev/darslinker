@@ -2251,9 +2251,23 @@ export function getCurrentLanguage() {
 
 // Set language (optionally skip emitting change event)
 export function setLanguage(lang, options = {}) {
-  const { emitEvent = true } = options;
+  const { emitEvent = true, updateUrl = true } = options;
   const targetLang = SUPPORTED_LANGUAGES.includes(lang) ? lang : 'uz';
   localStorage.setItem('appLanguage', targetLang);
+
+  // Update URL to reflect language (remove prefix for default 'uz')
+  try {
+    if (updateUrl && typeof window !== 'undefined') {
+      const { path } = stripLanguageFromPath(window.location.pathname);
+      const nextPath = applyLanguageToPath(path, targetLang);
+      if (nextPath !== window.location.pathname) {
+        window.history.replaceState({}, '', nextPath);
+      }
+    }
+  } catch (e) {
+    // Non-fatal; just log in console to avoid breaking UX
+    console.warn('setLanguage URL update skipped:', e);
+  }
 
   if (emitEvent) {
     window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: targetLang } }));

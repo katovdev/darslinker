@@ -9,6 +9,11 @@ uploads/*
 logs/
 *.log
 /src/generated/prisma
+<<<<<<< HEAD
 
 
 node_modules/
+=======
+node_modules/
+*.lognode_modules/
+>>>>>>> bugfix/schema_prisma
