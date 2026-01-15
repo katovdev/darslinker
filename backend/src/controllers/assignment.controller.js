@@ -1,18 +1,13 @@
-import Assignment from "../models/assignment.model.js";
-import Course from "../models/course.model.js";
+import { PrismaClient } from "@prisma/client";
 import logger from "../../config/logger.js";
-
 import {
   BadRequestError,
   ConflictError,
   NotFoundError,
 } from "../utils/error.utils.js";
-import {
-  handleValidationResult,
-  validateAndFindById,
-  validateObjectId,
-} from "../utils/model.utils.js";
 import { catchAsync } from "../middlewares/error.middleware.js";
+
+const prisma = new PrismaClient();
 
 /**
  * Create a new assignment
@@ -30,21 +25,27 @@ const create = catchAsync(async (req, res) => {
     maxGrade,
   } = req.body;
 
-  const findCourse = await validateAndFindById(Course, courseId, "Course");
-  const findCourseData = handleValidationResult(findCourse);
+  const course = await prisma.course.findUnique({ where: { id: courseId } });
+  if (!course) {
+    throw new NotFoundError("Course not found");
+  }
 
-  const assignment = await Assignment.create({
-    courseId,
-    title,
-    description,
-    dueDate,
-    resources,
-    createdBy,
-    maxGrade: Number(maxGrade),
+  const assignment = await prisma.assignment.create({
+    data: {
+      courseId,
+      title,
+      description,
+      dueDate: dueDate ? new Date(dueDate) : null,
+      resources,
+      createdBy,
+      maxGrade: Number(maxGrade),
+      status: "pending",
+      submissions: [],
+    },
   });
 
   logger.info("Assignment created successfully", {
-    assignmentId: assignment._id,
+    assignmentId: assignment.id,
     courseId,
     title: assignment.title,
     createdBy,
@@ -72,36 +73,29 @@ const findAll = catchAsync(async (req, res) => {
     order = "asc",
   } = req.query;
 
-  const filter = {};
-
-  if (courseId) {
-    const validation = validateObjectId(courseId, "Course");
-    const validationData = handleValidationResult(validation);
-    filter.courseId = courseId;
-  }
-
-  if (search) {
-    filter.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } },
-    ];
-  }
-
   const pageNumber = parseInt(page);
   const limitNumber = parseInt(limit);
   const skip = (pageNumber - 1) * limitNumber;
 
-  const sortOrder = order === "asc" ? 1 : -1;
-  const sort = { [sortBy]: sortOrder };
+  const where = {};
+  if (courseId) {
+    where.courseId = courseId;
+  }
+  if (search) {
+    where.OR = [
+      { title: { contains: search, mode: "insensitive" } },
+      { description: { contains: search, mode: "insensitive" } },
+    ];
+  }
 
-  const totalCount = await Assignment.countDocuments(filter);
+  const totalCount = await prisma.assignment.count({ where });
 
-  const assignments = await Assignment.find(filter)
-    .populate("courseId")
-    .sort(sort)
-    .skip(skip)
-    .limit(limitNumber)
-    .lean();
+  const assignments = await prisma.assignment.findMany({
+    where,
+    orderBy: { [sortBy]: order === "asc" ? "asc" : "desc" },
+    skip,
+    take: limitNumber,
+  });
 
   res.status(200).json({
     success: true,
@@ -121,22 +115,24 @@ const submitAssignment = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { studentId, files } = req.body;
 
-  const findAssignment = await validateAndFindById(
-    Assignment,
-    id,
-    "Assignment"
-  );
-  const findAssignmentData = handleValidationResult(findAssignment);
+  const assignment = await prisma.assignment.findUnique({ where: { id } });
+  if (!assignment) {
+    throw new NotFoundError("Assignment not found");
+  }
 
   const currentDate = new Date();
-  const dueDate = new Date(findAssignmentData.dueDate);
+  const dueDate = assignment.dueDate ? new Date(assignment.dueDate) : null;
 
-  if (currentDate > dueDate) {
+  if (dueDate && currentDate > dueDate) {
     throw new BadRequestError("Assignment submission has passed");
   }
 
-  const existingSubmission = findAssignmentData.submissions.find(
-    (sub) => sub.studentId.toString() === studentId
+  const submissions = Array.isArray(assignment.submissions)
+    ? assignment.submissions
+    : [];
+
+  const existingSubmission = submissions.find(
+    (sub) => sub.studentId?.toString?.() === studentId
   );
   if (existingSubmission) {
     throw new ConflictError(
@@ -144,13 +140,19 @@ const submitAssignment = catchAsync(async (req, res) => {
     );
   }
 
-  const updatedAssignment = await Assignment.findByIdAndUpdate(
-    id,
+  const updatedSubmissions = [
+    ...submissions,
     {
-      $push: { submissions: { studentId, files, submittedAt: new Date() } },
+      studentId,
+      files,
+      submittedAt: new Date(),
     },
-    { new: true, runValidators: true }
-  ).populate("courseId createdBy submissions.studentId");
+  ];
+
+  const updatedAssignment = await prisma.assignment.update({
+    where: { id },
+    data: { submissions: updatedSubmissions },
+  });
 
   logger.info("Assignment submitted by student", {
     assignmentId: id,
@@ -174,55 +176,53 @@ const gradeAssignment = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { studentId, grade, feedback } = req.body;
 
-  const findAssignment = await validateAndFindById(
-    Assignment,
-    id,
-    "Assignment"
-  );
-  const findAssignmentData = handleValidationResult(findAssignment);
+  const assignment = await prisma.assignment.findUnique({ where: { id } });
+  if (!assignment) {
+    throw new NotFoundError("Assignment not found");
+  }
 
-  const submissionIndex = findAssignmentData.submissions.findIndex(
-    (sub) => sub.studentId.toString() === studentId
+  const submissions = Array.isArray(assignment.submissions)
+    ? assignment.submissions
+    : [];
+
+  const submissionIndex = submissions.findIndex(
+    (sub) => sub.studentId?.toString?.() === studentId
   );
 
   if (submissionIndex === -1) {
     throw new NotFoundError("Student submission not found for this assignment");
   }
 
-  if (grade > findAssignmentData.maxGrade) {
+  if (grade > assignment.maxGrade) {
     throw new BadRequestError(
-      `Grade cannot exceed maximum grade of ${findAssignmentData.maxGrade}`
+      `Grade cannot exceed maximum grade of ${assignment.maxGrade}`
     );
   }
 
-  const updatedAssignment = await Assignment.findOneAndUpdate(
-    {
-      _id: id,
-      "submissions.studentId": studentId,
-    },
-    {
-      $set: {
-        "submissions.$.grade": grade,
-        "submissions.$.feedback": feedback || "",
-      },
-    },
-    { new: true, runValidators: true }
-  ).populate("courseId createdBy submissions.studentId");
+  const updatedSubmissions = [...submissions];
+  updatedSubmissions[submissionIndex] = {
+    ...updatedSubmissions[submissionIndex],
+    grade,
+    feedback: feedback || "",
+  };
 
-  const allGraded = updatedAssignment.submissions.every(
+  const allGraded = updatedSubmissions.every(
     (sub) => sub.grade !== undefined && sub.grade !== null
   );
 
-  if (allGraded && updatedAssignment.status !== "graded") {
-    updatedAssignment.status = "graded";
-    await updatedAssignment.save();
-  }
+  const updatedAssignment = await prisma.assignment.update({
+    where: { id },
+    data: {
+      submissions: updatedSubmissions,
+      status: allGraded ? "graded" : assignment.status,
+    },
+  });
 
   logger.info("Assignment graded by teacher", {
     assignmentId: id,
     studentId,
     grade,
-    maxGrade: findAssignmentData.maxGrade,
+    maxGrade: assignment.maxGrade,
   });
 
   res.status(200).json({
