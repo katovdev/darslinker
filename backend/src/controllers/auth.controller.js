@@ -1,12 +1,6 @@
 import bcrypt from "bcrypt";
 import logger from "../../config/logger.js";
 
-import User from "../models/user.model.js";
-import Student from "../models/student.model.js";
-import Teacher from "../models/teacher.model.js";
-import Session from "../models/session.model.js";
-import SubAdmin from "../models/sub-admin.model.js";
-
 import {
   parseDeviceInfo,
   getSessionExpiryDate,
@@ -25,10 +19,8 @@ import {
   verifyRefreshToken,
 } from "../utils/token.utils.js";
 import { BCRYPT_SALT_ROUNDS } from "../../config/env.js";
-import {
-  handleValidationResult,
-  validateAndFindById,
-} from "../utils/model.utils.js";
+
+import prisma from "../lib/prisma.js";
 
 import { catchAsync } from "../middlewares/error.middleware.js";
 import {
@@ -63,16 +55,18 @@ const checkUser = catchAsync(async (req, res) => {
     type: isEmail ? "email" : "phone",
   });
 
-  // Check in User model first
-  const existingUser = await User.findOne({
-    [isEmail ? "email" : "phone"]: normalizedIdentifier,
+  // Check in User (Prisma) first
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      [isEmail ? "email" : "phone"]: normalizedIdentifier,
+    },
   });
 
   if (existingUser) {
     // Check if user is verified
     if (existingUser.status === "pending") {
       logger.info("User found but not verified - needs verification", {
-        userId: existingUser._id,
+        userId: existingUser.id,
         identifier: normalizedIdentifier,
         status: existingUser.status,
       });
@@ -91,13 +85,13 @@ const checkUser = catchAsync(async (req, res) => {
         });
 
         logger.info("OTP sent to unverified user", {
-          userId: existingUser._id,
+          userId: existingUser.id,
           identifier: normalizedIdentifier,
           channel,
         });
       } catch (otpError) {
         logger.error("Failed to send OTP to unverified user", {
-          userId: existingUser._id,
+          userId: existingUser.id,
           identifier: normalizedIdentifier,
           error: otpError.message,
         });
@@ -112,14 +106,14 @@ const checkUser = catchAsync(async (req, res) => {
           firstName: existingUser.firstName,
           lastName: existingUser.lastName,
           email: existingUser.email,
-          phone: existingUser.phone
+          phone: existingUser.phone,
         }
       });
       return;
     }
 
     logger.info("User found", {
-      userId: existingUser._id,
+      userId: existingUser.id,
       identifier: normalizedIdentifier,
     });
 
@@ -132,7 +126,7 @@ const checkUser = catchAsync(async (req, res) => {
         firstName: existingUser.firstName,
         lastName: existingUser.lastName,
         email: existingUser.email,
-        phone: existingUser.phone
+        phone: existingUser.phone,
       }
     });
     return;
@@ -140,14 +134,18 @@ const checkUser = catchAsync(async (req, res) => {
 
   // If not found in User model, check SubAdmin model (only for phone, not email)
   if (!isEmail) {
-    const existingSubAdmin = await SubAdmin.findOne({
-      phone: normalizedIdentifier,
-      isActive: true
+    const existingSubAdmin = await prisma.subAdmin.findFirst({
+      where: { phone: normalizedIdentifier, isActive: true },
+      include: {
+        teacher: {
+          include: { user: true },
+        },
+      },
     });
 
     if (existingSubAdmin) {
       logger.info("Sub-admin found", {
-        subAdminId: existingSubAdmin._id,
+        subAdminId: existingSubAdmin.id,
         identifier: normalizedIdentifier,
       });
 
@@ -197,18 +195,20 @@ const register = catchAsync(async (req, res) => {
     role: role || "student",
   });
 
-  const existingUser = await User.findOne({
-    $or: [
-      normalizedEmail ? { email: normalizedEmail } : null,
-      normalizedPhone ? { phone: normalizedPhone } : null,
-    ].filter(Boolean),
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        normalizedEmail ? { email: normalizedEmail } : null,
+        normalizedPhone ? { phone: normalizedPhone } : null,
+      ].filter(Boolean),
+    },
   });
 
   if (existingUser) {
     // If user exists but not verified, resend OTP
     if (existingUser.status === "pending") {
       logger.info("User exists but not verified - resending OTP", {
-        userId: existingUser._id,
+        userId: existingUser.id,
         email: normalizedEmail,
         phone: normalizedPhone,
       });
@@ -226,7 +226,7 @@ const register = catchAsync(async (req, res) => {
         },
       });
 
-      const userResponse = existingUser.toObject();
+      const userResponse = { ...existingUser };
       delete userResponse.password;
 
       return res.status(200).json({
@@ -251,24 +251,36 @@ const register = catchAsync(async (req, res) => {
   let newUser;
 
   if (userRole === "student") {
-    newUser = await Student.create({
-      firstName,
-      lastName,
-      email: normalizedEmail,
-      phone: normalizedPhone,
-      password: hashedPassword,
-      role: "student",
-      status: "pending",
+    newUser = await prisma.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: {
+          firstName,
+          lastName,
+          email: normalizedEmail,
+          phone: normalizedPhone,
+          password: hashedPassword,
+          role: "student",
+          status: "pending",
+        },
+      });
+      await tx.student.create({ data: { userId: createdUser.id } });
+      return createdUser;
     });
   } else if (userRole === "teacher") {
-    newUser = await Teacher.create({
-      firstName,
-      lastName,
-      email: normalizedEmail,
-      phone: normalizedPhone,
-      password: hashedPassword,
-      role: "teacher",
-      status: "pending",
+    newUser = await prisma.$transaction(async (tx) => {
+      const createdUser = await tx.user.create({
+        data: {
+          firstName,
+          lastName,
+          email: normalizedEmail,
+          phone: normalizedPhone,
+          password: hashedPassword,
+          role: "teacher",
+          status: "pending",
+        },
+      });
+      await tx.teacher.create({ data: { userId: createdUser.id } });
+      return createdUser;
     });
   } else {
     throw new BadRequestError("Invalid role. Must be 'student' or 'teacher'");
@@ -287,11 +299,11 @@ const register = catchAsync(async (req, res) => {
     },
   });
 
-  const userResponse = newUser.toObject();
+  const userResponse = { ...newUser };
   delete userResponse.password;
 
   logger.info("User registered successfully - OTP sent", {
-    userId: newUser._id,
+    userId: newUser.id,
     email: normalizedEmail,
     phone: normalizedPhone,
     role: userRole,
@@ -352,16 +364,26 @@ const verifyRegistrationOtp = catchAsync(async (req, res) => {
   }
 
   // Get the activated user for automatic login
-  const activatedUser = result.data?.user;
+  const activatedUser =
+    (await prisma.user.findFirst({
+      where: { OR: [{ email: normalizedIdentifier }, { phone: normalizedIdentifier }] },
+    })) || result.data?.user;
 
   if (activatedUser) {
     // Generate tokens for immediate login after verification
+    const activatedUserId = activatedUser.id || activatedUser._id?.toString();
+
+    await prisma.user.update({
+      where: { id: activatedUserId },
+      data: { status: "active" },
+    });
+
     const tokenPayload = {
-      userId: activatedUser._id.toString(),
+      userId: activatedUserId,
       email: activatedUser.email,
       phone: activatedUser.phone,
       role: activatedUser.role,
-      status: activatedUser.status,
+      status: "active",
     };
 
     const accessToken = generateAccessToken(tokenPayload);
@@ -372,7 +394,7 @@ const verifyRegistrationOtp = catchAsync(async (req, res) => {
     const deviceFingerprint = createDeviceFingerprint(deviceInfo);
 
     const sessionData = {
-      userId: activatedUser._id,
+      userId: activatedUserId,
       ipAddress: req.ip,
       deviceInfo: deviceInfo,
       deviceFingerprint: deviceFingerprint,
@@ -381,29 +403,37 @@ const verifyRegistrationOtp = catchAsync(async (req, res) => {
       expiresAt: getSessionExpiryDate(),
     };
 
-    await Session.findOneAndUpdate(
-      {
-        userId: activatedUser._id,
-        deviceFingerprint: deviceFingerprint,
+    await prisma.session.upsert({
+      where: {
+        userId_deviceFingerprint: {
+          userId: activatedUserId,
+          deviceFingerprint: deviceFingerprint,
+        },
       },
-      sessionData,
-      { upsert: true, new: true }
-    );
+      create: {
+        ...sessionData,
+        userId: activatedUserId,
+      },
+      update: {
+        ...sessionData,
+        userId: activatedUserId,
+      },
+    });
 
     // Return user data with tokens for immediate login
     const userResponse = {
-      _id: activatedUser._id,
+      _id: activatedUserId,
       firstName: activatedUser.firstName,
       lastName: activatedUser.lastName,
       email: activatedUser.email,
       phone: activatedUser.phone,
       role: activatedUser.role,
-      status: activatedUser.status,
+      status: "active",
     };
 
     logger.info("OTP verified successfully - Account activated and logged in", {
       identifier: normalizedIdentifier,
-      userId: activatedUser._id,
+      userId: activatedUserId,
     });
 
     res.status(200).json({
@@ -416,7 +446,7 @@ const verifyRegistrationOtp = catchAsync(async (req, res) => {
   } else {
     logger.info("OTP verified successfully - Account activated", {
       identifier: normalizedIdentifier,
-      userId: result.data?.user?._id,
+      userId: result.data?.user?._id || result.data?.user?.id,
     });
 
     res.status(200).json({
@@ -449,11 +479,13 @@ const resendRegistrationOtp = catchAsync(async (req, res) => {
     channel,
   });
 
-  const existingUser = await User.findOne({
-    $or: [
-      email ? { email: normalizedEmail } : null,
-      phone ? { phone: normalizedPhone } : null,
-    ].filter(Boolean),
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        email ? { email: normalizedEmail } : null,
+        phone ? { phone: normalizedPhone } : null,
+      ].filter(Boolean),
+    },
   });
 
   if (!existingUser) {
@@ -518,18 +550,17 @@ const login = catchAsync(async (req, res) => {
     userAgent: req.headers["user-agent"],
   });
 
-  // Check in User model first
-  let existingUser = await User.findOne({
-    [isEmail ? "email" : "phone"]: normalizedIdentifier,
+  // Look up user or sub-admin
+  const existingUser = await prisma.user.findFirst({
+    where: { [isEmail ? "email" : "phone"]: normalizedIdentifier },
   });
 
-  // If not found in User model and using phone, check SubAdmin model
   let existingSubAdmin = null;
   if (!existingUser && !isEmail) {
-    existingSubAdmin = await SubAdmin.findOne({
-      phone: normalizedIdentifier,
-      isActive: true
-    }).populate('teacher', 'firstName lastName email phone');
+    existingSubAdmin = await prisma.subAdmin.findFirst({
+      where: { phone: normalizedIdentifier, isActive: true },
+      include: { teacher: { include: { user: true } } },
+    });
   }
 
   if (!existingUser && !existingSubAdmin) {
@@ -542,11 +573,14 @@ const login = catchAsync(async (req, res) => {
 
   // Handle sub-admin login
   if (existingSubAdmin && !existingUser) {
-    const isPasswordMatch = await existingSubAdmin.comparePassword(password);
+    const isPasswordMatch = await bcrypt.compare(
+      password,
+      existingSubAdmin.password
+    );
 
     if (!isPasswordMatch) {
       logger.warn("Login failed - Invalid password for sub-admin", {
-        subAdminId: existingSubAdmin._id,
+        subAdminId: existingSubAdmin.id,
         identifier: normalizedIdentifier,
         ip: req.ip,
       });
@@ -554,60 +588,75 @@ const login = catchAsync(async (req, res) => {
     }
 
     // Update login info
-    await existingSubAdmin.updateLoginInfo();
+    await prisma.subAdmin.update({
+      where: { id: existingSubAdmin.id },
+      data: {
+        lastLogin: new Date(),
+        loginCount: (existingSubAdmin.loginCount || 0) + 1,
+      },
+    });
 
     const deviceInfo = parseDeviceInfo(req.headers["user-agent"]);
     const deviceFingerprint = createDeviceFingerprint(deviceInfo);
 
     const tokenPayload = {
-      userId: existingSubAdmin._id.toString(),
+      userId: existingSubAdmin.id,
       phone: existingSubAdmin.phone,
       role: "subadmin",
-      teacherId: existingSubAdmin.teacher._id.toString(),
+      teacherId: existingSubAdmin.teacherId,
       status: "active",
     };
 
     const accessToken = generateAccessToken(tokenPayload);
     const refreshToken = generateRefreshToken(tokenPayload);
 
-    const sessionData = {
-      userId: existingSubAdmin._id,
-      ipAddress: req.ip,
-      deviceInfo: deviceInfo,
-      deviceFingerprint: deviceFingerprint,
-      userAgent: req.headers["user-agent"],
-      token: refreshToken,
-      expiresAt: getSessionExpiryDate(),
-    };
-
-    await Session.findOneAndUpdate(
-      {
-        userId: existingSubAdmin._id,
-        deviceFingerprint: deviceFingerprint,
+    await prisma.session.upsert({
+      where: {
+        userId_deviceFingerprint: {
+          userId: existingSubAdmin.id,
+          deviceFingerprint,
+        },
       },
-      sessionData,
-      { upsert: true, new: true }
-    );
+      create: {
+        userId: existingSubAdmin.id,
+        ipAddress: req.ip,
+        deviceInfo,
+        deviceFingerprint,
+        userAgent: req.headers["user-agent"],
+        token: refreshToken,
+        expiresAt: getSessionExpiryDate(),
+      },
+      update: {
+        ipAddress: req.ip,
+        deviceInfo,
+        deviceFingerprint,
+        userAgent: req.headers["user-agent"],
+        token: refreshToken,
+        expiresAt: getSessionExpiryDate(),
+      },
+    });
 
     logger.info("Sub-admin login successful", {
-      subAdminId: existingSubAdmin._id,
-      teacherId: existingSubAdmin.teacher._id,
+      subAdminId: existingSubAdmin.id,
+      teacherId: existingSubAdmin.teacherId,
       deviceType: deviceInfo.type,
       ip: req.ip,
     });
 
     const userResponse = {
-      _id: existingSubAdmin._id,
+      _id: existingSubAdmin.id,
       fullName: existingSubAdmin.fullName,
       phone: existingSubAdmin.phone,
       role: "subadmin",
-      teacher: {
-        _id: existingSubAdmin.teacher._id,
-        firstName: existingSubAdmin.teacher.firstName,
-        lastName: existingSubAdmin.teacher.lastName,
-        email: existingSubAdmin.teacher.email,
-        phone: existingSubAdmin.teacher.phone,
-      },
+      teacher: existingSubAdmin.teacher
+        ? {
+          _id: existingSubAdmin.teacher.userId,
+          firstName: existingSubAdmin.teacher.user.firstName,
+          lastName: existingSubAdmin.teacher.user.lastName,
+          email: existingSubAdmin.teacher.user.email,
+          phone: existingSubAdmin.teacher.user.phone,
+        }
+        : null,
       permissions: existingSubAdmin.permissions,
       lastLogin: existingSubAdmin.lastLogin,
       loginCount: existingSubAdmin.loginCount,
@@ -623,11 +672,12 @@ const login = catchAsync(async (req, res) => {
     return;
   }
 
+  // Standard user login
   const isPasswordMatch = await bcrypt.compare(password, existingUser.password);
 
   if (!isPasswordMatch) {
     logger.warn("Login failed - Invalid password", {
-      userId: existingUser._id,
+      userId: existingUser.id,
       identifier: normalizedIdentifier,
       ip: req.ip,
     });
@@ -635,7 +685,7 @@ const login = catchAsync(async (req, res) => {
   }
   if (existingUser.status !== "active") {
     logger.warn("Login failed - Account not active", {
-      userId: existingUser._id,
+      userId: existingUser.id,
       status: existingUser.status,
       ip: req.ip,
     });
@@ -647,17 +697,18 @@ const login = catchAsync(async (req, res) => {
   const deviceInfo = parseDeviceInfo(req.headers["user-agent"]);
   const deviceFingerprint = createDeviceFingerprint(deviceInfo);
 
-  const activeSessions = await Session.find({
-    userId: existingUser._id,
-  }).sort({ createdAt: 1 });
+  const activeSessions = await prisma.session.findMany({
+    where: { userId: existingUser.id },
+    orderBy: { createdAt: "asc" },
+  });
 
   if (activeSessions.length >= 2) {
     const oldestSession = activeSessions[0];
-    await Session.deleteOne({ _id: oldestSession._id });
+    await prisma.session.delete({ where: { id: oldestSession.id } });
   }
 
   const tokenPayload = {
-    userId: existingUser._id.toString(),
+    userId: existingUser.id,
     email: existingUser.email,
     phone: existingUser.phone,
     role: existingUser.role,
@@ -667,27 +718,34 @@ const login = catchAsync(async (req, res) => {
   const accessToken = generateAccessToken(tokenPayload);
   const refreshToken = generateRefreshToken(tokenPayload);
 
-  const sessionData = {
-    userId: existingUser._id,
-    ipAddress: req.ip,
-    deviceInfo: deviceInfo,
-    deviceFingerprint: deviceFingerprint,
-    userAgent: req.headers["user-agent"],
-    token: refreshToken,
-    expiresAt: getSessionExpiryDate(),
-  };
-
-  await Session.findOneAndUpdate(
-    {
-      userId: existingUser._id,
-      deviceFingerprint: deviceFingerprint,
+  await prisma.session.upsert({
+    where: {
+      userId_deviceFingerprint: {
+        userId: existingUser.id,
+        deviceFingerprint,
+      },
     },
-    sessionData,
-    { upsert: true, new: true }
-  );
+    create: {
+      userId: existingUser.id,
+      ipAddress: req.ip,
+      deviceInfo,
+      deviceFingerprint,
+      userAgent: req.headers["user-agent"],
+      token: refreshToken,
+      expiresAt: getSessionExpiryDate(),
+    },
+    update: {
+      ipAddress: req.ip,
+      deviceInfo,
+      deviceFingerprint,
+      userAgent: req.headers["user-agent"],
+      token: refreshToken,
+      expiresAt: getSessionExpiryDate(),
+    },
+  });
 
   logger.info("Login successful", {
-    userId: existingUser._id,
+    userId: existingUser.id,
     email: existingUser.email,
     role: existingUser.role,
     deviceType: deviceInfo.type,
@@ -696,7 +754,7 @@ const login = catchAsync(async (req, res) => {
 
   // Prepare user response (without password)
   let userResponse = {
-    _id: existingUser._id,
+    _id: existingUser.id,
     firstName: existingUser.firstName,
     lastName: existingUser.lastName,
     email: existingUser.email,
@@ -706,18 +764,34 @@ const login = catchAsync(async (req, res) => {
   };
 
   // If teacher, get full teacher profile
-  if (existingUser.role === 'teacher') {
-    const teacherProfile = await Teacher.findById(existingUser._id).select('-password');
+  if (existingUser.role === "teacher") {
+    const teacherProfile = await prisma.teacher.findUnique({
+      where: { userId: existingUser.id },
+      include: { user: true },
+    });
     if (teacherProfile) {
-      userResponse = teacherProfile.toObject();
+      userResponse = {
+        ...teacherProfile,
+        _id: teacherProfile.userId,
+        ...teacherProfile.user,
+        password: undefined,
+      };
     }
   }
 
   // If student, get full student profile
-  if (existingUser.role === 'student') {
-    const studentProfile = await Student.findById(existingUser._id).select('-password');
+  if (existingUser.role === "student") {
+    const studentProfile = await prisma.student.findUnique({
+      where: { userId: existingUser.id },
+      include: { user: true },
+    });
     if (studentProfile) {
-      userResponse = studentProfile.toObject();
+      userResponse = {
+        ...studentProfile,
+        _id: studentProfile.userId,
+        ...studentProfile.user,
+        password: undefined,
+      };
     }
   }
 
@@ -761,10 +835,10 @@ const changePassword = catchAsync(async (req, res) => {
     );
   }
 
-  const result = await validateAndFindById(User, userId, "User");
-  const resultData = handleValidationResult(result);
-
-  const user = resultData;
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) {
+    throw new NotFoundError("User not found");
+  }
 
   const isCurrentPasswordValid = await bcrypt.compare(
     currentPassword,
@@ -780,8 +854,10 @@ const changePassword = catchAsync(async (req, res) => {
     parseInt(BCRYPT_SALT_ROUNDS || "10", 10)
   );
 
-  user.password = hashedNewPassword;
-  await user.save();
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedNewPassword },
+  });
 
   logger.info("Password changed successfully", {
     userId,
@@ -810,10 +886,19 @@ const logout = catchAsync(async (req, res) => {
   const deviceInfo = parseDeviceInfo(req.headers["user-agent"]);
   const deviceFingerprint = createDeviceFingerprint(deviceInfo);
 
-  const deletedSession = await Session.findOneAndDelete({
-    userId: userId,
-    deviceFingerprint: deviceFingerprint,
-  });
+  let deletedSession = null;
+  try {
+    deletedSession = await prisma.session.delete({
+      where: {
+        userId_deviceFingerprint: {
+          userId,
+          deviceFingerprint,
+        },
+      },
+    });
+  } catch (e) {
+    // no-op
+  }
 
   if (!deletedSession) {
     logger.warn("Logout failed - Session not found", {
@@ -826,7 +911,7 @@ const logout = catchAsync(async (req, res) => {
   logger.info("Logout successful", {
     userId,
     deviceType: deviceInfo.type,
-    sessionId: deletedSession._id,
+    sessionId: deletedSession.id,
   });
 
   res.status(200).json({ success: true, message: "Logged out successfully" });
@@ -866,9 +951,11 @@ const refreshToken = catchAsync(async (req, res) => {
   }
 
   // Check if refresh token exists in session (stored in DB)
-  const session = await Session.findOne({
-    userId: decoded.userId,
-    token: refreshTokenFromBody,
+  const session = await prisma.session.findFirst({
+    where: {
+      userId: decoded.userId,
+      token: refreshTokenFromBody,
+    },
   });
 
   if (!session) {
@@ -883,17 +970,17 @@ const refreshToken = catchAsync(async (req, res) => {
   if (session.expiresAt && new Date() > new Date(session.expiresAt)) {
     logger.warn("Session expired", {
       userId: decoded.userId,
-      sessionId: session._id,
+      sessionId: session.id,
       ip: req.ip,
     });
 
     // Delete expired session
-    await Session.deleteOne({ _id: session._id });
+    await prisma.session.delete({ where: { id: session.id } });
     throw new UnauthorizedError("Session has expired. Please login again");
   }
 
   // Get user to verify account status
-  const user = await User.findById(decoded.userId);
+  const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
   if (!user) {
     logger.warn("User not found for refresh token", {
       userId: decoded.userId,
@@ -913,7 +1000,7 @@ const refreshToken = catchAsync(async (req, res) => {
 
   // Generate new access token
   const tokenPayload = {
-    userId: user._id.toString(),
+    userId: user.id,
     email: user.email,
     phone: user.phone,
     role: user.role,
@@ -923,7 +1010,7 @@ const refreshToken = catchAsync(async (req, res) => {
   const newAccessToken = generateAccessToken(tokenPayload);
 
   logger.info("Access token refreshed successfully", {
-    userId: user._id,
+    userId: user.id,
     email: user.email,
     role: user.role,
     ip: req.ip,

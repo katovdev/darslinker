@@ -18,13 +18,13 @@ connectToDB();
 // Setup Student Telegram bot - use webhook or polling based on USE_WEBHOOK env variable
 if (process.env.TELEGRAM_BOT_TOKEN) {
   const useWebhook = process.env.USE_WEBHOOK === 'true';
-  
+
   if (useWebhook) {
     // Use webhook (for production/deployed servers)
     setTimeout(async () => {
       const webhookInfo = await getWebhookInfo();
       logger.info('📡 Current webhook info:', webhookInfo);
-      
+
       const success = await setWebhook();
       if (success) {
         logger.info('✅ Student Telegram webhook configured successfully');
@@ -64,7 +64,7 @@ app.use((req, res, next) => {
     'http://localhost:3000',
     'http://localhost:3001', // Moderator port
     'http://localhost:8001', // Backend port for local development
-    
+
     // Production domains
     'http://darslinker.uz', // Main domain (HTTP)
     'https://darslinker.uz', // Main domain (HTTPS)
@@ -72,24 +72,24 @@ app.use((req, res, next) => {
     'https://www.darslinker.uz', // WWW version (HTTPS)
     'https://api.darslinker.uz', // Backend API behind Nginx/HTTPS
     'https://frontend-seven-lime-32.vercel.app', // Current frontend deployment
-    
+
     // Moderator subdomains
     'http://moderator.darslinker.uz', // Moderator subdomain (HTTP)
     'https://moderator.darslinker.uz', // Moderator subdomain (HTTPS)
     'http://admin.darslinker.uz', // Admin subdomain (HTTP)
     'https://admin.darslinker.uz', // Admin subdomain (HTTPS)
-    
+
     // Vercel deployments
     'https://darslinker-azio.vercel.app', // Frontend
     'https://darslinker-4n3z.vercel.app', // Moderator (old)
-    
+
     // Netlify deployments
     'https://bucolic-fairy-0e50d6.netlify.app', // Old frontend
     'https://heartfelt-centaur-5fc321.netlify.app' // Moderator (new)
   ];
-  
+
   const origin = req.headers.origin;
-  
+
   console.log('🌐 CORS Request:', {
     method: req.method,
     path: req.path,
@@ -97,7 +97,7 @@ app.use((req, res, next) => {
     allowed: allowedOrigins.includes(origin),
     userAgent: req.headers['user-agent']?.substring(0, 50)
   });
-  
+
   // Always set CORS headers for allowed origins
   if (allowedOrigins.includes(origin)) {
     res.header('Access-Control-Allow-Origin', origin);
@@ -107,29 +107,29 @@ app.use((req, res, next) => {
     if (origin && (origin.includes('localhost') || origin.includes('127.0.0.1'))) {
       res.header('Access-Control-Allow-Origin', origin);
       console.log('🔧 Allowing localhost origin:', origin);
-    } 
+    }
     // Allow any vercel.app domain
     else if (origin && origin.includes('vercel.app')) {
       res.header('Access-Control-Allow-Origin', origin);
       console.log('🔧 Allowing vercel.app origin:', origin);
-    } 
+    }
     // Allow any darslinker.uz subdomain
     else if (origin && (origin.includes('darslinker.uz') || origin.endsWith('.darslinker.uz'))) {
       res.header('Access-Control-Allow-Origin', origin);
       console.log('🔧 Allowing darslinker.uz origin:', origin);
-    } 
+    }
     // Allow netlify domains
     else if (origin && origin.includes('netlify.app')) {
       res.header('Access-Control-Allow-Origin', origin);
       console.log('🔧 Allowing netlify.app origin:', origin);
-    } 
+    }
     // Fallback: allow the request anyway but log it
     else {
       res.header('Access-Control-Allow-Origin', origin || '*');
       console.log('⚠️ Allowing unknown origin:', origin);
     }
   }
-  
+
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, Cache-Control, Pragma');
   res.header('Access-Control-Allow-Credentials', 'true');
@@ -140,7 +140,7 @@ app.use((req, res, next) => {
     console.log('✅ Handling OPTIONS preflight request for:', req.path);
     return res.status(200).end();
   }
-  
+
   next();
 });
 

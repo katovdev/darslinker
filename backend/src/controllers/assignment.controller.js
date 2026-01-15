@@ -1,4 +1,3 @@
-import { PrismaClient } from "@prisma/client";
 import logger from "../../config/logger.js";
 import {
   BadRequestError,
@@ -6,8 +5,7 @@ import {
   NotFoundError,
 } from "../utils/error.utils.js";
 import { catchAsync } from "../middlewares/error.middleware.js";
-
-const prisma = new PrismaClient();
+import prisma from "../lib/prisma.js";
 
 /**
  * Create a new assignment
