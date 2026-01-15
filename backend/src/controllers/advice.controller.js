@@ -1,4 +1,6 @@
-import Advice from '../models/advice.model.js';
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
 
 class AdviceController {
   // Create new advice request
@@ -24,13 +26,13 @@ class AdviceController {
       }
 
       // Create advice
-      const advice = new Advice({
-        name: name.trim(),
-        phone: phone.trim(),
-        comment: comment ? comment.trim() : null
+      const advice = await prisma.advice.create({
+        data: {
+          name: name.trim(),
+          phone: phone.trim(),
+          comment: comment ? comment.trim() : null
+        }
       });
-
-      await advice.save();
 
       res.status(201).json({
         success: true,
@@ -58,28 +60,32 @@ class AdviceController {
   async getAllAdvices(req, res) {
     try {
       const { page = 1, limit = 10, status, search } = req.query;
-      const offset = (page - 1) * limit;
+      const take = parseInt(limit) || 10;
+      const skip = (parseInt(page) - 1) * take;
 
-      // Build query
-      const query = {};
-      
+      const where = {};
+
       if (status && status !== 'all') {
-        query.status = status;
+        where.status = status;
       }
 
       if (search) {
-        query.$or = [
-          { name: { $regex: search, $options: 'i' } },
-          { phone: { $regex: search, $options: 'i' } },
-          { comment: { $regex: search, $options: 'i' } }
+        where.OR = [
+          { name: { contains: search, mode: 'insensitive' } },
+          { phone: { contains: search, mode: 'insensitive' } },
+          { comment: { contains: search, mode: 'insensitive' } },
         ];
       }
 
-      const total = await Advice.countDocuments(query);
-      const advices = await Advice.find(query)
-        .sort({ createdAt: -1 })
-        .limit(parseInt(limit))
-        .skip(parseInt(offset));
+      const [total, advices] = await Promise.all([
+        prisma.advice.count({ where }),
+        prisma.advice.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take
+        })
+      ]);
 
       res.json({
         success: true,
@@ -108,7 +114,7 @@ class AdviceController {
     try {
       const { id } = req.params;
 
-      const advice = await Advice.findById(id);
+      const advice = await prisma.advice.findUnique({ where: { id } });
 
       if (!advice) {
         return res.status(404).json({
@@ -144,7 +150,7 @@ class AdviceController {
         });
       }
 
-      const advice = await Advice.findById(id);
+      const advice = await prisma.advice.findUnique({ where: { id } });
 
       if (!advice) {
         return res.status(404).json({
@@ -153,8 +159,10 @@ class AdviceController {
         });
       }
 
-      advice.status = status;
-      await advice.save();
+      await prisma.advice.update({
+        where: { id },
+        data: { status }
+      });
 
       res.json({
         success: true,
@@ -176,7 +184,7 @@ class AdviceController {
     try {
       const { id } = req.params;
 
-      const advice = await Advice.findById(id);
+      const advice = await prisma.advice.findUnique({ where: { id } });
 
       if (!advice) {
         return res.status(404).json({
@@ -185,7 +193,7 @@ class AdviceController {
         });
       }
 
-      await advice.deleteOne();
+      await prisma.advice.delete({ where: { id } });
 
       res.json({
         success: true,
@@ -204,17 +212,17 @@ class AdviceController {
   // Get advice statistics
   async getAdviceStats(req, res) {
     try {
-      const total = await Advice.countDocuments();
-      const pending = await Advice.countDocuments({ status: 'pending' });
-      const contacted = await Advice.countDocuments({ status: 'contacted' });
-      const resolved = await Advice.countDocuments({ status: 'resolved' });
+      const total = await prisma.advice.count();
+      const pending = await prisma.advice.count({ where: { status: 'pending' } });
+      const contacted = await prisma.advice.count({ where: { status: 'contacted' } });
+      const resolved = await prisma.advice.count({ where: { status: 'resolved' } });
 
       // Get recent advices (last 7 days)
       const sevenDaysAgo = new Date();
       sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
-      
-      const recent = await Advice.countDocuments({
-        createdAt: { $gte: sevenDaysAgo }
+
+      const recent = await prisma.advice.count({
+        where: { createdAt: { gte: sevenDaysAgo } }
       });
 
       res.json({
